@@ -1,0 +1,60 @@
+<?
+$aMenuLinks = Array(
+	Array(
+		"О компании", 
+		"/about/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Производители", 
+		"/proizvoditeli/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Доставка", 
+		"/dostavka/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Оплата", 
+		"/oplata/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Гарантия и возврат", 
+		"/vozvrat-i-obmen/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+    Array(
+        "Проектирование отопления",
+        "/uslugi/proektirovanie-sistemy-otopleniya/",
+        Array(),
+        Array(),
+        ""
+    ),
+    Array(
+        "Монтаж сантехники",
+        "/uslugi/montazh-inzhenernoy-i-bytovoy-santekhniki/",
+        Array(),
+        Array(),
+        ""
+    ),
+	Array(
+		"Контакты", 
+		"/kontakty/", 
+		Array(), 
+		Array(), 
+		"" 
+	)
+);
+?>

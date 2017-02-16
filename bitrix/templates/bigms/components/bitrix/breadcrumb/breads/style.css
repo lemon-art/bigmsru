@@ -1,0 +1,38 @@
+.breadcrumb_block .fa-angle-right:before{
+	content: "-";
+}
+
+.bx-breadcrumb {
+	padding: 23px 30px 15px;
+	color: #a3a3a3;
+	font-family:Arial, Open Sans;
+}
+.bx-breadcrumb i {
+	color: #b5bdc2;
+	line-height: 10px;
+	font-size: 14px;
+	vertical-align: middle;
+	margin-right: 3px;
+}
+.bx-breadcrumb .bx-breadcrumb-item {
+	float: left;
+	margin-bottom: 10px;
+	white-space: nowrap;
+	line-height: 10px;
+	vertical-align: middle;
+	margin-right: 7px;
+}
+.bx-breadcrumb a, .bx-breadcrumb span{
+	color: #a3a3a3;
+	font-family: Arial, "Open Sans", "Helvetica Neue", Helvetica, sans-serif;
+	/* font-size: 12px; */
+	font-size: 14px;
+	/* font-weight:600; */
+}
+.bx-breadcrumb .bx-breadcrumb-item a {border-bottom: none;}
+.bx-breadcrumb .bx-breadcrumb-item a:hover {}
+
+/* .bx-breadcrumb .bx-breadcrumb-item:first-child {
+	position:relative;
+	top:3px;
+} */

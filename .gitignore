@@ -1,0 +1,8 @@
+/upload
+/bitrix/cache
+/bitrix/managed_cache
+/bitrix/backup
+bitrix/php_interface/dbconn.php
+bitrix/.settings.php
+*.txt
+*.xml

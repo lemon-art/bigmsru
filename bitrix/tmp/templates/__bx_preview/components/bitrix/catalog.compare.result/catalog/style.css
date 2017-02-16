@@ -1,0 +1,21 @@
+.bx_compare .table_compare{
+	overflow:auto;
+	width:100%;
+}
+.bx_compare .table_compare table{
+	min-width:100%;
+	border-collapse:collapse;
+}
+.bx_compare .table_compare table tr td{
+	font-size:0.750em; /* 12px/16px */
+	color:#434040;
+	position:relative;
+	text-align:center;
+	border:1px solid #e6f4f8;
+	width:245px;
+	vertical-align:middle;
+}
+
+.left_no_scroll table tr td:first-child{
+	text-align:left;
+}

@@ -1,0 +1,3181 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script type="text/javascript" data-skip-moving="true">(function(w, d) {var v = w.frameCacheVars = {'CACHE_MODE':'HTMLCACHE','storageBlocks':[],'dynamicBlocks':{'FKauiI':{'hash':'d41d8cd98f00b204e9800998ecf8427e'},'NSDDVx':{'hash':'d41d8cd98f00b204e9800998ecf8427e'}},'AUTO_UPDATE':true,'AUTO_UPDATE_TTL':'0'};var inv = false;if (v.AUTO_UPDATE === false){if (v.AUTO_UPDATE_TTL && v.AUTO_UPDATE_TTL > 0){var lm = Date.parse(d.lastModified);if (!isNaN(lm)){var td = new Date().getTime();if ((lm + v.AUTO_UPDATE_TTL * 1000) >= td){w.frameRequestStart = false;w.preventAutoUpdate = true;return;}inv = true;}}else{w.frameRequestStart = false;w.preventAutoUpdate = true;return;}}var r = w.XMLHttpRequest ? new XMLHttpRequest() : (w.ActiveXObject ? new w.ActiveXObject("Microsoft.XMLHTTP") : null);if (!r) { return; }w.frameRequestStart = true;var m = v.CACHE_MODE; var l = w.location; var x = new Date().getTime();var q = "?bxrand=" + x + (l.search.length > 0 ? "&" + l.search.substring(1) : "");var u = l.protocol + "//" + l.host + l.pathname + q;r.open("GET", u, true);r.setRequestHeader("BX-ACTION-TYPE", "get_dynamic");r.setRequestHeader("BX-CACHE-MODE", m);r.setRequestHeader("BX-CACHE-BLOCKS", v.dynamicBlocks ? JSON.stringify(v.dynamicBlocks) : "");if (inv){r.setRequestHeader("BX-INVALIDATE-CACHE", "Y");}try { r.setRequestHeader("BX-REF", d.referrer || "");} catch(e) {}if (m === "APPCACHE"){r.setRequestHeader("BX-APPCACHE-PARAMS", JSON.stringify(v.PARAMS));r.setRequestHeader("BX-APPCACHE-URL", v.PAGE_URL ? v.PAGE_URL : "");}r.onreadystatechange = function() {if (r.readyState != 4) { return; }var a = r.getResponseHeader("BX-RAND");var b = w.BX && w.BX.frameCache ? w.BX.frameCache : false;if (a != x || !((r.status >= 200 && r.status < 300) || r.status === 304 || r.status === 1223 || r.status === 0)){var f = {error:true, reason:a!=x?"bad_rand":"bad_status", url:u, xhr:r, status:r.status};if (w.BX && w.BX.ready){BX.ready(function() {setTimeout(function(){BX.onCustomEvent("onFrameDataRequestFail", [f]);}, 0);});}else{w.frameRequestFail = f;}return;}if (b){b.onFrameDataReceived(r.responseText);if (!w.frameUpdateInvoked){b.update(false);}w.frameUpdateInvoked = true;}else{w.frameDataString = r.responseText;}};r.send();})(window, document);</script>
+
+
+<link href="/bitrix/js/main/core/css/core.css?14383262213963" type="text/css"  rel="stylesheet" />
+<link href="/bitrix/templates/bigms/css/style.css?14812050032858" type="text/css"  data-template-style="true"  rel="stylesheet" />
+<link href="/bitrix/templates/bigms/css/jquery.fancybox.css?14383262234953" type="text/css"  data-template-style="true"  rel="stylesheet" />
+<link href="/bitrix/templates/bigms/css/jquery.formstyler.css?144290188111144" type="text/css"  data-template-style="true"  rel="stylesheet" />
+<link href="/bitrix/templates/bigms/css/flexslider.css?14514016066842" type="text/css"  data-template-style="true"  rel="stylesheet" />
+<link href="/bitrix/templates/bigms/components/bitrix/search.title/search/style.css?14407528783464" type="text/css"  data-template-style="true"  rel="stylesheet" />
+<link href="/bitrix/templates/bigms/components/bitrix/breadcrumb/breads/style.css?1447336101828" type="text/css"  data-template-style="true"  rel="stylesheet" />
+<link href="/bitrix/templates/bigms/components/bitrix/main.register/modal/style.css?1438326223225" type="text/css"  data-template-style="true"  rel="stylesheet" />
+<link href="/bitrix/templates/bigms/template_styles.css?148120802889049" type="text/css"  data-template-style="true"  rel="stylesheet" />
+<script type="text/javascript">if(!window.BX)window.BX={message:function(mess){if(typeof mess=='object') for(var i in mess) BX.message[i]=mess[i]; return true;}};</script>
+<script type="text/javascript">(window.BX||top.BX).message({'JS_CORE_LOADING':'Загрузка...','JS_CORE_NO_DATA':'- Нет данных -','JS_CORE_WINDOW_CLOSE':'Закрыть','JS_CORE_WINDOW_EXPAND':'Развернуть','JS_CORE_WINDOW_NARROW':'Свернуть в окно','JS_CORE_WINDOW_SAVE':'Сохранить','JS_CORE_WINDOW_CANCEL':'Отменить','JS_CORE_WINDOW_CONTINUE':'Продолжить','JS_CORE_H':'ч','JS_CORE_M':'м','JS_CORE_S':'с','JSADM_AI_HIDE_EXTRA':'Скрыть лишние','JSADM_AI_ALL_NOTIF':'Показать все','JSADM_AUTH_REQ':'Требуется авторизация!','JS_CORE_WINDOW_AUTH':'Войти','JS_CORE_IMAGE_FULL':'Полный размер'});</script>
+<script type="text/javascript">(window.BX||top.BX).message({'LANGUAGE_ID':'ru','FORMAT_DATE':'DD.MM.YYYY','FORMAT_DATETIME':'DD.MM.YYYY HH:MI:SS','COOKIE_PREFIX':'BITRIX_SM','SERVER_TZ_OFFSET':'10800','SITE_ID':'s1','SITE_DIR':'/'});</script>
+
+
+<script type="text/javascript" src="/bitrix/js/main/core/core.js?1486449684116711"></script>
+<script type="text/javascript" src="/bitrix/js/main/core/core_db.js?148644968411148"></script>
+<script type="text/javascript" src="/bitrix/js/main/core/core_ajax.js?148644968435622"></script>
+<script type="text/javascript" src="/bitrix/js/main/json/json2.min.js?14383262223467"></script>
+<script type="text/javascript" src="/bitrix/js/main/core/core_ls.js?143832622110430"></script>
+<script type="text/javascript" src="/bitrix/js/main/core/core_fx.js?148644968416864"></script>
+<script type="text/javascript" src="/bitrix/js/main/core/core_frame_cache.js?148644915217555"></script>
+
+
+<script type="text/javascript" src="/bitrix/templates/bigms/js/jquery-1.11.1.min.js?143832622395790"></script>
+<script type="text/javascript" src="/bitrix/templates/bigms/components/bitrix/sale.basket.basket.line/in_header/script.js?14383262234656"></script>
+<script type="text/javascript" src="/bitrix/components/bitrix/search.title/script.js?14410018069472"></script>
+<script type="text/javascript" src="/bitrix/templates/bigms/components/bitrix/search.title/search/script.js?14801678669745"></script>
+<script type="text/javascript" src="/bitrix/templates/bigms/js/jquery.maskedinput.js?14703220577207"></script>
+<script type="text/javascript" src="/bitrix/templates/bigms/js/jquery.fancybox.pack.js?143832622323135"></script>
+<script type="text/javascript" src="/bitrix/templates/bigms/js/jquery.flexslider-min.js?143832622321638"></script>
+<script type="text/javascript" src="/bitrix/templates/bigms/js/jquery.columnizer.js?143832622321279"></script>
+<script type="text/javascript" src="/bitrix/templates/bigms/js/jquery.formstyler.min.js?143832622315916"></script>
+<script type="text/javascript" src="/bitrix/templates/bigms/js/jquery-ui.min.js?1458636497240422"></script>
+<script type="text/javascript" src="/bitrix/templates/bigms/js/main.js?148491666164608"></script>
+<script type="text/javascript">var _ba = _ba || []; _ba.push(["aid", "d943e21d0e14607e21de89d52f2f7848"]); _ba.push(["host", "www.bigms.ru"]); (function() {var ba = document.createElement("script"); ba.type = "text/javascript"; ba.async = true;ba.src = (document.location.protocol == "https:" ? "https://" : "http://") + "bitrix.info/ba.js";var s = document.getElementsByTagName("script")[0];s.parentNode.insertBefore(ba, s);})();</script>
+
+
+	<title>Контакты</title>
+	
+	<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png">
+	<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+	<link rel="icon" type="image/png" href="/favicon-194x194.png" sizes="194x194">
+	<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+	<link rel="icon" type="image/png" href="/android-chrome-192x192.png" sizes="192x192">
+	<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+	<link rel="manifest" href="/manifest.json">
+	<meta name="msapplication-TileColor" content="#da532c">
+	<meta name="msapplication-TileImage" content="/mstile-144x144.png">
+	<meta name="theme-color" content="#ffffff">
+	
+	<meta charset="utf-8" />
+	<meta name="cmsmagazine" content="f1de57f03b55d6b2cebaf643bdee6d72" />
+    <meta property="og:title" content='Контакты' />
+    <meta property="og:description" content="" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://bigms.ru/kontakty/" />
+    <meta property="og:image" content="http://www.bigms.ru/bitrix/templates/bigms/images/big-logo.png">
+	
+						<meta name="fragment" content="!">
+				
+	
+
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+	
+	
+	<!--script type="text/javascript" src="/bitrix/templates/bigms/js/jquery-1.11.1.min.js"></script-->
+		
+	
+			<script src="/bitrix/templates/bigms/js/yandex_api.js?load=package.full&lang=ru-RU" type="text/javascript"></script>
+		
+	
+	
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/stopsovetnik/latest/ss.min.js" async="true"></script>
+	
+	<!-- fancybox -->
+		<!-- formstyler -->
+		<!-- flexslider -->
+	
+		
+	
+	<script>
+	// Яндекс Советник
+	//var stopSovetnik=function(){var b=function(d){var c=document.querySelectorAll(d);if(c.length===1){return c[0]}else{if(c.length>1){return c[c.length-1]}else{return null}}};var a=setInterval(function(){var c=parseInt(b("HTML").style.marginTop);if(c>0){b("BODY > DIV").remove();b("BODY > STYLE").remove();clearInterval(a);setTimeout(function(){b("HTML").style.marginTop="0px"},500)}setTimeout(function(){clearInterval(a)},10000)},10)};stopSovetnik();
+	</script>
+	
+</head>
+
+<body>
+
+<style>
+.footer .right {
+   width: 80%;
+}/*
+@media screen and (max-width: 1150px) {
+   .footer .inline {
+      margin-left: 5px;
+   }
+}*/
+</style>
+
+
+<style>
+
+.list a {
+	color: #006db8;
+}
+.catalog .catalog_with_icon .list {
+	border-bottom: 0;
+	padding: 25px 10px;
+}
+.catalog .catalog_with_icon .list li.item {
+	display: block;
+	padding: 0;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	width: 11.6%;
+	height: 230px;
+	margin:0 12px;
+	border:0;
+	float: left;
+}
+.catalog .catalog_with_icon .list li.item a .icon {
+	width: 100%;
+	max-width: 100px;
+	height: 100px;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	margin: 0 auto 20px;
+	border: 1px solid #e6f4f8 !important;
+}
+.catalog .catalog_with_icon .list li.item a .icon {
+background-size: 100%;
+}
+
+</style>
+
+<!-- Google Tag Manager -->
+<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-TNC5LN"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-TNC5LN');</script>
+<!-- End Google Tag Manager -->
+
+<div class="wrapper">
+	<div class="top_block">
+		<div class="center">
+			<nav class="top">
+				<ul>
+
+	
+	
+	
+		
+							<li class="root-item"><a href="/about/">О компании</a></li>
+			
+		
+	
+	
+
+	
+	
+	
+		
+							<li class="root-item"><a href="/proizvoditeli/">Производители</a></li>
+			
+		
+	
+	
+
+	
+	
+	
+		
+							<li class="root-item"><a href="/dostavka/">Доставка</a></li>
+			
+		
+	
+	
+
+	
+	
+	
+		
+							<li class="root-item"><a href="/oplata/">Оплата</a></li>
+			
+		
+	
+	
+
+	
+	
+	
+		
+							<li class="root-item"><a href="/vozvrat-i-obmen/">Гарантия и возврат</a></li>
+			
+		
+	
+	
+
+			<li class="root-item has-sub">
+			<a href="#">Услуги</a>
+			<ul class="sub-menu">
+				<li><a href="/uslugi/proektirovanie-sistemy-otopleniya/">Проектирование отопления</a></li>
+				<li><a href="/uslugi/montazh-inzhenernoy-i-bytovoy-santekhniki/">Монтаж сантехники</a></li>
+			</ul>
+		</li>
+		
+	
+	
+	
+		
+							<li class="active"><a href="/kontakty/">Контакты</a></li>
+			
+		
+	
+	
+
+
+</ul>
+			</nav>
+			
+			<div class="right">
+				<div class="zvonok_block"><a class="zvonok modalbox btn" href="#zvonok" onclick="yaCounter31721621.reachGoal('feedback-button');"><span>Обратный звонок</span></a></div>
+				<div class="login">
+											<a class="login_modal modalbox" href="#login"><span>Вход</span></a> /                 
+						<a class="register_modal modalbox" href="#register"><span>Регистрация</span></a>
+									</div>
+			</div>
+			<div class="clear"></div>
+		</div>
+	</div> <!-- END .top_block -->
+
+	<header class="header">
+		<div class="center">
+			<div class="left">
+				<a class="logo" href="/"></a>
+				<div class="text_block">
+					<a href="/">
+						<div class="slogan">
+							БОЛЬШОЙ МАСТЕР						</div>
+						<div class="desc">
+							Интернет-магазин инженерной<br />и бытовой сантехники						</div>
+					</a>
+				</div>
+			</div>
+			
+			<div class="right">
+                <div class="shops work-time">
+                    <span style="color:#006db;8">Мы работаем:</span><br />
+<span style="color: black;">Пн. - Сб.: 8:30 - 18:30<br />
+Вс.: 9:00 - 17:00</span>                </div>
+									<!--
+					<a href="/catalog/inzhenernaya/actions/" class="btn btn_actions"><span>распродажа</span></a>
+					<div class="shop_work_time">
+						Время работы:<br>
+ Пн.- Суб.: 08:30 - 18:00 <br>
+Вс: 09:00 - 17:00					</div>
+					-->
+								
+									<!--
+					<a href="/catalog/bytovaya/actions/" class="btn btn_actions"><span>распродажа</span></a>
+					<div class="shop_work_time">
+						Время работы:<br>
+ Пн.- Суб.: 08:30 - 18:00 <br>
+Вс: 09:00 - 17:00					</div>
+					-->
+							
+				<div class="shops shops_inzhenernaya ">
+					Инженерная сантехника<br>
+<span>+7 (495) 255-33-62</span><br>
+<span>+7 (800) 775-23-18</span><br>
+<a class="header_mail_link" href="mailto:info@bigms.ru">info@bigms.ru</a><br>
+<!--<a class="modalbox_map modalbox_map.ajax" data-fancybox-type="ajax" href="/include/shops_inzhenernaya_ajax.php">Адреса 4 магазинов</a><br>-->				</div>
+				<div class="shops shops_bytovaya ">
+					Бытовая сантехника<br>
+<span> +7 (495) 151-00-96</span><br />
+<span> +7 (800) 775-23-19</span><br />
+<a class="header_mail_link" href="mailto:bm@bigms.ru">bm@bigms.ru</a><br>
+<!--<a class="modalbox_map modalbox_map.ajax" data-fancybox-type="ajax" href="/include/shops_bytovaya_ajax.php">Адрес магазина</a>-->				</div>
+				<div class="basket_block">
+					
+
+<div id="bxdynamic_FKauiI_start" style="display:none"></div><div id="bxdynamic_FKauiI_end" style="display:none"></div>				</div>
+			</div>
+			<div class="clear"></div>	
+
+			<div class="nav_searcg_block">
+				<div class="catalog_link">
+					<!-- <a href="/catalog/">Каталог продукции</a> -->
+					<span>Каталог продукции</span>
+
+					<div class="catalogs_block">
+						<div class="catalogs catalogs1 catalogs1_header">
+							<a href="/catalog/inzhenernaya/" class="catalogs_link"><span>Инженерная сантехника</span></a>
+							
+<ul class="pop_menu">
+
+	
+		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/armatura_dlya_otopleniya/">Арматура для отопления</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/ventili_balansirovochnye/">Вентили балансировочные</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/gruppy_bystrogo_montazha/">Группы быстрого монтажа</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/klapany_smesitelnye/">Клапаны смесительные</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/kontrollery/">Контроллеры</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/regulyatory_temperatury/">Регуляторы температуры</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/servoprivody_i_elektroprivody/">Сервоприводы и электроприводы</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/strelki_gidravlicheskie/">Стрелки гидравлические</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/termostaty/">Термостаты</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/uzly_nasosno_smesitelnye/">Узлы насосно - смесительные</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/armatura_dlya_radiatorov/">Арматура для радиаторов</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/komplektuyushchie_dlya_radiatorov/">Комплектующие для радиаторов</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/krany_dlya_radiatorov/">Краны для радиаторов</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/termostaticheskie_golovki/">Термостатические головки</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/trubki_dlya_podklyucheniya_radiatorov/">Трубки для подключения радиаторов</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/uzly_nizhnego_podklyucheniya_radiatorov_multifleksy_i_komplektuyushchie/">Узлы нижнего подключение радиаторов (мультифлексы) и комплектующие</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/armatura_zapornaya/">Арматура запорная</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/komplektuyushchie_dlya_radiatorov/">Задвижки клиновые</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/klapany_solenoidnye/">Клапаны соленоидные</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/krany_sharovye_dlya_vody/">Краны шаровые для воды</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/krany_sharovye_dlya_gaza/">Краны шаровые для газа</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/krany_sharovye_dlya_santekhnicheskikh_priborov/">Краны шаровые для сантехнических приборов</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/krany_sharovye_tryekhkhodovye/">Краны шаровые трехходовые</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/armatura_izmeritelnaya_i_komplektuyushchie/">Арматура измерительная и комплектующие</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/komplektuyushchie/">Комплектующие</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/manometry/">Манометры</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/schyetchiki_dlya_vody/">Счетчики для воды</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/termometry_i_termomanometry/">Термометры и термоманометры</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/armatura_predokhranitelnaya/">Арматура предохранительная</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/vozdukhootvodchiki/">Воздухоотводчики</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/gruppy_bezopasnosti/">Группы безопасности</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/klapany_obratnye/">Клапаны обратные</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/klapany_predokhranitelnye/">Клапаны предохранительные</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/reduktory_davleniya/">Редукторы давления</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/rele_protoka/">Реле протока</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/baki_membrannye/">Баки мембранные</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/baki_rasshiritelnye_dlya_gvs/">Баки расширительные для ГВС</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/baki_rasshiritelnye_dlya_otopleniya/">Баки расширительные для отопления</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/baki_rasshiritelnye_dlya_khvs_gidroakkumulyatory/">Баки расширительные для ХВС (гидроаккумуляторы)</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/prinadlezhnosti_dlya_gidroakkumulyatorov/">Принадлежности для гидроаккумуляторов</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+			
+									<li class="root-item"><a class="for-crawler" href="/catalog/inzhenernaya/baki_toplivnye/">Баки топливные</a></li>
+				
+			
+		
+		
+	
+		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/boylery/">Бойлеры</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/boylery_kombinirovannogo_nagreva/">Бойлеры комбинированного нагрева</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/boylery_kosvennogo_nagreva/">Бойлеры косвенного нагрева</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/vodonagrevateli/">Водонагреватели</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/vodonagrevateli_elektricheskie_nakopitelnye/">Водонагреватели электрические накопительные</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/gofry_sifony_trapy_installyatsii/">Гофры, сифоны, трапы, инсталляции</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/aksessuary/">Аксессуары</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/gofry_sifony_obvyazki_dlya_vann/">Гофры, сифоны, обвязки для ванн</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/installyatsii/">Инсталляции</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/trapy/">Трапы</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/truby_fanovye/">Трубы фановые</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/instrument_i_aksessuary_dlya_montazha/">Инструмент и аксессуары для монтажа</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/aksessuary_1/">Аксессуары</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/dlya_montazha_mednykh_trub/">Для монтажа медных труб</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/dlya_montazha_metalloplastikovykh_trub/">Для монтажа металлопластиковых труб</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/dlya_montazha_polipropilenovykh_trub/">Для монтажа полипропиленовых труб</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/klyuchi/">Ключи</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/manzhety_i_prokladki/">Манжеты и прокладки</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/materialy_raskhodnye/">Материалы расходные</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/nozhnitsy_truborezy/">Ножницы, труборезы</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/opressovshchiki/">Опрессовщики</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/kabel_greyushchiy_dlya_vodoprovoda/">Кабель греющий для водопровода</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/aksessuary_dlya_kabelya_greyushchego/">Аксессуары для кабеля греющего</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/kabel_greyushchiy_dlya_vodoprovoda_vnutrenniy/">Кабель греющий для водопровода (внутренний)</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/kabel_greyushchiy_dlya_vodoprovoda_naruzhnyy/">Кабель греющий для водопровода (наружный)</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/kanalizatsiya/">Канализация</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/kanalizatsiya_naruzhnaya/">Канализация наружная</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/kanaliztsiya_vnutrennyaya/">Канализция внутренняя</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/kollektory/">Коллекторы</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/gruppy_kollektornye/">Группы коллекторные</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/kollektory_dlya_kotelnykh/">Коллекторы для котельных</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/kollektory_magistralnye_i_bez_kranov/">Коллекторы магистральные и без кранов</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/kollektory_s_otsekayushchimi_kranami/">Коллекторы с отсекающими кранами</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/kollektory_s_regulirovochnymi_ventilyami/">Коллекторы с регулировочными вентилями</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/komplektuyushchie_dlya_kollektorov/">Комплектующие для коллекторов</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/kotly_otopleniya/">Котлы отопления</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/kotly_gazovye_napolnye_atmosfernye/">Котлы газовые напольные (атмосферные)</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/kotly_gazovye_nastennye_dvukhkonturnye/">Котлы газовые настенные (двухконтурные)</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/kotly_gazovye_nastennye_odnokonturnye/">Котлы газовые настенные (одноконтурные)</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/kotly_tverdotoplivnye_derevo_ugol/">Котлы твердотопливные (дерево, уголь)</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/kotly_elektricheskie/">Котлы электрические</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/krepyezh/">Крепёж</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/krepyezh_montazhnyy/">Крепёж монтажный</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/kreplenie_dlya_kollektorov/">Крепление для коллекторов</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/kreplenie_dlya_radiatorov/">Крепление для радиаторов</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/kreplenie_dlya_trub/">Крепление для труб</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+			
+									<li class="root-item"><a class="for-crawler" href="/catalog/inzhenernaya/montazh_napolnogo_otopleniya/">Монтаж напольного отопления</a></li>
+				
+			
+		
+		
+	
+		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/nasosy_i_nasosnoe_oborudovanie/">Насосы и насосное оборудование</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/komplektuyushchie_k_nasosam/">Комплектующие к насосам</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/nasosy_vibratsionnye/">Насосы вибрационные</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/nasosy_dlya_povysheniya_davleniya/">Насосы для повышения давления</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/nasosy_drenazhnye_i_fekalnye/">Насосы дренажные и фекальные</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/nasosy_pogruzhnye_dlya_kolodtsev/">Насосы погружные для колодцев</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/nasosy_skvazhinnye/">Насосы скважинные</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/nasosy_tsirkulyatsionnye/">Насосы циркуляционные</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/stantsii_nasosnye/">Станции насосные</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/ustanovki_kanalizatsionnye/">Установки канализационные</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/podvodka_dlya_vody_i_gaza/">Подводка для воды и газа</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/podvodka_dlya_vody_gayka_gayka/">Подводка для воды гайка/гайка</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/podvodka_dlya_vody_gayka_shtutser/">Подводка для воды гайка/штуцер</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/podvodka_dlya_gaza_gayka_gayka/">Подводка для газа гайка/гайка</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/podvodka_dlya_gaza_gayka_shtutser/">Подводка для газа гайка/штуцер</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/radiatory_otopleniya_sektsionnye/">Радиаторы отопления секционные</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/radiatory_alyuminievye/">Радиаторы алюминиевые</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/radiatory_bimetallicheskie/">Радиаторы биметаллические</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/radiatory_otopleniya_stalnye_panelnye/">Радиаторы отопления стальные панельные</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/radiatory_stalnye_panelnye_hm/">Радиаторы стальные панельные HM</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/radiatory_stalnye_panelnye_kermi/">Радиаторы стальные панельные KERMI</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/radiatory_stalnye_panelnye_termoteknik/">Радиаторы стальные панельные TERMOTEKNIK</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/sistema_zashchity_ot_protechki_vody/">Система защиты от протечки воды</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/datchiki_kontrolya_protechki_vody/">Датчики контроля протечки воды</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/krany_sharovye_s_elektroprivodom/">Краны шаровые с электроприводом</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/moduli_upravleniya_i_komplekty/">Модули управления и комплекты</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/teploizolyatsiya/">Теплоизоляция</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/teploizolyatsiya_trubnaya_vspenennyy_kauchuk_k_flex/">Теплоизоляция трубная (вспененный каучук) K- FLEX</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/teploizolyatsiya_trubnaya_vspenennyy_polietilen/">Теплоизоляция трубная (вспененный полиэтилен)</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/teplonositel/">Теплоноситель</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/dixis_65/">DIXIS -65</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/dixis_top_30/">DIXIS TOP -30</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/warme_eco_30/">WARME ECO -30</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/voda_kotlovaya_warme_hydro/">Вода котловая WARME HYDRO</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/truby_i_fitingi/">Трубы</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/truby_i_fitingi/filter/tip_truby-is-c220d0ce-6f77-11e6-8dad-000c29721055/apply/">Из нержавеющей стали</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/truby_i_fitingi/filter/tip_truby-is-c220d0d3-6f77-11e6-8dad-000c29721055/apply/">Из полиэтилена PE-RT</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/truby_i_fitingi/filter/tip_truby-is-c220d0d2-6f77-11e6-8dad-000c29721055/apply/">Из полиэтилена низкого давления (ПНД)</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/inzhenernaya/truby_i_fitingi/filter/tip_truby-is-c220d0d0-6f77-11e6-8dad-000c29721055/apply/">Из сшитого полиэтилена (PEX)</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/truby_i_fitingi/filter/tip_truby-is-ba935da6-bc72-11e6-8dad-000c29721055/apply/">Кожух для труб</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/truby_i_fitingi/filter/tip_truby-is-c220d0cf-6f77-11e6-8dad-000c29721055/apply/">Медные</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/truby_i_fitingi/filter/tip_truby-is-c220d0d4-6f77-11e6-8dad-000c29721055/apply/">Металлопластиковые</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/truby_i_fitingi/filter/tip_truby-is-c220d0d1-6f77-11e6-8dad-000c29721055/apply/">Полипропиленовые</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/filtry/">Фильтры</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/preobrazovateli_magnitnye/">Преобразователи магнитные</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/filtry_kolbovye_i_elementy_filtruyushchie/">Фильтры колбовые и элементы фильтрующие</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/filtry_muftovye_gryazeviki/">Фильтры муфтовые (грязевики)</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/filtry_promyvnye/">Фильтры промывные</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/filtry_toplivnye/">Фильтры топливные</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/fitingi_rezbovye/">Фитинги резьбовые</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/valtec_5/">VALTEC</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/viega/">VIEGA</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/fitingi_chugunnye_rezbovye/">Фитинги чугунные резьбовые</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+			
+									<li class="root-item"><a class="for-crawler" href="/catalog/inzhenernaya/fitingi_remontnye_gebo/">Фитинги ремонтные GEBO</a></li>
+				
+			
+		
+		
+	
+		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/inzhenernaya/shkafy_kollektornye/">Шкафы коллекторные</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/shkaf_kollektornyy_naruzhnyy_shrn/">Шкаф коллекторный наружный (ШРН)</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/inzhenernaya/shkafy_kollektornye_vnutrenniy_shrv/">Шкафы коллекторные внутренний (ШРВ)</a></li>
+				
+			
+		
+		
+	
+			</ul></li>	
+<ul>						</div>
+						<div class="catalogs catalogs2 catalogs2_header">
+							<a href="/catalog/bytovaya/" class="catalogs_link"><span>Бытовая сантехника</span></a>
+							
+<ul class="pop_menu">
+
+	
+		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/bytovaya/aksessuary_dlya_vannoy_komnaty/">Аксессуары для ванной комнаты</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/aksessuary_dlya_vannoy_aks_line/">Аксессуары для ванной AKS LINE</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/aksessuary_dlya_vannoy_komnaty/filter/brend-is-9d04aa3f-2b8e-11e5-b5c8-000c299320e9/apply/">Аксессуары для ванной Fixsen</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/aksessuary_dlya_vannoy_komnaty/filter/brend-is-583a2d05-c198-11e5-a5fb-000c299320e9/apply/">Аксессуары для ванной LEDEME</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/aksessuary_dlya_vannoy_komnaty/filter/brend-is-c1192852-02d1-11e6-90aa-000c299320e9/apply/">Аксессуары для ванной WasserKRAFT</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+			
+									<li class="root-item"><a class="for-crawler" href="/catalog/bytovaya/bytovaya_khimiya/">Бытовая химия</a></li>
+				
+			
+		
+		
+	
+		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/bytovaya/vanny/">Ванны</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/vanny/filter/material-is-54d966bf-740d-11e5-b72a-000c299320e9/apply/">Акриловые ванны</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/obvyazki_dlya_vann/">Обвязки для ванн</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/vanny/filter/material-is-97b8d062-e971-11e3-84be-00215e52d78a/apply/">Стальные ванны</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+			
+									<li class="root-item"><a class="for-crawler" href="/catalog/bytovaya/dushevaya_programma/">Душевая программа</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="root-item"><a class="for-crawler" href="/catalog/bytovaya/dushevye_dveri_i_ograzhdeniya/">Душевые двери и ограждения</a></li>
+				
+			
+		
+		
+	
+		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/bytovaya/dushevye_kabiny/">Душевые кабины</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/dushevye_kabiny/filter/brend-is-ca0eee76-3690-11e5-b5c8-000c299320e9/apply/">Душевые кабины BORNEO</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/dushevye_kabiny/filter/brend-is-2641cbb6-2adc-11e5-b5c8-000c299320e9/apply/">Душевые кабины RIVER</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/dushevye_kabiny/filter/brend-is-eb3c6b97-3052-11e5-b5c8-000c299320e9/apply/">Душевые кабины SANWAY</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/dushevye_kabiny/filter/brend-is-62ca09bc-2f6e-11e5-b5c8-000c299320e9/apply/">Душевые кабины TIMO</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/bytovaya/dushevye_sistemy/">Душевые системы</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/dushevye_sistemy/filter/brend-is-0175bde2-2baa-11e5-b5c8-000c299320e9/apply/">Душевые системы BELBAGNO</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/dushevye_sistemy/filter/brend-is-159f44e6-2ed2-11e5-b5c8-000c299320e9/apply/">Душевые системы BRAVAT</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/dushevye_sistemy/filter/brend-is-6469d941-2ed6-11e5-b5c8-000c299320e9/apply/">Душевые системы CEZARES</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/dushevye_sistemy/filter/brend-is-826945f0-2ed6-11e5-b5c8-000c299320e9/apply/">Душевые системы FIORE</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/dushevye_sistemy/filter/brend-is-16813843-2ee0-11e5-b5c8-000c299320e9/apply/">Душевые системы KLUDI</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/dushevye_sistemy/filter/brend-is-62ca09bc-2f6e-11e5-b5c8-000c299320e9/apply/">Душевые системы TIMO</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/bytovaya/dushevye_stoyki/">Душевые стойки</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/dushevye_stoyki/filter/brend-is-0175bde2-2baa-11e5-b5c8-000c299320e9/apply/">Душевые стойки BELBANGO</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/dushevye_stoyki/filter/brend-is-159f44e6-2ed2-11e5-b5c8-000c299320e9/apply/">Душевые стойки BRAVAT</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/dushevye_stoyki/filter/brend-is-826945f0-2ed6-11e5-b5c8-000c299320e9/apply/">Душевые стойки FIORE</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/dushevye_stoyki/filter/brend-is-b47b1412-2ab6-11e5-b5c8-000c299320e9/apply/">Душевые стойки GROHE</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/dushevye_stoyki/filter/brend-is-159f44d8-2ed2-11e5-b5c8-000c299320e9/apply/">Душевые стойки HANSGROHE</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/dushevye_stoyki/filter/brend-is-16813843-2ee0-11e5-b5c8-000c299320e9/apply/">Душевые стойки KLUDI</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/dushevye_stoyki/filter/brend-is-62ca09bc-2f6e-11e5-b5c8-000c299320e9/apply/">Душевые стойки TIMO</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/dushevye_stoyki/filter/brend-is-09376108-2ed4-11e5-b5c8-000c299320e9/apply/">Душевые стойки VIDIMA</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+			
+									<li class="root-item"><a class="for-crawler" href="/catalog/bytovaya/installyatsii/">Инсталляции</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="root-item"><a class="for-crawler" href="/catalog/bytovaya/mebel_dlya_vannoy/">Мебель для ванной</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="root-item"><a class="for-crawler" href="/catalog/bytovaya/moyki_kukhonnye/">Мойки кухонные</a></li>
+				
+			
+		
+		
+	
+		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/bytovaya/polotentsesushiteli/">Полотенцесушители</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/polotentsesushiteli/filter/brend-is-954eb009-306b-11e5-b5c8-000c299320e9/tip-is-534ce5f1-796d-11e5-b72a-000c299320e9/apply/">Водяные полотенцесушители ENERGY</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/polotentsesushiteli/filter/brend-is-55ba9b64-3070-11e5-b5c8-000c299320e9/apply/">Водяные полотенцесушители TERMINUS</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/polotentsesushiteli/filter/brend-is-5bc09772-3115-11e5-b5c8-000c299320e9/apply/">Водяные полотенцесушители ДВИН</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/polotentsesushiteli/filter/brend-is-d9fc7bf6-aa05-11e5-a568-000c299320e9/apply/">Водяные полотенцесушители НИКА</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/polotentsesushiteli/filter/brend-is-954eb009-306b-11e5-b5c8-000c299320e9/tip-is-6ed61a61-7a24-11e5-b72a-000c299320e9/apply/">Электрические полотенцесушители ENERGY</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/bytovaya/smesiteli/">Смесители</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/smesiteli/filter/vstraivaemyy-is-a7abbf25-eab1-11e5-8ddb-000c299320e9/apply/">Встраиваемые смесители</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/smesiteli/filter/komplekty_smesiteley-is-ef357d9f-b245-11e6-8dad-000c29721055/apply/">Комплекты смесителей</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/smesiteli/filter/naznachenie_-is-7577a4bb-6437-11e5-b72a-000c299320e9/apply/">Смеситель для биде </a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/smesiteli/filter/naznachenie_-is-9d795be6-669e-11e5-b72a-000c299320e9/apply/">Смеситель для ванны</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/smesiteli/filter/naznachenie_-is-91ca965c-68d7-11e5-b72a-000c299320e9/apply/">Смеситель для душа</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/smesiteli/filter/naznachenie_-is-9450e900-6a6d-11e5-b72a-000c299320e9/apply/">Смеситель для кухонной мойки</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/smesiteli/filter/naznachenie_-is-b3166f92-6b60-11e5-b72a-000c299320e9/apply/">Смеситель для раковины</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+							<li class="parent depth1 ">
+					<span></span>
+					<a class="for-crawler" href="/catalog/bytovaya/unitazy/">Унитазы</a>
+					<ul>
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/unitazy_belbagno/">Унитазы BELBAGNO</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/unitazy_bravat/">Унитазы BRAVAT</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/unitazy_gustavsberg/">Унитазы GUSTAVSBERG</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/unitazy_ideal_standart/">Унитазы IDEAL STANDART</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/unitazy_jacob_delafon/">Унитазы JACOB DELAFON</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/unitazy_roca/">Унитазы ROCA</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/unitazy_santek/">Унитазы SANTEK</a></li>
+				
+			
+		
+		
+	
+		
+		
+			
+									<li class="depth2 "><a class="for-crawler" href="/catalog/bytovaya/unitazy_vidima/">Унитазы VIDIMA</a></li>
+				
+			
+		
+		
+	
+					</ul></li>		
+		
+			
+									<li class="root-item"><a class="for-crawler" href="/catalog/bytovaya/shtorki_na_vannu/">Шторки на ванну</a></li>
+				
+			
+		
+		
+	
+	
+<ul>						</div>
+					</div>
+				</div>
+								<nav>
+					
+<ul>
+
+
+	
+	
+		
+							<li class="root-item" data-link="/uslugi/proektirovanie-sistemy-otopleniya/"><a href="/uslugi/proektirovanie-sistemy-otopleniya/">Проектирование отопления</a></li>
+			
+		
+	
+	
+
+	
+	
+		
+							<li class="root-item" data-link="/uslugi/montazh-inzhenernoy-i-bytovoy-santekhniki/"><a href="/uslugi/montazh-inzhenernoy-i-bytovoy-santekhniki/">Монтаж сантехники</a></li>
+			
+		
+	
+	
+
+
+</ul>
+				</nav>
+								<div class="search_block">
+					<div class="search_title search_title_1">
+								<div id="search" class="bx_search_container" tabindex="1">
+		<form action="/search/index.php">
+			<div class="bx_field">
+				<input id="title-search-input10" type="text" name="q" value="" placeholder="Поиск по сайту" autocomplete="off" class="bx_input_text"/>
+			</div>
+			<input name="" type="submit" value="Найти" class="bx_input_submit" />
+		</form>
+	</div>
+
+<script>
+	BX.ready(function(){
+		new JCTitleSearch({
+			'AJAX_PAGE' : '/kontakty/',
+			'CONTAINER_ID': 'search',
+			'INPUT_ID': 'title-search-input10',
+			'MIN_QUERY_LEN': 2
+		});
+	});
+</script>
+						
+					</div>
+										
+					<div class="radio_block">
+						<input type="radio" name="iblock" value="search_title_1" checked="checked" id="iblock1" /> 
+						<label for="iblock1">Инженерная</label>
+						<input type="radio" name="iblock" value="search_title_2"  id="iblock2" /> 
+						<label for="iblock2">Бытовая</label>
+					</div>
+				</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+	</header><!-- .header-->
+
+	<div class="container">
+
+		<div class="center">
+
+							<div>
+				<div class="content">
+					<div class="breadcrumb_block">
+						<link href="/bitrix/css/main/font-awesome.css?143832622228777" type="text/css" rel="stylesheet" />
+<div class="bx-breadcrumb">
+				<div class="bx-breadcrumb-item" id="bx_breadcrumb_0" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"">
+					
+					<a href="/" title="Главная" itemprop="url">
+						<span itemprop="title">Главная</span>
+					</a>
+				</div>
+				<div class="bx-breadcrumb-item">
+					<i class="fa fa-angle-right"></i>
+					<span>Контакты</span>
+				</div><div style="clear:both"></div></div>					</div>
+
+											<h1>Контакты</h1>
+													<div class="switch_block">
+								<div class="title">
+									Наши магазины в Москве:
+								</div>
+								<div class="select_block">
+									<div class="selectesem">
+										<div onclick="catalog_active_open_map_ss(this.getAttribute('data-val'))" data-val="cat1" class="item active" style="font-size: 15px; font-weight: bold">
+											Инженерная сантехника (4)
+										</div>
+										<div onclick="catalog_active_open_map_ss(this.getAttribute('data-val'))" data-val="cat2" class="item" style="font-size: 15px; font-weight: bold">
+											Бытовая сантехника (1)
+										</div>
+										<div onclick="catalog_active_open_map_ss(this.getAttribute('data-val'))" data-val="cat3" class="item" style="font-size: 15px; font-weight: bold">
+											Хозяйственные магазины (3)
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="padding">
+														<style>
+.switch_block {
+display: -webkit-box;
+display: -moz-box;
+display: -webkit-flex;
+display: -ms-flexbox;
+display: flex;
+}
+.switch_block .title {
+min-width: 200px;
+}
+.selectesem .item {
+min-width: 215px;
+}
+</style>
+<div class="contacts-shops">
+    <div class="cat1 kontakt_a_i">
+	 
+	 </div>
+
+
+
+<div class="cat2 hidden kontakt_a_b">
+	 </div>
+<div class="cat3 hidden kontakt_a_r">
+	</div>
+<br></div>
+<div class="kontakty_text">
+	<table itemscope="" itemtype="http://schema.org/Organization" class="no_border" width="100%">
+<tbody>
+<tr>
+	<td width="50%">
+ <b>Реквизиты:</b>
+		<p>
+ <span itemprop="name">Общество с ограниченной ответственностью «Большой мастер»</span><br>
+			 Юрид. Адрес:&nbsp;111024, г. Москва, 2-я ул. Энтузиастов д. 5, корп.1, этаж. 2, комн. 9<br>
+			 ИНН&nbsp;7720605468&nbsp;<br>
+			 КПП&nbsp;772001001<br>
+			 ОГРН&nbsp;1087746107063<br>
+			 ОКПО&nbsp;84727931<br>
+			 Ген. Директор&nbsp;Шинкевич А. Н.<br>
+		</p>
+	</td>
+	<td width="50%">
+		<p>
+ <b>Сделать заказ или уточнить наличие:</b>
+		</p>
+ <br>
+		<p>
+ <b class="important" itemprop="telephone">+7 (495) 255-33-62</b>- Инженерная сантехника
+		</p>
+		<p>
+ <b class="important" itemprop="telephone">+7 (495) 151-00-96</b> - Бытовая сантехника
+		</p>
+ <br>
+		<p>
+			 Мы работаем: Пн. - Сб.: 8:30 - 18:30 / Вс.: 9:00 - 17:00
+		</p>
+		<div class="feedback">
+ <a class="modalbox btn" href="#feedback">написать нам</a>
+		</div>
+	</td>
+</tr>
+</tbody>
+</table></div>
+										
+													</div>
+												
+													</div>
+											</div>
+							</div>
+			<div class="clear"></div>
+		</div><!-- .container -->
+	</div><!-- .wrapper -->
+
+	<footer class="footer">
+		<div class="center">
+			<div class="left">
+				<div class="copy">
+					<div class="big">
+						© 2010 - 2015 БОЛЬШОЙ МАСТЕР					</div>
+					Интернет-магазин инженерной <br>
+и бытовой сантехники				</div>
+				<div class="o2k">
+					<!--noindex--><a href="http://o2k.ru/" target="_blank">Создание сайта</a> - KISLOROD<!--/noindex-->				</div>
+			</div>
+			
+			<div class="right">
+				<nav class="bottom">
+					<ul>
+
+	
+	
+	
+		
+							<li class="root-item"><a href="/about/">О компании</a></li>
+			
+		
+	
+	
+
+	
+	
+	
+		
+							<li class="root-item"><a href="/proizvoditeli/">Производители</a></li>
+			
+		
+	
+	
+
+	
+	
+	
+		
+							<li class="root-item"><a href="/dostavka/">Доставка</a></li>
+			
+		
+	
+	
+
+	
+	
+	
+		
+							<li class="root-item"><a href="/oplata/">Оплата</a></li>
+			
+		
+	
+	
+
+	
+	
+	
+		
+							<li class="root-item"><a href="/vozvrat-i-obmen/">Гарантия и возврат</a></li>
+			
+		
+	
+	
+
+	
+	
+	
+		
+							<li class="root-item"><a href="/uslugi/proektirovanie-sistemy-otopleniya/">Проектирование отопления</a></li>
+			
+		
+	
+	
+
+	
+	
+	
+		
+							<li class="root-item"><a href="/uslugi/montazh-inzhenernoy-i-bytovoy-santekhniki/">Монтаж сантехники</a></li>
+			
+		
+	
+	
+
+	
+	
+	
+		
+							<li class="active"><a href="/kontakty/">Контакты</a></li>
+			
+		
+	
+	
+
+
+</ul>
+				</nav>
+
+				<div>
+					<a href="http://clck.yandex.ru/redir/dtype=stred/pid=47/cid=2508/*https://market.yandex.ru/shop/281223/reviews"><img src="http://clck.yandex.ru/redir/dtype=stred/pid=47/cid=2507/*http://grade.market.yandex.ru/?id=281223&action=image&size=2" border="0" width="150" height="101" alt="Читайте отзывы покупателей и оценивайте качество магазина на Яндекс.Маркете" /></a>					
+					<div class="shops shops_inzhenernaya inline ">
+						Инженерная сантехника<br>
+<span>+7 (495) 255-33-62</span><br>
+<span>+7 (800) 775-23-18</span><br>
+<a class="header_mail_link" href="mailto:info@bigms.ru">info@bigms.ru</a><br>
+<!--<a class="modalbox_map modalbox_map.ajax" data-fancybox-type="ajax" href="/include/shops_inzhenernaya_ajax.php">Адреса 4 магазинов</a><br>-->					</div>
+					<div class="shops shops_bytovaya inline ">
+						Бытовая сантехника<br>
+<span> +7 (495) 151-00-96</span><br />
+<span> +7 (800) 775-23-19</span><br />
+<a class="header_mail_link" href="mailto:bm@bigms.ru">bm@bigms.ru</a><br>
+<!--<a class="modalbox_map modalbox_map.ajax" data-fancybox-type="ajax" href="/include/shops_bytovaya_ajax.php">Адрес магазина</a>-->					</div>
+					<div class="inline soc">
+						<span>Мы в социальных сетях</span><br />
+<a target="_blank" href="https://vk.com/club75316093"><img title="vk.png" src="/upload/medialibrary/ad0/ad00018231894a92c5a84b9e5ce8c19b.png" alt="vk.png" width="28" height="27"></a>
+<a target="_blank" href="https://instagram.com/bigms.master/"><img title="fb.png" src="/upload/medialibrary/ad0/insta.png" alt="fb.png" width="28" height="27"></a>					</div>
+					<div class="grafic inline">
+						<span>Мы принимаем</span><br/>
+<img src="/bitrix/templates/.default/images/visa.png">
+<img src="/bitrix/templates/.default/images/visa_electron.png">
+<img src="/bitrix/templates/.default/images/mastercard.png">
+<img src="/bitrix/templates/.default/images/maestro.png">					</div>
+				</div>
+			</div>
+			
+			<div class="clear"></div>
+		</div>
+	</footer><!-- .footer -->
+
+	<!-- Модальные окна -->
+	<div id="zvonok" class="hidden">
+		<div class="modal-content">
+			<div id="comp_580d66f51dece97f5e75ef46a8a04cc1">
+	<div class="title">Заказ обратного звонка</div>
+
+
+
+
+<form name="SIMPLE_FORM_1" action="/kontakty/" method="POST" enctype="multipart/form-data"><input type="hidden" name="bxajaxid" id="bxajaxid_580d66f51dece97f5e75ef46a8a04cc1_8BACKi" value="580d66f51dece97f5e75ef46a8a04cc1" /><input type="hidden" name="AJAX_CALL" value="Y" /><script type="text/javascript">
+function _processform_8BACKi(){
+	var obForm = top.BX('bxajaxid_580d66f51dece97f5e75ef46a8a04cc1_8BACKi').form;
+	top.BX.bind(obForm, 'submit', function() {BX.ajax.submitComponentForm(this, 'comp_580d66f51dece97f5e75ef46a8a04cc1', true)});
+	top.BX.removeCustomEvent('onAjaxSuccess', _processform_8BACKi);
+}
+if (top.BX('bxajaxid_580d66f51dece97f5e75ef46a8a04cc1_8BACKi'))
+	_processform_8BACKi();
+else
+	top.BX.addCustomEvent('onAjaxSuccess', _processform_8BACKi);
+</script><input type="hidden" name="sessid" id="sessid" value="" /><input type="hidden" name="WEB_FORM_ID" value="1" />
+
+	
+	<p></p>
+		
+				<div class="field">
+						<div class="label">Имя<font color='red'><span class='form-required starrequired'>*</span></font>:</div>
+			<div>
+				<input type="text"  class="inputtext"  name="form_text_1" value="" size="0" />			</div>
+		</div>
+		
+			<div class="field">
+						<div class="label">Телефон<font color='red'><span class='form-required starrequired'>*</span></font>:</div>
+			<div>
+				<input type="text"  class="inputtext"  name="form_text_2" value="" size="0" />			</div>
+		</div>
+		
+		
+		<div class="field"><input type="text" size="0" value="" name="form_text__1" /></div>
+	
+		<div class="">
+			<input  type="submit" name="web_form_submit" value="Заказать звонок" />
+		</div>
+
+
+</form>
+<script type="text/javascript">
+	$(function() {
+		$('form[name="SIMPLE_FORM_1"]').submit(function() {
+			if ($(this).find('input[name="form_text_1"]').val() !== '' && $(this).find('input[name="form_text_2"]').val() !== '') {
+				yaCounter31721621.reachGoal('feedback-submit');
+			}
+		});
+		
+		$('.field input[name="form_text_8"]').parent().parent().hide(0);
+		$('.field input[name="form_text_8"]').val("http://bigms.ru"+location.pathname);
+	});
+</script></div>		</div>
+	</div>
+	
+	<div id="feedback" class="hidden">
+		<div class="modal-content">
+			<div id="comp_6ce3d0b28bf94cf1aa6d45e5e7176d45">
+	<div class="title">Форма обратной связи</div>
+
+
+
+
+<form name="SIMPLE_FORM_2" action="/kontakty/" method="POST" enctype="multipart/form-data"><input type="hidden" name="bxajaxid" id="bxajaxid_6ce3d0b28bf94cf1aa6d45e5e7176d45_Ar8Szp" value="6ce3d0b28bf94cf1aa6d45e5e7176d45" /><input type="hidden" name="AJAX_CALL" value="Y" /><script type="text/javascript">
+function _processform_Ar8Szp(){
+	var obForm = top.BX('bxajaxid_6ce3d0b28bf94cf1aa6d45e5e7176d45_Ar8Szp').form;
+	top.BX.bind(obForm, 'submit', function() {BX.ajax.submitComponentForm(this, 'comp_6ce3d0b28bf94cf1aa6d45e5e7176d45', true)});
+	top.BX.removeCustomEvent('onAjaxSuccess', _processform_Ar8Szp);
+}
+if (top.BX('bxajaxid_6ce3d0b28bf94cf1aa6d45e5e7176d45_Ar8Szp'))
+	_processform_Ar8Szp();
+else
+	top.BX.addCustomEvent('onAjaxSuccess', _processform_Ar8Szp);
+</script><input type="hidden" name="sessid" id="sessid_1" value="" /><input type="hidden" name="WEB_FORM_ID" value="2" />
+
+	
+	<p></p>
+		
+				<div class="field">
+						<div class="label">Адрес E-mail<font color='red'><span class='form-required starrequired'>*</span></font>:</div>
+			<div>
+				<input type="text"  class="inputtext"  name="form_email_3" value="" size="0" />			</div>
+		</div>
+		
+			<div class="field">
+						<div class="label">Имя<font color='red'><span class='form-required starrequired'>*</span></font>:</div>
+			<div>
+				<input type="text"  class="inputtext"  name="form_text_4" value="" size="0" />			</div>
+		</div>
+		
+			<div class="field">
+						<div class="label">Телефон<font color='red'><span class='form-required starrequired'>*</span></font>:</div>
+			<div>
+				<input type="text"  class="inputtext"  name="form_text_5" value="" size="0" />			</div>
+		</div>
+		
+			<div class="field">
+						<div class="label">Сообщение<font color='red'><span class='form-required starrequired'>*</span></font>:</div>
+			<div>
+				<textarea name="form_textarea_6" cols="40" rows="5"  class="inputtextarea" ></textarea>			</div>
+		</div>
+		
+		
+		<div class="field"><input type="text" size="0" value="" name="form_text__1" /></div>
+	
+		<div class="">
+			<input  type="submit" name="web_form_submit" value="Отправить" />
+		</div>
+
+
+</form>
+<script type="text/javascript">
+	$(function() {
+		$('form[name="SIMPLE_FORM_1"]').submit(function() {
+			if ($(this).find('input[name="form_text_1"]').val() !== '' && $(this).find('input[name="form_text_2"]').val() !== '') {
+				yaCounter31721621.reachGoal('feedback-submit');
+			}
+		});
+		
+		$('.field input[name="form_text_8"]').parent().parent().hide(0);
+		$('.field input[name="form_text_8"]').val("http://bigms.ru"+location.pathname);
+	});
+</script></div>		</div>
+	</div>
+	
+	<div id="is_error" class="hidden">
+		<div class="modal-content">
+			<div id="comp_f1d12f953cdcbcb6a30fb9a82c1b483e">
+	<div class="title">Нашли ошибку на странице</div>
+
+
+
+
+<form name="SIMPLE_FORM_3" action="/kontakty/" method="POST" enctype="multipart/form-data"><input type="hidden" name="bxajaxid" id="bxajaxid_f1d12f953cdcbcb6a30fb9a82c1b483e_XrQFCj" value="f1d12f953cdcbcb6a30fb9a82c1b483e" /><input type="hidden" name="AJAX_CALL" value="Y" /><script type="text/javascript">
+function _processform_XrQFCj(){
+	var obForm = top.BX('bxajaxid_f1d12f953cdcbcb6a30fb9a82c1b483e_XrQFCj').form;
+	top.BX.bind(obForm, 'submit', function() {BX.ajax.submitComponentForm(this, 'comp_f1d12f953cdcbcb6a30fb9a82c1b483e', true)});
+	top.BX.removeCustomEvent('onAjaxSuccess', _processform_XrQFCj);
+}
+if (top.BX('bxajaxid_f1d12f953cdcbcb6a30fb9a82c1b483e_XrQFCj'))
+	_processform_XrQFCj();
+else
+	top.BX.addCustomEvent('onAjaxSuccess', _processform_XrQFCj);
+</script><input type="hidden" name="sessid" id="sessid_2" value="" /><input type="hidden" name="WEB_FORM_ID" value="3" />
+
+	
+	<p></p>
+		
+				<div class="field">
+						<div class="label">Подробное описание ошибки<font color='red'><span class='form-required starrequired'>*</span></font>:</div>
+			<div>
+				<textarea name="form_textarea_7" cols="40" rows="5"  class="inputtextarea" ></textarea>			</div>
+		</div>
+		
+			<div class="field">
+						<div class="label">Путь к странице, откуда отправлена форма:</div>
+			<div>
+				<input type="text"  class="inputtext"  name="form_text_8" value="" size="0" />			</div>
+		</div>
+		
+		
+		<div class="field"><input type="text" size="0" value="" name="form_text__1" /></div>
+	
+		<div class="">
+			<input  type="submit" name="web_form_submit" value="Отправить" />
+		</div>
+
+
+</form>
+<script type="text/javascript">
+	$(function() {
+		$('form[name="SIMPLE_FORM_1"]').submit(function() {
+			if ($(this).find('input[name="form_text_1"]').val() !== '' && $(this).find('input[name="form_text_2"]').val() !== '') {
+				yaCounter31721621.reachGoal('feedback-submit');
+			}
+		});
+		
+		$('.field input[name="form_text_8"]').parent().parent().hide(0);
+		$('.field input[name="form_text_8"]').val("http://bigms.ru"+location.pathname);
+	});
+</script></div>		</div>
+	</div>
+	
+	
+<!--modal-login-->
+<div id="login" class="hidden">
+	<div id="modal-login">
+		<div class="title">Вход в личный кабинет</div>
+		<div class="modal-content">
+			<div class="bx-system-auth-form">
+				<form name="system_auth_form6zOYVN" method="post" action="/kontakty/index.php?login=yes">
+							<input type="hidden" name="backurl" value="/kontakty/index.php"/>
+													<input type="hidden" name="USER_REMEMBER" value="Y">
+						<input type="hidden" name="AUTH_FORM" value="Y"/>
+			<input type="hidden" name="TYPE" value="AUTH"/>
+
+			<div class="bx-system-auth-table">
+				<div class="field">
+					<div class="label">Логин:</div>
+					<div>
+						<input type="text" name="USER_LOGIN" maxlength="50" value="" size="17"/>
+					</div>
+				</div>
+				<div class="field">
+					<div class="label">Пароль:</div>
+					<div>
+						<input type="password" name="USER_PASSWORD" maxlength="50" size="17"/>
+					</div>
+				</div>
+								<div class="password_to_modal"><a href="#password" class="password modalbox"><span>вспомнить пароль</span></a></div>
+				<div class="field">
+					<button type="submit" name="Login" value="Войти">Войти</button>
+				</div>
+			</div>
+
+							<div class="register_to_modal"><a class="register_modal modalbox" href="#register"><span>Зарегистрироваться</span></a></div>
+						
+					</form>
+			</div>
+		</div>
+	</div>
+</div>
+<!--//modal-login-->
+
+<!--modal-register-->
+<div id="register" class="hidden">
+	<div id="modal-register">
+		<div class="title">Регистрация</div>
+		<div class="modal-content">
+			<div class="bx-main-register">
+					
+		<form method="POST" action="/kontakty/" name="regform">
+						<input type="hidden" name="TYPE" value="REGISTRATION"/>
+			<input type="hidden" name="register_submit_button" value="Y"/>
+			<input type="text" class="api-mf-antibot" value="" name="ANTIBOT[NAME]">
+			<div class="bx-system-auth-table">
+
+															<div class="field">
+															<div class="label">Логин <small>(мин. 3 символа)</small>:<span	class="asterisk">*</span>								</div>
+														<div>											<input size="30" type="text" name="REGISTER[LOGIN]" value="" />
+																		</div>
+						</div>
+																				<div class="field">
+															<div class="label">Пароль <small>(мин. 6 символа)</small>:<span	class="asterisk">*</span>								</div>
+														<div><input size="30" type="password" name="REGISTER[PASSWORD]"
+										         value="" autocomplete="off"
+										         class="bx-auth-input"/>
+																	</div>
+						</div>
+																				<div class="field">
+															<div class="label">Подтверждение пароля:<span	class="asterisk">*</span>								</div>
+														<div><input size="30" type="password" name="REGISTER[CONFIRM_PASSWORD]"
+										         value="" autocomplete="off" />							</div>
+						</div>
+																				<div class="field">
+															<div class="label">Адрес e-mail:<span	class="asterisk">*</span>								</div>
+														<div>											<input size="30" type="text" name="REGISTER[EMAIL]" value="" />
+																		</div>
+						</div>
+																				<div class="field">
+															<div class="label">Имя:<span	class="asterisk">*</span>								</div>
+														<div>											<input size="30" type="text" name="REGISTER[NAME]" value="" />
+																		</div>
+						</div>
+																				<div class="field">
+															<div class="label">Фамилия:<span	class="asterisk">*</span>								</div>
+														<div>											<input size="30" type="text" name="REGISTER[LAST_NAME]" value="" />
+																		</div>
+						</div>
+																				<div class="field">
+														<div>							</div>
+						</div>
+													
+					<div class="field">
+						<div class="uf_type">
+							<input type="hidden" value="" name="UF_TYPE">
+							<input type="checkbox" id="type2" name="UF_TYPE" value="2">
+							<label for="type2">Я юридическое лицо</label>
+							<br>
+						</div>
+					</div>
+					<div class="ur_lico hidden">
+						<div class="field">
+							<div class="label">Наименование компании:</div>
+							<div><input type="text" value="" name="REGISTER[WORK_COMPANY]" size="30"></div>
+						</div>
+						<div class="field">
+							<div class="label">ИНН:</div>
+							<div><input type="text" class="fields string" size="60" value="" name="UF_INN"></div>
+						</div>
+					</div>
+						
+
+				
+									<div class="field">
+						<div class="label">
+							<input type="hidden" name="captcha_sid" value="08848f532a4f04c3717c689bc57d271c"/>
+							<img src="/bitrix/tools/captcha.php?captcha_sid=08848f532a4f04c3717c689bc57d271c"
+							     width="180" height="40" alt="CAPTCHA"/>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">Cлово на картинке:<span class="asterisk">*</span></div>
+						<div><input type="text" name="captcha_word" maxlength="50" value=""/></div>
+					</div>
+				
+				<div class="">
+					<button type="submit" name="register_submit_button" value="зарегистрироваться">зарегистрироваться</button>
+				</div>
+
+			</div>
+		</form>
+	</div>		</div>
+	</div>
+</div>
+<!--//modal-register-->
+
+<!--modal-forgot-password-->
+<div id="password" class="hidden">
+	<div id="modal-forgot-password">
+		<div class="title">вспомнить пароль</div>
+		<div class="modal-content">
+			<div class="bx-system-auth-forgotpasswd">
+	
+	<form name="bform" method="post" target="_top" action="/kontakty/index.php?forgot_password=yes">
+					<input type="hidden" name="backurl" value="/kontakty/index.php"/>
+				<input type="hidden" name="AUTH_FORM" value="Y">
+		<input type="hidden" name="TYPE" value="SEND_PWD">
+
+		<div class="text">Укажите адрес электронной почты, с которым вы регистрировались ранее, и мы вышлем инструкции по смене пароля.</div>
+
+		<div class="bx-system-auth-table">
+			<!--
+			<div class="field">
+				<div class="label">Логин:</div>
+				<div>
+					<input type="text" name="USER_LOGIN" maxlength="50"  value=""/>
+				</div>
+			</div>
+			<div class="field">
+				<div class="label">или</div>
+			</div>
+			-->
+			<div class="field">
+				<div class="label">Адрес E-mail:</div>
+				<div>
+					<input type="text" name="USER_EMAIL" maxlength="255"/>
+				</div>
+			</div>
+
+			<div class="field">
+				<button type="submit" name="send_account_info" value="Выслать">Выслать</button>
+			</div>
+		</div>
+
+		<div class="auth_to_modal"><a class="login_modal modalbox" href="#login"><span>Авторизация</span></a></div>
+	</form>
+</div>		</div>
+	</div>
+</div>
+<!--//modal-forgot-password-->
+
+
+<div id="bxdynamic_NSDDVx_start" style="display:none"></div><div id="bxdynamic_NSDDVx_end" style="display:none"></div><a class="ok_link modalbox hidden" href="#ok"></a>
+<div  class="hidden"><!--id="ok"-->
+	<div class="title">Отложенные товары</div>
+	<div class="text">Товар добавлен в избранное</div>
+	<div class="popup-window-buttons">
+		<span class="catalog_list next_button" style="margin-bottom: 0px; border-bottom: 0px none transparent;"><span class="bx_medium bx_bt_button">продолжить выбор товаров</span></span>
+		<span class="catalog_list cart_button" style="margin-bottom: 0px; border-bottom: 0px none transparent;"><span style="margin-right: 10px;" class="bx_medium bx_bt_button"><a href="/personal/zakladki/">Перейти в избранное</a></span></span>
+	</div>
+</div>
+
+
+<div class="b-popup__wrap" id="favor" style="display: none;">
+	<span class="popup__close"></span>
+	<div class="b-popup__img b-popup-favourites__img">
+		<img src="/bitrix/templates/bigms/images/popup_img.jpg" alt=""/>
+	</div>
+	<div class="b-popup__item">
+		<div class="b-popup__title b-popup-favourites__title">
+			ТОВАР Добавлен в избранное
+		</div>
+		<div class="b-popup__text b-popup-favourites__text" id="ok_name" style="width: 500px;">
+			Смеситель для ванны BORNEO Comfort Testa 121.333.001
+		</div>
+		<div id="count_items_in_popup" class="b-popup__descr b-popup-favourites__descr"></div>
+	</div>
+	<div class="b-popup__price b-popup-favourites__price" id="ok_price">
+		1 175 руб.
+	</div>
+	<span class="b-popup__btn b-popup-favourites__btn" >
+		<a href="/personal/zakladki/" style="color: #fff; text-decoration: none; ">
+			ПЕРЕЙТИ в избранное
+		</a>
+	</span>
+</div>
+
+<a class="ok_link_del modalbox hidden" href="#ok_del"></a>
+<div id="ok_del" class="hidden">
+	<div class="title">Отложенные товары</div>
+	<div class="text"></div>
+	<div class="popup-window-buttons">
+		<span class="catalog_list cart_button" style="margin-bottom: 0px; border-bottom: 0px none transparent;"><span style="margin-right: 10px;" class="bx_medium bx_bt_button"><a href="/personal/zakladki/">Перейти в закладки</a></span></span>
+	</div>
+</div>
+
+	<script>
+	$(document).ready(function(){
+				
+			})
+</script>
+<div class="fade"></div>
+
+<div class="fixed_block">
+	<a class="icon modalbox icon_msg" href="#feedback"><span>Написать нам</span></a>
+	<a class="icon modalbox icon_tel" href="#zvonok" onclick="yaCounter31721621.reachGoal('feedback-button');"><span>Заказать звонок</span></a>
+	<a class="icon modalbox icon_err" href="#is_error"><span>Нашли ошибку?</span></a>
+</div>
+
+	<script>
+		$('.bx_field input')
+			.blur(function() {
+				$(this).closest('.search_title').removeClass('focus');
+			})
+			.focus(function() {
+				$(this).closest('.search_title').addClass('focus');
+			});
+	</script>
+	<style>
+		.sub-menu {
+			opacity: 0;
+			visibility: hidden;
+			position: absolute;
+			left: -10px;
+			top: 100%;
+			background: #cbdef6;
+			padding: 10px 15px;
+			z-index: 999;
+			min-width: 200px;
+		}
+		.sub-menu li {
+			display: block;
+			margin: 0;
+			height: 20px !important;
+			margin-bottom: 10px;
+		}
+		.sub-menu li:last-child {
+			margin-bottom: 0;
+		}
+		.sub-menu li a {
+			font-size: 11px !important;
+			font-weight: normal;
+		}
+		nav.top ul li.has-sub {
+			position: relative;
+			padding-right: 30px;
+		}
+		nav.top ul li.has-sub a {
+			position: relative;
+			z-index: 1;
+		}
+		nav.top ul li.has-sub:after {
+			content: '';
+			position: absolute;
+			top: 22px;
+			right: 15px;
+			border-top: 3px solid #075991;
+			border-left: 4px solid transparent;
+			border-right: 4px solid transparent;
+		}
+		nav.top ul li.has-sub:hover:before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: -10px;
+			background: #cbdef6;
+			width: 100%;
+			height: 100%;
+			z-index: 0;
+		}
+		nav.top ul li.has-sub:hover .sub-menu {
+			opacity: 1;
+			visibility: visible
+		}
+
+		.nav_searcg_block {
+			background: #075991;
+			border: 0;
+		}
+		.nav_searcg_block .search_block {
+			background: #075991;
+			min-width: 75%;
+			height: 51px;
+			top: -1px;
+			padding: 2px 0 2px 12px;
+		}
+		.bx_search_container .bx_field {
+			background: #075991;
+			height: 48px;
+			width: 95% !important;
+		}
+		.bx_search_container .bx_field .bx_input_text {
+			background: #fff;
+			border: 2px solid transparent !important;
+			width: 100% !important;
+			-webkit-transition: all .5s ease;
+			-moz-transition: all .5s ease;
+			-ms-transition: all .5s ease;
+			-o-transition: all .5s ease;
+			transition: all .5s ease;
+		}
+		.bx_search_container .bx_input_submit {
+			position: absolute;
+			top: 10px;
+			right: 12px;
+			bottom: 0;
+			width: 55px;
+			height: 30px;
+			background: url(/bitrix/templates/bigms/images/search_lupe.png) no-repeat 50% 50% #ff6d4b;
+			font-size: 0;
+			text-align: right;
+			text-transform: inherit;
+			-webkit-transition: all .5s ease;
+			-moz-transition: all .5s ease;
+			-ms-transition: all .5s ease;
+			-o-transition: all .5s ease;
+			transition: all .5s ease;
+		}
+		.radio_block {
+			display: none;
+		}
+		.bx_search_container .bx_field .bx_input_text:focus {
+			border: 2px solid #ff6d4b !important;
+			border-radius: 4px;
+		}
+		.search_title.focus .bx_search_container .bx_input_submit {
+			font-size: 12px;
+			background: url(/bitrix/templates/bigms/images/search_lupe.png) no-repeat 20% 50% #ff6d4b;
+			width: 100px;
+			padding-right: 20px;
+			border-radius: 0 2px 2px 0;
+			-webkit-transition: all .5s ease;
+			-moz-transition: all .5s ease;
+			-ms-transition: all .5s ease;
+			-o-transition: all .5s ease;
+			transition: all .5s ease;
+		}
+	</style>
+<style>
+
+	.switch_block {
+		margin-bottom: 30px;
+		margin-top: 0;
+		background: #006db8;
+		height: 80px;
+	}
+	.selectesem .item {
+		background: #006db8;
+		color: #fff;
+		font-weight: normal;
+		text-decoration: none;
+		padding: 30px 30px 10px;
+		height: 40px;
+		-webkit-transition: all .4s ease;
+		-moz-transition: all .4s ease;
+		-ms-transition: all .4s ease;
+		-o-transition: all .4s ease;
+		transition: all .4s ease;
+	}
+	.selectesem .item:hover {
+		background: #167ac6;
+	}
+	.selectesem .item.active {
+		color: #fff;
+		background: #00487a;
+		position: relative;
+	}
+	.selectesem .item.active:before {
+		content: '';
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		margin-left: -6px;
+		border-top: 12px solid #00487a;
+		border-left: 12px solid transparent;
+		border-right: 12px solid transparent;
+	}
+	.selectesem .item.active,
+	.selectesem .item.active:hover {
+		color: #fff;
+		background: #00487a;
+		text-decoration: none;
+	}
+	.selectesem .item.active:hover {
+		background: #004d7a;
+	}
+	.switch_block .title {
+		padding: 15px 25px 15px 50px;
+		color: rgba(255, 255, 255, .48);
+		font-weight: normal;
+	}
+	.selectesem {
+		display: -webkit-box;
+		display: -moz-box;
+		display: -webkit-flex;
+		display: -ms-flexbox;
+		display: flex;
+	}
+</style>
+<!-- fancybox -->
+<!-- flexslider -->
+<!-- columnizer -->
+<!-- formstyler -->
+
+
+
+
+
+
+	<script type="text/javascript" src="/bitrix/templates/bigms/js/main_cont.js"></script>
+
+
+
+
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function (d, w, c) {
+        (w[c] = w[c] || []).push(function() {
+            try {
+                w.yaCounter31721621 = new Ya.Metrika({
+                    id:31721621,
+                    clickmap:true,
+                    trackLinks:true,
+                    accurateTrackBounce:true,
+                    webvisor:true,
+					params:window.yaParams||{ }
+                });
+            } catch(e) { }
+        });
+
+        var n = d.getElementsByTagName("script")[0],
+            s = d.createElement("script"),
+            f = function () { n.parentNode.insertBefore(s, n); };
+        s.type = "text/javascript";
+        s.async = true;
+        s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+        if (w.opera == "[object Opera]") {
+            d.addEventListener("DOMContentLoaded", f, false);
+        } else { f(); }
+    })(document, window, "yandex_metrika_callbacks");
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/31721621" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+</body>
+</html><!--e2659ab541855a10af3c67fcba2a7d80-->

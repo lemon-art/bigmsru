@@ -1,0 +1,6 @@
+<?
+$sSectionName = "закладки";
+$arDirProperties = Array(
+
+);
+?>

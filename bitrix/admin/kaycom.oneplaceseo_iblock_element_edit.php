@@ -1,0 +1,1 @@
+<? require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/kaycom.oneplaceseo/admin/iblock_element_edit.php");?>

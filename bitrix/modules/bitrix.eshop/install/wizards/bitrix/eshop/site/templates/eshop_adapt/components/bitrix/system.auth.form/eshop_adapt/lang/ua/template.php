@@ -1,0 +1,5 @@
+<?
+$MESS["AUTH_LOGIN"] = "Ââ³éòè";
+$MESS["AUTH_REGISTER"] = "Ðåºñòðàö³ÿ";
+$MESS["AUTH_LOGOUT"] = "Âèéòè";
+?>

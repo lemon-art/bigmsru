@@ -1,0 +1,1 @@
+<!--noindex--><a href="http://o2k.ru/" target="_blank">Создание сайта</a> - KISLOROD<!--/noindex-->

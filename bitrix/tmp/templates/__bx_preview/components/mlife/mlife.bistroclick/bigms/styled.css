@@ -1,0 +1,88 @@
+body {width:390px;padding:0;margin:0;background:#ffffff; overflow:hidden !important;}
+html{padding:0;margin:0;}
+
+#bistrclick {width:350px;display:block;overflow:hidden;font-family:'Open Sans';padding:20px; color:#434040;}
+
+#bistrclick .mlf_product {/* width:192px;float:left; */display:block;overflow:hidden; padding:0 0 30px;}
+#bistrclick .mlf_product .imager {width:110px;float:left;display:block;position:relative;overflow:hidden;height:110px;float:left;}
+#bistrclick .mlf_product .tovar_text {width:240px;float:left;font-size: 0.813em;/* 13px/16px */}
+#bistrclick .mlf_product .tovar_text .vlgen{width:100%; height:110px; display:table-cell; vertical-align:middle; padding-left:20px;}
+#bistrclick .mlf_product .imager .imageWp {width:110px;height:110px;display:table-cell; vertical-align:middle;overflow:hidden;background:#ffffff;}
+#bistrclick .mlf_product .imager .imageWp img {max-width:110px;height:auto;max-height:110px;position:relative;top:0px;left:0px;}
+#bistrclick .mlf_product .imager .imageWp .no-photo130 {display:block;background:url('images/nophoto130.jpg') 50% 50% no-repeat;width:100%;height:100%;}
+#bistrclick .mlf_product .naz {display:block;overflow:hidden; padding-bottom:20px;line-height:16px;}
+#bistrclick .mlf_product .pricen {display:block; font-weight:bold;}
+
+#bistrclick .field, .mlf_capcha {display:block;width:100%;clear:both;display:block;overflow:hidden;padding-bottom:16px;}
+#bistrclick .field label, .mlf_capcha .label {
+	padding-bottom:8px;
+	color:#434040;
+	font-size:0.750em; /* 12px/16px */
+	display:block;
+}
+#bistrclick .field input, .mlf_capcha input {
+	height:30px;
+	width:330px;
+	display:block;
+	padding:5px 10px;
+	border:1px solid #e6f4f8;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+    box-sizing: border-box;
+	color:#a3a3a3;
+	font-family: Open Sans;
+	font-size: 0.813em;/* 13px/16px */
+}
+.mlf_capcha img {margin-bottom:5px;width:198px;margin-left:2px;}
+.mlf_capcha .fieldcp {width: 200px;display:block;float:right;overflow:hidden;}
+#bistrclick .field textarea {
+float:right;
+font-size:14px;
+background-color: #FFFFFF;
+border-bottom: 1px solid #C1C5C8;
+border-left: 1px solid #BDC1C3;
+border-radius: 2px;
+border-right: 1px solid #BDC1C3;
+border-top: 1px solid #B9BCBE;
+box-shadow: 0px 1px 2px 0px #DEDEDE inset;
+padding: 3px;
+width: 190px;
+height:60px;
+resize:none;
+}
+.mlfform {width:345px;float:left;display:block;overflow:hidden;}
+table.offers {width:100%;clear:both;margin-bottom:10px;border-top:1px solid #B9BCBE;border-left:1px solid #B9BCBE;font-size:14px;}
+table.offers td {border-right:1px solid #B9BCBE;border-bottom:1px solid #B9BCBE;padding:3px;}
+#bistrclick .errorField {display:block;overflow:hidden;padding:5px 5px 15px 40px;text-align:left;color:red;line-height:18px;font-size:14px;width:500px;clear:both;background:url('images/error.png') 0 0 no-repeat;}
+.sendmessages {display:block;overflow:hidden;padding:5px 5px 15px 55px;text-align:left;color:#000000;line-height:18px;width:280px;clear:both;background:url('images/error.png') 4px -103px no-repeat;margin:130px 0 0; }
+.buy_button{
+	background:#006db8;
+	color:#ffffff;
+	display:block;
+	text-align:center;
+	padding:10px 0;
+	border:0;
+	font-family: Open Sans;
+	font-size: 0.875em;/* 14px/16px */
+	font-weight:bold;
+	text-transform:uppercase;
+	width:185px;
+	height:40px;
+	margin:0 auto;
+	cursor:pointer;
+}
+.buy_button:hover{
+	background:#ff6d4b;
+}
+table.offers {width:100%;border-top:1px solid #B9BCBE;border-left:1px solid #B9BCBE;border-spacing:0;}
+table.offers td {border-right:1px solid #B9BCBE;border-bottom:1px solid #B9BCBE;border-spacing:0;}
+table.offers td .naz {width:100%;clear:both;display:block;font-size:14px;font-weight:bold;}
+table.offers td .price {width:100%;clear:both;display:block;font-size:14px;color:#2cb6e9;}
+
+#bistrclick .mlfOfferProps {width:100%;clear:both;display:block;font-size:12px;color:#555555;padding:0 0 5px 0;overflow:hidden;}
+.locationwrap select {float:right;width:198px;margin: 0 0 5px 0;}
+
+/*********************************/
+.asterisk, .starrequired{
+	color:#006db8;
+}

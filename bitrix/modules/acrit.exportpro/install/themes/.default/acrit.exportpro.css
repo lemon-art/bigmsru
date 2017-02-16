@@ -1,0 +1,222 @@
+.adm-main-menu-item.adm-acrit .adm-main-menu-item-icon {
+    background: url("images/acrit/acrit.png") no-repeat 17px 6px;
+    height: 45px;
+    position: relative;
+    z-index: 2;
+}
+#step2 p {
+    display: inline-block !important;
+}
+
+#step4 #scheme_format textarea {
+    height: 300px;
+    font: 14px/19px "Helvetica Neue",Helvetica,Arial,sans-serif bold;
+}
+#step4 #scheme_offer textarea {
+    height: 550px;
+    font: 14px/19px "Helvetica Neue",Helvetica,Arial,sans-serif bold;
+}
+#step4 #scheme_category textarea,
+#step4 #scheme_currency textarea {
+    font: 14px/19px "Helvetica Neue",Helvetica,Arial,sans-serif bold;
+}
+
+#step5 .hide {
+    display: none;
+}
+#step5 .const-block {
+    display: inline-block !important;
+}
+#step5 .const-block.hide {
+    display: none !important;
+}
+#step5 .complex-block-container {
+    display: inline-block !important;
+}
+
+#step5 .complex-block-container.hide {
+    display: none !important;
+}
+
+#step5 .complex-block {
+    /*display: inline-block !important;*/
+}
+#step5 .complex-block.hide {
+    /*display: none !important;*/
+}
+#step5 .condition-block {
+    margin: 4px 0;
+}
+#step5 .fieldset-item-delete {
+    position: relative;
+    /*width: 18px;*/
+    /*height: 18px;*/
+    /*top: 6px;*/
+    display: inline-block;
+    /*background: url('images/acrit/exportpro/bx-admin-sprite-big.png') -7px -991px;
+    border-radius: 22px;
+    border: 1px solid black;
+    border-color: #87919c #959ea9 #9ea7b1 #959ea9;
+    */
+    font-size: 22px;
+    color: red;
+    padding: 0 4px;
+    cursor: pointer;
+}
+#step5 #fieldset-item-add-button button {
+    padding: 0 24px;
+    margin: 12px;
+}
+
+#step19 .fieldset-item-delete {
+    position: relative;
+    /*width: 18px;*/
+    /*height: 18px;*/
+    /*top: 6px;*/
+    display: inline-block;
+    /*background: url('images/acrit/exportpro/bx-admin-sprite-big.png') -7px -991px;
+    border-radius: 22px;
+    border: 1px solid black;
+    border-color: #87919c #959ea9 #9ea7b1 #959ea9;
+    */
+    font-size: 20px;
+    color: red;
+    padding: 0 4px;
+    cursor: pointer;
+}
+#step19 #fieldset-item-add-button button {
+    padding: 0 24px;
+    margin: 12px;
+}
+
+#step6 #market_category_data .field-edit,
+#step12 #market_category_data_ebay .field-edit,
+#step13 #market_category_data_ozon .field-edit,
+#step20 #market_category_data .field-edit {
+    background: url('images/acrit/exportpro/bx-admin-sprite-big.png') -3px -950px;
+    width: 26px;
+    height: 25px;
+    display: inline-block;
+    right: -13px;
+    left: inherit;
+    position: absolute;
+    top: 1px;
+    /* background-size: 4px; */
+    border-radius: 0 6px 6px 0;
+    border: 1px solid black;
+    border-color: #87919c #959ea9 #9ea7b1 #959ea9;
+}
+/*#market_category_list{
+    border: 2px solid #c4c4c4;
+    padding: 4px;
+    display: none;
+    position: absolute;
+    top: 15%;
+    left: 15%;
+    width: 800px;
+    z-index: 100;
+    background: white;
+}*/
+
+#market_category_list input,
+#market_category_list_ebay input,
+#market_category_list_ozon input,
+#market_category_list_tiu input{
+    width: 97.5%;
+    padding: 10px 1%;
+    margin: 4px 0;
+    display: block;
+    font-size: 18px;
+    font-weight: bold;
+}
+#market_category_list select,
+#market_category_list_ebay select,
+#market_category_list_ozon select,
+#market_category_list_tiu select{
+    padding: 0 10px;
+    min-width: 500px;
+}
+#market_category_select{
+    float: right;
+}
+#market_category_data input{
+    min-width: 100px;
+    width: 100%;
+}
+#market_category_data td,
+#market_category_data_ebay td,
+#market_category_data_ozon td,
+#market_category_data_tiu td{
+    position: relative;
+}
+#category_add{
+    /*width: 600px;*/
+    display: none;
+}
+#category_add table,
+#category_add input,
+#category_add textarea{
+    width: 100%;
+}
+#category_add textarea{
+    height: 200px;
+}
+a.adm-btn.adm-btn-save{
+    margin: 0 4px;
+}
+/*td.adm-detail-content-cell-l{
+    text-align: left;
+}*/
+
+
+#step10 table#instruction{
+    width: 75%;
+}
+#step10 table#instruction tr.heading{
+    height: 115px;
+}
+#step10 table#instruction tr.heading td{
+    font-size: 22px;
+}
+#step10 table#instruction li{
+    text-align: justify;
+    margin: 10px 5px;
+    font-size: 14px;
+    line-height: 20px;
+    text-indent: 30px;
+}
+#step10 table#instruction ul{
+    margin: 45px;
+}
+#step10 table#instruction tr.heading.about td{
+    color: #1CA1D9;
+}
+#step10 table#instruction td{
+}
+
+#step11 table table tr td:nth-child(2) {
+    font-weight: bold;
+    text-align: center;
+}
+#step9 .hide {
+    display: none;
+}
+.fieldset-item b.required {
+    color: red;
+}
+#fieldset-container input,
+#fieldset-container textarea,
+#fieldset-container .const-block,
+#fieldset-container .complex-block-container,
+#fieldset-container .complex-block,
+#fieldset-container select{
+    vertical-align: top;
+}
+
+#ibtype_select_block, #section_select_block{
+    vertical-align: top;
+}
+
+select.category_select{
+    height: 350px !important;
+}

@@ -1,0 +1,215 @@
+2016-Nov-07 22:59:12 Наличие необходимых модулей php (check_php_modules): Ok
+Все необходимые модули установлены
+2016-Nov-07 22:59:12 Обязательные параметры PHP (check_php_settings): Ok
+Настройки правильные
+2016-Nov-07 22:59:12 Модули веб-сервера (check_security): Ok
+Конфликтов не выявлено
+2016-Nov-07 22:59:12 Значения переменных сервера (check_server_vars): Ok
+Корректные
+2016-Nov-07 22:59:13 Сохранение сессии (check_session): Ok
+50% done
+2016-Nov-07 22:59:13 Сохранение сессии (check_session): Ok
+Успешно
+2016-Nov-07 22:59:13 Параметры настройки UTF (mbstring и константа BX_UTF) (check_mbstring): Ok
+Правильные. Сайт работает в UTF кодировке
+2016-Nov-07 22:59:13 Служебные скрипты в корне сайта (check_install_scripts): Ok
+Отсутствуют
+2016-Nov-07 22:59:13 Работа с сокетами (check_socket): Ok
+Connection to www.bigms.ru:80	Success
+
+Успешно
+2016-Nov-07 22:59:13 Параметры подключения к базе данных (check_dbconn_settings): Ok
+Успешно
+2016-Nov-07 22:59:14 Лишний вывод в файлах конфигурации (check_dbconn): Ok
+Connection to www.bigms.ru:80	Success
+
+Успешно
+2016-Nov-07 22:59:14 Выполнение агентов на cron (check_bx_crontab): Ok
+Успешно
+2016-Nov-07 22:59:14 Сохранение сессии без UserAgent (check_session_ua): Ok
+50% done
+Connection to www.bigms.ru:80	Success
+
+2016-Nov-07 22:59:14 Сохранение сессии без UserAgent (check_session_ua): Fail
+Connection to www.bigms.ru:80	Success
+== Request ==
+GET /bitrix/admin/site_checker.php?test_type=session_test&unique_id=a4c7161aedcc1a563de5d9eb286ac1b5 HTTP/1.1
+Host: www.bigms.ru
+Cookie: PHPSESSID=pk2pvn0vgpeumb2dk5ssek0bn5
+
+
+== Response ==
+HTTP/1.1 200 OK
+Server: nginx/1.6.2
+Date: Mon, 07 Nov 2016 19:59:14 GMT
+Content-Type: text/html; charset=UTF-8
+Content-Length: 681
+Connection: keep-alive
+X-Powered-By: PHP/5.5.33
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+Pragma: no-cache
+X-Content-Type-Options: nosniff
+
+== Body ==
+<br />
+<b>Warning</b>:  session_start(): open(/tmp/php_sessions/ext_www/bigms.ru/sess_pk2pvn0vgpeumb2dk5ssek0bn5, O_RDWR) failed: No such file or directory (2) in <b>/home/bitrix/ext_www/bigms.ru/bitrix/modules/main/admin/site_checker.php</b> on line <b>146</b><br />
+<br />
+<b>Warning</b>:  Unknown: open(/tmp/php_sessions/ext_www/bigms.ru/sess_pk2pvn0vgpeumb2dk5ssek0bn5, O_RDWR) failed: No such file or directory (2) in <b>Unknown</b> on line <b>0</b><br />
+<br />
+<b>Warning</b>:  Unknown: Failed to write session data (files). Please verify that the current setting of session.save_path is correct (/tmp/php_sessions/ext_www/bigms.ru) in <b>Unknown</b> on line <b>0</b><br />
+
+==========
+
+Ошибка! Не работает
+2016-Nov-07 22:59:14 Настройки сайтов (check_sites): Ok
+Правильные
+2016-Nov-07 22:59:14 Передача объектов по ссылке (check_clone): Ok
+Успешно
+2016-Nov-07 22:59:14 Размер стека и pcre.recursion_limit (check_pcre_recursion): Warning
+Connection to www.bigms.ru:80	Success
+
+Замечание. Возможны проблемы в работе с длинными строками из-за системных ограничений
+2016-Nov-07 22:59:14 Вызов method_exists на строке (check_method_exists): Ok
+Connection to www.bigms.ru:80	Success
+
+Успешно
+2016-Nov-07 22:59:15 Загрузка файла (check_upload): Fail
+Ошибка! Временная папка не существует (/tmp/php_upload/ext_www/bigms.ru)
+2016-Nov-07 22:59:15 Загрузка файла больше 4Мб (check_upload_big): Fail
+Ошибка! Временная папка не существует (/tmp/php_upload/ext_www/bigms.ru)
+2016-Nov-07 22:59:15 Загрузка файла через php://input (check_upload_raw): Fail
+Ошибка! Временная папка не существует (/tmp/php_upload/ext_www/bigms.ru)
+2016-Nov-07 22:59:15 Передача POST запроса с большим числом параметров (check_post): Ok
+Connection to www.bigms.ru:80	Success
+
+Успешно
+2016-Nov-07 22:59:15 Отправка почты (check_mail): Fail
+Ошибка! Не работает
+2016-Nov-07 22:59:15 Отправка почтового сообщения больше 64Кб (check_mail_big): Fail
+Ошибка! Не работает
+2016-Nov-07 22:59:15 Проверка на наличие неотправленных сообщений (check_mail_b_event): Ok
+Успешно
+2016-Nov-07 22:59:16 Внутреннее перенаправление (функция LocalRedirect) (check_localredirect): Ok
+50% done
+Connection to www.bigms.ru:80	Success
+
+2016-Nov-07 22:59:16 Внутреннее перенаправление (функция LocalRedirect) (check_localredirect): Ok
+Connection to www.bigms.ru:80	Success
+
+Успешно
+2016-Nov-07 22:59:16 Фактическое ограничение памяти (check_memory_limit): Ok
+20% done
+Connection to www.bigms.ru:80	Success
+
+2016-Nov-07 22:59:16 Фактическое ограничение памяти (check_memory_limit): Ok
+40% done
+Connection to www.bigms.ru:80	Success
+
+2016-Nov-07 22:59:16 Фактическое ограничение памяти (check_memory_limit): Ok
+60% done
+Connection to www.bigms.ru:80	Success
+
+2016-Nov-07 22:59:16 Фактическое ограничение памяти (check_memory_limit): Ok
+80% done
+Connection to www.bigms.ru:80	Success
+
+2016-Nov-07 22:59:17 Фактическое ограничение памяти (check_memory_limit): Ok
+Connection to www.bigms.ru:80	Success
+
+Не менее 256 М
+2016-Nov-07 22:59:17 Работа с файлами кеша (check_cache): Ok
+Успешно
+2016-Nov-07 22:59:17 Доступ к серверу обновлений (check_update): Ok
+Успешно
+2016-Nov-07 22:59:17 HTTP авторизация (check_http_auth): Ok
+Connection to www.bigms.ru:80	Success
+
+Успешно
+2016-Nov-07 22:59:17 Создание и запуск файла (check_exec): Ok
+Connection to www.bigms.ru:80	Success
+
+Успешно
+2016-Nov-07 22:59:18 Функция getimagesize для swf (check_getimagesize): Ok
+Успешно
+2016-Nov-07 22:59:18 Версия MySQL-сервера (check_mysql_bug_version): Ok
+Успешно
+2016-Nov-07 22:59:19 Время на БД и веб-сервере (check_mysql_time): Ok
+Успешно
+2016-Nov-07 22:59:19 Режим работы MySQL (check_mysql_mode): Ok
+Успешно
+2016-Nov-07 22:59:19 Кодировка соединения (check_mysql_connection_charset): Ok
+character_set_connection=utf8, collation_connection=utf8_unicode_ci, character_set_results=utf8
+Успешно
+2016-Nov-07 22:59:19 Кодировка базы данных (check_mysql_db_charset): Ok
+CHARSET=utf8, COLLATION=utf8_unicode_ci
+Успешно
+2016-Nov-07 22:59:19 Кодировки таблиц в БД (check_mysql_table_charset): Ok
+Успешно
+2016-Nov-07 22:59:20 Структура базы данных (check_mysql_table_structure): Ok
+0% done
+2016-Nov-07 22:59:20 Структура базы данных (check_mysql_table_structure): Ok
+3% done
+2016-Nov-07 22:59:20 Структура базы данных (check_mysql_table_structure): Ok
+6% done
+2016-Nov-07 22:59:22 Структура базы данных (check_mysql_table_structure): Ok
+9% done
+2016-Nov-07 22:59:22 Структура базы данных (check_mysql_table_structure): Ok
+12% done
+2016-Nov-07 22:59:23 Структура базы данных (check_mysql_table_structure): Ok
+16% done
+2016-Nov-07 22:59:23 Структура базы данных (check_mysql_table_structure): Ok
+19% done
+2016-Nov-07 22:59:24 Структура базы данных (check_mysql_table_structure): Ok
+22% done
+2016-Nov-07 22:59:24 Структура базы данных (check_mysql_table_structure): Ok
+25% done
+2016-Nov-07 22:59:26 Структура базы данных (check_mysql_table_structure): Ok
+29% done
+2016-Nov-07 22:59:32 Структура базы данных (check_mysql_table_structure): Ok
+32% done
+В таблице b_user_hit_auth поле TIMESTAMP_X "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP" не соответствует описанию на диске "datetime NULL DEFAULT NULL  "
+
+2016-Nov-07 22:59:33 Структура базы данных (check_mysql_table_structure): Ok
+35% done
+2016-Nov-07 22:59:33 Структура базы данных (check_mysql_table_structure): Ok
+38% done
+2016-Nov-07 22:59:41 Структура базы данных (check_mysql_table_structure): Ok
+41% done
+2016-Nov-07 22:59:41 Структура базы данных (check_mysql_table_structure): Ok
+45% done
+2016-Nov-07 22:59:41 Структура базы данных (check_mysql_table_structure): Ok
+48% done
+2016-Nov-07 22:59:42 Структура базы данных (check_mysql_table_structure): Ok
+51% done
+2016-Nov-07 22:59:44 Структура базы данных (check_mysql_table_structure): Ok
+54% done
+2016-Nov-07 22:59:44 Структура базы данных (check_mysql_table_structure): Ok
+58% done
+2016-Nov-07 22:59:45 Структура базы данных (check_mysql_table_structure): Ok
+61% done
+2016-Nov-07 22:59:45 Структура базы данных (check_mysql_table_structure): Ok
+64% done
+2016-Nov-07 22:59:46 Структура базы данных (check_mysql_table_structure): Ok
+67% done
+2016-Nov-07 22:59:46 Структура базы данных (check_mysql_table_structure): Ok
+70% done
+2016-Nov-07 22:59:47 Структура базы данных (check_mysql_table_structure): Ok
+74% done
+2016-Nov-07 22:59:47 Структура базы данных (check_mysql_table_structure): Ok
+77% done
+2016-Nov-07 22:59:47 Структура базы данных (check_mysql_table_structure): Ok
+80% done
+2016-Nov-07 22:59:48 Структура базы данных (check_mysql_table_structure): Ok
+83% done
+2016-Nov-07 22:59:49 Структура базы данных (check_mysql_table_structure): Ok
+87% done
+2016-Nov-07 22:59:51 Структура базы данных (check_mysql_table_structure): Ok
+90% done
+2016-Nov-07 22:59:52 Структура базы данных (check_mysql_table_structure): Ok
+93% done
+2016-Nov-07 22:59:52 Структура базы данных (check_mysql_table_structure): Ok
+96% done
+2016-Nov-07 22:59:52 Структура базы данных (check_mysql_table_structure): Fail
+ALTER TABLE `b_user_hit_auth` MODIFY `TIMESTAMP_X` datetime NULL DEFAULT NULL  ;
+Ошибка! Структура базы данных имеет ошибки (нет таблиц: 0, нет полей: 0, поля отличаются: 1, нет индексов: 0). Всего 1, автоматически могут быть исправлены: 0.
