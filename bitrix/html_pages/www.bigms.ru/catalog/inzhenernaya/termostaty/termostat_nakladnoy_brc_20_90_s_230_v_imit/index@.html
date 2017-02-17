@@ -30,7 +30,7 @@
 <link href="/bitrix/templates/bigms/components/bitrix/search.title/search/style.css?14407528783464" type="text/css"  data-template-style="true"  rel="stylesheet" />
 <link href="/bitrix/templates/bigms/components/bitrix/breadcrumb/breads/style.css?1447336101828" type="text/css"  data-template-style="true"  rel="stylesheet" />
 <link href="/bitrix/templates/bigms/components/bitrix/main.register/modal/style.css?1438326223225" type="text/css"  data-template-style="true"  rel="stylesheet" />
-<link href="/bitrix/templates/bigms/template_styles.css?148707524189551" type="text/css"  data-template-style="true"  rel="stylesheet" />
+<link href="/bitrix/templates/bigms/template_styles.css?148707941189642" type="text/css"  data-template-style="true"  rel="stylesheet" />
 <script type="text/javascript">if(!window.BX)window.BX={message:function(mess){if(typeof mess=='object') for(var i in mess) BX.message[i]=mess[i]; return true;}};</script>
 <script type="text/javascript">(window.BX||top.BX).message({'JS_CORE_LOADING':'Загрузка...','JS_CORE_NO_DATA':'- Нет данных -','JS_CORE_WINDOW_CLOSE':'Закрыть','JS_CORE_WINDOW_EXPAND':'Развернуть','JS_CORE_WINDOW_NARROW':'Свернуть в окно','JS_CORE_WINDOW_SAVE':'Сохранить','JS_CORE_WINDOW_CANCEL':'Отменить','JS_CORE_WINDOW_CONTINUE':'Продолжить','JS_CORE_H':'ч','JS_CORE_M':'м','JS_CORE_S':'с','JSADM_AI_HIDE_EXTRA':'Скрыть лишние','JSADM_AI_ALL_NOTIF':'Показать все','JSADM_AUTH_REQ':'Требуется авторизация!','JS_CORE_WINDOW_AUTH':'Войти','JS_CORE_IMAGE_FULL':'Полный размер'});</script>
 <script type="text/javascript">(window.BX||top.BX).message({'LANGUAGE_ID':'ru','FORMAT_DATE':'DD.MM.YYYY','FORMAT_DATETIME':'DD.MM.YYYY HH:MI:SS','COOKIE_PREFIX':'BITRIX_SM','SERVER_TZ_OFFSET':'10800','SITE_ID':'s1','SITE_DIR':'/'});</script>
@@ -44,9 +44,12 @@
 <script type="text/javascript" src="/bitrix/js/main/core/core_fx.js?148644968416864"></script>
 <script type="text/javascript" src="/bitrix/js/main/core/core_frame_cache.js?148644915217555"></script>
 <script type="text/javascript" src="/bitrix/js/main/core/core_popup.js?148644968441651"></script>
+<script type="text/javascript" src="/bitrix/js/main/cphttprequest.js?14383262226104"></script>
 <script type="text/javascript" src="/bitrix/js/main/core/core_window.js?146840399296650"></script>
 <script type="text/javascript" src="/bitrix/js/main/rating.js?143832622216427"></script>
 <script type="text/javascript" src="/bitrix/js/currency/core_currency.js?14684039112402"></script>
+<script type="text/javascript">var ajaxMessages = {wait:"Загрузка..."}</script>
+
 
 
 <script type="text/javascript" src="/bitrix/templates/bigms/js/jquery-1.11.1.min.js?143832622395790"></script>
@@ -2362,7 +2365,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 BX.ready(function(){
 	window.bx_vo_10_16178_sBq3II = new JCIblockVoteStars({'progressId':'bx_vo_10_16178_sBq3II_progr','ratingId':'bx_vo_10_16178_sBq3II_rating','starsId':'bx_vo_10_16178_sBq3II_stars','ajaxUrl':'/bitrix/components/bitrix/iblock.vote/component.php','voteId':'16178'});
 
-	window.bx_vo_10_16178_sBq3II.ajaxParams = {'SESSION_PARAMS':'cfecd32cdd1497aa1e61688e09c75e68','PAGE_PARAMS':{'ELEMENT_ID':'16178'},'sessid':'1c088f1d13332971d3a428f829cac882','AJAX_CALL':'Y'};
+	window.bx_vo_10_16178_sBq3II.ajaxParams = {'SESSION_PARAMS':'cfecd32cdd1497aa1e61688e09c75e68','PAGE_PARAMS':{'ELEMENT_ID':'16178'},'sessid':'954bfe694aaeb880a2eef7a731ee4096','AJAX_CALL':'Y'};
 	window.bx_vo_10_16178_sBq3II.setValue("120");
 	window.bx_vo_10_16178_sBq3II.setVotes("1");
 });
@@ -2598,18 +2601,7 @@ BX.message({
 	BTN_MESSAGE_COMPARE_REDIRECT: 'Перейти в список сравнения',
 	SITE_ID: 's1'
 });
-</script><script type="text/javascript">
-BX.ready(
-	BX.defer(function(){
-		if (!!window.bx_vo_10_16178_sBq3II)
-		{
-			window.bx_vo_10_16178_sBq3II.bindEvents();
-		}
-	})
-);
-</script>
-
-	<script type="text/javascript">
+</script>	<script type="text/javascript">
 		BX.Currency.setCurrencies([{'CURRENCY':'BYR','FORMAT':{'FORMAT_STRING':'# руб.','DEC_POINT':'.','THOUSANDS_SEP':' ','DECIMALS':2,'THOUSANDS_VARIANT':'S','HIDE_ZERO':'Y'}},{'CURRENCY':'EUR','FORMAT':{'FORMAT_STRING':'&euro;#','DEC_POINT':'.','THOUSANDS_SEP':',','DECIMALS':2,'THOUSANDS_VARIANT':'C','HIDE_ZERO':'Y'}},{'CURRENCY':'RUB','FORMAT':{'FORMAT_STRING':'# руб.','DEC_POINT':'.','THOUSANDS_SEP':' ','DECIMALS':2,'THOUSANDS_VARIANT':'S','HIDE_ZERO':'Y'}},{'CURRENCY':'UAH','FORMAT':{'FORMAT_STRING':'# грн.','DEC_POINT':'.','THOUSANDS_SEP':' ','DECIMALS':2,'THOUSANDS_VARIANT':'S','HIDE_ZERO':'Y'}},{'CURRENCY':'USD','FORMAT':{'FORMAT_STRING':'$#','DEC_POINT':'.','THOUSANDS_SEP':',','DECIMALS':2,'THOUSANDS_VARIANT':'C','HIDE_ZERO':'Y'}}]);
 	</script>
 <script type="text/javascript">
@@ -2805,7 +2797,7 @@ var obbx_3966226736_16157 = new JCCatalogSection({'PRODUCT_TYPE':'1','SHOW_QUANT
 			<div class="title"><a href="/catalog/inzhenernaya/termostaty/datchik_tyeplogo_pola_fs3000_salus/" title="Датчик тёплого пола FS3000, SALUS">Датчик тёплого пола FS3000, SALUS</a></div>
 	
 			<div class="price_block">
-				<div id="bx_3966226736_16139_price" class="bx_price">528.00<span> руб.</span></div>
+				<div id="bx_3966226736_16139_price" class="bx_price">516.00<span> руб.</span></div>
 			</div>
 
             <div class="availability no">Заказ 1-3 дня</div>		
@@ -2825,7 +2817,7 @@ var obbx_3966226736_16157 = new JCCatalogSection({'PRODUCT_TYPE':'1','SHOW_QUANT
 
 						<a class="share_button" data-id="16139" href="javascript:void(0)" onclick="yaCounter31721621.reachGoal('add_to_bookmarks');" data-text="В избранное"></a>
 						<input type="hidden" name="CAT_PRICE_ID16139" value="24239"/>
-						<input type="hidden" name="CAT_PRICE16139" value="528.00"/>
+						<input type="hidden" name="CAT_PRICE16139" value="516.00"/>
 						<input type="hidden" name="ELEM_NAME16139" value="Датчик тёплого пола FS3000, SALUS"/>
 						<input type="hidden" name="DETAIL_PAGE16139" value="/catalog/inzhenernaya/termostaty/datchik_tyeplogo_pola_fs3000_salus/"/>
 						<input type="hidden" name="PICTURE16139" value="/upload/resize_cache/iblock/7ae/80_150_0/7aee0c7e85ed9e100872b79b65aa9ec5.jpeg"/>
@@ -2838,7 +2830,7 @@ var obbx_3966226736_16157 = new JCCatalogSection({'PRODUCT_TYPE':'1','SHOW_QUANT
 
 		
 		<script type="text/javascript">
-var obbx_3966226736_16139 = new JCCatalogSection({'PRODUCT_TYPE':'1','SHOW_QUANTITY':false,'SHOW_ADD_BASKET_BTN':false,'SHOW_BUY_BTN':true,'SHOW_ABSENT':true,'SHOW_OLD_PRICE':false,'ADD_TO_BASKET_ACTION':'ADD','SHOW_CLOSE_POPUP':false,'SHOW_DISCOUNT_PERCENT':false,'DISPLAY_COMPARE':true,'PRODUCT':{'ID':'16139','IBLOCK_ID':'10','NAME':'Датчик тёплого пола FS3000, SALUS','PICT':{'ID':'1765875','SRC':'/upload/resize_cache/iblock/7ae/80_150_0/7aee0c7e85ed9e100872b79b65aa9ec5.jpeg','WIDTH':'80','HEIGHT':'70'},'CAN_BUY':true,'SUBSCRIPTION':false,'CHECK_QUANTITY':false,'MAX_QUANTITY':'0','STEP_QUANTITY':'1','QUANTITY_FLOAT':false,'SUBSCRIBE_URL':'/catalog/inzhenernaya/termostaty/termostat_nakladnoy_brc_20_90_s_230_v_imit/index.php?action=SUBSCRIBE_PRODUCT&id=16139','BASIS_PRICE':{'VALUE_NOVAT':'447.45762711864','PRINT_VALUE_NOVAT':'447.46 руб.','VALUE_VAT':'528.00','PRINT_VALUE_VAT':'528 руб.','VATRATE_VALUE':'80.542372881356','PRINT_VATRATE_VALUE':'80.54 руб.','DISCOUNT_VALUE_NOVAT':'447.45762711864','PRINT_DISCOUNT_VALUE_NOVAT':'447.46 руб.','DISCOUNT_VALUE_VAT':'528.00','PRINT_DISCOUNT_VALUE_VAT':'528 руб.','DISCOUNT_VATRATE_VALUE':'80.542372881356','PRINT_DISCOUNT_VATRATE_VALUE':'80.54 руб.','CURRENCY':'RUB','PRICE_ID':'1','ID':'24239','CAN_ACCESS':'Y','CAN_BUY':'Y','MIN_PRICE':'Y','VALUE':'528.00','PRINT_VALUE':'528 руб.','DISCOUNT_VALUE':'528.00','PRINT_DISCOUNT_VALUE':'528 руб.','DISCOUNT_DIFF':'0','DISCOUNT_DIFF_PERCENT':'0','PRINT_DISCOUNT_DIFF':'0 руб.'}},'BASKET':{'ADD_PROPS':true,'QUANTITY':'quantity','PROPS':'prop','EMPTY_PROPS':true,'ADD_URL_TEMPLATE':'/catalog/inzhenernaya/termostaty/termostat_nakladnoy_brc_20_90_s_230_v_imit/index.php?action=ADD2BASKET&id=#ID#','BUY_URL_TEMPLATE':'/catalog/inzhenernaya/termostaty/termostat_nakladnoy_brc_20_90_s_230_v_imit/index.php?action=BUY&id=#ID#'},'VISUAL':{'ID':'bx_3966226736_16139','PICT_ID':'bx_3966226736_16139_secondpict','QUANTITY_ID':'bx_3966226736_16139_quantity','QUANTITY_UP_ID':'bx_3966226736_16139_quant_up','QUANTITY_DOWN_ID':'bx_3966226736_16139_quant_down','PRICE_ID':'bx_3966226736_16139_price','BUY_ID':'bx_3966226736_16139_buy_link','BASKET_PROP_DIV':'bx_3966226736_16139_basket_prop','BASKET_ACTIONS_ID':'bx_3966226736_16139_basket_actions','NOT_AVAILABLE_MESS':'bx_3966226736_16139_not_avail','COMPARE_LINK_ID':'bx_3966226736_16139_compare_link'},'LAST_ELEMENT':'N','COMPARE':{'COMPARE_URL_TEMPLATE':'/catalog/inzhenernaya/compare/?action=ADD_TO_COMPARE_LIST&id=#ID#','COMPARE_PATH':'/catalog/inzhenernaya/compare/?action=COMPARE'}});
+var obbx_3966226736_16139 = new JCCatalogSection({'PRODUCT_TYPE':'1','SHOW_QUANTITY':false,'SHOW_ADD_BASKET_BTN':false,'SHOW_BUY_BTN':true,'SHOW_ABSENT':true,'SHOW_OLD_PRICE':false,'ADD_TO_BASKET_ACTION':'ADD','SHOW_CLOSE_POPUP':false,'SHOW_DISCOUNT_PERCENT':false,'DISPLAY_COMPARE':true,'PRODUCT':{'ID':'16139','IBLOCK_ID':'10','NAME':'Датчик тёплого пола FS3000, SALUS','PICT':{'ID':'1765875','SRC':'/upload/resize_cache/iblock/7ae/80_150_0/7aee0c7e85ed9e100872b79b65aa9ec5.jpeg','WIDTH':'80','HEIGHT':'70'},'CAN_BUY':true,'SUBSCRIPTION':false,'CHECK_QUANTITY':false,'MAX_QUANTITY':'0','STEP_QUANTITY':'1','QUANTITY_FLOAT':false,'SUBSCRIBE_URL':'/catalog/inzhenernaya/termostaty/termostat_nakladnoy_brc_20_90_s_230_v_imit/index.php?action=SUBSCRIBE_PRODUCT&id=16139','BASIS_PRICE':{'VALUE_NOVAT':'437.28813559322','PRINT_VALUE_NOVAT':'437.29 руб.','VALUE_VAT':'516.00','PRINT_VALUE_VAT':'516 руб.','VATRATE_VALUE':'78.71186440678','PRINT_VATRATE_VALUE':'78.71 руб.','DISCOUNT_VALUE_NOVAT':'437.28813559322','PRINT_DISCOUNT_VALUE_NOVAT':'437.29 руб.','DISCOUNT_VALUE_VAT':'516.00','PRINT_DISCOUNT_VALUE_VAT':'516 руб.','DISCOUNT_VATRATE_VALUE':'78.71186440678','PRINT_DISCOUNT_VATRATE_VALUE':'78.71 руб.','CURRENCY':'RUB','PRICE_ID':'1','ID':'24239','CAN_ACCESS':'Y','CAN_BUY':'Y','MIN_PRICE':'Y','VALUE':'516.00','PRINT_VALUE':'516 руб.','DISCOUNT_VALUE':'516.00','PRINT_DISCOUNT_VALUE':'516 руб.','DISCOUNT_DIFF':'0','DISCOUNT_DIFF_PERCENT':'0','PRINT_DISCOUNT_DIFF':'0 руб.'}},'BASKET':{'ADD_PROPS':true,'QUANTITY':'quantity','PROPS':'prop','EMPTY_PROPS':true,'ADD_URL_TEMPLATE':'/catalog/inzhenernaya/termostaty/termostat_nakladnoy_brc_20_90_s_230_v_imit/index.php?action=ADD2BASKET&id=#ID#','BUY_URL_TEMPLATE':'/catalog/inzhenernaya/termostaty/termostat_nakladnoy_brc_20_90_s_230_v_imit/index.php?action=BUY&id=#ID#'},'VISUAL':{'ID':'bx_3966226736_16139','PICT_ID':'bx_3966226736_16139_secondpict','QUANTITY_ID':'bx_3966226736_16139_quantity','QUANTITY_UP_ID':'bx_3966226736_16139_quant_up','QUANTITY_DOWN_ID':'bx_3966226736_16139_quant_down','PRICE_ID':'bx_3966226736_16139_price','BUY_ID':'bx_3966226736_16139_buy_link','BASKET_PROP_DIV':'bx_3966226736_16139_basket_prop','BASKET_ACTIONS_ID':'bx_3966226736_16139_basket_actions','NOT_AVAILABLE_MESS':'bx_3966226736_16139_not_avail','COMPARE_LINK_ID':'bx_3966226736_16139_compare_link'},'LAST_ELEMENT':'N','COMPARE':{'COMPARE_URL_TEMPLATE':'/catalog/inzhenernaya/compare/?action=ADD_TO_COMPARE_LIST&id=#ID#','COMPARE_PATH':'/catalog/inzhenernaya/compare/?action=COMPARE'}});
 </script></div>
 </li>
 
@@ -2857,7 +2849,7 @@ var obbx_3966226736_16139 = new JCCatalogSection({'PRODUCT_TYPE':'1','SHOW_QUANT
 			<div class="title"><a href="/catalog/inzhenernaya/termostaty/termostat_s_regulirovkoy_30_90_s_kapilyarnaya_trubka_l_1500_mm_emmeti/" title="Термостат с регулировкой  30-90 °С, капилярная трубка L= 1500 мм, EMMETI">Термостат с регулировкой  30-90 °С, капилярная трубка L= 1500 мм, EMMETI</a></div>
 	
 			<div class="price_block">
-				<div id="bx_3966226736_14400_price" class="bx_price">815.00<span> руб.</span></div>
+				<div id="bx_3966226736_14400_price" class="bx_price">797.00<span> руб.</span></div>
 			</div>
 
             <div class="availability">Есть в наличии</div>		
@@ -2877,7 +2869,7 @@ var obbx_3966226736_16139 = new JCCatalogSection({'PRODUCT_TYPE':'1','SHOW_QUANT
 
 						<a class="share_button" data-id="14400" href="javascript:void(0)" onclick="yaCounter31721621.reachGoal('add_to_bookmarks');" data-text="В избранное"></a>
 						<input type="hidden" name="CAT_PRICE_ID14400" value="22619"/>
-						<input type="hidden" name="CAT_PRICE14400" value="815.00"/>
+						<input type="hidden" name="CAT_PRICE14400" value="797.00"/>
 						<input type="hidden" name="ELEM_NAME14400" value="Термостат с регулировкой  30-90 °С, капилярная трубка L= 1500 мм, EMMETI"/>
 						<input type="hidden" name="DETAIL_PAGE14400" value="/catalog/inzhenernaya/termostaty/termostat_s_regulirovkoy_30_90_s_kapilyarnaya_trubka_l_1500_mm_emmeti/"/>
 						<input type="hidden" name="PICTURE14400" value="/upload/resize_cache/iblock/e7c/80_150_0/e7c5af62cc5697e2b35f33bc76594f4a.jpeg"/>
@@ -2890,7 +2882,7 @@ var obbx_3966226736_16139 = new JCCatalogSection({'PRODUCT_TYPE':'1','SHOW_QUANT
 
 		
 		<script type="text/javascript">
-var obbx_3966226736_14400 = new JCCatalogSection({'PRODUCT_TYPE':'1','SHOW_QUANTITY':false,'SHOW_ADD_BASKET_BTN':false,'SHOW_BUY_BTN':true,'SHOW_ABSENT':true,'SHOW_OLD_PRICE':false,'ADD_TO_BASKET_ACTION':'ADD','SHOW_CLOSE_POPUP':false,'SHOW_DISCOUNT_PERCENT':false,'DISPLAY_COMPARE':true,'PRODUCT':{'ID':'14400','IBLOCK_ID':'10','NAME':'Термостат с регулировкой  30-90 °С, капилярная трубка L= 1500 мм, EMMETI','PICT':{'ID':'1766979','SRC':'/upload/resize_cache/iblock/e7c/80_150_0/e7c5af62cc5697e2b35f33bc76594f4a.jpeg','WIDTH':'80','HEIGHT':'77'},'CAN_BUY':true,'SUBSCRIPTION':false,'CHECK_QUANTITY':false,'MAX_QUANTITY':'2','STEP_QUANTITY':'1','QUANTITY_FLOAT':false,'SUBSCRIBE_URL':'/catalog/inzhenernaya/termostaty/termostat_nakladnoy_brc_20_90_s_230_v_imit/index.php?action=SUBSCRIBE_PRODUCT&id=14400','BASIS_PRICE':{'VALUE_NOVAT':'690.6779661017','PRINT_VALUE_NOVAT':'690.68 руб.','VALUE_VAT':'815.00','PRINT_VALUE_VAT':'815 руб.','VATRATE_VALUE':'124.3220338983','PRINT_VATRATE_VALUE':'124.32 руб.','DISCOUNT_VALUE_NOVAT':'690.6779661017','PRINT_DISCOUNT_VALUE_NOVAT':'690.68 руб.','DISCOUNT_VALUE_VAT':'815.00','PRINT_DISCOUNT_VALUE_VAT':'815 руб.','DISCOUNT_VATRATE_VALUE':'124.3220338983','PRINT_DISCOUNT_VATRATE_VALUE':'124.32 руб.','CURRENCY':'RUB','PRICE_ID':'1','ID':'22619','CAN_ACCESS':'Y','CAN_BUY':'Y','MIN_PRICE':'Y','VALUE':'815.00','PRINT_VALUE':'815 руб.','DISCOUNT_VALUE':'815.00','PRINT_DISCOUNT_VALUE':'815 руб.','DISCOUNT_DIFF':'0','DISCOUNT_DIFF_PERCENT':'0','PRINT_DISCOUNT_DIFF':'0 руб.'}},'BASKET':{'ADD_PROPS':true,'QUANTITY':'quantity','PROPS':'prop','EMPTY_PROPS':true,'ADD_URL_TEMPLATE':'/catalog/inzhenernaya/termostaty/termostat_nakladnoy_brc_20_90_s_230_v_imit/index.php?action=ADD2BASKET&id=#ID#','BUY_URL_TEMPLATE':'/catalog/inzhenernaya/termostaty/termostat_nakladnoy_brc_20_90_s_230_v_imit/index.php?action=BUY&id=#ID#'},'VISUAL':{'ID':'bx_3966226736_14400','PICT_ID':'bx_3966226736_14400_secondpict','QUANTITY_ID':'bx_3966226736_14400_quantity','QUANTITY_UP_ID':'bx_3966226736_14400_quant_up','QUANTITY_DOWN_ID':'bx_3966226736_14400_quant_down','PRICE_ID':'bx_3966226736_14400_price','BUY_ID':'bx_3966226736_14400_buy_link','BASKET_PROP_DIV':'bx_3966226736_14400_basket_prop','BASKET_ACTIONS_ID':'bx_3966226736_14400_basket_actions','NOT_AVAILABLE_MESS':'bx_3966226736_14400_not_avail','COMPARE_LINK_ID':'bx_3966226736_14400_compare_link'},'LAST_ELEMENT':'N','COMPARE':{'COMPARE_URL_TEMPLATE':'/catalog/inzhenernaya/compare/?action=ADD_TO_COMPARE_LIST&id=#ID#','COMPARE_PATH':'/catalog/inzhenernaya/compare/?action=COMPARE'}});
+var obbx_3966226736_14400 = new JCCatalogSection({'PRODUCT_TYPE':'1','SHOW_QUANTITY':false,'SHOW_ADD_BASKET_BTN':false,'SHOW_BUY_BTN':true,'SHOW_ABSENT':true,'SHOW_OLD_PRICE':false,'ADD_TO_BASKET_ACTION':'ADD','SHOW_CLOSE_POPUP':false,'SHOW_DISCOUNT_PERCENT':false,'DISPLAY_COMPARE':true,'PRODUCT':{'ID':'14400','IBLOCK_ID':'10','NAME':'Термостат с регулировкой  30-90 °С, капилярная трубка L= 1500 мм, EMMETI','PICT':{'ID':'1766979','SRC':'/upload/resize_cache/iblock/e7c/80_150_0/e7c5af62cc5697e2b35f33bc76594f4a.jpeg','WIDTH':'80','HEIGHT':'77'},'CAN_BUY':true,'SUBSCRIPTION':false,'CHECK_QUANTITY':false,'MAX_QUANTITY':'2','STEP_QUANTITY':'1','QUANTITY_FLOAT':false,'SUBSCRIBE_URL':'/catalog/inzhenernaya/termostaty/termostat_nakladnoy_brc_20_90_s_230_v_imit/index.php?action=SUBSCRIBE_PRODUCT&id=14400','BASIS_PRICE':{'VALUE_NOVAT':'675.42372881356','PRINT_VALUE_NOVAT':'675.42 руб.','VALUE_VAT':'797.00','PRINT_VALUE_VAT':'797 руб.','VATRATE_VALUE':'121.57627118644','PRINT_VATRATE_VALUE':'121.58 руб.','DISCOUNT_VALUE_NOVAT':'675.42372881356','PRINT_DISCOUNT_VALUE_NOVAT':'675.42 руб.','DISCOUNT_VALUE_VAT':'797.00','PRINT_DISCOUNT_VALUE_VAT':'797 руб.','DISCOUNT_VATRATE_VALUE':'121.57627118644','PRINT_DISCOUNT_VATRATE_VALUE':'121.58 руб.','CURRENCY':'RUB','PRICE_ID':'1','ID':'22619','CAN_ACCESS':'Y','CAN_BUY':'Y','MIN_PRICE':'Y','VALUE':'797.00','PRINT_VALUE':'797 руб.','DISCOUNT_VALUE':'797.00','PRINT_DISCOUNT_VALUE':'797 руб.','DISCOUNT_DIFF':'0','DISCOUNT_DIFF_PERCENT':'0','PRINT_DISCOUNT_DIFF':'0 руб.'}},'BASKET':{'ADD_PROPS':true,'QUANTITY':'quantity','PROPS':'prop','EMPTY_PROPS':true,'ADD_URL_TEMPLATE':'/catalog/inzhenernaya/termostaty/termostat_nakladnoy_brc_20_90_s_230_v_imit/index.php?action=ADD2BASKET&id=#ID#','BUY_URL_TEMPLATE':'/catalog/inzhenernaya/termostaty/termostat_nakladnoy_brc_20_90_s_230_v_imit/index.php?action=BUY&id=#ID#'},'VISUAL':{'ID':'bx_3966226736_14400','PICT_ID':'bx_3966226736_14400_secondpict','QUANTITY_ID':'bx_3966226736_14400_quantity','QUANTITY_UP_ID':'bx_3966226736_14400_quant_up','QUANTITY_DOWN_ID':'bx_3966226736_14400_quant_down','PRICE_ID':'bx_3966226736_14400_price','BUY_ID':'bx_3966226736_14400_buy_link','BASKET_PROP_DIV':'bx_3966226736_14400_basket_prop','BASKET_ACTIONS_ID':'bx_3966226736_14400_basket_actions','NOT_AVAILABLE_MESS':'bx_3966226736_14400_not_avail','COMPARE_LINK_ID':'bx_3966226736_14400_compare_link'},'LAST_ELEMENT':'N','COMPARE':{'COMPARE_URL_TEMPLATE':'/catalog/inzhenernaya/compare/?action=ADD_TO_COMPARE_LIST&id=#ID#','COMPARE_PATH':'/catalog/inzhenernaya/compare/?action=COMPARE'}});
 </script></div>
 </li>
 
@@ -2909,7 +2901,7 @@ var obbx_3966226736_14400 = new JCCatalogSection({'PRODUCT_TYPE':'1','SHOW_QUANT
 			<div class="title"><a href="/catalog/inzhenernaya/termostaty/termostat_komnatnyy_230_v_fiv/" title="Термостат КОМНАТНЫЙ ~ 230 В, FIV">Термостат КОМНАТНЫЙ ~ 230 В, FIV</a></div>
 	
 			<div class="price_block">
-				<div id="bx_3966226736_9659_price" class="bx_price">627.00<span> руб.</span></div>
+				<div id="bx_3966226736_9659_price" class="bx_price">613.00<span> руб.</span></div>
 			</div>
 
             <div class="availability">Есть в наличии</div>		
@@ -2929,7 +2921,7 @@ var obbx_3966226736_14400 = new JCCatalogSection({'PRODUCT_TYPE':'1','SHOW_QUANT
 
 						<a class="share_button" data-id="9659" href="javascript:void(0)" onclick="yaCounter31721621.reachGoal('add_to_bookmarks');" data-text="В избранное"></a>
 						<input type="hidden" name="CAT_PRICE_ID9659" value="15915"/>
-						<input type="hidden" name="CAT_PRICE9659" value="627.00"/>
+						<input type="hidden" name="CAT_PRICE9659" value="613.00"/>
 						<input type="hidden" name="ELEM_NAME9659" value="Термостат КОМНАТНЫЙ ~ 230 В, FIV"/>
 						<input type="hidden" name="DETAIL_PAGE9659" value="/catalog/inzhenernaya/termostaty/termostat_komnatnyy_230_v_fiv/"/>
 						<input type="hidden" name="PICTURE9659" value="/upload/resize_cache/iblock/696/80_150_0/696610a3228dd04a5856d9278f5a7a60.jpeg"/>
@@ -2942,7 +2934,7 @@ var obbx_3966226736_14400 = new JCCatalogSection({'PRODUCT_TYPE':'1','SHOW_QUANT
 
 		
 		<script type="text/javascript">
-var obbx_3966226736_9659 = new JCCatalogSection({'PRODUCT_TYPE':'1','SHOW_QUANTITY':false,'SHOW_ADD_BASKET_BTN':false,'SHOW_BUY_BTN':true,'SHOW_ABSENT':true,'SHOW_OLD_PRICE':false,'ADD_TO_BASKET_ACTION':'ADD','SHOW_CLOSE_POPUP':false,'SHOW_DISCOUNT_PERCENT':false,'DISPLAY_COMPARE':true,'PRODUCT':{'ID':'9659','IBLOCK_ID':'10','NAME':'Термостат КОМНАТНЫЙ ~ 230 В, FIV','PICT':{'ID':'1765909','SRC':'/upload/resize_cache/iblock/696/80_150_0/696610a3228dd04a5856d9278f5a7a60.jpeg','WIDTH':'80','HEIGHT':'80'},'CAN_BUY':true,'SUBSCRIPTION':false,'CHECK_QUANTITY':false,'MAX_QUANTITY':'6','STEP_QUANTITY':'1','QUANTITY_FLOAT':false,'SUBSCRIBE_URL':'/catalog/inzhenernaya/termostaty/termostat_nakladnoy_brc_20_90_s_230_v_imit/index.php?action=SUBSCRIBE_PRODUCT&id=9659','BASIS_PRICE':{'VALUE_NOVAT':'531.35593220339','PRINT_VALUE_NOVAT':'531.36 руб.','VALUE_VAT':'627.00','PRINT_VALUE_VAT':'627 руб.','VATRATE_VALUE':'95.64406779661','PRINT_VATRATE_VALUE':'95.64 руб.','DISCOUNT_VALUE_NOVAT':'531.35593220339','PRINT_DISCOUNT_VALUE_NOVAT':'531.36 руб.','DISCOUNT_VALUE_VAT':'627.00','PRINT_DISCOUNT_VALUE_VAT':'627 руб.','DISCOUNT_VATRATE_VALUE':'95.64406779661','PRINT_DISCOUNT_VATRATE_VALUE':'95.64 руб.','CURRENCY':'RUB','PRICE_ID':'1','ID':'15915','CAN_ACCESS':'Y','CAN_BUY':'Y','MIN_PRICE':'Y','VALUE':'627.00','PRINT_VALUE':'627 руб.','DISCOUNT_VALUE':'627.00','PRINT_DISCOUNT_VALUE':'627 руб.','DISCOUNT_DIFF':'0','DISCOUNT_DIFF_PERCENT':'0','PRINT_DISCOUNT_DIFF':'0 руб.'}},'BASKET':{'ADD_PROPS':true,'QUANTITY':'quantity','PROPS':'prop','EMPTY_PROPS':true,'ADD_URL_TEMPLATE':'/catalog/inzhenernaya/termostaty/termostat_nakladnoy_brc_20_90_s_230_v_imit/index.php?action=ADD2BASKET&id=#ID#','BUY_URL_TEMPLATE':'/catalog/inzhenernaya/termostaty/termostat_nakladnoy_brc_20_90_s_230_v_imit/index.php?action=BUY&id=#ID#'},'VISUAL':{'ID':'bx_3966226736_9659','PICT_ID':'bx_3966226736_9659_secondpict','QUANTITY_ID':'bx_3966226736_9659_quantity','QUANTITY_UP_ID':'bx_3966226736_9659_quant_up','QUANTITY_DOWN_ID':'bx_3966226736_9659_quant_down','PRICE_ID':'bx_3966226736_9659_price','BUY_ID':'bx_3966226736_9659_buy_link','BASKET_PROP_DIV':'bx_3966226736_9659_basket_prop','BASKET_ACTIONS_ID':'bx_3966226736_9659_basket_actions','NOT_AVAILABLE_MESS':'bx_3966226736_9659_not_avail','COMPARE_LINK_ID':'bx_3966226736_9659_compare_link'},'LAST_ELEMENT':'Y','COMPARE':{'COMPARE_URL_TEMPLATE':'/catalog/inzhenernaya/compare/?action=ADD_TO_COMPARE_LIST&id=#ID#','COMPARE_PATH':'/catalog/inzhenernaya/compare/?action=COMPARE'}});
+var obbx_3966226736_9659 = new JCCatalogSection({'PRODUCT_TYPE':'1','SHOW_QUANTITY':false,'SHOW_ADD_BASKET_BTN':false,'SHOW_BUY_BTN':true,'SHOW_ABSENT':true,'SHOW_OLD_PRICE':false,'ADD_TO_BASKET_ACTION':'ADD','SHOW_CLOSE_POPUP':false,'SHOW_DISCOUNT_PERCENT':false,'DISPLAY_COMPARE':true,'PRODUCT':{'ID':'9659','IBLOCK_ID':'10','NAME':'Термостат КОМНАТНЫЙ ~ 230 В, FIV','PICT':{'ID':'1765909','SRC':'/upload/resize_cache/iblock/696/80_150_0/696610a3228dd04a5856d9278f5a7a60.jpeg','WIDTH':'80','HEIGHT':'80'},'CAN_BUY':true,'SUBSCRIPTION':false,'CHECK_QUANTITY':false,'MAX_QUANTITY':'6','STEP_QUANTITY':'1','QUANTITY_FLOAT':false,'SUBSCRIBE_URL':'/catalog/inzhenernaya/termostaty/termostat_nakladnoy_brc_20_90_s_230_v_imit/index.php?action=SUBSCRIBE_PRODUCT&id=9659','BASIS_PRICE':{'VALUE_NOVAT':'519.49152542373','PRINT_VALUE_NOVAT':'519.49 руб.','VALUE_VAT':'613.00','PRINT_VALUE_VAT':'613 руб.','VATRATE_VALUE':'93.508474576271','PRINT_VATRATE_VALUE':'93.51 руб.','DISCOUNT_VALUE_NOVAT':'519.49152542373','PRINT_DISCOUNT_VALUE_NOVAT':'519.49 руб.','DISCOUNT_VALUE_VAT':'613.00','PRINT_DISCOUNT_VALUE_VAT':'613 руб.','DISCOUNT_VATRATE_VALUE':'93.508474576271','PRINT_DISCOUNT_VATRATE_VALUE':'93.51 руб.','CURRENCY':'RUB','PRICE_ID':'1','ID':'15915','CAN_ACCESS':'Y','CAN_BUY':'Y','MIN_PRICE':'Y','VALUE':'613.00','PRINT_VALUE':'613 руб.','DISCOUNT_VALUE':'613.00','PRINT_DISCOUNT_VALUE':'613 руб.','DISCOUNT_DIFF':'0','DISCOUNT_DIFF_PERCENT':'0','PRINT_DISCOUNT_DIFF':'0 руб.'}},'BASKET':{'ADD_PROPS':true,'QUANTITY':'quantity','PROPS':'prop','EMPTY_PROPS':true,'ADD_URL_TEMPLATE':'/catalog/inzhenernaya/termostaty/termostat_nakladnoy_brc_20_90_s_230_v_imit/index.php?action=ADD2BASKET&id=#ID#','BUY_URL_TEMPLATE':'/catalog/inzhenernaya/termostaty/termostat_nakladnoy_brc_20_90_s_230_v_imit/index.php?action=BUY&id=#ID#'},'VISUAL':{'ID':'bx_3966226736_9659','PICT_ID':'bx_3966226736_9659_secondpict','QUANTITY_ID':'bx_3966226736_9659_quantity','QUANTITY_UP_ID':'bx_3966226736_9659_quant_up','QUANTITY_DOWN_ID':'bx_3966226736_9659_quant_down','PRICE_ID':'bx_3966226736_9659_price','BUY_ID':'bx_3966226736_9659_buy_link','BASKET_PROP_DIV':'bx_3966226736_9659_basket_prop','BASKET_ACTIONS_ID':'bx_3966226736_9659_basket_actions','NOT_AVAILABLE_MESS':'bx_3966226736_9659_not_avail','COMPARE_LINK_ID':'bx_3966226736_9659_compare_link'},'LAST_ELEMENT':'Y','COMPARE':{'COMPARE_URL_TEMPLATE':'/catalog/inzhenernaya/compare/?action=ADD_TO_COMPARE_LIST&id=#ID#','COMPARE_PATH':'/catalog/inzhenernaya/compare/?action=COMPARE'}});
 </script></div>
 </li>
 
@@ -3425,8 +3417,8 @@ else
 				
 									<div class="field">
 						<div class="label">
-							<input type="hidden" name="captcha_sid" value="0f5e0ddaea77535b656595954a6f31e0"/>
-							<img src="/bitrix/tools/captcha.php?captcha_sid=0f5e0ddaea77535b656595954a6f31e0"
+							<input type="hidden" name="captcha_sid" value="01c6226fbde6d09b9947b4d7c3f52d4b"/>
+							<img src="/bitrix/tools/captcha.php?captcha_sid=01c6226fbde6d09b9947b4d7c3f52d4b"
 							     width="180" height="40" alt="CAPTCHA"/>
 						</div>
 					</div>
@@ -3725,4 +3717,4 @@ else
 <!-- /Yandex.Metrika counter -->
 
 </body>
-</html><!--42e81605558a3d60ffcfd9f199b7c730-->
+</html><!--404860cf3a0ed26c3147d6c8c43eb9f4-->
