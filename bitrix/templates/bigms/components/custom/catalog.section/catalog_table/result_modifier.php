@@ -123,6 +123,8 @@ if (!empty($arResult['ITEMS']))
 	}
 	unset($strEmptyPreview);
 
+	
+	/*
 	$arSKUPropList = array();
 	$arSKUPropIDs = array();
 	$arSKUPropKeys = array();
@@ -157,7 +159,9 @@ if (!empty($arResult['ITEMS']))
 				$arSKUPropKeys = array_fill_keys($arSKUPropIDs, false);
 		}
 	}
-
+	*/
+	
+	/*
 	$arNewItemsList = array();
 	foreach ($arResult['ITEMS'] as $key => $arItem)
 	{
@@ -175,6 +179,8 @@ if (!empty($arResult['ITEMS']))
 		if (!isset($arItem['CATALOG_SUBSCRIPTION']) || 'Y' != $arItem['CATALOG_SUBSCRIPTION'])
 			$arItem['CATALOG_SUBSCRIPTION'] = 'N';
 
+		
+			
 		CIBlockPriceTools::getLabel($arItem, $arParams['LABEL_PROP']);
 
 		$productPictures = CIBlockPriceTools::getDoublePicturesForItem($arItem, $arParams['ADD_PICT_PROP']);
@@ -189,6 +195,7 @@ if (!empty($arResult['ITEMS']))
 		$arItem['PRODUCT_PREVIEW'] = $productPictures['PICT'];
 		$arItem['PRODUCT_PREVIEW_SECOND'] = $productPictures['SECOND_PICT'];
 
+		
 		if ($arResult['MODULES']['catalog'])
 		{
 			$arItem['CATALOG'] = true;
@@ -220,7 +227,9 @@ if (!empty($arResult['ITEMS']))
 			$arItem['CATALOG_TYPE'] = 0;
 			$arItem['OFFERS'] = array();
 		}
+		*/
 
+		/*
 		if ($arItem['CATALOG'] && isset($arItem['OFFERS']) && !empty($arItem['OFFERS']))
 		{
 			if ('Y' == $arParams['PRODUCT_DISPLAY_MODE'])
@@ -389,6 +398,7 @@ if (!empty($arResult['ITEMS']))
 				);
 			}
 		}
+		
 
 		if (
 			$arResult['MODULES']['catalog']
@@ -401,6 +411,7 @@ if (!empty($arResult['ITEMS']))
 			CIBlockPriceTools::setRatioMinPrice($arItem, false);
 			$arItem['MIN_BASIS_PRICE'] = $arItem['MIN_PRICE'];
 		}
+		
 
 		if (!empty($arItem['DISPLAY_PROPERTIES']))
 		{
@@ -413,11 +424,13 @@ if (!empty($arResult['ITEMS']))
 		$arItem['LAST_ELEMENT'] = 'N';
 		$arNewItemsList[$key] = $arItem;
 	}
+	
 	$arNewItemsList[$key]['LAST_ELEMENT'] = 'Y';
 	$arResult['ITEMS'] = $arNewItemsList;
 	$arResult['SKU_PROPS'] = $arSKUPropList;
 	$arResult['DEFAULT_PICTURE'] = $arEmptyPreview;
-
+*/
+	/*
 	$arResult['CURRENCIES'] = array();
 	if ($arResult['MODULES']['currency'])
 	{
@@ -462,5 +475,6 @@ if (!empty($arResult['ITEMS']))
 			unset($currencyFormat, $currency, $currencyIterator);
 		}
 	}
+	*/
 }
 ?>

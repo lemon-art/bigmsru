@@ -48,6 +48,7 @@ if (!empty($arResult['ITEMS']))
 	);
 	unset($currencyList, $templateLibrary);
 
+	/*
 	$arSkuTemplate = array();
 	if (!empty($arResult['SKU_PROPS']))
 	{
@@ -117,6 +118,7 @@ if (!empty($arResult['ITEMS']))
 		}
 		unset($templateRow, $arProp);
 	}
+	*/
 
 	$strElementEdit = CIBlock::GetArrayByID($arParams["IBLOCK_ID"], "ELEMENT_EDIT");
 	$strElementDelete = CIBlock::GetArrayByID($arParams["IBLOCK_ID"], "ELEMENT_DELETE");
@@ -205,10 +207,9 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
                 <?
 				
 				global $USER;
-if ($USER->IsAdmin()){
-				print_r($file['src']);
-				
-				}
+				//if ($USER->IsAdmin()){
+				//print_r($file['src']);
+				//}
 				if(!empty($file['src'])) {?>
                     <img itemprop="image" class="image_rework_table" itemprop="image" src="<? echo $file['src'] ?>" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>">
                 <? } else {?>

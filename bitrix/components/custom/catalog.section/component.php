@@ -626,28 +626,57 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 		"ID",
 		"IBLOCK_ID",
 		"CODE",
-		"XML_ID",
 		"NAME",
-		"ACTIVE",
-		"DATE_ACTIVE_FROM",
-		"DATE_ACTIVE_TO",
 		"SORT",
-		"PREVIEW_TEXT",
-		"PREVIEW_TEXT_TYPE",
-		"DETAIL_TEXT",
-		"DETAIL_TEXT_TYPE",
-		"DATE_CREATE",
-		"CREATED_BY",
-		"TIMESTAMP_X",
-		"MODIFIED_BY",
-		"TAGS",
 		"IBLOCK_SECTION_ID",
 		"DETAIL_PAGE_URL",
-		"DETAIL_PICTURE",
 		"PREVIEW_PICTURE"
 	);
 	if ($bIBlockCatalog)
 		$arSelect[] = "CATALOG_QUANTITY";
+		
+	//Находим подразделы, чтобы не использовать INCLUDE_SUBSECTIONS, который много жрет	
+	
+	if($arResult["ID"])
+		$section_id = $arResult["ID"];
+	elseif(!$arParams["SHOW_ALL_WO_SECTION"])
+		$section_id = 0;
+	
+	$rsSectBorders = CIBlockSection::GetList(
+	   array( "SORT"=>"ASC" ),
+	   array(
+		  "ACTIVE"    => "Y",
+		  "IBLOCK_ID" => $arParams["IBLOCK_ID"],
+		  "ID"      => $section_id
+	   ),
+	   false,
+	   Array("LEFT_MARGIN", "RIGHT_MARGIN")
+	);
+
+	
+	$SectBorders = $rsSectBorders->GetNext();	//определили границы текущего раздела
+	
+
+	//выбираем все подразделы по границам	
+	$rsSections = CIBlockSection::GetList(
+	   array( "SORT"=>"ASC" ),
+	   array(
+		  "ACTIVE"        => "Y",
+		  "IBLOCK_ID"     => $arParams["IBLOCK_ID"],
+		  ">LEFT_MARGIN"  => $SectBorders["LEFT_MARGIN"],
+		  "<RIGHT_MARGIN" => $SectBorders["RIGHT_MARGIN"],
+	   ),
+	   false,
+	   Array('ID')
+	);
+
+	$SectionIDSArray = array();
+	while( $Section = $rsSections->GetNext() ) {
+	   $SectionIDSArray[] = $Section["ID"];
+	} // End while	
+	
+	// $SectionIDSArray - массив подразделов, его и смпользуем в конечном фильтре
+		
 	$arFilter = array(
 		"IBLOCK_ID" => $arParams["IBLOCK_ID"],
 		"IBLOCK_LID" => SITE_ID,
@@ -656,13 +685,16 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 		"ACTIVE" => "Y",
 		"CHECK_PERMISSIONS" => "Y",
 		"MIN_PERMISSION" => "R",
-		"INCLUDE_SUBSECTIONS" => ($arParams["INCLUDE_SUBSECTIONS"] == 'N' ? 'N' : 'Y'),
+		"SECTION_ID" => $SectionIDSArray,
+		//"INCLUDE_SUBSECTIONS" => ($arParams["INCLUDE_SUBSECTIONS"] == 'N' ? 'N' : 'Y'),
+		"INCLUDE_SUBSECTIONS" => "N"
 	);
 	if ($arParams["INCLUDE_SUBSECTIONS"] == 'A')
 		$arFilter["SECTION_GLOBAL_ACTIVE"] = "Y";
 	if ($bIBlockCatalog && 'Y' == $arParams['HIDE_NOT_AVAILABLE'])
 		$arFilter['CATALOG_AVAILABLE'] = 'Y';
 
+	/*
 	if($arParams["BY_LINK"]!=="Y")
 	{
 		if($arResult["ID"])
@@ -677,6 +709,7 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 				unset($arFilter["SECTION_GLOBAL_ACTIVE"]);
 		}
 	}
+	*/
 
 	if($bCatalog && $bOffersIBlockExist)
 	{
@@ -756,6 +789,8 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 		$arDefaultMeasure = CCatalogMeasure::getDefaultMeasure(true, true);
 	$currencyList = array();
 	$arSections = array();
+	
+
 
 	//EXECUTE
 	$rsElements = CIBlockElement::GetList($arSort, array_merge($arrFilter, $arFilter), false, $arNavParams, $arSelect);
@@ -777,8 +812,6 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 	{
 		$arItem['ID'] = (int)$arItem['ID'];
 
-		$arItem['ACTIVE_FROM'] = $arItem['DATE_ACTIVE_FROM'];
-		$arItem['ACTIVE_TO'] = $arItem['DATE_ACTIVE_TO'];
 
 		if($arResult["ID"])
 			$arItem["IBLOCK_SECTION_ID"] = $arResult["ID"];
@@ -804,16 +837,6 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 			$arItem["PREVIEW_PICTURE"]["TITLE"] = $arItem["IPROPERTY_VALUES"]["ELEMENT_PREVIEW_PICTURE_FILE_TITLE"];
 			if ($arItem["PREVIEW_PICTURE"]["TITLE"] == "")
 				$arItem["PREVIEW_PICTURE"]["TITLE"] = $arItem["NAME"];
-		}
-		$arItem["DETAIL_PICTURE"] = (0 < $arItem["DETAIL_PICTURE"] ? CFile::GetFileArray($arItem["DETAIL_PICTURE"]) : false);
-		if ($arItem["DETAIL_PICTURE"])
-		{
-			$arItem["DETAIL_PICTURE"]["ALT"] = $arItem["IPROPERTY_VALUES"]["ELEMENT_DETAIL_PICTURE_FILE_ALT"];
-			if ($arItem["DETAIL_PICTURE"]["ALT"] == "")
-				$arItem["DETAIL_PICTURE"]["ALT"] = $arItem["NAME"];
-			$arItem["DETAIL_PICTURE"]["TITLE"] = $arItem["IPROPERTY_VALUES"]["ELEMENT_DETAIL_PICTURE_FILE_TITLE"];
-			if ($arItem["DETAIL_PICTURE"]["TITLE"] == "")
-				$arItem["DETAIL_PICTURE"]["TITLE"] = $arItem["NAME"];
 		}
 
 		$arItem["PROPERTIES"] = array();
@@ -843,6 +866,7 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 			}
 		}
 
+		/*
 		if ($arParams["SET_LAST_MODIFIED"])
 		{
 			$time = DateTime::createFromUserTime($arItem["TIMESTAMP_X"]);
@@ -852,6 +876,7 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 			)
 				$arResult["ITEMS_TIMESTAMP_X"] = $time;
 		}
+		*/
 
 		$arResult["ITEMS"][$intKey] = $arItem;
 		$arResult["ELEMENTS"][$intKey] = $arItem["ID"];
@@ -889,6 +914,7 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 	if (isset($arItem))
 		unset($arItem);
 
+	/*
 	if (!empty($arResult["ELEMENTS"]) && ($bGetProperties || ($bCatalog && $boolNeedCatalogCache)))
 	{
 		$arPropFilter = array(
@@ -896,7 +922,7 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 			'IBLOCK_ID' => $arParams['IBLOCK_ID']
 		);
 		CIBlockElement::GetPropertyValuesArray($arElementLink, $arParams["IBLOCK_ID"], $arPropFilter);
-
+		
 		foreach ($arResult["ITEMS"] as &$arItem)
 		{
 			if ($bCatalog && $boolNeedCatalogCache)
@@ -939,6 +965,7 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 		if (isset($arItem))
 			unset($arItem);
 	}
+	*/
 
 	if ($bIBlockCatalog)
 	{
@@ -1144,6 +1171,7 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 		if($value === "")
 			unset($arParams["OFFERS_PROPERTY_CODE"][$key]);
 
+	/*
 	if(
 		$bCatalog
 		&& !empty($arResult["ELEMENTS"])
@@ -1161,6 +1189,7 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 		{
 			$offersFilter['SHOW_PRICE_COUNT'] = $arParams['SHOW_PRICE_COUNT'];
 		}
+		
 		$arOffers = CIBlockPriceTools::GetOffersArray(
 			$offersFilter,
 			$arResult["ELEMENTS"],
@@ -1214,6 +1243,7 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 		}
 		unset($arOffers);
 	}
+	*/
 
 	if (
 		'Y' == $arParams['CONVERT_CURRENCY']
@@ -1264,6 +1294,7 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 }
 
 $arTitleOptions = null;
+/*
 if($USER->IsAuthorized())
 {
 	if(
@@ -1337,6 +1368,7 @@ if($USER->IsAuthorized())
 		}
 	}
 }
+*/
 
 $this->SetTemplateCachedData($arResult["NAV_CACHED_DATA"]);
 

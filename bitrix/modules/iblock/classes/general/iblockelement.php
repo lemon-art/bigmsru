@@ -5219,8 +5219,9 @@ class CAllIBlockElement
 	{
 		global $DB;
 		$IBLOCK_ID = (int)$IBLOCK_ID;
-		$VERSION = CIBlockElement::GetIBVersion($IBLOCK_ID);
-
+		//$VERSION = CIBlockElement::GetIBVersion($IBLOCK_ID);
+		$VERSION = 1;
+		
 		$propertyID = array();
 		if (isset($propertyFilter['ID']))
 		{
@@ -5233,6 +5234,7 @@ class CAllIBlockElement
 		$element = new CIBlockElement;
 		$element->strField = "ID";
 		$element->GetList(array(), $arElementFilter, false, false, array("ID"));
+		
 
 		if ($VERSION == 2)
 			$strSql = "

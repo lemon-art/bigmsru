@@ -41,7 +41,7 @@ $arParams['USE_FILTER'] = (isset($arParams['USE_FILTER']) && $arParams['USE_FILT
 <?
 // Узнаем ID текущего раздела
 $arFilter = Array('IBLOCK_ID'=>$arParams["IBLOCK_ID"], 'CODE'=>$arResult["VARIABLES"]["SECTION_CODE"]);
-$db_list = CIBlockSection::GetList(Array($by=>$order), $arFilter, true);
+$db_list = CIBlockSection::GetList(Array($by=>$order), $arFilter, true, Array('ID'));
 $ar_result = $db_list->GetNext();
 
 // Узнаем количество товаров к текущем разделе
@@ -133,9 +133,9 @@ if (substr_count($currentUrl, 'filter') > 0 && substr_count($currentUrl, 'apply'
 $title = '';
 if ($ar_result['DEPTH_LEVEL'] == 3) {
 
-    // вытягиваем имя родителя
+    //вытягиваем имя родителя
     $arFilter = Array('IBLOCK_ID' => $arParams["IBLOCK_ID"], 'ID' => $ar_result["IBLOCK_SECTION_ID"]);
-    $db_list_parent = CIBlockSection::GetList(Array($by => $order), $arFilter, true);
+    $db_list_parent = CIBlockSection::GetList(Array($by => $order), $arFilter, true, Array("NAME"));
     $ar_result_parent = $db_list_parent->GetNext();
     $title = $ar_result_parent['NAME'] . ' ' . $ar_result['NAME'];
 
@@ -206,7 +206,7 @@ if ($ar_result['DEPTH_LEVEL'] == 3) {
 			}
 			?>
 			<? $APPLICATION->IncludeComponent(
-				"bitrix:catalog.smart.filter",
+				"custom:catalog.smart.filter",
 				"catalog",
 				array(
 					"IBLOCK_TYPE" => $arParams["IBLOCK_TYPE"],
@@ -216,7 +216,7 @@ if ($ar_result['DEPTH_LEVEL'] == 3) {
 					"FILTER_NAME" => $arParams["FILTER_NAME"],
 					"PRICE_CODE" => $arParams["PRICE_CODE"],
 					//"CACHE_TYPE" => $arParams["CACHE_TYPE"],
-					"CACHE_TYPE" => "N",
+					"CACHE_TYPE" => "Y",
 					"CACHE_TIME" => $arParams["CACHE_TIME"],
 					"CACHE_GROUPS" => $arParams["CACHE_GROUPS"],
 					"SAVE_IN_SESSION" => "N",
