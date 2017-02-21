@@ -7,4 +7,7 @@ bitrix/.settings.php
 *.txt
 *.xml
 /bitrix/html_pages
+bitrix/stack_cache
 .htaccess
+robots.txt
+bitrix/tools

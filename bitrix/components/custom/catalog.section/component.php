@@ -630,7 +630,8 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 		"SORT",
 		"IBLOCK_SECTION_ID",
 		"DETAIL_PAGE_URL",
-		"PREVIEW_PICTURE"
+		"PREVIEW_PICTURE",
+		"DETAIL_PICTURE" 
 	);
 	if ($bIBlockCatalog)
 		$arSelect[] = "CATALOG_QUANTITY";
