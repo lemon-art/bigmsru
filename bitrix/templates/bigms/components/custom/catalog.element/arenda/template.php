@@ -1,5 +1,4 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
-$GLOBALS["arLinkedProducts"]["XML_ID"] = $arResult["PROPERTIES"]["RECOMMEND"]["VALUE"];
 /** @var array $arParams */
 /** @var array $arResult */
 /** @global CMain $APPLICATION */
@@ -13,9 +12,6 @@ $GLOBALS["arLinkedProducts"]["XML_ID"] = $arResult["PROPERTIES"]["RECOMMEND"]["V
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
 $templateLibrary = array('popup');
-
-
-//print_r($arResult['IBLOCK_SECTION_ID']);
 $currencyList = '';
 if (!empty($arResult['CURRENCIES']))
 {
@@ -84,15 +80,19 @@ reset($arResult['MORE_PHOTO']);
 $arFirstPhoto = current($arResult['MORE_PHOTO']);
 ?>
 
-<div itemscope itemtype="http://schema.org/Product" class="catalog_detail <? echo $templateData['TEMPLATE_CLASS']; ?>" id="<? echo $arItemIDs['ID']; ?>">
+<div class="catalog_detail <? echo $templateData['TEMPLATE_CLASS']; ?>" id="<? echo $arItemIDs['ID']; ?>">
 
 <div class="title_block">
-	<h1 itemprop="name"><span itemprop="description"><?=$strTitle?></span></h1>
+	<h1 itemprop="name"><?=$strTitle?></h1>
 	
 	<div class="links_block">
 		<?if(!empty($arResult["DISPLAY_PROPERTIES"]["CML2_ARTICLE"]["VALUE"])){?>
 			<div class="articul">Артикул: <?=$arResult["DISPLAY_PROPERTIES"]["CML2_ARTICLE"]["VALUE"]?></div>
+		<?}
+		else if(!empty($arResult["PROPERTIES"]["ARTICUL"]["VALUE"])){?>
+			<div class="articul">Артикул: <?=$arResult["PROPERTIES"]["ARTICUL"]["VALUE"]?></div>
 		<?}?>
+
 		
 		<div class="vote_block">
 			<?$APPLICATION->IncludeComponent(
@@ -119,26 +119,17 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 	
 <div class="img" id="<? echo $arItemIDs['BIG_SLIDER_ID']; ?>">
 	<div class="vlign" id="<? echo $arItemIDs['BIG_IMG_CONT_ID']; ?>">
-
+		
 		<?
 		$renderImage = CFile::ResizeImageGet(
-			$arResult['DETAIL_PICTURE']['ID'],
-			Array("width" => 370, "height" => 360),
-			BX_RESIZE_IMAGE_EXACT,
+			$arItem['PREVIEW_PICTURE']['ID'], 
+			Array("width" => 370, "height" => 360), 
+			BX_RESIZE_IMAGE_EXACT, 
 			true
 		);
 		?>
 	
-		<?if($arResult["MORE_PHOTO_COUNT"] > 1){?>
-			<a itemprop="image" href="#" class="click_first_photo">
-				<img  id="<? echo $arItemIDs['PICT']; ?>" src="<?=$renderImage["src"]?>" alt="<? echo $strAlt; ?>" title="<? echo $strTitle; ?>" class="big" />
-			</a>		
-		<?}
-		else{?>
-			<a itemprop="image" href="<? echo $arFirstPhoto['SRC']; ?>" class="fancybox">
-				<img  id="<? echo $arItemIDs['PICT']; ?>" src="<?=$renderImage["src"]?>" alt="<? echo $strAlt; ?>" title="<? echo $strTitle; ?>" class="big" />
-			</a>
-		<?}?>
+		<a href="<? echo $arFirstPhoto['SRC']; ?>" class="fancybox"><img itemprop="image" id="<? echo $arItemIDs['PICT']; ?>" src="<?=$renderImage["src"]?>" alt="<? echo $strAlt; ?>" title="<? echo $strTitle; ?>" class="big" /></a>
 		
 		<?
 		if ('Y' == $arParams['SHOW_DISCOUNT_PERCENT'])
@@ -165,40 +156,18 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 			<div class="bx_stick average left top" id="<? echo $arItemIDs['STICKER_ID'] ?>" title="<? echo $arResult['LABEL_VALUE']; ?>"><? echo $arResult['LABEL_VALUE']; ?></div>
 		<?
 		}
-
-		//Уменьшаем картинку для баннера
-		$renderImage = CFile::ResizeImageGet($arFirstPhoto['ID'], array('width'=>80, 'height'=>150), BX_RESIZE_IMAGE_PROPORTIONAL_ALT, true);
-		$PICT['ID'] = $arFirstPhoto['ID'];
-		$PICT['SRC'] = $renderImage['src'];
-		$PICT['WIDTH'] = $renderImage['width'];
-		$PICT['HEIGHT'] = $renderImage['height'];
 		?>
-
-		<div class="do_block">
-			<a data-id="<?=$arResult["ID"]?>" href="javascript:void(0);" title="Добавить в избранное"  class="bx_big bx_bt_button_type_2 compare_button" id="<? echo $arItemIDs['COMPARE_LINK']; ?>" onclick="yaCounter31721621.reachGoal('add_to_compare'); return true;"><span><?=GetMessage("CT_BCE_CATALOG_COMPARE_IN"); ?></span></a>
-			<a class="share_button" data-id="<?=$arResult["ID"]?>" href="javascript:void(0)" title="Добавить в сравнение"  onclick="yaCounter31721621.reachGoal('add_to_bookmarks');"><span><?=GetMessage('CT_BCS_TPL_MESS_BTN_SHARE')?></span></a>
-			<!-- /*add2delay('<?=$arResult["ID"]?>','<?=$arResult["CATALOG_PRICE_ID_1"]?>','<?=$arResult["CATALOG_PRICE_1"]?>','<?=addslashes($arResult["NAME"]);?>','<?=$arResult["DETAIL_PAGE_URL"]?>');*/ -->
-			<input type="hidden" name="CAT_PRICE_ID<?=$arResult["ID"]?>" value="<?=$arResult["CATALOG_PRICE_ID_1"]?>"/>
-			<input type="hidden" name="CAT_PRICE<?=$arResult["ID"]?>" value="<?=$arResult["CATALOG_PRICE_1"]?>"/>
-			<input type="hidden" name="DETAIL_PAGE<?=$arResult["ID"]?>" value="<?=$arResult["DETAIL_PAGE_URL"]?>"/>
-			<input type="hidden" name="ELEM_NAME<?=$arResult["ID"]?>" value="<?=$arResult["NAME"]?>"/>
-			<input type="hidden" name="PICTURE<?=$arResult["ID"]?>" value="<?=$renderImage["src"]?>"/>
-		</div>
 		
+		<div class="do_block">
+			<a data-id="<?=$arResult["ID"]?>" href="javascript:void(0);" class="bx_big bx_bt_button_type_2 compare_button" id="<? echo $arItemIDs['COMPARE_LINK']; ?>" onclick="yaCounter31721621.reachGoal('add_to_compare'); return true;"><span><?=GetMessage("CT_BCE_CATALOG_COMPARE_IN"); ?></span></a>
+	
+			<a class="share_button" data-id="<?=$arResult["ID"]?>" href="javascript:void(0)" onclick="add2delay('<?=$arResult["ID"]?>','<?=$arResult["CATALOG_PRICE_ID_1"]?>','<?=$arResult["CATALOG_PRICE_1"]?>','<?=addslashes($arResult["NAME"]);?>','<?=$arResult["DETAIL_PAGE_URL"]?>'); yaCounter31721621.reachGoal('add_to_bookmarks');"><span><?=GetMessage('CT_BCS_TPL_MESS_BTN_SHARE')?></span></a>
+		</div>
 		
 		<?if($arResult["MORE_PHOTO_COUNT"] > 1){?>
 			<div class="more_photo">
 				<?foreach($arResult["MORE_PHOTO"] as $photo){?>
-					<?
-					$renderImage = CFile::ResizeImageGet(
-						$photo['ID'], 
-						Array("width" => 105, "height" => 105), 
-						BX_RESIZE_IMAGE_EXACT, 
-						true
-					);
-					?>
-				
-					<a href="<?=$photo["SRC"]?>" class="fancybox" rel="gallery"><img src="<?=$renderImage["src"]?>" alt="" /></a>
+					<a href="<?=$photo["SRC"]?>" class="fancybox" rel="gallery"><img src="<?=$photo["SRC"]?>" alt="" /></a>
 				<?}?>
 				<div class="clear"></div>
 			</div>
@@ -215,17 +184,10 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 		}
 		?>
 	</div>
-
 </div>
 
-
-<div itemprop="offers" itemscope itemtype="http://schema.org/Offer" class="info_block">
+<div class="info_block">
 	<div class="wrp">
-		<?
-		if(!empty($arResult["PROPERTIES"]["ARTICUL"]["VALUE"])){
-			?><div class="artucul">Код: <?=$arResult["PROPERTIES"]["ARTICUL"]["VALUE"]?></div><?
-		}
-		?>
 
 		<?
 		if (isset($arResult['OFFERS']) && !empty($arResult['OFFERS']))
@@ -247,16 +209,16 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 			$addToBasketBtnMessage = GetMessage('CT_BCE_CATALOG_ZAG');
 		}
 		?>
-
+		
 		<span class="item_section_name_gray"><? echo GetMessage('CATALOG_QUANTITY'); ?>:</span>
-		<div class="item_buttons vam" data-id="<?= $arResult['ID'] ?>">
+		<div class="item_buttons vam">
 			<span class="item_buttons_counter_block">
-				<a href="javascript:void(0)" class="bx_bt_button_type_2 bx_small bx_fwb down" id="<? echo $arItemIDs['QUANTITY_DOWN']; ?>">-</a>
+				<a href="javascript:void(0)" class="bx_bt_button_type_2 bx_small bx_fwb" id="<? echo $arItemIDs['QUANTITY_DOWN']; ?>">-</a>
 				<input id="<? echo $arItemIDs['QUANTITY']; ?>" type="text" class="tac transparent_input" value="<? echo (isset($arResult['OFFERS']) && !empty($arResult['OFFERS'])
 						? 1
 						: $arResult['CATALOG_MEASURE_RATIO']
 					); ?>">
-				<a href="javascript:void(0)" class="bx_bt_button_type_2 bx_small bx_fwb up" id="<? echo $arItemIDs['QUANTITY_UP']; ?>">+</a>
+				<a href="javascript:void(0)" class="bx_bt_button_type_2 bx_small bx_fwb" id="<? echo $arItemIDs['QUANTITY_UP']; ?>">+</a>
 			</span>
 			
 			<div class="item_price">
@@ -266,18 +228,17 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 				?>
 				
 				<?if(!empty($minPrice['VALUE'])){?>
-					<div itemprop="price" content="<?echo number_format($minPrice['VALUE'],0,'.','');?>" class="item_current_price" id="<? echo $arItemIDs['PRICE']; ?>"><?echo number_format($minPrice['VALUE'],2,'.',' ');?> <span itemprop="priceCurrency" content="RUB"> руб.</span></div>
+					<div class="item_current_price" itemprop="price" content="<?echo number_format($minPrice['VALUE'],2,'.',' ');?>" id="<? echo $arItemIDs['PRICE']; ?>"><?echo number_format($minPrice['VALUE'],2,'.',' ');?> <span itemprop="priceCurrency" content="RUB"> руб./сут.</span></div>
 				<?}?>
 			</div>
-			
+
 			<div class="availability_block">
 				<?
-                if($arResult['IBLOCK_SECTION_ID'] == 1405 || $arResult['IBLOCK_SECTION_ID'] == 1385 || $arResult['IBLOCK_SECTION_ID'] == 1386) { ?>
-                    <div class="availability">Есть в наличии</div>
-                <? } elseif($arResult["CATALOG_QUANTITY"] <= 0){
+				if($arResult["CATALOG_QUANTITY"] <= 0){
 					?><div class="availability no">Заказ 1-3 дня</div><?
-				} else{
-					?><div class="availability">Есть в наличии</div><?
+				}
+				else{
+					?><div class="availability" itemprop="availability">Есть в наличии</div><?
 				}
 				?>
 			</div>
@@ -288,16 +249,12 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 			<?
 				if ($showAddBtn)
 				{
-					// yaCounter31721621.reachGoal('basket');
+					//onclick="yaCounter31721621.reachGoal('basket');"
 				?>
 					<a href="javascript:void(0);" class="bx_big bx_bt_button bx_cart buy_button" id="<? echo $arItemIDs['ADD_BASKET_LINK']; ?>" onclick="yaCounter31721621.reachGoal('basket'); return true;"><span></span><? echo $addToBasketBtnMessage; ?></a>
 				<?
 				}
 				?>
-				
-				<div class="byclick">
-					<a href="#" data-id="<?=$arResult["ID"]?>" data-iblock="<?=$arParams["IBLOCK_ID"]?>" class="buy_one_button" onclick="yaCounter31721621.reachGoal('catalog-oneclickbuy-button'); return true;">купить в 1 клик</a>
-				</div>
 			</span>
 		</div>
 		<?
@@ -305,20 +262,9 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 		?>
 		
 		<div>
-			<ul class="tabNavigation" style="width: 200px;">
-				<?if($arResult["CATALOG_QUANTITY"] > 0 && $arParams["IBLOCK_ID"] == 12){?>
-					<li class="link1">
-						<span class="lign"></span>
-						<div class="lign"><a class="" href="#tab_content1">Возможна доставка <br />в день заказа</a></div>
-					</li>
-				<?}
-				else if ($arParams["IBLOCK_ID"] == 10){?>
-					<li class="link1"><span></span>
-						<a class="" href="#tab_content1">Доставка от 500 руб.</a>
-					</li>
-				<?}?>
-				<li class="link2"><span></span><a class="" href="#tab_content2">Самовывоз (фото магазина)<!-- <?if($arParams["IBLOCK_ID"] == 12){echo '1 магазин';}else{echo '4 магазина';}?> --></a></li>
-				<li class="link3"><span></span><a class="" href="#tab_content3">Гарантия качества</a></li>
+			<ul class="tabNavigation">
+				<li class="link2"><span></span><a class="" href="#tab_content2">Самовывоз 4 магазина</a></li>
+				<li class="link3 link33"><span></span><a class="" href="#tab_content3">Гарантия качества</a></li>
 			</ul>
 		</div>
 	</div>
@@ -330,8 +276,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 		<?
 		$i = 0;
 		foreach($arResult["DISPLAY_PROPERTIES"] as $code=>$properties){
-		if($code !== "RASPRODAZHA" && $code !== "NOVINKA" && $code != "ARTICUL" && $code != "LIDER_PRODAZH" && $code != "DELIVERY" && $code != "FILES" && $code != "GARANTY" && $code != "CML2_ARTICLE" && $code != "RECOMMEND"){
-				
+		if($code !== "RASPRODAZHA" && $code !== "NOVINKA" && $code != "ARTICUL" && $code != "LIDER_PRODAZH" && $code != "DELIVERY" && $code != "FILES" && $code != "GARANTY" && $code != "CML2_ARTICLE"){
 				if($i < 6){
 					?>
 					<tr>
@@ -359,14 +304,14 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 <div class="clear"></div>
 
 
+
 <div class="tabs_block">
 	<div class="title_block">
 		<ul class="tabNavigation">
 			<li><a class="" href="#tab_content1"><h3>технические характеристики</h3></a></li>
 			<li><a class="" href="#tab_content2"><h3>отзывы</h3></a></li>
-			<noindex><li><a class="" href="#tab_content3"><h3>магазины</h3></a></li>
-			<li><a class="" href="#tab_content4"><h3>доставка</h3></a></li>
-			<li><a class="" href="#tab_content5"><h3>Гарантия и сервис</h3></a></li></noindex>
+			<li><a class="" href="#tab_content3"><h3>магазины</h3></a></li>
+			<li><a class="" href="#tab_content5"><h3>Гарантия и сервис</h3></a></li>
 		</ul>
 	</div>
 	
@@ -374,13 +319,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 		<table class="text">
 			<?
 			foreach($arResult["DISPLAY_PROPERTIES"] as $code=>$properties){
-				/*global $USER;
-				if ($USER->IsAdmin()){
-					echo("<pre>");
-					print_r($code);
-					echo("</pre>");
-				}*/
-				if($code !== "RASPRODAZHA" && $code !== "NOVINKA" && $code != "ARTICUL" && $code != "LIDER_PRODAZH" && $code != "DELIVERY" && $code != "FILES" && $code != "GARANTY" && $code != "CML2_ARTICLE" && $code != "RECOMMEND"){
+				if($code !== "RASPRODAZHA" && $code !== "NOVINKA" && $code != "ARTICUL" && $code != "LIDER_PRODAZH" && $code != "DELIVERY" && $code != "FILES" && $code != "GARANTY" && $code != "CML2_ARTICLE"){
 					?>
 					<tr>
 						<td><?=$properties["NAME"]?></td>
@@ -461,229 +400,191 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 			</div>
 		</div>
 	</div>
-	<noindex><div class="properties tab_content shops" id="tab_content3">
-			
-
-			
-			<script>
-				$( document ).ready(function() {
-					var data = {
-						arResult_SECTION_SHOP: <?=$arResult["SECTION_SHOP"]?>
-					}
-					$.ajax({
-						type: "POST",
-						url: "<?=$templateFolder?>/ajax_tabs.php",
-						data: data,
-						success: function(data){
-							$('#tab_content3').html(data);
-						}
-					});
-				});
-			</script>
-			
-			
-<!--		--><?//$APPLICATION->IncludeComponent(
-//			"bitrix:news.list",
-//			"shops",
-//			array(
-//				"COMPONENT_TEMPLATE" => "shops",
-//				"IBLOCK_TYPE" => "content",
-//				"IBLOCK_ID" => "5",
-//				"NEWS_COUNT" => "20",
-//				"SORT_BY1" => "SORT",
-//				"SORT_ORDER1" => "DESC",
-//				"SORT_BY2" => "ID",
-//				"SORT_ORDER2" => "ASC",
-//				"FILTER_NAME" => "",
-//				"FIELD_CODE" => array(
-//					0 => "",
-//					1 => "",
-//				),
-//				"PROPERTY_CODE" => array(
-//					0 => "ADRESS",
-//					1 => "PHONE",
-//					2 => "VIDEO",
-//					3 => "MAP",
-//					4 => "MORE_PHOTO",
-//				),
-//				"CHECK_DATES" => "Y",
-//				"DETAIL_URL" => "",
-//				"AJAX_MODE" => "N",
-//				"AJAX_OPTION_JUMP" => "N",
-//				"AJAX_OPTION_STYLE" => "Y",
-//				"AJAX_OPTION_HISTORY" => "N",
-//				"AJAX_OPTION_ADDITIONAL" => "",
-//				"CACHE_TYPE" => "A",
-//				"CACHE_TIME" => "36000000",
-//				"CACHE_FILTER" => "N",
-//				"CACHE_GROUPS" => "Y",
-//				"PREVIEW_TRUNCATE_LEN" => "",
-//				"ACTIVE_DATE_FORMAT" => "d.m.Y",
-//				"SET_TITLE" => "N",
-//				"SET_BROWSER_TITLE" => "N",
-//				"SET_META_KEYWORDS" => "N",
-//				"SET_META_DESCRIPTION" => "N",
-//				"SET_STATUS_404" => "N",
-//				"INCLUDE_IBLOCK_INTO_CHAIN" => "N",
-//				"ADD_SECTIONS_CHAIN" => "N",
-//				"HIDE_LINK_WHEN_NO_DETAIL" => "N",
-//				"PARENT_SECTION" => $arResult["SECTION_SHOP"],
-//				"PARENT_SECTION_CODE" => "",
-//				"INCLUDE_SUBSECTIONS" => "Y",
-//				"DISPLAY_DATE" => "N",
-//				"DISPLAY_NAME" => "Y",
-//				"DISPLAY_PICTURE" => "N",
-//				"DISPLAY_PREVIEW_TEXT" => "N",
-//				"PAGER_TEMPLATE" => "bigms",
-//				"DISPLAY_TOP_PAGER" => "N",
-//				"DISPLAY_BOTTOM_PAGER" => "N",
-//				"PAGER_TITLE" => "Новости",
-//				"PAGER_SHOW_ALWAYS" => "N",
-//				"PAGER_DESC_NUMBERING" => "N",
-//				"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
-//				"PAGER_SHOW_ALL" => "N"
-//			),
-//			false
-//		);?>
-	</div>
-	<div class="properties tab_content delivery" id="tab_content4">
-		<noindex>
-		<?=$arResult["DISPLAY_PROPERTIES"]["DELIVERY"]["DISPLAY_VALUE"]?>
-		</noindex>
+	<div class="properties tab_content shops" id="tab_content3">
+		<?$APPLICATION->IncludeComponent(
+			"bitrix:news.list", 
+			"shops", 
+			array(
+				"COMPONENT_TEMPLATE" => "shops",
+				"IBLOCK_TYPE" => "content",
+				"IBLOCK_ID" => "5",
+				"NEWS_COUNT" => "20",
+				"SORT_BY1" => "SORT",
+				"SORT_ORDER1" => "DESC",
+				"SORT_BY2" => "ID",
+				"SORT_ORDER2" => "ASC",
+				"FILTER_NAME" => "",
+				"FIELD_CODE" => array(
+					0 => "",
+					1 => "",
+				),
+				"PROPERTY_CODE" => array(
+					0 => "ADRESS",
+					1 => "PHONE",
+					2 => "VIDEO",
+					3 => "MAP",
+					4 => "MORE_PHOTO",
+				),
+				"CHECK_DATES" => "Y",
+				"DETAIL_URL" => "",
+				"AJAX_MODE" => "N",
+				"AJAX_OPTION_JUMP" => "N",
+				"AJAX_OPTION_STYLE" => "Y",
+				"AJAX_OPTION_HISTORY" => "N",
+				"AJAX_OPTION_ADDITIONAL" => "",
+				"CACHE_TYPE" => "A",
+				"CACHE_TIME" => "36000000",
+				"CACHE_FILTER" => "N",
+				"CACHE_GROUPS" => "Y",
+				"PREVIEW_TRUNCATE_LEN" => "",
+				"ACTIVE_DATE_FORMAT" => "d.m.Y",
+				"SET_TITLE" => "N",
+				"SET_BROWSER_TITLE" => "N",
+				"SET_META_KEYWORDS" => "N",
+				"SET_META_DESCRIPTION" => "N",
+				"SET_STATUS_404" => "N",
+				"INCLUDE_IBLOCK_INTO_CHAIN" => "N",
+				"ADD_SECTIONS_CHAIN" => "N",
+				"HIDE_LINK_WHEN_NO_DETAIL" => "N",
+				"PARENT_SECTION" => 27,
+				"PARENT_SECTION_CODE" => "",
+				"INCLUDE_SUBSECTIONS" => "Y",
+				"DISPLAY_DATE" => "N",
+				"DISPLAY_NAME" => "Y",
+				"DISPLAY_PICTURE" => "N",
+				"DISPLAY_PREVIEW_TEXT" => "N",
+				"PAGER_TEMPLATE" => "bigms",
+				"DISPLAY_TOP_PAGER" => "N",
+				"DISPLAY_BOTTOM_PAGER" => "N",
+				"PAGER_TITLE" => "Новости",
+				"PAGER_SHOW_ALWAYS" => "N",
+				"PAGER_DESC_NUMBERING" => "N",
+				"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
+				"PAGER_SHOW_ALL" => "N"
+			),
+			false
+		);?>
 	</div>
 	<div class="properties tab_content garanty" id="tab_content5">
 		<?=$arResult["DISPLAY_PROPERTIES"]["GARANTY"]["DISPLAY_VALUE"]?>
-	</div></noindex>
+	</div>
 </div>
 
-<?
-if ($arResult['CATALOG'] && $arParams['USE_GIFTS_DETAIL'] == 'Y' && \Bitrix\Main\ModuleManager::isModuleInstalled("sale"))
-{
-
-	$APPLICATION->IncludeComponent("bitrix:sale.gift.product", ".default", array(
-		'PRODUCT_ID_VARIABLE' => $arResult["ID"],
-		'ACTION_VARIABLE' => $arParams['ACTION_VARIABLE'],
-		'BUY_URL_TEMPLATE' => $arResult['~BUY_URL_TEMPLATE'],
-		'ADD_URL_TEMPLATE' => $arResult['~ADD_URL_TEMPLATE'],
-		'SUBSCRIBE_URL_TEMPLATE' => $arResult['~SUBSCRIBE_URL_TEMPLATE'],
-		'COMPARE_URL_TEMPLATE' => $arResult['~COMPARE_URL_TEMPLATE'],
-
-		"SHOW_DISCOUNT_PERCENT" => $arParams['GIFTS_SHOW_DISCOUNT_PERCENT'],
-		"SHOW_OLD_PRICE" => $arParams['GIFTS_SHOW_OLD_PRICE'],
-		"PAGE_ELEMENT_COUNT" => $arParams['GIFTS_DETAIL_PAGE_ELEMENT_COUNT'],
-		"LINE_ELEMENT_COUNT" => $arParams['GIFTS_DETAIL_PAGE_ELEMENT_COUNT'],
-		"HIDE_BLOCK_TITLE" => $arParams['GIFTS_DETAIL_HIDE_BLOCK_TITLE'],
-		"TEXT_LABEL_GIFT" => $arParams['GIFTS_DETAIL_TEXT_LABEL_GIFT'],
-		"SHOW_NAME" => $arParams['GIFTS_SHOW_NAME'],
-		"SHOW_IMAGE" => $arParams['GIFTS_SHOW_IMAGE'],
-		"MESS_BTN_BUY" => $arParams['GIFTS_MESS_BTN_BUY'],
-
-		"SHOW_PRODUCTS_{$arParams['IBLOCK_ID']}" => "Y",
-		"HIDE_NOT_AVAILABLE" => $arParams["HIDE_NOT_AVAILABLE"],
-		"PRODUCT_SUBSCRIPTION" => $arParams["PRODUCT_SUBSCRIPTION"],
-		"MESS_BTN_DETAIL" => $arParams["MESS_BTN_DETAIL"],
-		"MESS_BTN_SUBSCRIBE" => $arParams["MESS_BTN_SUBSCRIBE"],
-		"TEMPLATE_THEME" => $arParams["TEMPLATE_THEME"],
-		"PRICE_CODE" => $arParams["PRICE_CODE"],
-		"SHOW_PRICE_COUNT" => $arParams["SHOW_PRICE_COUNT"],
-		"PRICE_VAT_INCLUDE" => $arParams["PRICE_VAT_INCLUDE"],
-		"CONVERT_CURRENCY" => $arParams["CONVERT_CURRENCY"],
-		"BASKET_URL" => $arParams["BASKET_URL"],
-		"ADD_PROPERTIES_TO_BASKET" => $arParams["ADD_PROPERTIES_TO_BASKET"],
-		"PRODUCT_PROPS_VARIABLE" => $arParams["PRODUCT_PROPS_VARIABLE"],
-		"PARTIAL_PRODUCT_PROPERTIES" => $arParams["PARTIAL_PRODUCT_PROPERTIES"],
-		"USE_PRODUCT_QUANTITY" => 'N',
-		"OFFER_TREE_PROPS_{$arResult['OFFERS_IBLOCK']}" => $arParams['OFFER_TREE_PROPS'],
-		"CART_PROPERTIES_{$arResult['OFFERS_IBLOCK']}" => $arParams['OFFERS_CART_PROPERTIES'],
-		"PRODUCT_QUANTITY_VARIABLE" => $arParams["PRODUCT_QUANTITY_VARIABLE"],
-		"CACHE_GROUPS" => $arParams["CACHE_GROUPS"],
-		"POTENTIAL_PRODUCT_TO_BUY" => array(
-			'ID' => isset($arResult['ID']) ? $arResult['ID'] : null,
-			'MODULE' => isset($arResult['MODULE']) ? $arResult['MODULE'] : 'catalog',
-			'PRODUCT_PROVIDER_CLASS' => isset($arResult['PRODUCT_PROVIDER_CLASS']) ? $arResult['PRODUCT_PROVIDER_CLASS'] : 'CCatalogProductProvider',
-			'QUANTITY' => isset($arResult['QUANTITY']) ? $arResult['QUANTITY'] : null,
-			'IBLOCK_ID' => isset($arResult['IBLOCK_ID']) ? $arResult['IBLOCK_ID'] : null,
-
-			'PRIMARY_OFFER_ID' => isset($arResult['OFFERS'][0]['ID']) ? $arResult['OFFERS'][0]['ID'] : null,
-			'SECTION' => array(
-				'ID' => isset($arResult['SECTION']['ID']) ? $arResult['SECTION']['ID'] : null,
-				'IBLOCK_ID' => isset($arResult['SECTION']['IBLOCK_ID']) ? $arResult['SECTION']['IBLOCK_ID'] : null,
-				'LEFT_MARGIN' => isset($arResult['SECTION']['LEFT_MARGIN']) ? $arResult['SECTION']['LEFT_MARGIN'] : null,
-				'RIGHT_MARGIN' => isset($arResult['SECTION']['RIGHT_MARGIN']) ? $arResult['SECTION']['RIGHT_MARGIN'] : null,
-			),
-		)
-	), $component, array("HIDE_ICONS" => "Y"));
-}
-?>
 
 <?
 unset($minPrice);
+
+/* if ('' != $arResult['PREVIEW_TEXT'])
+{
+	if ('S' == $arParams['DISPLAY_PREVIEW_TEXT_MODE'] || ('E' == $arParams['DISPLAY_PREVIEW_TEXT_MODE'] && '' == $arResult['DETAIL_TEXT']))
+	{
+		?>
+		<div class="item_info_section">
+		<?
+				echo ('html' == $arResult['PREVIEW_TEXT_TYPE'] ? $arResult['PREVIEW_TEXT'] : '<p>'.$arResult['PREVIEW_TEXT'].'</p>');
+		?>
+		</div>
+		<?
+	}
+} */
+
 ?>
 
 			
-		<div class="bx_md">
-			<div class="item_info_section">
-			<?
-			if (isset($arResult['OFFERS']) && !empty($arResult['OFFERS']))
-			{
-				if ($arResult['OFFER_GROUP'])
-				{
-					foreach ($arResult['OFFER_GROUP_VALUES'] as $offerID)
-					{
-			?>
-				<span id="<? echo $arItemIDs['OFFER_GROUP'].$offerID; ?>" style="display: none;">
-			<?$APPLICATION->IncludeComponent("bitrix:catalog.set.constructor",
-				".default",
-				array(
-					"IBLOCK_ID" => $arResult["OFFERS_IBLOCK"],
-					"ELEMENT_ID" => $offerID,
-					"PRICE_CODE" => $arParams["PRICE_CODE"],
-					"BASKET_URL" => $arParams["BASKET_URL"],
-					"OFFERS_CART_PROPERTIES" => $arParams["OFFERS_CART_PROPERTIES"],
-					"CACHE_TYPE" => $arParams["CACHE_TYPE"],
-					"CACHE_TIME" => $arParams["CACHE_TIME"],
-					"CACHE_GROUPS" => $arParams["CACHE_GROUPS"],
-					"TEMPLATE_THEME" => $arParams['~TEMPLATE_THEME'],
-					"CONVERT_CURRENCY" => $arParams['CONVERT_CURRENCY'],
-					"CURRENCY_ID" => $arParams["CURRENCY_ID"]
-				),
-				$component,
-				array("HIDE_ICONS" => "Y")
-			);?><?
-			?>
-				</span>
-			<?
-					}
-				}
-			}
-			else
-			{
-				if ($arResult['MODULES']['catalog'] && $arResult['OFFER_GROUP'])
-				{
-			?><?$APPLICATION->IncludeComponent("bitrix:catalog.set.constructor",
-				".default",
-				array(
-					"IBLOCK_ID" => $arParams["IBLOCK_ID"],
-					"ELEMENT_ID" => $arResult["ID"],
-					"PRICE_CODE" => $arParams["PRICE_CODE"],
-					"BASKET_URL" => $arParams["BASKET_URL"],
-					"CACHE_TYPE" => $arParams["CACHE_TYPE"],
-					"CACHE_TIME" => $arParams["CACHE_TIME"],
-					"CACHE_GROUPS" => $arParams["CACHE_GROUPS"],
-					"TEMPLATE_THEME" => $arParams['~TEMPLATE_THEME'],
-					"CONVERT_CURRENCY" => $arParams['CONVERT_CURRENCY'],
-					"CURRENCY_ID" => $arParams["CURRENCY_ID"]
-				),
-				$component,
-				array("HIDE_ICONS" => "Y")
-			);?><?
-				}
-			}
-			?>
-			</div>
-		</div>
 		
 
+		<div class="bx_md">
+<div class="item_info_section">
+<?
+if (isset($arResult['OFFERS']) && !empty($arResult['OFFERS']))
+{
+	if ($arResult['OFFER_GROUP'])
+	{
+		foreach ($arResult['OFFER_GROUP_VALUES'] as $offerID)
+		{
+?>
+	<span id="<? echo $arItemIDs['OFFER_GROUP'].$offerID; ?>" style="display: none;">
+<?$APPLICATION->IncludeComponent("bitrix:catalog.set.constructor",
+	".default",
+	array(
+		"IBLOCK_ID" => $arResult["OFFERS_IBLOCK"],
+		"ELEMENT_ID" => $offerID,
+		"PRICE_CODE" => $arParams["PRICE_CODE"],
+		"BASKET_URL" => $arParams["BASKET_URL"],
+		"OFFERS_CART_PROPERTIES" => $arParams["OFFERS_CART_PROPERTIES"],
+		"CACHE_TYPE" => $arParams["CACHE_TYPE"],
+		"CACHE_TIME" => $arParams["CACHE_TIME"],
+		"CACHE_GROUPS" => $arParams["CACHE_GROUPS"],
+		"TEMPLATE_THEME" => $arParams['~TEMPLATE_THEME'],
+		"CONVERT_CURRENCY" => $arParams['CONVERT_CURRENCY'],
+		"CURRENCY_ID" => $arParams["CURRENCY_ID"]
+	),
+	$component,
+	array("HIDE_ICONS" => "Y")
+);?><?
+?>
+	</span>
+<?
+		}
+	}
+}
+else
+{
+	if ($arResult['MODULES']['catalog'] && $arResult['OFFER_GROUP'])
+	{
+?><?$APPLICATION->IncludeComponent("bitrix:catalog.set.constructor",
+	".default",
+	array(
+		"IBLOCK_ID" => $arParams["IBLOCK_ID"],
+		"ELEMENT_ID" => $arResult["ID"],
+		"PRICE_CODE" => $arParams["PRICE_CODE"],
+		"BASKET_URL" => $arParams["BASKET_URL"],
+		"CACHE_TYPE" => $arParams["CACHE_TYPE"],
+		"CACHE_TIME" => $arParams["CACHE_TIME"],
+		"CACHE_GROUPS" => $arParams["CACHE_GROUPS"],
+		"TEMPLATE_THEME" => $arParams['~TEMPLATE_THEME'],
+		"CONVERT_CURRENCY" => $arParams['CONVERT_CURRENCY'],
+		"CURRENCY_ID" => $arParams["CURRENCY_ID"]
+	),
+	$component,
+	array("HIDE_ICONS" => "Y")
+);?><?
+	}
+}
+?>
+</div>
+		</div>
+		
+		<!-- 
+		<div class="bx_rb">
+			<div class="item_info_section">
+				<?
+				/*
+				if ('' != $arResult['DETAIL_TEXT'])
+				{
+				?>
+					<div class="bx_item_description">
+						<div class="bx_item_section_name_gray" style="border-bottom: 1px solid #f2f2f2;"><? echo GetMessage('FULL_DESCRIPTION'); ?></div>
+				<?
+					if ('html' == $arResult['DETAIL_TEXT_TYPE'])
+					{
+						echo $arResult['DETAIL_TEXT'];
+					}
+					else
+					{
+						?><p><? echo $arResult['DETAIL_TEXT']; ?></p><?
+					}
+				?>
+					</div>
+				<?
+				}
+				*/
+				?>
+			</div>
+		</div>
+		-->
+		
+			
 	<div class="clear"></div>
 </div><?
 if (isset($arResult['OFFERS']) && !empty($arResult['OFFERS']))
@@ -846,7 +747,7 @@ else
 		'PRODUCT_TYPE' => $arResult['CATALOG_TYPE'],
 		'PRODUCT' => array(
 			'ID' => $arResult['ID'],
-			'PICT' => $PICT, //$arFirstPhoto,
+			'PICT' => $arFirstPhoto,
 			'NAME' => $arResult['~NAME'],
 			'SUBSCRIPTION' => true,
 			'PRICE' => $arResult['MIN_PRICE'],
@@ -877,7 +778,6 @@ else
 		);
 	}
 	unset($emptyProductProperties);
-	$arJSParams['IBLOCK_ID'] = $arResult['IBLOCK_ID'];
 }
 ?>
 

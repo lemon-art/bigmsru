@@ -1,6 +1,8 @@
 <?
+use Bitrix\Sale;
 use Bitrix\Sale\Location;
 use Bitrix\Sale\Location\Admin\TypeHelper;
+
 
 
 /*AddEventHandler("sale", "OnOrderSave", "OnOrderSaveHandler");
@@ -107,6 +109,73 @@ function OnBeforeOrderUpdateHandler($ID, $arFields){
 		CEvent::Send("SEND_REQ_ORDER", "s1", $arEventFields);
 	
 	}
+}
+
+//проверяем есть ли подарок к заказу и добавляем его
+AddEventHandler("sale", "OnBasketAdd", "AddPresentToBasket");
+function  AddPresentToBasket($ID,$arFields)     {
+            
+			if ( $_SESSION["GIFT"][$arFields['PRODUCT_ID']] ){
+
+			/*
+            $dbFindInBasket=CSaleBasket::GetList(array("NAME" => "ASC","ID" => "ASC"),
+				Array(
+				"PRODUCT_ID"=>$_SESSION["GIFT"][$arFields['PRODUCT_ID']],
+				"FUSER_ID" => CSaleBasket::GetBasketUserID(),
+				"LID" => SITE_ID,
+				"ORDER_ID" => "NULL")
+				);
+			*/
+                   //if(!$dbFindInBasket->Fetch()) 
+                   //  {
+						$dbPresent=CIBlockElement::GetByID( $_SESSION["GIFT"][$arFields['PRODUCT_ID']] );
+						if ($present=$dbPresent->Fetch())
+                              {
+                                $arFieldsPresent = array(
+                                 "PRODUCT_ID" => $_SESSION["GIFT"][$arFields['PRODUCT_ID']],
+                                 "PRODUCT_PRICE_ID" => 0,
+                                 "PRICE" => 0.00,
+                                 "CURRENCY" => 'RUB',
+                                 "WEIGHT" => 0,
+                                 "QUANTITY" => 1,
+                                 "LID" => SITE_ID,
+                                 "DELAY" => "N",
+                                 "CAN_BUY" => "Y",
+                                 "NAME" => $present["NAME"],
+                                 "MODULE" => "catalog",
+                                 "NOTES" => "Товар в подарок",
+								 "DISCOUNT_COUPON" => $arFields['PRODUCT_ID'] //сохраняем тут id товара к которму прилагается подарок
+                                );
+                              CSaleBasket::Add($arFieldsPresent);
+                                 
+                              }
+                    // }
+                  
+                  }
+				  
+}
+
+
+
+AddEventHandler("sale", "OnBeforeBasketDelete", "DeletePresentFromBasket");
+//проверяем есть ли подарок к удаляемому из корзины товару и убираем его из корзины
+function DeletePresentFromBasket($ID) {
+
+		$arFields=CSaleBasket::GetByID($ID);
+		if ( $arFields['PRODUCT_ID'] ){
+
+			$dbFindInBasket=CSaleBasket::GetList(array("NAME" => "ASC","ID" => "ASC"),
+					Array(
+					"DISCOUNT_COUPON"=>$arFields['PRODUCT_ID'],
+					"FUSER_ID" => CSaleBasket::GetBasketUserID(),
+					"LID" => SITE_ID,
+					"ORDER_ID" => "NULL")
+					);
+			if($arFindInBasket=$dbFindInBasket->Fetch()) 
+				CSaleBasket::Delete($arFindInBasket['ID']);
+		}
+
+     
 }
 
 

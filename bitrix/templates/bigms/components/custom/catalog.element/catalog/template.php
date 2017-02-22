@@ -88,7 +88,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 
 <div class="title_block">
 	<h1 itemprop="name"><span itemprop="description"><?=$strTitle?></span></h1>
-	
+
 	<div class="links_block">
 		<?if(!empty($arResult["DISPLAY_PROPERTIES"]["CML2_ARTICLE"]["VALUE"])){?>
 			<div class="articul">Артикул: <?=$arResult["DISPLAY_PROPERTIES"]["CML2_ARTICLE"]["VALUE"]?></div>
@@ -320,6 +320,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 				<li class="link2"><span></span><a class="" href="#tab_content2">Самовывоз (фото магазина)<!-- <?if($arParams["IBLOCK_ID"] == 12){echo '1 магазин';}else{echo '4 магазина';}?> --></a></li>
 				<li class="link3"><span></span><a class="" href="#tab_content3">Гарантия качества</a></li>
 			</ul>
+
 		</div>
 	</div>
 </div>
@@ -354,11 +355,16 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 		}
 		?>
 	</table>
+
 </div>
 
 <div class="clear"></div>
 
-
+					<?//вывод подарка?>
+				<?if ( count($arResult["GIFT"]) > 0 ):?>
+					<div class="gift"> + <a href="<?=$arResult["GIFT"]["DETAIL_PAGE_URL"]?>" target="_blank"><?=$arResult["GIFT"]["NAME"]?></a> в подарок </div>
+				<?endif;?>
+				
 <div class="tabs_block">
 	<div class="title_block">
 		<ul class="tabNavigation">

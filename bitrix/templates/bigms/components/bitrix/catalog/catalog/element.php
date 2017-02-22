@@ -79,7 +79,7 @@ global $arLinkedProducts;
 
 <?
 $ElementID = $APPLICATION->IncludeComponent(
-	"bitrix:catalog.element",
+	"custom:catalog.element",
 	$template,
 	array(
 		"IBLOCK_TYPE" => $arParams["IBLOCK_TYPE"],
