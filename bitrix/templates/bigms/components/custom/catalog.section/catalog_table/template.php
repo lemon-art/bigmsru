@@ -203,7 +203,7 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 				<?
 				}
 				?>
-                <?$file = CFile::ResizeImageGet($arItem['PREVIEW_PICTURE']['ID'], array('height'=>80), BX_RESIZE_IMAGE_PROPORTIONAL, true);?>
+                <?$file = CFile::ResizeImageGet($arItem['PREVIEW_PICTURE']['ID'], array('width'=>150, 'height'=>80), BX_RESIZE_IMAGE_PROPORTIONAL, true);?>
                 <?
 				
 				global $USER;

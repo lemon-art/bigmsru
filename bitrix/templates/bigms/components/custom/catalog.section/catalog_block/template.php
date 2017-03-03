@@ -208,7 +208,7 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 			<?
 			}
 			?>
-            <?$file = CFile::ResizeImageGet($arItem['PREVIEW_PICTURE']['ID'], array('height'=>150), BX_RESIZE_IMAGE_PROPORTIONAL, true);?>
+            <?$file = CFile::ResizeImageGet($arItem['PREVIEW_PICTURE']['ID'], array('width'=>150, 'height'=>150), BX_RESIZE_IMAGE_PROPORTIONAL, true);?>
             <?if(!empty($file['src'])) {?>
             <img itemprop="image" class="image_rework" itemprop="image" src="<? echo $file['src'] ?>" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>">
             <? } else {?>

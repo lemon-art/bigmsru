@@ -8,6 +8,6 @@ bitrix/.settings.php
 *.xml
 /bitrix/html_pages
 bitrix/stack_cache
-.htaccess
+/.htaccess
 robots.txt
 bitrix/tools

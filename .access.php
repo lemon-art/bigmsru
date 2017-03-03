@@ -1,4 +1,10 @@
 <?
+$PERM["tools"]["2"]="D";
+$PERM["tools"]["3"]="D";
+$PERM["tools"]["4"]="D";
+$PERM["tools"]["6"]="D";
+$PERM["tools"]["5"]="D";
+$PERM["tools"]["*"]="D";
 $PERM["test.php"]["*"]="D";
 $PERM["/"]["*"]="R";
 ?>
