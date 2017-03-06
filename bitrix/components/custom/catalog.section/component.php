@@ -1,8 +1,10 @@
 <?
-use Bitrix\Main\Context;
-use Bitrix\Main\Loader;
-use Bitrix\Main\Type\DateTime;
-use Bitrix\Currency\CurrencyTable;
+use Bitrix\Main\Context,
+	Bitrix\Main\Loader,
+	Bitrix\Main\Type\DateTime,
+	Bitrix\Currency,
+	Bitrix\Catalog,
+	Bitrix\Iblock;
 
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 /** @var CBitrixComponent $this */
@@ -464,6 +466,12 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 		"ACTIVE"=>"Y",
 		"GLOBAL_ACTIVE"=>"Y",
 	);
+	
+	
+	//если это старница фильтра по короткому url то код раздела берем из запроса
+	if ( strlen($_REQUEST["SECTION_CODE"]) ){
+		$arParams["SECTION_CODE"] = $_REQUEST["SECTION_CODE"];	
+	}	
 
 	$bSectionFound = false;
 	//Hidden triky parameter USED to display linked
@@ -516,11 +524,12 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 		);
 		$bSectionFound = true;
 	}
-
+	
 	if(!$bSectionFound)
 	{
-		$this->AbortResultCache();
-		\Bitrix\Iblock\Component\Tools::process404(
+		
+		$this->abortResultCache();
+		Iblock\Component\Tools::process404(
 			trim($arParams["MESSAGE_404"]) ?: GetMessage("CATALOG_SECTION_NOT_FOUND")
 			,true
 			,$arParams["SET_STATUS_404"] === "Y"
@@ -528,7 +537,8 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 			,$arParams["FILE_404"]
 		);
 		return;
-	}
+		
+	} 
 	elseif($arResult["ID"] > 0 && $arParams["ADD_SECTIONS_CHAIN"])
 	{
 		$arResult["PATH"] = array();

@@ -27,6 +27,58 @@ class MyClass
 	}
 }
 
+AddEventHandler("iblock", "OnAfterIBlockElementAdd", "OnAfterIBlockElementUpdateHandler");
+AddEventHandler("iblock", "OnAfterIBlockElementUpdate", "OnAfterIBlockElementUpdateHandler");
+
+function OnAfterIBlockElementUpdateHandler(&$arFields){
+	
+	//обновление информации о ЧПУ коротких ссылок
+	if ( $arFields["IBLOCK_ID"] == 19 ) {
+	
+		$db_props = CIBlockElement::GetProperty($arFields["IBLOCK_ID"], $arFields["ID"], array("sort" => "asc"), Array("CODE"=>"URL"));
+		if($ar_props = $db_props->Fetch()){ 		//если заполнено свойство короткого url
+			$shortUrl  = $ar_props["VALUE"]; 		//желаемый адрес
+			$longUrl   = $arFields["NAME"];			//исходный адрес фильтра чпу
+			$filterUrl =  GetFilterUrl($longUrl);	//адрес фильтра в формате get строки
+			
+			//открываем файл с массивом соответствия адресов страниц
+			$fileSeoUrl = $_SERVER["DOCUMENT_ROOT"]."/tools/files/seo_url.txt";
+			$data = file_get_contents( $fileSeoUrl );
+			$arUrlData = unserialize( $data );
+			
+			$arUrlData[$longUrl] = $shortUrl;
+			
+			$fd = fopen($fileSeoUrl, 'w') or die("не удалось создать файл");
+			fwrite($fd, serialize($arUrlData) );
+			fclose($fd);
+			
+			//вносим изменения в urlrewrite
+			$fileUrlReWrite = $_SERVER["DOCUMENT_ROOT"]."/urlrewrite.php";
+			require( $fileUrlReWrite ); //подключаем массив
+			
+			$found = false; //индикатор если зайпись на такую страницу
+			foreach ( $arUrlRewrite as $key => $arUrl ){
+				if ( $arUrl["PATH"] == $filterUrl ){
+					$arUrlRewrite[$key]["CONDITION"] = "#^".$shortUrl."#";
+					$found = true;
+				}
+			}
+
+			if ( !$found ){ 					//если не найдено записи добавляем ее в начало массива
+				$arUrlRewriteNew = Array(
+					"CONDITION" => "#^".$shortUrl."#",
+					"PATH" => $filterUrl
+				);
+				array_unshift($arUrlRewrite, $arUrlRewriteNew);
+			}
+			
+			file_put_contents($fileUrlReWrite, "<?$"."arUrlRewrite = ".var_export($arUrlRewrite,true).";?>");
+
+		}
+	}
+
+}
+
 
 AddEventHandler("sale", "OnBeforeOrderUpdate", "OnBeforeOrderUpdateHandler");
 function OnBeforeOrderUpdateHandler($ID, $arFields){
@@ -344,7 +396,88 @@ class EXT1C
     return $ending;
 } */
 
+function GetFilterUrl($url){
 
+	$smartParts = explode("/", $url);
+	$result = array();
+	$SECTION_CODE = $smartParts[3];
+	//находим раздел
+	$arFilter = Array('IBLOCK_ID'=>Array(10, 12), 'CODE'=>$SECTION_CODE );
+	$db_list = CIBlockSection::GetList(Array(), $arFilter, true, Array("ID", "IBLOCK_ID"));
+	if ($ar_result = $db_list->GetNext()){
+		$IBLOCK_ID = $ar_result["IBLOCK_ID"]; //определили какой инфоблок
+		$SECTION_ID = $ar_result["IBLOCK_ID"]; //определили какой инфоблок
+	}
+
+
+		$arNewUrl = Array(); //в этот массив собираем все параметры по фильтру
+		$arNewUrl[] = "SECTION_CODE=".$SECTION_CODE;
+
+	foreach ($smartParts as $smartPart){
+		//echo $smartPart . "<br>";
+		$smartPart = preg_split("/-(is|or)-/", $smartPart, -1, PREG_SPLIT_DELIM_CAPTURE);
+		if ( count($smartPart) > 1 ){
+			$itemName = "";
+			$itemID = "";
+			$arPropEnum = Array();
+
+			
+			foreach ($smartPart as $i => $smartElement){
+				if ( $i == 0 ){
+					$itemName = $smartElement; //название свойства
+					
+					//определяем ID свойства
+					$properties = CIBlockProperty::GetList(Array("sort"=>"asc", "name"=>"asc"), Array("CODE"=>$smartElement, "IBLOCK_ID"=>$IBLOCK_ID));
+					if ($prop_fields = $properties->GetNext()){
+						$itemID = $prop_fields["ID"]; //ID свойства
+						//echo $prop_fields["PROPERTY_TYPE"];
+					}
+					
+					if ( $prop_fields["PROPERTY_TYPE"] == 'L' ){
+						//получаем значения свойства
+						$property_enums = CIBlockPropertyEnum::GetList(Array(), Array("IBLOCK_ID"=>$IBLOCK_ID, "CODE"=>$smartElement));
+						while($enum_fields = $property_enums->GetNext()){
+							
+							
+							
+							//получаем ключ 
+							$key = $enum_fields["ID"];
+							$htmlKey = htmlspecialcharsbx($key);
+							$keyCrc = abs(crc32($htmlKey));
+
+							$arPropEnum[$enum_fields["XML_ID"]] = $keyCrc;
+						}
+					}
+					
+
+				}
+				else {
+					
+					if ( $smartElement !== 'is' && $smartElement !== 'or' ){
+					
+						if ( $arPropEnum[$smartElement] ){
+							$arNewUrl[] = "arrFilter_".$itemID."_".$arPropEnum[$smartElement]."=Y";
+						}
+						else {
+							//получаем ключ 
+							$key = $smartElement;
+							$htmlKey = htmlspecialcharsbx($key);
+							$keyCrc = abs(crc32($htmlKey));
+							$arNewUrl[] = "arrFilter_".$itemID."_".$keyCrc."=Y";
+						}
+					}
+					
+				}
+				
+				
+			
+			}
+		}
+	}
+	$arNewUrl[] = "set_filter=y";
+	$filterUrl = "/".$smartParts[1]."/".$smartParts[2]."/?". implode("&", $arNewUrl);
+	return $filterUrl;
+}
 
 
 

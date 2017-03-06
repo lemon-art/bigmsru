@@ -526,6 +526,7 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 		$arSelect = array(
 			"ID",
 			"IBLOCK_ID",
+			"SECTION_ID",
 			"CODE",
 			"XML_ID",
 			"NAME",
@@ -764,18 +765,22 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 				while($ar = $rsLinkElements->GetNext())
 					$arResult["LINKED_ELEMENTS"][]=$ar;
 			}
+			
 
 			if(!$arSection && $arResult["IBLOCK_SECTION_ID"] > 0)
 			{
+				
 				$arSectionFilter = array(
 					"ID" => $arResult["IBLOCK_SECTION_ID"],
 					"IBLOCK_ID" => $arResult["IBLOCK_ID"],
-					"ACTIVE" => "Y",
+					
 				);
 				$rsSection = CIBlockSection::GetList(Array(),$arSectionFilter);
 				$rsSection->SetUrlTemplates("", $arParams["SECTION_URL"]);
 				$arSection = $rsSection->GetNext();
 			}
+			
+			
 
 			if($arSection)
 			{
@@ -811,12 +816,23 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 				
 				$arItog = Array(); //массив для итоговых подарков подходящих товару
 				
+
+				
 				//получаем ID всех род категорий
-				foreach ( $arSection['PATH'] as $arSect ){
-					$arCurSections[] = $arSect['ID'];
+				if ( count( $arSection['PATH'] ) > 0){
+					foreach ( $arSection['PATH'] as $arSect ){
+						$arCurSections[] = $arSect['ID'];
+					}
+				}
+				else {
+					$arCurSections[] = $arResult["IBLOCK_SECTION_ID"];
 				}
 				
+
+				
 				foreach ( $arGifts as $key => $arGift ){
+				
+
 					
 					//проверка по разделам
 					if ( $arGift["SECTION"]["VALUE"] ){
@@ -868,9 +884,10 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 					$_SESSION["GIFT"][$arResult["ID"]] = $gift_ID; //сохраняем в сессию
 				}
 				
-			}
+			} 
 			
-			
+	
+	
 		
 
 			if ($bCatalog && $bIBlockCatalog)

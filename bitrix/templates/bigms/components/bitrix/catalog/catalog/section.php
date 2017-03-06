@@ -39,6 +39,109 @@ $arParams['USE_FILTER'] = (isset($arParams['USE_FILTER']) && $arParams['USE_FILT
 ?>
 
 <?
+
+//открываем файл с массивом соответствия адресов страниц
+$data = file_get_contents($_SERVER["DOCUMENT_ROOT"]."/tools/files/seo_url.txt");
+$arUrlData = unserialize( $data );
+
+//если фильтр
+if ( $_REQUEST["SECTION_CODE"] ){
+	$arResult["VARIABLES"]["SECTION_CODE"] = $_REQUEST["SECTION_CODE"];
+}
+
+$currentUrl = $APPLICATION->GetCurPageParam();
+$curPage = $APPLICATION->GetCurPage(false);
+
+
+			if ( $arUrlData[$curPage] && !substr_count($curPage, 'price') ){
+				//если есть короткое соответсвие то переходим на него
+				header("HTTP/1.1 301 Moved Permanently"); 
+				header("Location: ".$arUrlData[$curPage]); 
+				exit(); 
+			}
+
+			$arFilter = Array('IBLOCK_ID' => $arParams['IBLOCK_ID'],'CODE' => $arResult["VARIABLES"]["SECTION_CODE"], 'GLOBAL_ACTIVE'=>'Y'); 
+			$db_list = CIBlockSection::GetList(Array(), $arFilter, false, Array("UF_CUSTOM_URL")); 
+			if($uf_value = $db_list->GetNext()): 
+				$custom_url = $uf_value["UF_CUSTOM_URL"];
+			endif;
+
+			if($custom_url != "" && !$arUrlData[$custom_url] ){
+				header("HTTP/1.1 301 Moved Permanently"); 
+				header("Location: ".$custom_url); 
+				exit(); 
+			}
+
+
+// есть ли фильтр
+
+$seoUrls = array();
+if ((substr_count($currentUrl, 'filter') > 0 && substr_count($currentUrl, 'apply') > 0) || $_REQUEST['set_filter']) {
+    // значит это страница с фильтром
+	
+	$nameUrl = array_search($APPLICATION->GetCurPage(false), $arUrlData);
+	if ( !$nameUrl ){
+		$nameUrl = $APPLICATION->GetCurPage(false);
+	}
+	
+    $url = array();
+    $rs = CIBlockElement::GetList(
+        array("SORT" => "ASC", "ID" => "ASC"),
+        array("NAME" => $nameUrl, "IBLOCK_CODE" => "kaycom_ONEPLACESEO", 'ACTIVE'=>'Y'),
+        false,
+        false,//array("nTopCount" => 1),
+        array("ID", "PROPERTY_URL_BLOCK_BIND", "DETAIL_TEXT")
+    );
+
+	$addNoindex = true;
+	while ($el = $rs->GetNext()) {
+		$addNoindex = false;
+		
+		if ( is_null($el['PROPERTY_URL_BLOCK_BIND_VALUE'])){
+			continue;
+		}
+		
+		
+		
+			$SEO_TEXT = $el['DETAIL_TEXT'];
+
+		
+		
+		$arSelect = Array('ID', 'IBLOCK_ID', 'NAME');
+		$arFilter = Array('IBLOCK_ID'=>20, 'ID'=>$el['PROPERTY_URL_BLOCK_BIND_VALUE'], 'ACTIVE'=>'Y');
+		$name = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect)->Fetch()['NAME'];
+		$bindProp = CIBlockElement::GetProperty(20, $el['PROPERTY_URL_BLOCK_BIND_VALUE'], array("sort" => "asc"), Array("CODE"=>"URLS"));
+		while($bind = $bindProp->GetNext()) {
+			$url = str_replace("http://www.bigms.ru", "", $bind['VALUE']);
+			if ( $arUrlData[$url] && !substr_count($url, 'price')){
+				$url = $arUrlData[$url];
+			}
+			$seoUrls[$name][TruncateText($bind['DESCRIPTION'], 24)] = $url;
+		}
+		
+	}
+	
+	//
+	
+	
+	if ($addNoindex){
+		$APPLICATION->AddViewContent("noindex", '<meta name="robots" content="noindex"/><meta name="googlebot" content="noindex"/>' . "\n");
+	}
+    /*if ($el = $el->GetNext()) {
+        $el['PROPERTY_URL_BLOCK_BIND_VALUE'];
+        $bindProp = CIBlockElement::GetProperty(20, $el['PROPERTY_URL_BLOCK_BIND_VALUE'], array("sort" => "asc"), Array("CODE"=>"URLS"));
+        while($bind = $bindProp->GetNext()) {
+            $urls[$bind['DESCRIPTION']] = $bind['VALUE'];
+			echo '<pre style="display: none;">'.print_r($bind, true).'</pre>';
+        }
+    } else {
+        $APPLICATION->AddViewContent("noindex", '<meta name="robots" content="noindex"/>' . "\n");
+    }*/
+}
+
+
+
+
 // Узнаем ID текущего раздела
 $arFilter = Array('IBLOCK_ID'=>$arParams["IBLOCK_ID"], 'CODE'=>$arResult["VARIABLES"]["SECTION_CODE"]);
 $db_list = CIBlockSection::GetList(Array($by=>$order), $arFilter, true, Array('ID'));
@@ -74,61 +177,7 @@ if($res->SelectedRowsCount() == 1) {
 	if($section['UF_SHOW_FILTER'] == 1) $show_section_filter = true;				
 }
 
-// есть ли фильтр
-$currentUrl = $APPLICATION->GetCurPageParam();
-$seoUrls = array();
-if (substr_count($currentUrl, 'filter') > 0 && substr_count($currentUrl, 'apply') > 0) {
-    // значит это страница с фильтром
-    $url = array();
-    $rs = CIBlockElement::GetList(
-        array("SORT" => "ASC", "ID" => "ASC"),
-        array("NAME" => $APPLICATION->GetCurPage(false), "IBLOCK_CODE" => "kaycom_ONEPLACESEO", 'ACTIVE'=>'Y'),
-        false,
-        false,//array("nTopCount" => 1),
-        array("ID", "PROPERTY_URL_BLOCK_BIND", "DETAIL_TEXT")
-    );
 
-	$addNoindex = true;
-	while ($el = $rs->GetNext()) {
-		$addNoindex = false;
-		
-		if ( is_null($el['PROPERTY_URL_BLOCK_BIND_VALUE'])){
-			continue;
-		}
-		
-		
-		
-			$SEO_TEXT = $el['DETAIL_TEXT'];
-
-		
-		
-		$arSelect = Array('ID', 'IBLOCK_ID', 'NAME');
-		$arFilter = Array('IBLOCK_ID'=>20, 'ID'=>$el['PROPERTY_URL_BLOCK_BIND_VALUE'], 'ACTIVE'=>'Y');
-		$name = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect)->Fetch()['NAME'];
-		$bindProp = CIBlockElement::GetProperty(20, $el['PROPERTY_URL_BLOCK_BIND_VALUE'], array("sort" => "asc"), Array("CODE"=>"URLS"));
-		while($bind = $bindProp->GetNext()) {
-			$seoUrls[$name][TruncateText($bind['DESCRIPTION'], 24)] = $bind['VALUE'];
-		}
-		
-	}
-	
-	//
-	
-	
-	if ($addNoindex){
-		$APPLICATION->AddViewContent("noindex", '<meta name="robots" content="noindex"/><meta name="googlebot" content="noindex"/>' . "\n");
-	}
-    /*if ($el = $el->GetNext()) {
-        $el['PROPERTY_URL_BLOCK_BIND_VALUE'];
-        $bindProp = CIBlockElement::GetProperty(20, $el['PROPERTY_URL_BLOCK_BIND_VALUE'], array("sort" => "asc"), Array("CODE"=>"URLS"));
-        while($bind = $bindProp->GetNext()) {
-            $urls[$bind['DESCRIPTION']] = $bind['VALUE'];
-			echo '<pre style="display: none;">'.print_r($bind, true).'</pre>';
-        }
-    } else {
-        $APPLICATION->AddViewContent("noindex", '<meta name="robots" content="noindex"/>' . "\n");
-    }*/
-}
 
 $title = '';
 if ($ar_result['DEPTH_LEVEL'] == 3) {
@@ -310,16 +359,7 @@ if ($ar_result['DEPTH_LEVEL'] == 3) {
 		
 		
 			
-			$arFilter = Array('IBLOCK_ID' => $arParams['IBLOCK_ID'],'CODE' => $arResult["VARIABLES"]["SECTION_CODE"], 'GLOBAL_ACTIVE'=>'Y'); 
-			$db_list = CIBlockSection::GetList(Array(), $arFilter, false, Array("UF_CUSTOM_URL")); 
-			if($uf_value = $db_list->GetNext()): 
-				$custom_url = $uf_value["UF_CUSTOM_URL"];
-			endif;
-			if($custom_url != ""){
-				header("HTTP/1.1 301 Moved Permanently"); 
-				header("Location: http://www.bigms.ru".$custom_url); 
-				exit(); 
-			}
+
 
 		
 		?>

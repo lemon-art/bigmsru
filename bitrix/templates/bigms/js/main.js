@@ -46,9 +46,9 @@ $.ajax({
             var newLink = deleteFilterForRange($(this).data('param'));
             location.href = newLink;
         } else {
-            var newLink = deleteFilterUrl($(this).data('param') ,$(this).data('url'));
-            newLink += newLink + '#downtofilter';
-            location.href = newLink;
+            deleteFilterUrl($(this).data('param') ,$(this).data('url'));
+            //newLink += newLink + '#downtofilter';
+            //location.href = newLink;
         }
     });
     /* flexslider
@@ -1447,24 +1447,43 @@ $(".main_carusel_block .selectesem .item").click(function () {
 
 		var param2 = param === undefined ? '' : param
     	var item2 = item === undefined ? '' : item;
+		
+		$.post("/tools/getfilterurl.php",
+				   {'shortUrl': location.pathname},
+				   function(result){
+				   
+				   
+						if ( result !== "" ){
+							var linkArray = result.split('/');
+							
+						}
+						else {
+							var linkArray = location.pathname.split('/');
+						}
+						
+						var link = '';
+						param2 = param2.toLowerCase();
+						if (!isNumeric(item2)) {
+							item2 = item2.replace(/\s/ig, '+');
+						}
+						item2 = encodeURI(item2);
+						for (var i = 0; i < linkArray.length; i++) {
+							if (linkArray[i].indexOf(param2) != -1 && linkArray[i].indexOf(item2) != -1) {
+								linkArray[i] = linkArray[i].replace(item2, '');
+								linkArray[i] = linkArray[i].replace(/--or-/,'-').replace(/-or-$/,'');
+							}
+							if (linkArray[i] != '') {
+								link = link + '/' + linkArray[i];
+							}
+						}
+						link += '/#downtofilter';
+												
+						location.href = link;
+				   
+				  }
+			);
 
-		var linkArray = location.pathname.split('/');
-		var link = '';
-		param2 = param2.toLowerCase();
-		if (!isNumeric(item2)) {
-			item2 = item2.replace(/\s/ig, '+');
-		}
-		item2 = encodeURI(item2);
-		for (var i = 0; i < linkArray.length; i++) {
-			if (linkArray[i].indexOf(param2) != -1 && linkArray[i].indexOf(item2) != -1) {
-				linkArray[i] = linkArray[i].replace(item2, '');
-				linkArray[i] = linkArray[i].replace(/--or-/,'-').replace(/-or-$/,'');
-			}
-			if (linkArray[i] != '') {
-				link = link + '/' + linkArray[i];
-			}
-		}
-		return link + '/';
+		
 	}
 
 
@@ -1504,22 +1523,37 @@ $(".main_carusel_block .selectesem .item").click(function () {
 	}
 
     function filterReset() {
-        var linkArray = location.pathname.split('/');
-
-        var link = '';
-        for (var i = 0; i < linkArray.length; i++) {
-            if (linkArray[i] == 'filter') {
-                link = link + '/';
-                break;
-            }
-            if (linkArray[i] != '') {
-                link = link + '/' + linkArray[i];
-            }
-        }
-        if (link[link.length - 1] !== '/'){
-            link += '/';
-        }
-        location.href = link;
+	
+		$.post("/tools/getfilterurl.php",
+				   {'shortUrl': location.pathname},
+				   function(result){
+						if ( result !== "" ){
+							var linkArray = result.split('/');
+							
+						}
+						else {
+							var linkArray = location.pathname.split('/');
+						}
+							
+						var link = '';
+						for (var i = 0; i < linkArray.length; i++) {
+							if (linkArray[i] == 'filter') {
+								link = link + '/';
+								break;
+							}
+							if (linkArray[i] != '') {
+								link = link + '/' + linkArray[i];
+							}
+						}
+						if (link[link.length - 1] !== '/'){
+							link += '/';
+						}
+						location.href = link;
+				   
+				  }
+		);
+	
+        
     }
 
 

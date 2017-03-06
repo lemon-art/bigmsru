@@ -54,17 +54,32 @@ Class CKaycomOneplaceseo
         global $APPLICATION;
 
         if (!CModule::IncludeModule("iblock")) return;
+		
+		
+		//открываем файл с массивом соответствия адресов страниц
+		$data = file_get_contents($_SERVER["DOCUMENT_ROOT"]."/tools/files/seo_url.txt");
+		$arUrlData = unserialize( $data );
 
+		$curPage = $APPLICATION->GetCurPage(false);
 
+		
+		
+		if ( array_search($curPage, $arUrlData) ){
+			//если есть короткий url то берем по нему элемент
+			$curPage = array_search($curPage, $arUrlData);
+		}
+
+		$arFilter = Array(
+				"NAME" => $curPage,
+				"IBLOCK_CODE" => "kaycom_ONEPLACESEO"
+		);
+		
         $el = CIBlockElement::GetList(
             array(
                 "SORT" => "ASC",
                 "ID" => "ASC"
             ),
-            array(
-                "NAME" => $APPLICATION->GetCurPage(false),
-                "IBLOCK_CODE" => "kaycom_ONEPLACESEO"
-            ),
+            $arFilter,
             false,
             array(
                 "nTopCount" => 1

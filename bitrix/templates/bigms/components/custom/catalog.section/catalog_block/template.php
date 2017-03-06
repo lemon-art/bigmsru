@@ -180,7 +180,7 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 	if($kk % 4 == 0){
 		$class="last";
 	}
-	?>
+	?> 
 	<div itemprop="itemListElement" itemscope="" itemtype="http://schema.org/Product" class="item <?=$class;?>">
 	<div class="bx_catalog_item_container <?if (!$arItem['CAN_BUY']){echo 'small';}?>" id="<? echo $strMainID; ?>">
 		<div class="labels">
@@ -190,6 +190,10 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 			}
 			if($arItem["PROPERTIES"]["NOVINKA"]["VALUE"] == "Да"){
 				echo '<div class="label new">NEW</div>';
+			}
+			//если подарок
+			if($arItem["IS_GIFT"] == 1){
+				echo 'aaa<div class="label new">NEW</div>';
 			}
 			?>
 		</div>

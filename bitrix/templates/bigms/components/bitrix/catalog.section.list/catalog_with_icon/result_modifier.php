@@ -73,10 +73,18 @@ function hyphen_words($text)
 	return preg_replace($rules, "$1\xc2\xad$2", $text);
 }
 
+	//открываем файл с массивом соответствия адресов страниц
+		$data = file_get_contents($_SERVER["DOCUMENT_ROOT"]."/tools/files/seo_url.txt");
+		$arUrlData = unserialize( $data );
+		
+		
+
 foreach ($arResult['SECTIONS'] as &$arSection) {
-	$arSection['NAME'] = hyphen_words($arSection['NAME']);
 	if(($arSection['UF_ACTIVE'] == 3 || $arSection['UF_ACTIVE'] == 4) && $arSection['UF_CUSTOM_URL'] != ''){
 		$arSection['SECTION_PAGE_URL'] = $arSection['UF_CUSTOM_URL'];
 	}
-}
+	if ( $arUrlData[$arSection['SECTION_PAGE_URL']] ){
+		$arSection['SECTION_PAGE_URL'] =  $arUrlData[$arSection['SECTION_PAGE_URL']]; //заменяем ссылку
+	}
+}  
 unset($arSection);

@@ -76,8 +76,8 @@ $APPLICATION->SetTitle("Производители");
 					$file = CFile::ResizeImageGet($brand["UF_FILE"], array('width'=>148, 'height'=>61), BX_RESIZE_IMAGE_EXACT, true);
 					?>
 					<li class="item">
-						<a class="logo" href="/proizvoditeli/inzhenernaya/<?=$brand["UF_NAME"]?>" style="background-image:url(<?=$file["src"]?>);"></a>
-						<div class="title"><a href="/proizvoditeli/inzhenernaya/<?=$brand["UF_NAME"]?>"><?echo $brand["UF_NAME"]?></a></div>
+						<a class="logo" href="/proizvoditeli/inzhenernaya/<?=$brand["UF_NAME"]?>/" style="background-image:url(<?=$file["src"]?>);"></a>
+						<div class="title"><a href="/proizvoditeli/inzhenernaya/<?=$brand["UF_NAME"]?>/"><?echo $brand["UF_NAME"]?></a></div>
 					</li>
 					<?
 				}
