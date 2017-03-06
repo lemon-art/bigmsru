@@ -180,7 +180,7 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 		
 		$res = CIBlockElement::GetList(Array(), $arFilterElement, false, Array("nTopCount"=>1), Array("DETAIL_PICTURE"));
 		if($arElement = $res->GetNext()){
-			$file = CFile::ResizeImageGet($arElement["DETAIL_PICTURE"], array('width'=>150, 'height'=>150), BX_RESIZE_IMAGE_PROPORTIONAL_ALT, true);
+			$file = CFile::ResizeImageGet($arElement["DETAIL_PICTURE"], array('width'=>140, 'height'=>75), BX_RESIZE_IMAGE_PROPORTIONAL_ALT, true);
 			$arSection['PICTURE'] = $file['src'];
 
 		}
