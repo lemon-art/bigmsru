@@ -35,8 +35,16 @@ if($arParams["TOP_DEPTH"] <= 0)
 $arParams["COUNT_ELEMENTS"] = $arParams["COUNT_ELEMENTS"]!="N";
 $arParams["ADD_SECTIONS_CHAIN"] = $arParams["ADD_SECTIONS_CHAIN"]!="N"; //Turn on by default
 
+//////////////upd////////////////////////////////
+
 $arResult["SECTIONS"] = array();
 $arResult["BRAND_NAME"] = $arParams["BRAND_NAME"];
+
+$curPage = $APPLICATION->GetCurPage(false);
+$APPLICATION->AddHeadString('<link href="http://'.$_SERVER["SERVER_NAME"].$curPage.'" rel="canonical" />',true);
+
+///////////////////////////////////////////////////
+
 
 /*************************************************************************
 			Work with cache
@@ -140,9 +148,10 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 	
 	$arFilter["PROPERTY"] = Array('BREND'=>$arParams["BRAND_XML"] );
 	
-	echo "<pre>";
+	
+	//echo "<pre>";
 	//print_r( $arFilter );
-	echo "</pre>";
+	//echo "</pre>";
 
 	//ORDER BY
 	$arSort = array(
@@ -156,25 +165,26 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 		$ipropValues = new \Bitrix\Iblock\InheritedProperty\SectionValues($arSection["IBLOCK_ID"], $arSection["ID"]);
 		$arSection["IPROPERTY_VALUES"] = $ipropValues->getValues();
 
-		if ($boolPicture)
-		{
-			Iblock\Component\Tools::getFieldImageData(
-				$arSection,
-				array('PICTURE'),
-				Iblock\Component\Tools::IPROPERTY_ENTITY_SECTION,
-				'IPROPERTY_VALUES'
-			);
-		}
+		
 		$arSection['RELATIVE_DEPTH_LEVEL'] = $arSection['DEPTH_LEVEL'] - $intSectionDepth;
 
-		$arButtons = CIBlock::GetPanelButtons(
-			$arSection["IBLOCK_ID"],
-			0,
-			$arSection["ID"],
-			array("SESSID"=>false, "CATALOG"=>true)
+		//получаем картинку элемента раздела по бренду
+		$arFilterElement = Array(
+			"IBLOCK_ID"=>$arSection["IBLOCK_ID"], 
+			"SECTION_ID" => $arSection["ID"], 
+			"ACTIVE"=>"Y", 
+			"INCLUDE_SUBSECTIONS" => "Y",
+			"!DETAIL_PICTURE" => false, 
+			"PROPERTY_BREND" => $arParams["BRAND_XML"]
 		);
-		$arSection["EDIT_LINK"] = $arButtons["edit"]["edit_section"]["ACTION_URL"];
-		$arSection["DELETE_LINK"] = $arButtons["edit"]["delete_section"]["ACTION_URL"];
+		
+		$res = CIBlockElement::GetList(Array(), $arFilterElement, false, Array("nTopCount"=>1), Array("DETAIL_PICTURE"));
+		if($arElement = $res->GetNext()){
+			$file = CFile::ResizeImageGet($arElement["DETAIL_PICTURE"], array('width'=>150, 'height'=>150), BX_RESIZE_IMAGE_PROPORTIONAL_ALT, true);
+			$arSection['PICTURE'] = $file['src'];
+
+		}
+		////
 
 		$arResult["SECTIONS"][]=$arSection;
 	}

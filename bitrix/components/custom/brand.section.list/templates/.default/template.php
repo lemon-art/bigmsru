@@ -60,7 +60,6 @@ $arUrlData = unserialize( $data );
 
 		<?if ( $arSection["IBLOCK_ID"]  == 10 ):?>
 			<?$arSection["IBLOCK_CODE"] = 'inzhenernaya';?>
-			<?echo "2222";?>
 		<?endif;?>
 		
 		<?$arSection['SECTION_PAGE_URL'] = "/catalog/".$arSection["IBLOCK_CODE"]."/".$arSection["CODE"].'/filter/brend-is-'.$arParams['BRAND_XML'].'/apply/';?>
@@ -71,7 +70,7 @@ $arUrlData = unserialize( $data );
 		?>
 		<li class="item ">
 			<a href="<? echo $arSection['SECTION_PAGE_URL']; ?>">
-				<div class="icon" style="background-image:url('<? echo $arSection['PICTURE']['SRC']; ?>');"></div>
+				<div class="icon" style="background-image:url('<? echo $arSection['PICTURE']; ?>');"></div>
 				<span><? echo $arSection['NAME']; ?> <?=$arResult['BRAND_NAME']?></span>
 			</a>
 			<div class="icon" style="background-image:url(/upload/iblock/a07/a07728551a10137406610025005ebdd6.jpg);"></div>

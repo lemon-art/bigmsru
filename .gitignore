@@ -11,3 +11,4 @@ bitrix/stack_cache
 /.htaccess
 robots.txt
 bitrix/tools
+urlrewrite.php
