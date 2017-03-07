@@ -49,6 +49,10 @@ if ( $_REQUEST["SECTION_CODE"] ){
 	$arResult["VARIABLES"]["SECTION_CODE"] = $_REQUEST["SECTION_CODE"];
 }
 
+if ( $arResult["VARIABLES"]["SECTION_CODE"] == 'truby_i_fitingi' ){
+	$arResult["VARIABLES"]["SECTION_CODE"] == 'truby';
+}
+
 $currentUrl = $APPLICATION->GetCurPageParam();
 $curPage = $APPLICATION->GetCurPage(false);
 
@@ -144,7 +148,7 @@ if ((substr_count($currentUrl, 'filter') > 0 && substr_count($currentUrl, 'apply
 
 // Узнаем ID текущего раздела
 $arFilter = Array('IBLOCK_ID'=>$arParams["IBLOCK_ID"], 'CODE'=>$arResult["VARIABLES"]["SECTION_CODE"]);
-$db_list = CIBlockSection::GetList(Array($by=>$order), $arFilter, true, Array('ID'));
+$db_list = CIBlockSection::GetList(Array($by=>$order), $arFilter, true, Array('ID', 'NAME', 'DEPTH_LEVEL', 'IBLOCK_SECTION_ID', 'ELEMENT_CNT'));
 $ar_result = $db_list->GetNext();
 
 // Узнаем количество товаров к текущем разделе
@@ -157,15 +161,18 @@ $res = CIBlockElement::GetList(Array("SORT"=>"ASC"), $arFilterEl, Array("SECTION
 $ar_fields = $res->GetNext();
 $count = $ar_fields["CNT"];
 
+
+
 // Получаем минимальную цену
 $res = CIBlockElement::GetList(
     Array("CATALOG_PRICE_1"=>"ASC"),
-    Array('SECTION_ID'=>$ar_result["ID"], 'INCLUDE_SUBSECTIONS' => 'Y'),
+    Array('SECTION_ID'=>$ar_result["ID"], 'INCLUDE_SUBSECTIONS' => 'Y', '!CATALOG_PRICE_1' => false),
     false,
     false,
     Array("IBLOCK_ID", "ID", "NAME", "CATALOG_PRICE_1")
 );
 $ob = $res->Fetch();
+
 $min_price=explode('.',$ob['CATALOG_PRICE_1']);
 $min_price=number_format($min_price[0], 0, '', ' ');
 
