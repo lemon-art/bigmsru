@@ -416,7 +416,7 @@ function GetFilterUrl($url){
 
 	foreach ($smartParts as $smartPart){
 		//echo $smartPart . "<br>";
-		$smartPart = preg_split("/-(is|or)-/", $smartPart, -1, PREG_SPLIT_DELIM_CAPTURE);
+		$smartPart = preg_split("/-(from|to|is|or)-/", $smartPart, -1, PREG_SPLIT_DELIM_CAPTURE);
 		if ( count($smartPart) > 1 ){
 			$itemName = "";
 			$itemID = "";
@@ -454,14 +454,22 @@ function GetFilterUrl($url){
 				}
 				else {
 					
-					if ( $smartElement !== 'is' && $smartElement !== 'or' ){
+					if ($smartElement === "from"){
+						$arNewUrl[] = "arrFilter_".$itemID."_MIN=".$smartPart[$i+1];
+					}
+					elseif ($smartElement === "to"){
+						$arNewUrl[] = "arrFilter_".$itemID."_MAX=".$smartPart[$i+1];
+					}
+					elseif ( $smartElement === 'is' || $smartElement === 'or' ){
 					
+						
 						if ( $arPropEnum[$smartElement] ){
-							$arNewUrl[] = "arrFilter_".$itemID."_".$arPropEnum[$smartElement]."=Y";
+							//если тип свойства список 
+							$arNewUrl[] = "arrFilter_".$itemID."_".$arPropEnum[$smartPart[$i+1]]."=Y";
 						}
 						else {
 							//получаем ключ 
-							$key = $smartElement;
+							$key = $smartPart[$i+1];
 							$htmlKey = htmlspecialcharsbx($key);
 							$keyCrc = abs(crc32($htmlKey));
 							$arNewUrl[] = "arrFilter_".$itemID."_".$keyCrc."=Y";
