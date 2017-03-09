@@ -131,6 +131,14 @@ if (CModule::IncludeModule('sale')	&& CModule::IncludeModule('iblock') && CModul
 			$userPassword = randString(10);
 			$username = explode(' ', trim($_POST['ONE_CLICK_BUY']['FIO']));
 			$newUser = $USER->Register($login, $username[0], $username[1], $userPassword,  $userPassword,$_POST['ONE_CLICK_BUY']['EMAIL']);
+			
+			
+			$fields = Array( 
+				"PERSONAL_PHONE" => $_POST['ONE_CLICK_BUY']['PHONE'] 
+			); 
+			$USER->Update($USER->GetID(), $fields);
+		
+			
 			if ($captcha == 'Y'){ COption::SetOptionString('main', 'captcha_registration', 'Y');}
 			if ($newUser['TYPE'] == 'ERROR') { die(getJson(GetMessage('USER_REGISTER_FAIL'), 'N', $newUser['MESSAGE'])); } 
 			else 

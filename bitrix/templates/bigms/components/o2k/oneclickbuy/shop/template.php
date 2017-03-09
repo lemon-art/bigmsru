@@ -57,6 +57,7 @@
 			//$('#one_click_buy_id_PHONE').mask("+7 999-999-99-99");
 		var bSubmitFormOneClickBuy = true;
 		$("#one_click_buy_form").submit(function(){
+		alert('1');
 			//console.time('test');
 			if (bSubmitFormOneClickBuy){
 				bSubmitFormOneClickBuy = false;
@@ -84,7 +85,7 @@
 					bSubmitFormOneClickBuy = true;
 					if(data.result = "Y"){
 						$(".block_form").html('<div class="one_click_buy_result_success">Спасибо за заказ!</div>');
-						//setTimeout(function() {window.location.reload();}, 2000);
+						setTimeout(function() {window.location.reload();}, 2000);
 						$(".wrapper").load(location.href+" .wrapper");
 					}
 					console.log(data);

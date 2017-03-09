@@ -46,7 +46,7 @@ if(!empty($_GET["ORDER_ID"])){
 global $basketCount;
 if($basketCount > 0){?>
 	<?$APPLICATION->IncludeComponent(
-	"bitrix:sale.order.ajax", 
+	"custom:sale.order.ajax", 
 	"order", 
 	array(
 		"PAY_FROM_ACCOUNT" => "Y",

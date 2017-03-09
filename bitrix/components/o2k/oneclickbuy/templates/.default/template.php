@@ -3,7 +3,7 @@
 <div class="ocb-form" id="ocb-form-wrap">
 	<div class="title"><?=GetMessage('FORM_HEADER_CAPTION')?></div>
 	<a class="jqmClose close"></a>
-	<form method="post" id="ocb-form" action="<?=$arResult['SCRIPT_PATH']?>/script.php"><div id="ocb-params">
+	<form method="post" id="ocb-form" action=""><div id="ocb-params">
 		<input type="hidden" name="buyMode" value="<?=$arParams['BUY_MODE']?>" />
 		<? if (!$arParams['USE_SKU']):?><input type="hidden" name="itemId" value="<?=$arParams['ELEMENT_ID']?>" /><?endif;?>
 		<?if (strlen($arParams['DUB'])>0):?><input type="hidden" name="dubLetter" value="<?=$arParams['DUB']?>" /><?endif;?>

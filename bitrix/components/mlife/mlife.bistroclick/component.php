@@ -375,7 +375,7 @@ if(count($arResult['ERROR'])==0 && intval($_REQUEST["name_bk"])==1) {
 
 			$prefix = 'user_';
 			if($arParams['USER_PREFIX']) $prefix = $arParams['USER_PREFIX'];
-			if(!isset($arResult['SEND']['email']) || (isset($arResult['SEND']['name']) && !$arResult['SEND']['name'])) $arResult['SEND']['name'] = $prefix.time();
+			//if(!isset($arResult['SEND']['email']) || (isset($arResult['SEND']['name']) && !$arResult['SEND']['name'])) $arResult['SEND']['name'] = $prefix.time();
 			if(!isset($arResult['SEND']['email']) || (isset($arResult['SEND']['email']) && !$arResult['SEND']['email'])) $arResult['SEND']['email'] = $prefix.time().'@noemail.gav';
 			$pass = rand(1000000,10000000).'_fG';
 			
@@ -384,6 +384,7 @@ if(count($arResult['ERROR'])==0 && intval($_REQUEST["name_bk"])==1) {
 			$arFields = Array(
 			"NAME"              => $arResult['SEND']['name'],
 			"EMAIL"             => $arResult['SEND']['email'],
+			"PERSONAL_PHONE"	=> $arResult['SEND']['phone'],
 			"LOGIN"             => $login,
 			"ACTIVE"            => "Y",
 			"PASSWORD"          => $pass,

@@ -1004,6 +1004,11 @@ class CBitrixCatalogSmartFilter extends CBitrixComponent
 			}
 			unset($item);
 		}
+		
+		echo "<pre>";
+		print_r($result);
+		echo "</pre>";
+		
 		return $result;
 	}
 

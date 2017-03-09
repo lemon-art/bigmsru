@@ -12,3 +12,5 @@ bitrix/stack_cache
 robots.txt
 bitrix/tools
 urlrewrite.php
+bitrix/templates/bigms/footer.php
+bitrix/templates/bigms/header.php
