@@ -37,42 +37,45 @@ function OnAfterIBlockElementUpdateHandler(&$arFields){
 		if ( substr_count($arFields["NAME"], 'filter') ){
 			$db_props = CIBlockElement::GetProperty($arFields["IBLOCK_ID"], $arFields["ID"], array("sort" => "asc"), Array("CODE"=>"URL"));
 			if($ar_props = $db_props->Fetch()){ 		//если заполнено свойство короткого url
-				$shortUrl  = $ar_props["VALUE"]; 		//желаемый адрес
-				$longUrl   = $arFields["NAME"];			//исходный адрес фильтра чпу
-				$filterUrl =  GetFilterUrl($longUrl);	//адрес фильтра в формате get строки
-				
-				//открываем файл с массивом соответствия адресов страниц
-				$fileSeoUrl = $_SERVER["DOCUMENT_ROOT"]."/tools/files/seo_url.txt";
-				$data = file_get_contents( $fileSeoUrl );
-				$arUrlData = unserialize( $data );
-				
-				$arUrlData[$longUrl] = $shortUrl;
-				
-				$fd = fopen($fileSeoUrl, 'w') or die("не удалось создать файл");
-				fwrite($fd, serialize($arUrlData) );
-				fclose($fd);
-				
-				//вносим изменения в urlrewrite
-				$fileUrlReWrite = $_SERVER["DOCUMENT_ROOT"]."/urlrewrite.php";
-				require( $fileUrlReWrite ); //подключаем массив
-				
-				$found = false; //индикатор если зайпись на такую страницу
-				foreach ( $arUrlRewrite as $key => $arUrl ){
-					if ( $arUrl["PATH"] == $filterUrl ){
-						$arUrlRewrite[$key]["CONDITION"] = "#^".$shortUrl."#";
-						$found = true;
+			
+				if ( $ar_props["VALUE"] ){
+					$shortUrl  = $ar_props["VALUE"]; 		//желаемый адрес
+					$longUrl   = $arFields["NAME"];			//исходный адрес фильтра чпу
+					$filterUrl =  GetFilterUrl($longUrl);	//адрес фильтра в формате get строки
+					
+					//открываем файл с массивом соответствия адресов страниц
+					$fileSeoUrl = $_SERVER["DOCUMENT_ROOT"]."/tools/files/seo_url.txt";
+					$data = file_get_contents( $fileSeoUrl );
+					$arUrlData = unserialize( $data );
+					
+					$arUrlData[$longUrl] = $shortUrl;
+					
+					$fd = fopen($fileSeoUrl, 'w') or die("не удалось создать файл");
+					fwrite($fd, serialize($arUrlData) );
+					fclose($fd);
+					
+					//вносим изменения в urlrewrite
+					$fileUrlReWrite = $_SERVER["DOCUMENT_ROOT"]."/urlrewrite.php";
+					require( $fileUrlReWrite ); //подключаем массив
+					
+					$found = false; //индикатор если зайпись на такую страницу
+					foreach ( $arUrlRewrite as $key => $arUrl ){
+						if ( $arUrl["PATH"] == $filterUrl ){
+							$arUrlRewrite[$key]["CONDITION"] = "#^".$shortUrl."#";
+							$found = true;
+						}
 					}
-				}
 
-				if ( !$found ){ 					//если не найдено записи добавляем ее в начало массива
-					$arUrlRewriteNew = Array(
-						"CONDITION" => "#^".$shortUrl."#",
-						"PATH" => $filterUrl
-					);
-					array_unshift($arUrlRewrite, $arUrlRewriteNew);
+					if ( !$found ){ 					//если не найдено записи добавляем ее в начало массива
+						$arUrlRewriteNew = Array(
+							"CONDITION" => "#^".$shortUrl."#",
+							"PATH" => $filterUrl
+						);
+						array_unshift($arUrlRewrite, $arUrlRewriteNew);
+					}
+					
+					file_put_contents($fileUrlReWrite, "<?$"."arUrlRewrite = ".var_export($arUrlRewrite,true).";?>");
 				}
-				
-				file_put_contents($fileUrlReWrite, "<?$"."arUrlRewrite = ".var_export($arUrlRewrite,true).";?>");
 
 			}
 		}
