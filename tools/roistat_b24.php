@@ -4,7 +4,7 @@ CModule::IncludeModule("sale");
 
 
 if (is_array( $_REQUEST )){
-
+	writeToLog( $_REQUEST );
 	$dealID = $_REQUEST["data"]["FIELDS"]["ID"];
 	$orderID = GetOrderIDByDealID($dealID);			//получаем номер заказа
 	$roistat = GetRoistatByOrderID($orderID);		//получаем значение поля roistat
@@ -13,6 +13,17 @@ if (is_array( $_REQUEST )){
 
 } 
  
+ 
+function writeToLog($data, $title = '') {
+ $log = "\n------------------------\n";
+ $log .= date("Y.m.d G:i:s") . "\n";
+ $log .= (strlen($title) > 0 ? $title : 'DEBUG') . "\n";
+ $log .= print_r($data, 1);
+ $log .= "\n------------------------\n";
+ file_put_contents($_SERVER["DOCUMENT_ROOT"] . '/tools/b24hook.log', $log, FILE_APPEND);
+ return true;
+} 
+
 
 //получаем поле roistat из заказа
 function GetRoistatByOrderID($orderID){
