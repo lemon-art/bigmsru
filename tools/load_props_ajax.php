@@ -34,11 +34,12 @@ parse_str($_POST["data"]);
 					array("PROPERTY_CML2_ARTICLE" => $articul[1]),
 				),
 			);
-			$res = CIBlockElement::GetList(Array(), $arFilter, false, Array(), Array("ID"));
+			$res = CIBlockElement::GetList(Array(), $arFilter, false, Array(), Array("ID", "NAME", "PROPERTY_CML2_ARTICLE"));
 			while($ar_fields = $res->GetNext()){
 				$arResult[] = Array (
 					"PRODUCT_ID" => $ar_fields["ID"],
-					"DATA" => $arItem
+					"DATA" => $arItem,
+					"ELEMENT" => $ar_fields
 				);
 
 			}
@@ -64,6 +65,9 @@ parse_str($_POST["data"]);
 		$data = file_get_contents($_SERVER["DOCUMENT_ROOT"]."/tools/temp/result.txt");
 		$arResult = unserialize( $data );
 		?>
+		<h3>Найденные товары</h3>
+		<p>Верхняя строка: название и артикул в файле</p>
+		<p><b>Нижняя строка</b>: название и артикул на сайте</p>
 		<table>
 			<tr>
 				
@@ -73,8 +77,14 @@ parse_str($_POST["data"]);
 			<?foreach ( $arResult as $key => $arItem):?>
 				<tr>
 					
-					<td><?=$arItem["DATA"]["1"]?></td>
-					<td><?=$arItem["DATA"]["3"]?></td>
+					<td>
+						<?=$arItem["DATA"]["1"]?><br>
+						<b><?=$arItem["ELEMENT"]["NAME"]?></b>
+					</td>
+					<td>
+						<?=$arItem["DATA"]["3"]?><br>
+						<b><?=$arItem["ELEMENT"]["PROPERTY_CML2_ARTICLE_VALUE"]?></b>
+					</td>
 				</tr>
 			<?endforeach;?>
 		</table>

@@ -53,27 +53,6 @@ else{
 }
 
 
-$APPLICATION->IncludeComponent(
-	"bitrix:catalog.compare.list",
-	"simple",
-	array(
-		"IBLOCK_TYPE" => "1c_catalog",
-		"IBLOCK_ID" => 12,
-		"NAME" => "CATALOG_COMPARE_LIST",
-		"DETAIL_URL" => '/catalog/bytovaya/#SECTION_CODE#/#ELEMENT_CODE#/',
-		"COMPARE_URL" => '/catalog/bytovaya/compare/',
-		"ACTION_VARIABLE" => "action",
-		"PRODUCT_ID_VARIABLE" => "id",
-		'POSITION_FIXED' => "Y",
-		'POSITION' => "top left",
-	),
-	$component,
-	array("HIDE_ICONS" => "Y")
-);
-
-
-
-
 $arFilter = array('UF_XML_ID' => $arRes["UF_XML_ID"]); //задаете фильтр по вашим полям
 
 $sTableID = 'tbl_'.$entity_table_name;
@@ -89,6 +68,9 @@ $brandXmlId = $arRes["UF_XML_ID"];
 $brandName = $arRes["UF_NAME"];
 
 $APPLICATION->SetTitle("Бытовая сантехника ".$arRes["UF_NAME"]);
+$APPLICATION->SetPageProperty("title", 'Бытовая сантехника '.$arRes["UF_NAME"] . ' - каталог, цены в магазине "Большой Мастер" в Москве');
+$APPLICATION->SetPageProperty("description", 'Бытовая сантехника от официального поставщика бренда '.$arRes["UF_NAME"] . ' с гарантией качества. Доставка в любой регион России!');
+
 ?>
 
 <h1><?$APPLICATION->ShowTitle(false)?></h1>
@@ -162,15 +144,4 @@ $APPLICATION->SetTitle("Бытовая сантехника ".$arRes["UF_NAME"])
 </div>
 
 <?
-$APPLICATION->IncludeComponent(
-	"bitrix:main.include", 
-	".default", 
-	array(
-		"AREA_FILE_SHOW" => "file",
-		"PATH" => "/include/is_delay_compare.php",
-		"EDIT_TEMPLATE" => "standard.php"
-	),
-	false
-);
-
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

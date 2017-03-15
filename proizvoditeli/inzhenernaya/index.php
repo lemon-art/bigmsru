@@ -58,23 +58,6 @@ else{
 
 
 
-$APPLICATION->IncludeComponent(
-	"bitrix:catalog.compare.list",
-	"simple",
-	array(
-		"IBLOCK_TYPE" => "1c_catalog",
-		"IBLOCK_ID" => 10,
-		"NAME" => "CATALOG_COMPARE_LIST",
-		"DETAIL_URL" => '/catalog/inzhenernaya/#SECTION_CODE#/#ELEMENT_CODE#/',
-		"COMPARE_URL" => '/catalog/inzhenernaya/compare/',
-		"ACTION_VARIABLE" => "action",
-		"PRODUCT_ID_VARIABLE" => "id",
-		'POSITION_FIXED' => "Y",
-		'POSITION' => "top left",
-	),
-	$component,
-	array("HIDE_ICONS" => "Y")
-);
 
 
 $arFilter = array('UF_XML_ID' => $arRes["UF_XML_ID"]); //задаете фильтр по вашим полям
@@ -90,6 +73,9 @@ $arRes = $rsData->Fetch();
 
 
 $APPLICATION->SetTitle("Инженерная сантехника ".$arRes["UF_NAME"]);
+$APPLICATION->SetPageProperty("title", 'Инженерная сантехника '.$arRes["UF_NAME"] . ' - каталог, цены в магазине "Большой Мастер" в Москве');
+$APPLICATION->SetPageProperty("description", 'Инженерная сантехника от официального поставщика бренда '.$arRes["UF_NAME"] . ' с гарантией качества. Доставим и установим!');
+
 ?>
 
 <h1><?$APPLICATION->ShowTitle(false)?></h1>
@@ -162,16 +148,4 @@ $APPLICATION->SetTitle("Инженерная сантехника ".$arRes["UF_N
 	<div class="clear"></div>
 </div>
 
-<?
-$APPLICATION->IncludeComponent(
-	"bitrix:main.include", 
-	".default", 
-	array(
-		"AREA_FILE_SHOW" => "file",
-		"PATH" => "/include/is_delay_compare.php",
-		"EDIT_TEMPLATE" => "standard.php"
-	),
-	false
-);
-
-require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
+<?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

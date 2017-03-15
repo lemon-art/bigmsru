@@ -149,9 +149,6 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 	$arFilter["PROPERTY"] = Array('BREND'=>$arParams["BRAND_XML"] );
 	
 	
-	//echo "<pre>";
-	//print_r( $arFilter );
-	//echo "</pre>";
 
 	//ORDER BY
 	$arSort = array(

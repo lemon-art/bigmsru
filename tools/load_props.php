@@ -78,7 +78,7 @@ TABLE {
 .conteiner {
 	margin: 20px;
 	padding: 20px;
-	border: 1px #15188a solid;
+	border: 0px #15188a solid;
 	height: 90%;
 }
 

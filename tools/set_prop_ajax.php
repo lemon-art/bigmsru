@@ -9,14 +9,14 @@ parse_str($_POST["data"]);
 		//считываем временный файл совпадений
 		$data = file_get_contents($_SERVER["DOCUMENT_ROOT"]."/tools/temp/result.txt");
 		$arResult = unserialize( $data );
-		
+		$arPropNotUse = Array();
 		//echo "<pre>";
 		//print_r( $arResult );
 		//echo "</pre>"; 
 		
 		if ( count ($arResult) > 0 ){
 		
-			echo "<br>Заполнены следующие свойства:<br>";
+			echo "<h2>Заполнены следующие свойства:</h2>";
 			
 			//определяем все свойства которые будут участвовать в процессе заполнения
 			$arProps = Array();				//массив соотвествия свойств инфоблока и данных из файла csv
@@ -40,9 +40,17 @@ parse_str($_POST["data"]);
 							}
 						}
 					}
+					else {
+						$arPropNotUse[] = $prop[0];
+					}
 				}
 				
 
+			}
+			
+			echo "<br><h2>Не найдены свойства:</h2><br>";
+			foreach( $arPropNotUse as $prop){
+				echo $prop."<br>";
 			}
 			
 		//echo "<pre>";
