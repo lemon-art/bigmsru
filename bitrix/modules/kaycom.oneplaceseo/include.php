@@ -97,7 +97,6 @@ Class CKaycomOneplaceseo
         );
 
         if ($el = $el->GetNext()) {
-			echo '123';
             if ($el["PROPERTY_H1_VALUE"]) {
                 $APPLICATION->SetTitle($el["PROPERTY_H1_VALUE"]);
             }

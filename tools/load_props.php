@@ -1,9 +1,6 @@
-<?php
-//обработка csv файлов на предмет наличия и заполнения свойств
-error_reporting(E_ALL | E_NOTICE | E_STRICT);
-ini_set("error_reporting", E_ALL|E_STRICT);
-
-require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
+<?
+require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
+$APPLICATION->SetTitle("Загрузка свойств на сайт");
 require_once ($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/csv_data.php");
 		
 CModule::IncludeModule("iblock");
@@ -19,7 +16,7 @@ $scvDir = $_SERVER["DOCUMENT_ROOT"]."/tools/csv/"; 		//папка где хра�
 						
 
 if (!empty($_FILES['userfile']['name'])){
-	
+	echo '12';
 	$uploadfile = $scvDir.basename($_FILES['userfile']['name']);
 
 	// Копируем файл из каталога для временного хранения файлов:
@@ -92,7 +89,6 @@ TABLE {
 </style>
 
 <div class="conteiner">
-	<h1>Загрузка свойств</h1>
 
 	<?=$message?>
 	
@@ -129,7 +125,7 @@ TABLE {
 				 
 				<?foreach ($csvFiles as $file):?>
 				
-					<?if(preg_match('/\.(csv)/', $file)):?>
+					<?if( preg_match('/\.(csv)/', $file) || preg_match('/\.(xlsx)/', $file)):?>
 						<option value="<?=$file?>" <?if ( $_POST['csvFile'] == $file):?> selected <?endif;?> ><?=$file?></option>
 					<?endif;?>
 					
@@ -150,26 +146,46 @@ TABLE {
 		if ( $_POST['csvFile'] ){
 			//дабы не грузить сервер считываем файл csv, переводим его в массив и сохраняем по частям в временные файлы. Затем с помощью аякса обрабатываем эти файлы
 			
+			//смотрим расширение файла
+			$arFile = explode('.', $_POST['csvFile']);
+
 			$arData = Array(); 	// здесь формируется новый массив
 			$row = 1;
 			$num = 0; 			//число строк в текущей итеррации
 			$count = 0; 		//общий счетчик строк
 			$file_k = 0; 		//счетчик префикса временного файла
-			
+				
 			//удаление временных файлов
 			exec("rm -rf ".$_SERVER["DOCUMENT_ROOT"]."/tools/temp/*");
 			//rmdir( $_SERVER["DOCUMENT_ROOT"]."/tools/temp/");
 			
+			if ( $arFile[1] == 'csv' ){
 			
-			if (($handle = fopen($_SERVER["DOCUMENT_ROOT"]."/tools/csv/".$_POST['csvFile'], "r")) !== FALSE) {
-				while (($data = fgetcsv($handle, 5000, ";")) !== FALSE) {
+				if (($handle = fopen($_SERVER["DOCUMENT_ROOT"]."/tools/csv/".$_POST['csvFile'], "r")) !== FALSE) {
+					while (($data = fgetcsv($handle, 5000, ";")) !== FALSE) {
+						
+						$row++;
+						$arData[] = $data;
+						$num++;
+						$count++;
+						
+						if ( $num > 99 ){
+
+						
+							//создаем временный файл в temp и записываем туда массив
+							$fd = fopen($_SERVER["DOCUMENT_ROOT"]."/tools/temp/csv_".$file_k.".txt", 'w') or die("не удалось создать файл");
+							fwrite($fd, serialize($arData) );
+							fclose($fd);
+							$arData = Array(); //обнуляем массив
+							$file_k++; //счетчик файлов
+							$num = 0;
+							
+						}
+					}
+					fclose($handle);
 					
-					$row++;
-					$arData[] = $data;
-					$num++;
-					$count++;
-					
-					if ( $num > 99 ){
+					//записываем остатки
+					if ( count($arData) > 0 ){
 						//создаем временный файл в temp и записываем туда массив
 						$fd = fopen($_SERVER["DOCUMENT_ROOT"]."/tools/temp/csv_".$file_k.".txt", 'w') or die("не удалось создать файл");
 						fwrite($fd, serialize($arData) );
@@ -177,29 +193,70 @@ TABLE {
 						$arData = Array(); //обнуляем массив
 						$file_k++; //счетчик файлов
 						$num = 0;
-						
+					
 					}
+					
+					
+					
+							//создаем временный файл для хранения совпадений
+							$fd = fopen($_SERVER["DOCUMENT_ROOT"]."/tools/temp/result.txt", 'w') or die("не удалось создать файл");
+							fwrite($fd, '' );
+							fclose($fd);
 				}
-				fclose($handle);
+			}
+			elseif( $arFile[1] == 'xlsx' ){ //обработка exel файла
+
+				require_once 'PHPExcel-1.8/Classes/PHPExcel.php';
+				set_time_limit(1800);
+				ini_set('memory_liit', '128M');
+				$pExcel = PHPExcel_IOFactory::load($_SERVER["DOCUMENT_ROOT"]."/tools/csv/".$_POST['csvFile']);
+				// Цикл по листам Excel-файла
+				foreach ($pExcel->getWorksheetIterator() as $worksheet) {
+					$tables[] = $worksheet->toArray();
+				}
+
 				
-				//записываем остатки
-				if ( count($arData) > 0 ){
-					//создаем временный файл в temp и записываем туда массив
-					$fd = fopen($_SERVER["DOCUMENT_ROOT"]."/tools/temp/csv_".$file_k.".txt", 'w') or die("не удалось создать файл");
-					fwrite($fd, serialize($arData) );
-					fclose($fd);
-					$arData = Array(); //обнуляем массив
-					$file_k++; //счетчик файлов
-					$num = 0;
+				foreach ( $tables[0] as $data){
 				
+						$row++;
+						$arData[] = $data;
+						$num++;
+						$count++;
+				
+						if ( $num > 99 ){
+
+						
+							//создаем временный файл в temp и записываем туда массив
+							$fd = fopen($_SERVER["DOCUMENT_ROOT"]."/tools/temp/csv_".$file_k.".txt", 'w') or die("не удалось создать файл");
+							fwrite($fd, serialize($arData) );
+							fclose($fd);
+							$arData = Array(); //обнуляем массив
+							$file_k++; //счетчик файлов
+							$num = 0;
+							
+						}
+
 				}
 				
-				
-				
+						//записываем остатки
+						if ( count($arData) > 0 ){
+							//создаем временный файл в temp и записываем туда массив
+							$fd = fopen($_SERVER["DOCUMENT_ROOT"]."/tools/temp/csv_".$file_k.".txt", 'w') or die("не удалось создать файл");
+							fwrite($fd, serialize($arData) );
+							fclose($fd);
+							$arData = Array(); //обнуляем массив
+							$file_k++; //счетчик файлов
+							$num = 0;
+						
+						}
+					
+					
+					
 						//создаем временный файл для хранения совпадений
 						$fd = fopen($_SERVER["DOCUMENT_ROOT"]."/tools/temp/result.txt", 'w') or die("не удалось создать файл");
 						fwrite($fd, '' );
 						fclose($fd);
+			
 			}
 		
 		
@@ -365,4 +422,4 @@ function getSectionList($filter, $select)
    return $arSections;
 }
 ?>
-
+<?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
