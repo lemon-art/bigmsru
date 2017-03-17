@@ -124,7 +124,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 		$renderImage = CFile::ResizeImageGet(
 			$arResult['DETAIL_PICTURE']['ID'],
 			Array("width" => 370, "height" => 360),
-			BX_RESIZE_IMAGE_EXACT,
+			BX_RESIZE_IMAGE_PROPORTIONAL,
 			true
 		);
 		?>
@@ -362,7 +362,17 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 
 					<?//вывод подарка?>
 				<?if ( count($arResult["GIFT"]) > 0 ):?>
-					<div class="gift"> + <a href="<?=$arResult["GIFT"]["DETAIL_PAGE_URL"]?>" target="_blank"><?=$arResult["GIFT"]["NAME"]?></a> в подарок </div>
+					<div class="gift">
+						<div class="gift_inner">
+							<div class="gift_img"> 
+								<img src="/images/gift.png"> 
+							</div>
+							<div class="gift_text">
+								+ <a href="<?=$arResult["GIFT"]["DETAIL_PAGE_URL"]?>" target="_blank"><?=$arResult["GIFT"]["NAME"]?></a> <br>в подарок 
+							</div>
+						</div>
+						
+					</div>
 				<?endif;?>
 				
 <div class="tabs_block">
@@ -370,6 +380,9 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 		<ul class="tabNavigation">
 			<li><a class="" href="#tab_content1"><h3>технические характеристики</h3></a></li>
 			<li><a class="" href="#tab_content2"><h3>отзывы</h3></a></li>
+			<?if ( is_array( $arResult["COLLECTIONS"] )):?>
+				<li><a class="" href="#tab_content6"><h3>товары из одной коллекции</h3></a></li>
+			<?endif;?>
 			<noindex><li><a class="" href="#tab_content3"><h3>магазины</h3></a></li>
 			<li><a class="" href="#tab_content4"><h3>доставка</h3></a></li>
 			<li><a class="" href="#tab_content5"><h3>Гарантия и сервис</h3></a></li></noindex>
@@ -377,51 +390,75 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 	</div>
 	
 	<div class="properties tab_content properties_block" id="tab_content1">
-		<table class="text">
+	
+		<? if (CModule::IncludeModule('yenisite.infoblockpropsplus')): ?> 
+			
 			<?
-			foreach($arResult["DISPLAY_PROPERTIES"] as $code=>$properties){
-				/*global $USER;
-				if ($USER->IsAdmin()){
-					echo("<pre>");
-					print_r($code);
-					echo("</pre>");
-				}*/
-				if($code !== "RASPRODAZHA" && $code !== "NOVINKA" && $code != "ARTICUL" && $code != "LIDER_PRODAZH" && $code != "DELIVERY" && $code != "FILES" && $code != "GARANTY" && $code != "CML2_ARTICLE" && $code != "RECOMMEND"){
-					?>
-					<tr>
-						<td><?=$properties["NAME"]?></td>
-						<td>
-							<?
-							if(!empty($properties["DISPLAY_VALUE"])){
-								echo strip_tags($properties["DISPLAY_VALUE"], "");
-							}
-							else{
-								echo $properties["VALUE"];
-							}
-							?>
-						</td>
-					</tr>
-					<?
+				//очищаем не нуждные для вывода свойства
+				$arNoShowProp = Array("NOVINKA", "ARTICUL", "LIDER_PRODAZH", "DELIVERY", "FILES", "GARANTY", "CML2_ARTICLE", "RECOMMEND");
+				$arProperty = $arResult['DISPLAY_PROPERTIES'];
+				foreach ( $arNoShowProp as $val){
+					unset($arProperty[$val]);
 				}
-			}
+				
 			?>
-		</table>
-		<div class="file_block">
-			<?
-			if(!empty($arResult["PROPERTIES"]["FILES"]["VALUE"])){
-				foreach($arResult["PROPERTIES"]["FILES"]["VALUE"] as $id_file){
-					$arFile = CFile::GetFileArray($id_file);
-					if(!empty($arFile["DESCRIPTION"])){
-						echo '<a href="'.$arFile["SRC"].'">'.$arFile["DESCRIPTION"].'</a>';
-					}
-					else{
-						echo '<a href="'.$arFile["SRC"].'">'.$arFile["FILE_NAME"].'</a>';
+			
+			<? $APPLICATION->IncludeComponent('yenisite:ipep.props_groups', 
+				'', 
+				array(
+				'DISPLAY_PROPERTIES' => $arResult['DISPLAY_PROPERTIES'], 
+				'IBLOCK_ID' => $arParams['IBLOCK_ID'],
+				'SHORT_VIEW_GROUP' => Array(1,5)
+				)); ?> 
+		
+		<?else:?>
+	
+			<table class="text">
+				<?
+				foreach($arResult["DISPLAY_PROPERTIES"] as $code=>$properties){
+					/*global $USER;
+					if ($USER->IsAdmin()){
+						echo("<pre>");
+						print_r($code);
+						echo("</pre>");
+					}*/
+					if($code !== "RASPRODAZHA" && $code !== "NOVINKA" && $code != "ARTICUL" && $code != "LIDER_PRODAZH" && $code != "DELIVERY" && $code != "FILES" && $code != "GARANTY" && $code != "CML2_ARTICLE" && $code != "RECOMMEND"){
+						?>
+						<tr>
+							<td><?=$properties["NAME"]?></td>
+							<td>
+								<?
+								if(!empty($properties["DISPLAY_VALUE"])){
+									echo strip_tags($properties["DISPLAY_VALUE"], "");
+								}
+								else{
+									echo $properties["VALUE"];
+								}
+								?>
+							</td>
+						</tr>
+						<?
 					}
 				}
-			}
-			?>
-		</div>
-		<div class="clear"></div>
+				?>
+			</table>
+			<div class="file_block">
+				<?
+				if(!empty($arResult["PROPERTIES"]["FILES"]["VALUE"])){
+					foreach($arResult["PROPERTIES"]["FILES"]["VALUE"] as $id_file){
+						$arFile = CFile::GetFileArray($id_file);
+						if(!empty($arFile["DESCRIPTION"])){
+							echo '<a href="'.$arFile["SRC"].'">'.$arFile["DESCRIPTION"].'</a>';
+						}
+						else{
+							echo '<a href="'.$arFile["SRC"].'">'.$arFile["FILE_NAME"].'</a>';
+						}
+					}
+				}
+				?>
+			</div>
+			<div class="clear"></div>
+		<?endif;?>
 	</div>
 	<div class="properties tab_content comments" id="tab_content2">
 		<div class="bx_lb">
@@ -466,6 +503,99 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 				);?>
 			</div>
 		</div>
+	</div>
+	<div class="properties tab_content" id="tab_content6">
+		<?$count_similar = count($arResult["COLLECTIONS"]);?>
+		<?global $colFilter;?>
+		<?$colFilter = Array("ID" => $arResult["COLLECTIONS"]);?>
+		
+				<?$APPLICATION->IncludeComponent("bitrix:catalog.section", "carusel", Array(
+					"COMPONENT_TEMPLATE" => ".default",
+						"IBLOCK_TYPE" => "1c_catalog",
+						"IBLOCK_ID" => $arParams["IBLOCK_ID"],
+						"SECTION_ID" => "",
+						"SECTION_CODE" => "",
+						"SECTION_USER_FIELDS" => array(
+							0 => "",
+							1 => "",
+						),
+						"ELEMENT_SORT_FIELD" => "sort",
+						"ELEMENT_SORT_ORDER" => "asc",
+						"ELEMENT_SORT_FIELD2" => "id",
+						"ELEMENT_SORT_ORDER2" => "desc",
+						"FILTER_NAME" => "colFilter",
+						"INCLUDE_SUBSECTIONS" => "Y",
+						"SHOW_ALL_WO_SECTION" => "Y",
+						"HIDE_NOT_AVAILABLE" => "N",
+						"PAGE_ELEMENT_COUNT" => "20",
+						"LINE_ELEMENT_COUNT" => "3",
+						"PROPERTY_CODE" => array(
+							0 => "NEW",
+							1 => "",
+						),
+						"OFFERS_LIMIT" => "5",
+						"TEMPLATE_THEME" => "blue",
+						"PRODUCT_SUBSCRIPTION" => "N",
+						"SHOW_DISCOUNT_PERCENT" => "N",
+						"SHOW_OLD_PRICE" => "N",
+						"SHOW_CLOSE_POPUP" => "N",
+						"MESS_BTN_BUY" => "Купить",
+						"MESS_BTN_ADD_TO_BASKET" => "В корзину",
+						"MESS_BTN_SUBSCRIBE" => "Подписаться",
+						"MESS_BTN_DETAIL" => "Подробнее",
+						"MESS_NOT_AVAILABLE" => "Нет в наличии",
+						"SECTION_URL" => "",
+						"DETAIL_URL" => "",
+						"SECTION_ID_VARIABLE" => "SECTION_ID",
+						"AJAX_MODE" => "N",
+						"AJAX_OPTION_JUMP" => "N",
+						"AJAX_OPTION_STYLE" => "Y",
+						"AJAX_OPTION_HISTORY" => "N",
+						"AJAX_OPTION_ADDITIONAL" => "",
+						"CACHE_TYPE" => "N",
+						"CACHE_TIME" => "36000000",
+						"CACHE_GROUPS" => "Y",
+						"SET_TITLE" => "N",
+						"SET_BROWSER_TITLE" => "N",
+						"BROWSER_TITLE" => "-",
+						"SET_META_KEYWORDS" => "N",
+						"META_KEYWORDS" => "-",
+						"SET_META_DESCRIPTION" => "N",
+						"META_DESCRIPTION" => "-",
+						"ADD_SECTIONS_CHAIN" => "N",
+						"SET_STATUS_404" => "Y",
+						"CACHE_FILTER" => "N",
+						"ACTION_VARIABLE" => "action",
+						"PRODUCT_ID_VARIABLE" => "id",
+						"PRICE_CODE" => $arParams["PRICE_CODE"],
+						"USE_PRICE_COUNT" => "N",
+						"SHOW_PRICE_COUNT" => "1",
+						"PRICE_VAT_INCLUDE" => "Y",
+						"CONVERT_CURRENCY" => "N",
+						"BASKET_URL" => "/basket/",
+						"USE_PRODUCT_QUANTITY" => "N",
+						"PRODUCT_QUANTITY_VARIABLE" => "",
+						"ADD_PROPERTIES_TO_BASKET" => "Y",
+						"PRODUCT_PROPS_VARIABLE" => "prop",
+						"PARTIAL_PRODUCT_PROPERTIES" => "N",
+						"PRODUCT_PROPERTIES" => "",
+						"ADD_TO_BASKET_ACTION" => "ADD",
+						"DISPLAY_COMPARE" => "Y",
+						"PAGER_TEMPLATE" => ".default",
+						"DISPLAY_TOP_PAGER" => "N",
+						"DISPLAY_BOTTOM_PAGER" => "N",
+						"PAGER_TITLE" => "Товары",
+						"PAGER_SHOW_ALWAYS" => "N",
+						"PAGER_DESC_NUMBERING" => "N",
+						"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
+						"PAGER_SHOW_ALL" => "N",
+						"MESS_BTN_COMPARE" => "Сравнить",
+						"ADD_PICT_PROP" => "-",
+						"LABEL_PROP" => "-",
+						"COMPARE_PATH" => $arResult['FOLDER'].$arResult['URL_TEMPLATES']['compare'],
+					),
+					false
+				);?>
 	</div>
 	<noindex><div class="properties tab_content shops" id="tab_content3">
 			
