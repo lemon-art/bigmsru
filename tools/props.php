@@ -1,5 +1,6 @@
-<?php
-require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
+<?
+require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
+$APPLICATION->SetTitle("Проверка элементов на заполненность свойствами");
 
 CModule::IncludeModule("iblock");
 
@@ -58,7 +59,7 @@ TABLE {
 </style>
 
 <div class="conteiner">
-	<h1>Проверка элементов на заполненность свойствами</h1>
+
 
 	<form name="" id="props" method="post" action="">
 
@@ -195,4 +196,4 @@ function getSectionList($filter, $select)
    return $arSections;
 }
 ?>
-
+<?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
