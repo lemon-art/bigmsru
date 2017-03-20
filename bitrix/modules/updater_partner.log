@@ -3110,3 +3110,398 @@
 2017-02-21 15:38:55 -  - exec CUpdateClientPartner::GetHTTPPage
 2017-02-21 15:38:55 -  - TIME GetUpdatesList(request) 0.385 sec
 2017-02-21 15:38:55 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:54:35 -  - exec CUpdateClientPartner::GetUpdatesList
+2017-03-10 10:54:35 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:54:35 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=asd.currencyrate%2Cwebfly.ymarket%2Cacrit.exportpro%2Croistat.integration%2Cbitrix.eshop%2Cmlife.bistroklick%2Ckaycom.oneplaceseo%2Cbitrix.sitecorporate%2Cbitrix.xdebug&fullmoduleinfo=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:54:35 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:54:36 -  - TIME GetUpdatesList(request) 0.792 sec
+2017-03-10 10:54:36 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:54:42 -  - exec CUpdateClientPartner::GetUpdatesList
+2017-03-10 10:54:42 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:54:42 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=asd.currencyrate%2Cwebfly.ymarket%2Cacrit.exportpro%2Croistat.integration%2Cbitrix.eshop%2Cmlife.bistroklick%2Ckaycom.oneplaceseo%2Cbitrix.sitecorporate%2Cbitrix.xdebug&fullmoduleinfo=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:54:42 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:54:43 -  - TIME GetUpdatesList(request) 0.359 sec
+2017-03-10 10:54:43 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:54:46 -  - exec CUpdateClientPartner::GetUpdatesList
+2017-03-10 10:54:46 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:54:46 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=asd.currencyrate%2Cwebfly.ymarket%2Cacrit.exportpro%2Croistat.integration%2Cbitrix.eshop%2Cmlife.bistroklick%2Ckaycom.oneplaceseo%2Cbitrix.sitecorporate%2Cbitrix.xdebug&fullmoduleinfo=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:54:46 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:54:46 -  - TIME GetUpdatesList(request) 0.38 sec
+2017-03-10 10:54:46 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:54:49 -  - exec CUpdateClientPartner::GetUpdatesList
+2017-03-10 10:54:49 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:54:49 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=asd.currencyrate%2Cwebfly.ymarket%2Cacrit.exportpro%2Croistat.integration%2Cbitrix.eshop%2Cmlife.bistroklick%2Ckaycom.oneplaceseo%2Cbitrix.sitecorporate%2Cbitrix.xdebug&fullmoduleinfo=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:54:49 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:54:50 -  - TIME GetUpdatesList(request) 0.437 sec
+2017-03-10 10:54:50 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:55:08 -  - exec CUpdateClientPartner::GetUpdatesList
+2017-03-10 10:55:08 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:55:08 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=asd.currencyrate%2Cwebfly.ymarket%2Cacrit.exportpro%2Croistat.integration%2Cbitrix.eshop%2Cmlife.bistroklick%2Ckaycom.oneplaceseo%2Cbitrix.sitecorporate%2Cbitrix.xdebug&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:55:08 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:55:09 -  - TIME GetUpdatesList(request) 0.504 sec
+2017-03-10 10:55:09 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:55:51 -  - exec CUpdateClientPartner::ActivateCoupon
+2017-03-10 10:55:51 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:55:51 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&SUPD_SRS=RU&SUPD_CMP=N&coupon=MPX-S0WI255FRT-NPVAIOYI8M&query_type=coupon
+2017-03-10 10:55:51 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:55:51 -  - TIME ActivateCoupon(request) 0.618 sec
+2017-03-10 10:55:51 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:55:51 - UPD_SUCCESS - Coupon activated
+2017-03-10 10:55:53 -  - exec CUpdateClientPartner::GetUpdatesList
+2017-03-10 10:55:53 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:55:53 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=asd.currencyrate%2Cwebfly.ymarket%2Cacrit.exportpro%2Croistat.integration%2Cbitrix.eshop%2Cmlife.bistroklick%2Ckaycom.oneplaceseo%2Cbitrix.sitecorporate%2Cbitrix.xdebug&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:55:53 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:55:54 -  - TIME GetUpdatesList(request) 0.486 sec
+2017-03-10 10:55:54 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:01 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:01 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:01 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:01 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:01 -  - TIME LoadModulesUpdates(request) 0.69 sec
+2017-03-10 10:56:01 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:01 - S - STEP
+2017-03-10 10:56:01 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:01 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:01 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:01 -  - loadFile
+2017-03-10 10:56:02 - U - RETURN
+2017-03-10 10:56:02 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:02 -  - TIME UnGzipArchive 0.011 sec
+2017-03-10 10:56:02 -  - TIME UpdateStepModules 0.012 sec
+2017-03-10 10:56:02 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus
+2017-03-10 10:56:02 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:02 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:02 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.0.0%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:02 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:03 -  - TIME LoadModulesUpdates(request) 0.669 sec
+2017-03-10 10:56:03 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:03 - S - STEP
+2017-03-10 10:56:03 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:03 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:03 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:03 -  - loadFile
+2017-03-10 10:56:03 - U - RETURN
+2017-03-10 10:56:03 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:03 -  - TIME UnGzipArchive 0.004 sec
+2017-03-10 10:56:03 - CSURUS1 - Run updater '/bitrix/updates/update_m1489132563/yenisite.infoblockpropsplus/updater1.0.2.php'
+2017-03-10 10:56:03 -  - TIME UpdateStepModules 0.008 sec
+2017-03-10 10:56:03 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus (1.0.2)<br>- небольшие изменения в шаблоне .default компонента
+2017-03-10 10:56:03 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:03 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:03 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.0.2%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:03 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:03 -  - TIME LoadModulesUpdates(request) 0.579 sec
+2017-03-10 10:56:03 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:03 - S - STEP
+2017-03-10 10:56:03 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:03 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:03 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:03 -  - loadFile
+2017-03-10 10:56:04 - U - RETURN
+2017-03-10 10:56:04 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:04 -  - TIME UnGzipArchive 0.008 sec
+2017-03-10 10:56:04 -  - TIME UpdateStepModules 0.01 sec
+2017-03-10 10:56:04 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus (1.0.3)<br><ul> <li>Правки для свойств типа список.</li> </ul>
+2017-03-10 10:56:04 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:04 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:04 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.0.3%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:04 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:04 -  - TIME LoadModulesUpdates(request) 0.496 sec
+2017-03-10 10:56:04 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:04 - S - STEP
+2017-03-10 10:56:04 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:04 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:04 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:04 -  - loadFile
+2017-03-10 10:56:05 - U - RETURN
+2017-03-10 10:56:05 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:05 -  - TIME UnGzipArchive 0.009 sec
+2017-03-10 10:56:05 - CSURUS1 - Run updater '/bitrix/updates/update_m1489132565/yenisite.infoblockpropsplus/updater1.1.0.php'
+2017-03-10 10:56:05 -  - TIME UpdateStepModules 0.012 sec
+2017-03-10 10:56:05 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus (1.1.0)<br>- изменен механизм хранения комментариев к свойствам <br> - добавлена возможность группировки свойств в разделе инфоблока <br> - добавлена возможность привязывать группы к конкретному разделу инфоблока
+2017-03-10 10:56:05 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:05 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:05 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.1.0%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:05 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:05 -  - TIME LoadModulesUpdates(request) 0.456 sec
+2017-03-10 10:56:05 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:05 - S - STEP
+2017-03-10 10:56:05 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:05 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:05 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:05 -  - loadFile
+2017-03-10 10:56:05 - U - RETURN
+2017-03-10 10:56:05 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:05 -  - TIME UnGzipArchive 0.009 sec
+2017-03-10 10:56:05 - CSURUS1 - Run updater '/bitrix/updates/update_m1489132565/yenisite.infoblockpropsplus/updater1.1.1.php'
+2017-03-10 10:56:05 -  - TIME UpdateStepModules 0.012 sec
+2017-03-10 10:56:05 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus (1.1.1)<br>- исправлена проблема при установке модуля
+2017-03-10 10:56:06 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:06 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:06 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.1.1%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:06 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:06 -  - TIME LoadModulesUpdates(request) 0.449 sec
+2017-03-10 10:56:06 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:06 - S - STEP
+2017-03-10 10:56:06 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:06 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:06 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:06 -  - loadFile
+2017-03-10 10:56:06 - U - RETURN
+2017-03-10 10:56:06 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:06 -  - TIME UnGzipArchive 0.009 sec
+2017-03-10 10:56:06 - CSURUS1 - Run updater '/bitrix/updates/update_m1489132566/yenisite.infoblockpropsplus/updater1.1.2.php'
+2017-03-10 10:56:06 -  - TIME UpdateStepModules 0.013 sec
+2017-03-10 10:56:06 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus (1.1.2)<br>- исправлена проблема вывода множественного свойства в шаблоне .default
+2017-03-10 10:56:06 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:06 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:06 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.1.2%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:06 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:07 -  - TIME LoadModulesUpdates(request) 0.423 sec
+2017-03-10 10:56:07 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:07 - S - STEP
+2017-03-10 10:56:07 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:07 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:07 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:07 -  - loadFile
+2017-03-10 10:56:07 - U - RETURN
+2017-03-10 10:56:07 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:07 -  - TIME UnGzipArchive 0.009 sec
+2017-03-10 10:56:07 - CSURUS1 - Run updater '/bitrix/updates/update_m1489132567/yenisite.infoblockpropsplus/updater1.1.3.php'
+2017-03-10 10:56:07 -  - TIME UpdateStepModules 0.013 sec
+2017-03-10 10:56:07 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus (1.1.3)<br>- исправлена проблема неработоспособности кнопки \"детального редактирования\" свойства на странице настроек инфоблока
+2017-03-10 10:56:07 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:07 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:07 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.1.3%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:07 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:08 -  - TIME LoadModulesUpdates(request) 0.494 sec
+2017-03-10 10:56:08 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:08 - S - STEP
+2017-03-10 10:56:08 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:08 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:08 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:08 -  - loadFile
+2017-03-10 10:56:08 - U - RETURN
+2017-03-10 10:56:08 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:08 -  - TIME UnGzipArchive 0.003 sec
+2017-03-10 10:56:08 - CSURUS1 - Run updater '/bitrix/updates/update_m1489132568/yenisite.infoblockpropsplus/updater1.2.0.php'
+2017-03-10 10:56:08 -  - TIME UpdateStepModules 0.005 sec
+2017-03-10 10:56:08 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus (1.2.0)<br>- Шаблоны всех используемых компонентов переведены на работу по технологии \"Композитный сайт\"
+2017-03-10 10:56:08 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:08 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:08 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.2.0%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:08 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:08 -  - TIME LoadModulesUpdates(request) 0.444 sec
+2017-03-10 10:56:08 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:08 - S - STEP
+2017-03-10 10:56:08 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:08 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:08 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:08 -  - loadFile
+2017-03-10 10:56:09 - U - RETURN
+2017-03-10 10:56:09 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:09 -  - TIME UnGzipArchive 0.003 sec
+2017-03-10 10:56:09 - CSURUS1 - Run updater '/bitrix/updates/update_m1489132569/yenisite.infoblockpropsplus/updater1.2.1.php'
+2017-03-10 10:56:09 -  - TIME UpdateStepModules 0.005 sec
+2017-03-10 10:56:09 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus (1.2.1)<br>- Добавлена совместимость с версиями Битрикса до 14.5
+2017-03-10 10:56:09 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:09 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:09 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.2.1%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:09 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:09 -  - TIME LoadModulesUpdates(request) 0.434 sec
+2017-03-10 10:56:09 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:09 - S - STEP
+2017-03-10 10:56:09 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:09 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:09 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:09 -  - loadFile
+2017-03-10 10:56:09 - U - RETURN
+2017-03-10 10:56:09 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:09 -  - TIME UnGzipArchive 0.007 sec
+2017-03-10 10:56:09 - CSURUS1 - Run updater '/bitrix/updates/update_m1489132569/yenisite.infoblockpropsplus/updater1.2.2.php'
+2017-03-10 10:56:09 -  - TIME UpdateStepModules 0.009 sec
+2017-03-10 10:56:09 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus (1.2.2)<br>- Незначительные правки
+2017-03-10 10:56:10 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:10 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:10 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.2.2%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:10 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:10 -  - TIME LoadModulesUpdates(request) 0.434 sec
+2017-03-10 10:56:10 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:10 - S - STEP
+2017-03-10 10:56:10 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:10 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:10 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:10 -  - loadFile
+2017-03-10 10:56:10 - U - RETURN
+2017-03-10 10:56:10 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:10 -  - TIME UnGzipArchive 0.008 sec
+2017-03-10 10:56:10 - CSURUS1 - Run updater '/bitrix/updates/update_m1489132570/yenisite.infoblockpropsplus/updater1.3.2.php'
+2017-03-10 10:56:10 -  - TIME UpdateStepModules 0.01 sec
+2017-03-10 10:56:10 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus (1.3.2)<br>- Устранена проблема распада групп со свойствами после редактирования свойств в разделах каталога<br> - Устранена проблема переупорядочивания групп со свойствами после редактирования свойств в разделах каталога<br> - Оптимизация загрузки страницы редактирования инфоблока<br> - Улучшение стабильности работы JS-скриптов<br> - Добавлено отображение групп во вкладке &quot;Свойства элементов&quot; на странице редактирования раздела инфоблока.<br> - В шаблон добавлена раскраска свойств зеброй и подсветка при наведении
+2017-03-10 10:56:10 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:10 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:10 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.3.2%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:10 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:11 -  - TIME LoadModulesUpdates(request) 0.349 sec
+2017-03-10 10:56:11 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:11 - S - STEP
+2017-03-10 10:56:11 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:11 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:11 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:11 -  - loadFile
+2017-03-10 10:56:11 - U - RETURN
+2017-03-10 10:56:11 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:11 -  - TIME UnGzipArchive 0.01 sec
+2017-03-10 10:56:11 - CSURUS1 - Run updater '/bitrix/updates/update_m1489132571/yenisite.infoblockpropsplus/updater1.3.7.php'
+2017-03-10 10:56:11 -  - TIME UpdateStepModules 0.011 sec
+2017-03-10 10:56:11 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus (1.3.7)<br>- Обновлены шаблоны<br> - Добавлен параметр для выбора цвета подсветки строк<br> - Исправления работы модуля в административной части
+2017-03-10 10:56:11 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:11 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:11 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.3.7%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:11 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:12 -  - TIME LoadModulesUpdates(request) 0.351 sec
+2017-03-10 10:56:12 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:12 - S - STEP
+2017-03-10 10:56:12 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:12 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:12 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:12 -  - loadFile
+2017-03-10 10:56:12 - U - RETURN
+2017-03-10 10:56:12 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:12 -  - TIME UnGzipArchive 0.003 sec
+2017-03-10 10:56:12 - CSURUS1 - Run updater '/bitrix/updates/update_m1489132572/yenisite.infoblockpropsplus/updater1.3.8.php'
+2017-03-10 10:56:12 -  - TIME UpdateStepModules 0.008 sec
+2017-03-10 10:56:12 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus (1.3.8)<br>- Добавлен вывод описания значений свойств. Можно отключить в параметрах компонента.
+2017-03-10 10:56:12 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:12 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:12 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.3.8%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:12 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:12 -  - TIME LoadModulesUpdates(request) 0.332 sec
+2017-03-10 10:56:12 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:12 - S - STEP
+2017-03-10 10:56:12 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:12 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:12 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:12 -  - loadFile
+2017-03-10 10:56:12 - U - RETURN
+2017-03-10 10:56:12 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:12 -  - TIME UnGzipArchive 0.002 sec
+2017-03-10 10:56:12 - CSURUS1 - Run updater '/bitrix/updates/update_m1489132572/yenisite.infoblockpropsplus/updater1.3.10.php'
+2017-03-10 10:56:12 -  - TIME UpdateStepModules 0.003 sec
+2017-03-10 10:56:12 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus (1.3.10)<br>- Подключение библиотеки jQueryUI перенесено в эпилог шаблонов.<br> - Устранена проблема с отсутствием классов модуля в шаблоне.<br> - Исправлено использование языковой фразы.
+2017-03-10 10:56:12 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:12 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:12 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.3.10%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:12 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:13 -  - TIME LoadModulesUpdates(request) 0.484 sec
+2017-03-10 10:56:13 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:13 - S - STEP
+2017-03-10 10:56:13 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:13 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:13 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:13 -  - loadFile
+2017-03-10 10:56:13 - U - RETURN
+2017-03-10 10:56:13 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:13 -  - TIME UnGzipArchive 0.003 sec
+2017-03-10 10:56:13 - CSURUS1 - Run updater '/bitrix/updates/update_m1489132573/yenisite.infoblockpropsplus/updater1.3.11.php'
+2017-03-10 10:56:13 -  - TIME UpdateStepModules 0.006 sec
+2017-03-10 10:56:13 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus (1.3.11)<br>- Добавлена сортировка разделов инфоблока. <br> - Исправлена проблема, связанная с не работой чекбоксов в группах свойств.<br> - Исправлена ошибка, связанная с выводом привязанных групп свойств, в не том разделе.<br> - Добавлена поддержка настройки модуля, позволяющая выводить прикрепленные группы свойств в дочерних разделах.<br> - Добавлена возможность отключать работу модуля для выбранных инфоблоков.<br> 
+2017-03-10 10:56:13 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:13 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:13 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.3.11%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:13 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:14 -  - TIME LoadModulesUpdates(request) 0.39 sec
+2017-03-10 10:56:14 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:14 - S - STEP
+2017-03-10 10:56:14 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:14 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:14 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:14 -  - loadFile
+2017-03-10 10:56:14 - U - RETURN
+2017-03-10 10:56:14 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:14 -  - TIME UnGzipArchive 0.005 sec
+2017-03-10 10:56:14 - CSURUS1 - Run updater '/bitrix/updates/update_m1489132574/yenisite.infoblockpropsplus/updater1.3.20.php'
+2017-03-10 10:56:14 -  - TIME UpdateStepModules 0.007 sec
+2017-03-10 10:56:14 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus (1.3.20)<br><h2>Добавлено:</h2> <ul> <li>Проверка значения max_input_vars в настройках модуля и после установкии</li> <li>Описание API модуля (FAQ)</li> </ul> <h2>Исправлено:</h2> <ul> <li>Обновление кеша, при отключенном управляемом кешировании</li> <li>Исчезающая область для перетаскивания свойств</li> <li>Отображение множественных свойств если задано только одно значение</li> <li>Появление двойного окна редактирования свойства</li> <li>Проведена оптимизация модуля. Увеличилась скорость работы, в частности добавление/редактирование разделов</li> </ul>
+2017-03-10 10:56:14 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:14 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:14 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.3.20%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:14 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:14 -  - TIME LoadModulesUpdates(request) 0.36 sec
+2017-03-10 10:56:14 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:14 - S - STEP
+2017-03-10 10:56:14 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:14 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:14 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:14 -  - loadFile
+2017-03-10 10:56:14 - U - RETURN
+2017-03-10 10:56:14 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:14 -  - TIME UnGzipArchive 0.002 sec
+2017-03-10 10:56:14 - CSURUS1 - Run updater '/bitrix/updates/update_m1489132574/yenisite.infoblockpropsplus/updater1.3.21.php'
+2017-03-10 10:56:14 -  - TIME UpdateStepModules 0.004 sec
+2017-03-10 10:56:14 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus (1.3.21)<br><h2> Исправленные проблемы </h2> <ul> <li>Заблокирована сортировка групп свойств и самих свойств в группах в разделе. Все операции связанные с редактированием групп свойств теперь доступны только из редактирования инфоблока. </li> <li>Добавлена поддержка html тегов в комментариях</li> </ul> 
+2017-03-10 10:56:14 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:14 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:14 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.3.21%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:14 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:15 -  - TIME LoadModulesUpdates(request) 0.356 sec
+2017-03-10 10:56:15 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:15 - S - STEP
+2017-03-10 10:56:15 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:15 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:15 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:15 -  - loadFile
+2017-03-10 10:56:15 - U - RETURN
+2017-03-10 10:56:15 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:15 -  - TIME UnGzipArchive 0.001 sec
+2017-03-10 10:56:15 - CSURUS1 - Run updater '/bitrix/updates/update_m1489132575/yenisite.infoblockpropsplus/updater1.3.22.php'
+2017-03-10 10:56:15 -  - TIME UpdateStepModules 0.002 sec
+2017-03-10 10:56:15 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus (1.3.22)<br><h2>Исправлено:</h2> <ul> <li>Сброс привязки свойств к конкретным разделам инфоблока</li> </ul>
+2017-03-10 10:56:15 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:15 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:15 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.3.22%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:15 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:15 -  - TIME LoadModulesUpdates(request) 0.324 sec
+2017-03-10 10:56:15 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:15 - S - STEP
+2017-03-10 10:56:15 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:16 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:16 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:16 -  - loadFile
+2017-03-10 10:56:16 - U - RETURN
+2017-03-10 10:56:16 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:16 -  - TIME UnGzipArchive 0.002 sec
+2017-03-10 10:56:16 - CSURUS1 - Run updater '/bitrix/updates/update_m1489132576/yenisite.infoblockpropsplus/updater1.3.23.php'
+2017-03-10 10:56:16 -  - TIME UpdateStepModules 0.006 sec
+2017-03-10 10:56:16 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus (1.3.23)<br><h2>Исправлено:</h2> <ul> <li>Возможность группировки свойств в разделах</li> </ul>
+2017-03-10 10:56:16 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:16 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:16 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.3.23%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:16 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:16 -  - TIME LoadModulesUpdates(request) 0.421 sec
+2017-03-10 10:56:16 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:16 - S - STEP
+2017-03-10 10:56:16 - LMU01 - LoadModulesUpdates-Step
+2017-03-10 10:56:16 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:16 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:16 -  - loadFile
+2017-03-10 10:56:16 - U - RETURN
+2017-03-10 10:56:16 -  - exec CUpdateClientPartner::UnGzipArchive
+2017-03-10 10:56:16 -  - TIME UnGzipArchive 0.001 sec
+2017-03-10 10:56:16 - CSURUS1 - Run updater '/bitrix/updates/update_m1489132576/yenisite.infoblockpropsplus/updater1.3.24.php'
+2017-03-10 10:56:16 -  - TIME UpdateStepModules 0.003 sec
+2017-03-10 10:56:16 - UPD_SUCCESS - Updated: yenisite.infoblockpropsplus (1.3.24)<br><h2>Исправлено:</h2> <ul> <li>Вид курсора для перетаскиваемых объектов</li> </ul>
+2017-03-10 10:56:16 -  - exec CUpdateClientPartner::LoadModulesUpdates
+2017-03-10 10:56:16 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:16 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.3.24%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=yenisite.infoblockpropsplus&lim=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:16 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:17 -  - TIME LoadModulesUpdates(request) 0.36 sec
+2017-03-10 10:56:17 -  - exec CUpdateClientPartner::ParseServerData
+2017-03-10 10:56:17 - STEP - Finish - NOUPDATES
+2017-03-10 10:56:17 - STEP - Finish - NOUPDATES
+2017-03-10 10:56:20 -  - exec CUpdateClientPartner::GetUpdatesList
+2017-03-10 10:56:20 -  - exec CUpdateClientPartner::__CollectRequestData
+2017-03-10 10:56:20 -  - utf=Y&lang=ru&stable=Y&CANGZIP=Y&SUPD_DBS=MYSQL&XE=N&CLIENT_SITE=bigms.arendalesov.com&LICENSE_KEY=X&SUPD_STS=1&SUPD_URS=0&SUPD_URSA=1030&TYPENC=E&CLIENT_PHPVER=5.4.45&NGINX=Y&dbv=5.5.46&instm=main%2C16.5.11%2CN%3Bstoreassist%2C16.0.1%2CN%3Btranslate%2C14.5.0%2CN%3Bphotogallery%2C16.0.1%2CN%3Bcatalog%2C16.0.15%2CN%3Breport%2C16.5.1%2CN%3Basd.currencyrate%2C1.1.0%2CN%3Bhighloadblock%2C16.5.0%2CN%3Bclouds%2C16.5.2%2CN%3Bwebfly.ymarket%2C1.3.5%2CN%3Bacrit.exportpro%2C3.3.23%2CN%3Bscale%2C16.5.0%2CN%3Bseo%2C17.0.0%2CN%3Bpull%2C17.0.0%2CN%3Bcompression%2C16.0.0%2CN%3Bsale%2C16.0.31%2CN%3Byenisite.infoblockpropsplus%2C1.3.24%2CN%3Biblock%2C16.0.6%2CN%3Bfileman%2C16.5.5%2CN%3Bmobileapp%2C16.0.11%2CN%3Bsubscribe%2C16.5.0%2CN%3Bsender%2C16.5.2%2CN%3Bsearch%2C16.0.0%2CN%3Bsocialservices%2C17.0.0%2CN%3Broistat.integration%2C1.1.15%2CN%3Bsecurity%2C16.5.0%2CN%3Bvote%2C17.0.0%2CN%3Babtest%2C16.0.0%2CN%3Bblog%2C16.6.0%2CN%3Bcurrency%2C17.0.0%2CN%3Bforum%2C17.0.0%2CN%3Bbitrixcloud%2C16.0.1%2CN%3Bbitrix.eshop%2C15.0.1%2CN%3Bmlife.bistroklick%2C1.0.10%2CN%3Beshopapp%2C16.5.0%2CN%3Bkaycom.oneplaceseo%2C1.0.5%2CN%3Bperfmon%2C16.5.0%2CN%3Bbitrix.sitecorporate%2C15.0.0%2CN%3Bb24connector%2C16.5.3%2CN%3Bbitrix.xdebug%2C1.0.5%2CN%3Bform%2C15.0.2%2CN%3Bconversion%2C15.5.6%2CN&reqm=asd.currencyrate%2Cwebfly.ymarket%2Cacrit.exportpro%2Cyenisite.infoblockpropsplus%2Croistat.integration%2Cbitrix.eshop%2Cmlife.bistroklick%2Ckaycom.oneplaceseo%2Cbitrix.sitecorporate%2Cbitrix.xdebug&fullmoduleinfo=Y&SUPD_SRS=RU&SUPD_CMP=N
+2017-03-10 10:56:20 -  - exec CUpdateClientPartner::GetHTTPPage
+2017-03-10 10:56:20 -  - TIME GetUpdatesList(request) 0.685 sec
+2017-03-10 10:56:20 -  - exec CUpdateClientPartner::ParseServerData
