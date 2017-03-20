@@ -14,6 +14,9 @@ $GLOBALS["arLinkedProducts"]["XML_ID"] = $arResult["PROPERTIES"]["RECOMMEND"]["V
 $this->setFrameMode(true);
 $templateLibrary = array('popup');
 
+global $MAIN_SECTION_ID;
+$MAIN_SECTION_ID = $arResult["SECTION"]["PATH"][0]["ID"];
+
 
 //print_r($arResult['IBLOCK_SECTION_ID']);
 $currencyList = '';
@@ -94,6 +97,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 			<div class="articul">Артикул: <?=$arResult["DISPLAY_PROPERTIES"]["CML2_ARTICLE"]["VALUE"]?></div>
 		<?}?>
 		
+		<?/*
 		<div class="vote_block">
 			<?$APPLICATION->IncludeComponent(
 				"bitrix:iblock.vote",
@@ -114,6 +118,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 				array("HIDE_ICONS" => "Y")
 			);?>
 		</div>
+		*/?>
 	</div>
 </div>
 	
@@ -379,7 +384,6 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 	<div class="title_block">
 		<ul class="tabNavigation">
 			<li><a class="" href="#tab_content1"><h3>технические характеристики</h3></a></li>
-			<li><a class="" href="#tab_content2"><h3>отзывы</h3></a></li>
 			<?if ( is_array( $arResult["COLLECTIONS"] )):?>
 				<li><a class="" href="#tab_content6"><h3>товары из одной коллекции</h3></a></li>
 			<?endif;?>
@@ -460,6 +464,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 			<div class="clear"></div>
 		<?endif;?>
 	</div>
+	<?/*
 	<div class="properties tab_content comments" id="tab_content2">
 		<div class="bx_lb">
 			<div class="tac ovh"></div>
@@ -504,16 +509,18 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 			</div>
 		</div>
 	</div>
+	*/?>
 	<div class="properties tab_content" id="tab_content6">
 		<?$count_similar = count($arResult["COLLECTIONS"]);?>
 		<?global $colFilter;?>
 		<?$colFilter = Array("ID" => $arResult["COLLECTIONS"]);?>
+
 		
-				<?$APPLICATION->IncludeComponent("bitrix:catalog.section", "carusel", Array(
+				<?$APPLICATION->IncludeComponent("custom:catalog.section", "carusel", Array(
 					"COMPONENT_TEMPLATE" => ".default",
 						"IBLOCK_TYPE" => "1c_catalog",
 						"IBLOCK_ID" => $arParams["IBLOCK_ID"],
-						"SECTION_ID" => "",
+						"SECTION_ID" =>  $arResult["SECTION"]["PATH"][0]["ID"],
 						"SECTION_CODE" => "",
 						"SECTION_USER_FIELDS" => array(
 							0 => "",

@@ -186,6 +186,10 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 				if($arItem["PROPERTIES"]["NOVINKA"]["VALUE"] == "Да"){
 					echo '<div class="label new">NEW</div>';
 				}
+				//если подарок
+				if($arItem["IS_GIFT"] == 1){
+					echo '<div class="label gift">+ подарок</div>';
+				}
 				?>
 			</div>
 		
@@ -208,7 +212,6 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 				
 				global $USER;
 				//if ($USER->IsAdmin()){
-				//print_r($file['src']);
 				//}
 				if(!empty($file['src'])) {?>
                     <img itemprop="image" class="image_rework_table" itemprop="image" src="<? echo $file['src'] ?>" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>">
@@ -231,6 +234,19 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 		?>
 		<td class="title_block">
 			<div class="title"><a href="<? echo $arItem['DETAIL_PAGE_URL']; ?>" itemprop="itemListElement" title="<? echo $productTitle; ?>"><? echo $productTitle; ?></a></div>
+			
+			<div class="property_block">
+				<?if ( $arItem["DISPLAY_PROPERTIES"]["STRANA_PROIZVODITEL"]["VALUE"]):?>
+					<div class="country c<?=$arItem["DISPLAY_PROPERTIES"]["STRANA_PROIZVODITEL"]["VALUE_ENUM_ID"]?>">
+						<?=$arItem["DISPLAY_PROPERTIES"]["STRANA_PROIZVODITEL"]["VALUE"]?>
+					</div>
+					<?unset( $arItem["DISPLAY_PROPERTIES"]["STRANA_PROIZVODITEL"] );?>
+				<?endif;?>
+				<?foreach ( $arItem["DISPLAY_PROPERTIES"] as $arProperty):?>
+					<?=$arProperty["NAME"]?>: <?=$arProperty["VALUE"]?><br>
+				<?endforeach;?>			
+			</div>
+			
 			<div class="do_block">
 				<a id="<? echo $arItemIDs['COMPARE_LINK']; ?>" data-id="<?=$arItem["ID"]?>" class="bx_bt_button_type_2 bx_medium compare_button" href="javascript:void(0)" onclick="yaCounter31721621.reachGoal('add_to_compare'); return true;"><span><?=$compareBtnMessage;?></span></a>
 				<a class="share_button" href="javascript:void(0)" data-id="<?=$arItem["ID"]?>" onclick="yaCounter31721621.reachGoal('add_to_bookmarks');"><span><?=GetMessage('CT_BCS_TPL_MESS_BTN_SHARE')?></span></a>

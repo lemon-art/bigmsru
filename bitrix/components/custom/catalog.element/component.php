@@ -796,6 +796,13 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 				$arResult["SECTION"] = $arSection;
 			}
 			
+			
+			//коллекции
+			
+
+			
+			
+			
 			//подарки
 			$IBLOCK_GIFT_ID = 22;
 			$arGifts = Array();
@@ -810,15 +817,7 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 			}
 			
 			
-
-
-			if ( count ( $arGifts ) > 0){
-				
-				$arItog = Array(); //массив для итоговых подарков подходящих товару
-				
-
-				
-				//получаем ID всех род категорий
+			//получаем ID всех род категорий
 				if ( count( $arSection['PATH'] ) > 0){
 					foreach ( $arSection['PATH'] as $arSect ){
 						$arCurSections[] = $arSect['ID'];
@@ -827,6 +826,16 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 				else {
 					$arCurSections[] = $arResult["IBLOCK_SECTION_ID"];
 				}
+			
+
+
+			if ( count ( $arGifts ) > 0){
+				
+				$arItog = Array(); //массив для итоговых подарков подходящих товару
+				
+
+				
+				
 				
 
 				
@@ -886,8 +895,65 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 				
 			} 
 			
-	
-	
+			
+			//считываем файл с массивом коллекций
+			$colFile = $_SERVER["DOCUMENT_ROOT"]."/tools/files/collections.txt"; 
+			$data = file_get_contents( $colFile );
+			$arCollections = unserialize( $data );
+			$arColItog = Array();
+			$filterSection = 0;
+			
+			foreach ( $arCollections as $keyCollection => $arCollection ){
+				
+					//проверка по разделам
+					if ( $arGift["SECTION"]["VALUE"] ){
+						if ( in_array( $arCollection["SECTION_ID"], $arCurSections ) ){
+							$arColItog[] = $keyCollection; //раздел найден
+							$filterSection = $arCollection["SECTION_ID"];
+						}
+					}
+			}
+			
+			if ( count($arColItog) > 0){ //если есть совпадения по разделам
+				$arColProps = Array();
+				
+				foreach ( $arColItog as $valCol ){
+					foreach ( $arCollections[$valCol]["PROPS"] as $arProp ){
+						$arColProps[] = $arProp;	//выписываем свойства по которым надо будет искать элементы коллекции
+					}
+				}
+				
+				$arFilterProp = Array(); //массив фильтра элементов по найденным значениям свойств
+				foreach ( $arResult['PROPERTIES'] as $arProperty ){
+					if ( in_array($arProperty["ID"], $arColProps)){
+						if ( $arProperty["PROPERTY_TYPE"] == "L" ){
+							$arFilterProp["PROPERTY_".$arProperty["ID"]] = $arProperty["VALUE_ENUM_ID"];
+						}
+						else {
+							$arFilterProp["PROPERTY_".$arProperty["ID"]] = $arProperty["VALUE"];
+						}
+					}
+				}
+				if ( count( $arFilterProp ) > 0){
+					$arFilterProp["!ID"] = $arResult["ID"];
+					$arFilterProp["IBLOCK_ID"] = $arResult["IBLOCK_ID"];
+					$arFilterProp["SECTION_ID"] = $filterSection;
+					$arFilterProp["INCLUDE_SUBSECTIONS"] = "Y";
+				}
+				$arCollectionElements = Array();
+				$arSelect = Array("ID");
+				$res = CIBlockElement::GetList(Array(), $arFilterProp, false, Array(), $arSelect); 
+				while($ob = $res->GetNextElement()){ 
+					$arFields = $ob->GetFields();
+					$arCollectionElements[] = $arFields["ID"];
+				}
+			
+				$arResult["COLLECTIONS"] = $arCollectionElements;
+			}
+			
+
+
+			
 		
 
 			if ($bCatalog && $bIBlockCatalog)

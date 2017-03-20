@@ -2,6 +2,21 @@
 	display: none;
 }
 
+.gift_inner {
+	display: inline-block;
+    vertical-align: middle;
+}
+
+.gift_img {
+	height: 75px;
+    float: left;
+}
+
+.gift_text {
+	padding-top: 25px;
+    padding-left: 30px;
+	white-space: nowrap;
+}
 
 a.char_tab {
     color: #2d2d2d;
@@ -42,4 +57,6 @@ a.char_tab.active_tab {
 .gift {
 	text-align: center;
     padding: 20px;
+	height: 65px;
+    margin-top: 10px;
 }

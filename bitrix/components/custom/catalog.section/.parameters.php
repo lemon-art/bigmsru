@@ -8,9 +8,12 @@ use Bitrix\Currency;
 
 global $USER_FIELD_MANAGER;
 
+
 if (!Loader::includeModule('iblock'))
 	return;
+	
 $catalogIncluded = Loader::includeModule('catalog');
+CModule::IncludeModule('yenisite.infoblockpropsplus');
 $iblockExists = (!empty($arCurrentValues['IBLOCK_ID']) && (int)$arCurrentValues['IBLOCK_ID'] > 0);
 
 $arIBlockType = CIBlockParameters::GetIBlockTypes();

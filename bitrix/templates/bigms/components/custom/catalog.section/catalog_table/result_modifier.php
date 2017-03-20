@@ -122,6 +122,9 @@ if (!empty($arResult['ITEMS']))
 		unset($arSizes);
 	}
 	unset($strEmptyPreview);
+	 
+	
+
 
 	$arSKUPropList = array();
 	$arSKUPropIDs = array();
@@ -158,6 +161,21 @@ if (!empty($arResult['ITEMS']))
 		}
 	}
 
+					//подарки
+			$IBLOCK_GIFT_ID = 22;
+			$arGifts = Array();
+			$arCurSections = Array();
+			$arSelectGift = Array("ID", "IBLOCK_ID", "NAME", "PROPERTY_*");
+			$arFilterGift = Array("IBLOCK_ID"=>$IBLOCK_GIFT_ID, "ACTIVE"=>"Y");
+			$resGift = CIBlockElement::GetList(Array(), $arFilterGift, false, Array(), $arSelectGift); //получаем список всех доступных подарков
+			while($obGift = $resGift->GetNextElement()){ 
+				
+				$arGiftProps = $obGift->GetProperties();
+				$arGifts[] = $arGiftProps;
+			}
+			
+
+	
 	$arNewItemsList = array();
 	foreach ($arResult['ITEMS'] as $key => $arItem)
 	{
@@ -410,6 +428,73 @@ if (!empty($arResult['ITEMS']))
 					unset($arItem['DISPLAY_PROPERTIES'][$propKey]);
 			}
 		}
+		
+		
+		//определяем есть ли подарок
+		
+		if ( count ( $arGifts ) > 0){
+		
+				
+				
+				$arItog = Array(); //массив для итоговых подарков подходящих товару
+				$arCurSections = Array();
+				$isGift = 0;
+	
+				//получаем ID всех род категорий
+				if ( count( $arResult['PATH'] ) > 0){
+					foreach ( $arResult['PATH'] as $arSect ){
+						$arCurSections[] = $arSect['ID'];
+					}
+				}
+				
+				
+				foreach ( $arGifts as $keyG => $arGift ){
+
+					//проверка по разделам
+					if ( $arGift["SECTION"]["VALUE"] ){
+						if ( in_array( $arGift["SECTION"]["VALUE"], $arCurSections ) ){
+							$isGift = 1; //подарок найден
+						}
+					}
+					
+					//проверка по товарам
+					if ( is_array($arGift["PRODUCT_ID"]["VALUE"]) ){
+						foreach ( $arGift["PRODUCT_ID"]["VALUE"] as $productID ){
+							if ( $productID == $arItem["ID"] ) {
+								$isGift = 1; //подарок найден
+							}
+						}
+					}
+					
+					//проверка по свойствам
+					$arProprs = Array();
+					foreach ( $arGift as $keyGift=>$val) { //вычисляем свойства
+						if ( strpos( $keyGift, "PROP_") !== false ){
+							$arProprs[str_replace("PROP_", "", $keyGift)] = $val;
+						}
+					}
+					
+					
+					foreach ( $arProprs as $keyProp => $arProp){
+						if ( $arProp["VALUE"] ){
+							if ( $arProp["VALUE"] == $arItem["PROPERTIES"][$keyProp]["VALUE"] ){
+								$isGift = 1; //подарок найден
+ 							}
+						}
+					}
+
+				}
+				
+				
+				
+				if ( $isGift ){ //если есть подарок то получаем данные по нему
+					$arItem['IS_GIFT'] = 1;
+				}
+
+				
+		}
+		
+		
 		$arItem['LAST_ELEMENT'] = 'N';
 		$arNewItemsList[$key] = $arItem;
 	}

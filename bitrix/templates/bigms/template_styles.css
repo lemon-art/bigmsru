@@ -707,6 +707,11 @@ nav.top ul li:last-child{
 	text-transform:uppercase;
 	padding:0 15px;
 }
+
+
+
+
+
 .sections_block_main .title_block .select_block{
 	border-right: 1px solid #e6f4f8;
 }
@@ -1644,7 +1649,7 @@ button:hover, input[type="submit"]:hover, input[type="button"]:hover {
     box-sizing: border-box;
 	text-align:center;
 	position:relative;
-	height:350px;
+	height:450px;
 	float:left;
 }
 .labels{
@@ -1670,6 +1675,12 @@ button:hover, input[type="submit"]:hover, input[type="button"]:hover {
 	background:#06997c;
 	width:25px;
 }
+
+.labels .label.gift{
+	background:#e61f09;
+	
+}
+
 .catalog_list .item.last{
 	border-right:none;
 }
@@ -1833,7 +1844,7 @@ button:hover, input[type="submit"]:hover, input[type="button"]:hover {
 	background:#ffffff;
 	/* height:394px; */
 
-	height:370px;
+	height:470px;
 }
 /* .catalog_block .do_block{
 	position:absolute;
@@ -1950,6 +1961,7 @@ span.catalog_table{
 .catalog_table .item .img_block{
 	width:15%;
 	border-right: 1px solid #e6f4f8;
+	position: relative;
 }
 .catalog_table .item .img_block .img{
 	height:80px;
@@ -1958,6 +1970,7 @@ span.catalog_table{
 }
 .catalog_table .item .title_block{
 	width:38%;
+	padding-bottom: 10px;
 }
 .catalog_table .item .title_block .title a{
 	padding:0 30px 5px 20px;
@@ -1966,6 +1979,46 @@ span.catalog_table{
 	padding:0 0 0 20px;
 	text-align:left;
 }
+
+.catalog_table .item .title_block .property_block, .catalog_block .item  .property_block{
+padding: 0 20px 0px 30px;
+    font-size: 12px;
+    text-align: left;
+}
+
+.catalog_block .item  .property_block{
+	min-height: 88px;
+}
+
+.property_block .country{
+	
+	padding-left: 20px;
+}
+
+.country.c1134{	background: url('images/flags/1134.png') no-repeat left; }
+.country.c1203{	background: url('images/flags/1203.png') no-repeat left; }
+.country.c345{	background: url('images/flags/345.png') no-repeat left; }
+.country.c423{	background: url('images/flags/423.png') no-repeat left; }
+.country.c442{	background: url('images/flags/442.png') no-repeat left; }
+.country.c447{	background: url('images/flags/447.png') no-repeat left; }
+.country.c448{	background: url('images/flags/448.png') no-repeat left; }
+.country.c449{	background: url('images/flags/449.png') no-repeat left; }
+.country.c465{	background: url('images/flags/465.png') no-repeat left; }
+.country.c466{	background: url('images/flags/466.png') no-repeat left; }
+.country.c593{	background: url('images/flags/593.png') no-repeat left; }
+.country.c598{	background: url('images/flags/598.png') no-repeat left; }
+.country.c684{	background: url('images/flags/684.png') no-repeat left; }
+.country.c782{	background: url('images/flags/782.png') no-repeat left; }
+.country.c800{	background: url('images/flags/800.png') no-repeat left; }
+.country.c826{	background: url('images/flags/826.png') no-repeat left; }
+.country.c834{	background: url('images/flags/834.png') no-repeat left; }
+.country.c878{	background: url('images/flags/878.png') no-repeat left; }
+.country.c879{	background: url('images/flags/879.png') no-repeat left; }
+.country.c884{	background: url('images/flags/884.png') no-repeat left; }
+.country.c894{	background: url('images/flags/894.png') no-repeat left; }
+
+
+
 .availability_block{
 	width:18%;
 }
@@ -2020,7 +2073,7 @@ span.catalog_table{
 	z-index:999;
 }
 .buy_with_this:after{
-	z-index:1001;
+	z-index:0;
 }
 .carusel_block .title_block{
 	height:49px;
@@ -2137,7 +2190,7 @@ span.catalog_table{
 
 .carusel_block .catalog_block .item .bx_catalog_item_container{
 	/* height:385px; */
-	height:360px;
+	height:450px;
 }
 .carusel_block .catalog_block .item,
 .buy_with_this .catalog_block .item{
@@ -2145,14 +2198,14 @@ span.catalog_table{
  	-webkit-box-sizing: content-box;
  	-moz-box-sizing: content-box;
     box-sizing: content-box;
-	height:341px;
+	height:450px;
 	background:#ffffff;
 }
 .buy_with_this .catalog_block.not_carusel .item{
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
     box-sizing: border-box;
-	height: 439px;
+	height: 450px;
     padding-top: 54px;
 }
 .carusel_block .catalog_list .availability{
@@ -2582,7 +2635,8 @@ span.catalog_table{
 	margin-bottom:-1px;
 	border-top:25px solid #f2f7fd;
 	position:relative;
-	min-height:391px;
+	min-height:490px;
+
 }
 .buy_with_this .title_block{
 	position:absolute;
@@ -2606,9 +2660,12 @@ span.catalog_table{
 	text-transform:uppercase;
 }
 .buy_with_this .flexslider .flex-viewport{
-	border-left:1px solid #e6f4f8;
+	border-left:0px solid #e6f4f8;
 	background:#f2f7fd;
+	padding-left: 2px;
 }
+
+
 .buy_with_this .bottom{
 	height:80px;
 	margin-left:-1px;

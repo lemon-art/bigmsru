@@ -351,13 +351,14 @@ if($arParams["IBLOCK_ID"] == 10 || $arParams["IBLOCK_ID"] == 12){?>
 				<div class="catalog_block not_carusel">
 			<?else:?>
 				<div class="flexslider flexslider_run">
-			<?endif?>			
-				<?$APPLICATION->IncludeComponent("bitrix:catalog.section", "carusel", Array(
+			<?endif?>
+				<?global $MAIN_SECTION_ID;?>
+				<?$APPLICATION->IncludeComponent("custom:catalog.section", "carusel", Array(
 					"COMPONENT_TEMPLATE" => ".default",
 						"IBLOCK_TYPE" => "1c_catalog",
 						"IBLOCK_ID" => $arParams["IBLOCK_ID"],
-						"SECTION_ID" => "",
-						"SECTION_CODE" => "",
+						"SECTION_ID" => $MAIN_SECTION_ID,
+						"SECTION_CODE" =>"",
 						"SECTION_USER_FIELDS" => array(
 							0 => "",
 							1 => "",
@@ -443,7 +444,7 @@ if($arParams["IBLOCK_ID"] == 10 || $arParams["IBLOCK_ID"] == 12){?>
 				</div>
 			<?else:?>
 				</div>
-				<div class="bottom"></div>
+				
 			<?endif?>
 		</div>		
 	<?endif?>	

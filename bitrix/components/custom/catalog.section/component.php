@@ -525,6 +525,7 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 		$bSectionFound = true;
 	}
 	
+	
 	if(!$bSectionFound)
 	{
 		
@@ -537,6 +538,7 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 			,$arParams["FILE_404"]
 		);
 		return;
+		
 		
 	} 
 	elseif($arResult["ID"] > 0 && $arParams["ADD_SECTIONS_CHAIN"])
@@ -924,8 +926,22 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 	$arResult["NAV_RESULT"] = $rsElements;
 	if (isset($arItem))
 		unset($arItem);
+		
 
-	/*
+	//echo "111-".$section_id;
+	//открываем файл с массивом свойств выводимых на листинг
+	$listFile = $_SERVER["DOCUMENT_ROOT"]."/tools/files/listing_prop_".$arResult["IBLOCK_ID"].".txt";
+	$data = file_get_contents($listFile);
+	$arPropData = unserialize( $data );
+	if ( is_array($arPropData[$section_id])){
+		$arParams["PROPERTY_CODE"] = $arPropData[$section_id];
+	}
+	else {
+		unset($arParams["PROPERTY_CODE"]);
+	}
+	$arParams["PROPERTY_CODE"][] ="STRANA_PROIZVODITEL";
+	
+	
 	if (!empty($arResult["ELEMENTS"]) && ($bGetProperties || ($bCatalog && $boolNeedCatalogCache)))
 	{
 		$arPropFilter = array(
@@ -960,7 +976,7 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 
 				if ($bGetProductProperties)
 				{
-					$arItem["PRODUCT_PROPERTIES"] = CIBlockPriceTools::GetProductProperties(
+						$arItem["PRODUCT_PROPERTIES"] = CIBlockPriceTools::GetProductProperties(
 						$arParams["IBLOCK_ID"],
 						$arItem["ID"],
 						$arParams["PRODUCT_PROPERTIES"],
@@ -976,7 +992,7 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 		if (isset($arItem))
 			unset($arItem);
 	}
-	*/
+	
 
 	if ($bIBlockCatalog)
 	{

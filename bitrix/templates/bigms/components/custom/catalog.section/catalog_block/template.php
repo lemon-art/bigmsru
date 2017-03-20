@@ -193,7 +193,7 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 			}
 			//если подарок
 			if($arItem["IS_GIFT"] == 1){
-				echo 'aaa<div class="label new">NEW</div>';
+				echo '<div class="label gift">+ подарок</div>';
 			}
 			?>
 		</div>
@@ -228,6 +228,18 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 		?>
 		
 		<div class="title"><a itemprop="url" href="<? echo $arItem['DETAIL_PAGE_URL']; ?>" title="<? echo $productTitle; ?>"><span itemprop="name"><? echo $productTitle; ?></span><span itemprop="description" style="display: none"><? echo $productTitle; ?></span></a></div>
+	
+			<div class="property_block">
+				<?if ( $arItem["DISPLAY_PROPERTIES"]["STRANA_PROIZVODITEL"]["VALUE"]):?>
+					<div class="country c<?=$arItem["DISPLAY_PROPERTIES"]["STRANA_PROIZVODITEL"]["VALUE_ENUM_ID"]?>">
+						<?=$arItem["DISPLAY_PROPERTIES"]["STRANA_PROIZVODITEL"]["VALUE"]?>
+					</div>
+					<?unset( $arItem["DISPLAY_PROPERTIES"]["STRANA_PROIZVODITEL"] );?>
+				<?endif;?>
+				<?foreach ( $arItem["DISPLAY_PROPERTIES"] as $arProperty):?>
+					<?=$arProperty["NAME"]?>: <?=$arProperty["VALUE"]?><br>
+				<?endforeach;?>			
+			</div>
 	
 		<div class="price_block" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
 			<div id="<? echo $arItemIDs['PRICE']; ?>" class="bx_price"><?
