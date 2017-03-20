@@ -4,7 +4,7 @@
 		$arUrlData = unserialize( $data );
 
 		$curPage = $APPLICATION->GetCurPage(false);
-
-		if ( !array_search($curPage, $arUrlData) ){
+		
+		if ( !array_search($curPage, $arUrlData) &&  substr_count($currentUrl, 'apply') > 0 ){
 			$APPLICATION->AddViewContent('seotext', $arResult["SECTION"]["DESCRIPTION"]);
 		}
