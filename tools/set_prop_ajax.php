@@ -77,8 +77,10 @@ parse_str($_POST["data"]);
 						}
 						else {		//если нет такого варианта то добавляем его
 							$ibpenum = new CIBlockPropertyEnum;
-							if($PropID = $ibpenum->Add(Array('PROPERTY_ID'=>$arProps[$key], 'VALUE'=>$arData[$key])))
+							if($PropID = $ibpenum->Add(Array('PROPERTY_ID'=>$arProps[$key], 'VALUE'=>$arData[$key]))){
 								$value = $PropID;
+								$arEnumValues[$arProps[$key]][$value] = $arData[$key]; //записываем новый вариан, чтобы не создавались дубли
+							}
 						}
 						
 					}
