@@ -16,8 +16,9 @@ parse_str($_POST["data"]);
 		
 		if ( count ($arResult) > 0 ){
 		
-			echo "<h2>Заполнены следующие свойства:</h2>";
 			
+			
+			/*
 			//определяем все свойства которые будут участвовать в процессе заполнения
 			$arProps = Array();				//массив соотвествия свойств инфоблока и данных из файла csv
 			$arEnumValues = Array(); 		//массив вариантов значений свойств типа "список"
@@ -48,67 +49,93 @@ parse_str($_POST["data"]);
 
 			}
 			
+			
 			echo "<br><h2>Не найдены свойства:</h2><br>";
 			foreach( $arPropNotUse as $prop){
 				echo $prop."<br>";
 			}
+			*/
 			
-		//echo "<pre>";
-		//print_r( $arProps );
-		//echo "</pre>";
+			//echo "<pre>";
+			//print_r( $arProps );
+			//echo "</pre>";
 			
 			
+			$arPropPlus = Array();
+			$arPropMinus = Array();
 			
-			
-			foreach( $arResult as $arItem){
+			foreach( $arResult as $arItem){ 						//перебираем массив с совпадениями
 				$arData = Array();
-				foreach( $arItem['DATA'] as $keyData => $valData){
-					if ( $keyData > 3 ) {
-						$prop = explode(": ",  $valData);
-						$arData[$keyData] = $prop[1];
+				$arPropName = Array();
+				$arSetProps = Array();
+				foreach( $arItem['DATA'] as $keyData => $valData){ 	//перебираем свойства
+					if ( $keyData > 3 ) { 							//первые 2 пропускаем так как там название и ссылка
+						$prop = explode(": ",  $valData);			//получаем название и значение свойства
+				 
+						//ищем свойство
+						$properties = CIBlockProperty::GetList(Array("sort"=>"asc", "name"=>"asc"), Array("ACTIVE"=>"Y", "IBLOCK_ID"=>$IBLOCK_ID, "NAME" => $prop[0]));
+						if ($prop_fields = $properties->GetNext()){
+							//$arProps[$key] = $prop_fields["ID"];
+							
+							$arPropPlus[$prop[0]] = 1; 				//записываем в массив найденных свойств
+
+							
+							//обрабатываем свойства у которых тип "список"
+							if ( $prop_fields["PROPERTY_TYPE"] == 'L' ){
+								$value = '';
+								$property_enums = CIBlockPropertyEnum::GetList(Array("DEF"=>"DESC", "SORT"=>"ASC"), Array("IBLOCK_ID"=>$IBLOCK_ID, "CODE"=>$prop_fields["CODE"]));
+								while($enum_fields = $property_enums->GetNext()){
+									if ( $enum_fields["VALUE"] == $prop[1] ){
+										$value = $enum_fields["ID"];
+									}
+									//$arEnumValues[$prop_fields["ID"]][$enum_fields["ID"]] = $enum_fields["VALUE"];
+								}
+								if ( !$value ) {						//если значение не найдено, то добавляем его
+									$ibpenum = new CIBlockPropertyEnum;
+									if($PropID = $ibpenum->Add(Array('PROPERTY_ID'=>$prop_fields["ID"], 'VALUE'=>$prop[1]))){
+										$value = $PropID;
+									}
+								} 
+							}
+							else {
+								$value = $prop[1];
+							}
+							$arSetProps[$prop_fields["ID"]] = $value;
+						}
+						else {
+							$arPropMinus[$prop[0]] = 1; 				//записываем в массив ненайденных свойств
+						}
+					
+					
+					
 					}
 				}
 			
-				$arSetProps = Array();
-				foreach ( $arProps as $key => $prop ){
-					if ( is_array( $arEnumValues[$arProps[$key]] )){ 				
-						if ( $value = array_search($arData[$key], $arEnumValues[$arProps[$key]] )){ 	//если свойство типа список
-
-						}
-						else {		//если нет такого варианта то добавляем его
-							$ibpenum = new CIBlockPropertyEnum;
-							if($PropID = $ibpenum->Add(Array('PROPERTY_ID'=>$arProps[$key], 'VALUE'=>$arData[$key]))){
-								$value = $PropID;
-								$arEnumValues[$arProps[$key]][$value] = $arData[$key]; //записываем новый вариан, чтобы не создавались дубли
-							}
-						}
-						
-					}
-					else {
-
-						$value = $arData[$key];
-					}
-					$arSetProps[$prop] = $value;
-				}
 				
-				//echo "<pre>";
-				//print_r( $arSetProps );
-				//echo "</pre>";
-				
-				//обновление элемента
-				//$el = new CIBlockElement;
-				//$arLoadProductArray = Array(
-				//  "PROPERTY_VALUES"=> $arSetProps,
-				//  );
+
+
 				
 				CIBlockElement::SetPropertyValuesEx($arItem["PRODUCT_ID"], false, $arSetProps);
 				
 				
-				//$PRODUCT_ID = $arItem["PRODUCT_ID"]; 
-				//echo $PRODUCT_ID;
-				//$res = $el->Update($PRODUCT_ID, $arLoadProductArray);
+
 			}
 			
+			echo "<h2>Заполнены свойства:</h2>";
+			echo "<ul>";
+			foreach ( $arPropPlus as $kName => $kVal){
+				echo "<li>".$kName."</li>";
+			}
+			echo "</ul>";
+			
+			echo "<h2>Не найдены свойства:</h2>";
+			echo "<ul>";
+			foreach ( $arPropMinus as $kName => $kVal){
+				if ( $kName ) {
+					echo "<li>".$kName."</li>";
+				}
+			}
+			echo "</ul>";
 		}
 		else{
 			$error = "Не найдено совпадений";
