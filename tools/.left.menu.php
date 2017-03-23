@@ -27,6 +27,13 @@ $aMenuLinks = Array(
 		Array(), 
 		Array(), 
 		"" 
-	)
+	),
+	Array(
+		"Настройка sitemap.xml", 
+		"/tools/sitemap.php", 
+		Array(), 
+		Array(), 
+		"" 
+	),
 );
 ?>

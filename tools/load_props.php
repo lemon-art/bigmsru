@@ -16,7 +16,6 @@ $scvDir = $_SERVER["DOCUMENT_ROOT"]."/tools/csv/"; 		//папка где хра�
 						
 
 if (!empty($_FILES['userfile']['name'])){
-	echo '12';
 	$uploadfile = $scvDir.basename($_FILES['userfile']['name']);
 
 	// Копируем файл из каталога для временного хранения файлов:
