@@ -5,7 +5,7 @@ CModule::IncludeModule("iblock");
 
 $map = new CSitemap;
 
-$siteName = 'http://bigms.arendalesov.com';
+$siteName = 'http://www.bigms.ru';
 
 $count = 0;
 
