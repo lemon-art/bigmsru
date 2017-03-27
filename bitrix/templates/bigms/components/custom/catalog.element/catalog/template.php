@@ -345,7 +345,8 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 						<td>
 							<?
 							if(!empty($properties["DISPLAY_VALUE"])){
-								echo strip_tags($properties["DISPLAY_VALUE"], "");
+								//echo strip_tags($properties["DISPLAY_VALUE"], "");
+								echo $properties["DISPLAY_VALUE"];
 							}
 							else{
 								echo $properties["VALUE"];

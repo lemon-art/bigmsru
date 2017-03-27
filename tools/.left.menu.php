@@ -29,6 +29,13 @@ $aMenuLinks = Array(
 		"" 
 	),
 	Array(
+		"Перелинковка свойств", 
+		"/tools/prop_detail_link.php", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
 		"Настройка sitemap.xml", 
 		"/tools/sitemap.php", 
 		Array(), 

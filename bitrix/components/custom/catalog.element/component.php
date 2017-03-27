@@ -664,6 +664,49 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 				Iblock\Component\Tools::IPROPERTY_ENTITY_ELEMENT,
 				'IPROPERTY_VALUES'
 			);
+			
+			
+			if(!$arSection && $arResult["IBLOCK_SECTION_ID"] > 0)
+			{
+				
+				$arSectionFilter = array(
+					"ID" => $arResult["IBLOCK_SECTION_ID"],
+					"IBLOCK_ID" => $arResult["IBLOCK_ID"],
+					
+				);
+				$rsSection = CIBlockSection::GetList(Array(),$arSectionFilter);
+				$rsSection->SetUrlTemplates("", $arParams["SECTION_URL"]);
+				$arSection = $rsSection->GetNext();
+			}
+			
+			
+
+			if($arSection)
+			{
+				$arSection["PATH"] = array();
+				$rsPath = CIBlockSection::GetNavChain($arResult["IBLOCK_ID"], $arSection["ID"]);
+				$rsPath->SetUrlTemplates("", $arParams["SECTION_URL"]);
+				while($arPath = $rsPath->GetNext())
+				{
+					$ipropValues = new \Bitrix\Iblock\InheritedProperty\SectionValues($arParams["IBLOCK_ID"], $arPath["ID"]);
+					$arPath["IPROPERTY_VALUES"] = $ipropValues->getValues();
+					$arSection["PATH"][] = $arPath;
+				}
+				$arResult["SECTION"] = $arSection;
+			}
+			
+			//открываем файл с массивом соответствия адресов страниц
+			$data = file_get_contents($_SERVER["DOCUMENT_ROOT"]."/tools/files/seo_url.txt");
+			$arUrlData = unserialize( $data );
+					
+			//считываем дсписок свойств для которых делать перелинковку
+			$data = file_get_contents($_SERVER["DOCUMENT_ROOT"]."/tools/files/prop_link_".$arResult["IBLOCK_ID"].".txt");
+			$arPropLinkedData = unserialize( $data );
+			$arPropLinked = Array();
+			foreach ( $arPropLinkedData as $key=>$val){
+				$arPropLinked[] = $key;
+			}
+			
 
 			$arResult["PROPERTIES"] = $obElement->GetProperties();
 			if ($bCatalog && $boolNeedCatalogCache)
@@ -696,9 +739,15 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 			{
 				foreach ($propertyList as &$pid)
 				{
+				
+					
+				
 					if (!isset($arResult["PROPERTIES"][$pid]))
 						continue;
 					$prop = &$arResult["PROPERTIES"][$pid];
+					
+
+					
 					$boolArr = is_array($prop["VALUE"]);
 					if (
 							($boolArr && !empty($prop["VALUE"]))
@@ -707,6 +756,30 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 					{
 						$arResult["DISPLAY_PROPERTIES"][$pid] = CIBlockFormatProperties::GetDisplayValue($arResult, $prop, "catalog_out");
 					}
+					
+					//вставляем ссылки для свойств
+					
+					if ( in_array($prop["ID"], $arPropLinked)){
+						$link = $arResult["SECTION"]["PATH"][0]["SECTION_PAGE_URL"];
+						$link .= 'filter/';
+						if ( $arResult["DISPLAY_PROPERTIES"][$pid]["PROPERTY_TYPE"] == 'S' ){
+							$link .= strtolower($arResult["DISPLAY_PROPERTIES"][$pid]["CODE"]) . "-is-" . $arResult["DISPLAY_PROPERTIES"][$pid]["VALUE"];
+						}
+						elseif( $arResult["DISPLAY_PROPERTIES"][$pid]["PROPERTY_TYPE"] == 'L' ){
+							$link .= strtolower($arResult["DISPLAY_PROPERTIES"][$pid]["CODE"]) . "-is-" . $arResult["DISPLAY_PROPERTIES"][$pid]["VALUE_XML_ID"];
+						}
+						
+						$link .= '/apply/';
+						
+						if ( isset($arUrlData[$link]) ){
+							$link = $arUrlData[$link];
+						}
+						
+						
+						$arResult["DISPLAY_PROPERTIES"][$pid]["DISPLAY_VALUE"] = "<a href='".$link."'>".$arResult["DISPLAY_PROPERTIES"][$pid]["DISPLAY_VALUE"]."</a>";
+						
+					} 
+					
 					unset($prop);
 				}
 				unset($pid);
@@ -767,34 +840,9 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 			}
 			
 
-			if(!$arSection && $arResult["IBLOCK_SECTION_ID"] > 0)
-			{
-				
-				$arSectionFilter = array(
-					"ID" => $arResult["IBLOCK_SECTION_ID"],
-					"IBLOCK_ID" => $arResult["IBLOCK_ID"],
-					
-				);
-				$rsSection = CIBlockSection::GetList(Array(),$arSectionFilter);
-				$rsSection->SetUrlTemplates("", $arParams["SECTION_URL"]);
-				$arSection = $rsSection->GetNext();
-			}
-			
-			
+	
 
-			if($arSection)
-			{
-				$arSection["PATH"] = array();
-				$rsPath = CIBlockSection::GetNavChain($arResult["IBLOCK_ID"], $arSection["ID"]);
-				$rsPath->SetUrlTemplates("", $arParams["SECTION_URL"]);
-				while($arPath = $rsPath->GetNext())
-				{
-					$ipropValues = new \Bitrix\Iblock\InheritedProperty\SectionValues($arParams["IBLOCK_ID"], $arPath["ID"]);
-					$arPath["IPROPERTY_VALUES"] = $ipropValues->getValues();
-					$arSection["PATH"][] = $arPath;
-				}
-				$arResult["SECTION"] = $arSection;
-			}
+			
 			
 			
 			//коллекции
