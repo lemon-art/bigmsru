@@ -295,7 +295,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 				{
 					// yaCounter31721621.reachGoal('basket');
 				?>
-					<a href="javascript:void(0);" class="bx_big bx_bt_button bx_cart buy_button" id="<? echo $arItemIDs['ADD_BASKET_LINK']; ?>" onclick="yaCounter31721621.reachGoal('basket'); return true;"><span></span><? echo $addToBasketBtnMessage; ?></a>
+					<a href="javascript:void(0);" class="bx_big bx_bt_button bx_cart buy_button" id="<? echo $arItemIDs['ADD_BASKET_LINK']; ?>" data-id="<?=$arResult['ID']?>" onclick="yaCounter31721621.reachGoal('basket'); return true;"><span></span><? echo $addToBasketBtnMessage; ?></a>
 				<?
 				}
 				?>
