@@ -313,7 +313,7 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 				?>
 				<div id="<? echo $arItemIDs['BASKET_ACTIONS']; ?>" class="bx_catalog_item_controls_blocktwo">
 					
-						<a id="<? echo $arItemIDs['BUY_LINK']; ?>" class="bx_bt_button bx_medium buy_button" href="javascript:void(0)" rel="nofollow" onclick="yaCounter31721621.reachGoal('basket');" data-id="<?=$arItemIDs['ID']?>"><?
+						<a id="<? echo $arItemIDs['BUY_LINK']; ?>" class="bx_bt_button bx_medium buy_button" href="javascript:void(0)" rel="nofollow" onclick="yaCounter31721621.reachGoal('basket');" data-id="<?=$arItem['ID']?>"><?
 						
 						if($arItem["CATALOG_QUANTITY"] == 0){
 							echo GetMessage('CT_BCS_TPL_MESS_BTN_ADD_TO_BASKET_ZAG');
