@@ -767,3 +767,4 @@ $APPLICATION->AddHeadString('<link href="http://'.$canonical.'" rel="canonical" 
         ), $component
 );?>
 
+<div data-retailrocket-markup-block="58da81ef9872e51d287b54cb" data-category-id="<?=$ar_result['ID']?>"></div>

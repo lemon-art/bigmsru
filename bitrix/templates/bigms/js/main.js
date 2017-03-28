@@ -1162,7 +1162,7 @@ $.ajax({
 function SendRetailMail ( email ){
 	var r = /^\w+@\w+\.\w{2,4}$/i;
 	if (r.test(email)) {		//проверяем на валидность
-		(window["rrApiOnReady"] = window["rrApiOnReady"] || []).push(function() { rrApi.setEmail("<"+email+">");	});
+		(window["rrApiOnReady"] = window["rrApiOnReady"] || []).push(function() { rrApi.setEmail(email);	});
 	}
 
 	

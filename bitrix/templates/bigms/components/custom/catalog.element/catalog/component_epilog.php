@@ -46,3 +46,4 @@ BX.ready(BX.defer(function(){
 );?>
 
 
+ <div data-retailrocket-markup-block="58da82c865bf1907bc23147a" data-product-id="<?=$arResult['ID']?>"></div>
