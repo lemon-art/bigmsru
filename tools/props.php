@@ -92,7 +92,7 @@ TABLE {
 
 	$properties = CIBlockProperty::GetList(Array("name"=>"asc"), Array("ACTIVE"=>"Y", "IBLOCK_ID"=>$IBLOCK_ID));
 	while ($prop_fields = $properties->GetNext()):?>
-		<?if ( $prop_fields["SORT"] > 550 || $prop_fields["CODE"] == 'BREND'):?>
+		<?if ( $prop_fields["SORT"] > 0 || $prop_fields["CODE"] == 'BREND'):?>
 			<li>
 				<label>
 					<input type="checkbox" class="check" name="prop[<?=$prop_fields["ID"]?>]" <?if ( in_array($prop_fields["ID"], $arProp) ):?>checked<?endif;?>>  <?=$prop_fields["NAME"]?>
