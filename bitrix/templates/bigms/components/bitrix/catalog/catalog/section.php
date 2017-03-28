@@ -760,3 +760,9 @@ if(isset($_GET['PAGEN_1'])) {
 
 $APPLICATION->AddHeadString('<link href="http://'.$canonical.'" rel="canonical" />',true);
 ?>
+
+<script type="text/javascript">
+    (window["rrApiOnReady"] = window["rrApiOnReady"] || []).push(function() {
+		try { rrApi.categoryView(<<?=$ar_result['ID']?>>); } catch(e) {}
+	})
+</script>
