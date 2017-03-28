@@ -18,6 +18,6 @@ var url_referrer = document.referrer;
 var yaParams = {error404: {page: url, from: url_referrer}};
 </script>
 
-
+<div data-retailrocket-markup-block="58da87da65bf1907bc2314ad"></div>
 
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
