@@ -760,9 +760,10 @@ if(isset($_GET['PAGEN_1'])) {
 
 $APPLICATION->AddHeadString('<link href="http://'.$canonical.'" rel="canonical" />',true);
 ?>
+<?$APPLICATION->IncludeComponent(
+        "quetzal:tracking.category", "",
+        Array(
+                "CATEGORY_PAGE_PARAM" => $ar_result['ID']
+        ), $component
+);?>
 
-<script type="text/javascript">
-    (window["rrApiOnReady"] = window["rrApiOnReady"] || []).push(function() {
-		try { rrApi.categoryView(<<?=$ar_result['ID']?>>); } catch(e) {}
-	})
-</script>

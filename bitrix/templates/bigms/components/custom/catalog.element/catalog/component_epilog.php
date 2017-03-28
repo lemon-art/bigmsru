@@ -37,8 +37,12 @@ BX.ready(BX.defer(function(){
 }
 
 ?>
-<script type="text/javascript">
-    (window["rrApiOnReady"] = window["rrApiOnReady"] || []).push(function() {
-		try{ rrApi.view(<<?=$arResult['ID']?>>); } catch(e) {}
-	})
-</script>
+
+<?$APPLICATION->IncludeComponent(
+        "quetzal:tracking.product", "",
+        Array(
+                "CARD_PRODUCT_PARAM" => $arResult['ID']
+        ), $component
+);?>
+
+
