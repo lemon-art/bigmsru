@@ -143,6 +143,9 @@ $.ajax({
             }
         }
     });
+	
+
+	
 
 
     /* Разбиваем меню на колонки
@@ -1155,8 +1158,20 @@ $.ajax({
     });
 });
 
+//отправляем email в retail rocket
+function SendRetailMail ( email ){
+	var r = /^\w+@\w+\.\w{2,4}$/i;
+	if (r.test(email)) {		//проверяем на валидность
+		(window["rrApiOnReady"] = window["rrApiOnReady"] || []).push(function() { rrApi.setEmail("<"+email+">");	});
+	}
+
+	
+}
+
 
 $(function () {
+
+
     //Обработчик формы авторизации
     $('#modal-login').on('submit', 'form', function () {
 

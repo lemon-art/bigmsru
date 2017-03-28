@@ -110,7 +110,7 @@ if (!function_exists("PrintPropsForm"))
 							</div>
 
 							<div class="bx_block r3x1">
-								<input type="text" maxlength="250" size="<?=$arProperties["SIZE1"]?>" value="<?=$arProperties["VALUE"]?>" name="<?=$arProperties["FIELD_NAME"]?>" id="<?=$arProperties["FIELD_NAME"]?>" />
+								<input type="text" maxlength="250" size="<?=$arProperties["SIZE1"]?>" value="<?=$arProperties["VALUE"]?>" name="<?=$arProperties["FIELD_NAME"]?>" id="<?=$arProperties["FIELD_NAME"]?>" <?if ( $arProperties["CODE"] == 'EMAIL'):?> onChange="SendRetailMail(this.value);" <?endif;?>/>
 
 								<?
 								if (strlen(trim($arProperties["DESCRIPTION"])) > 0):
