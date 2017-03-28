@@ -33,4 +33,16 @@ $APPLICATION->SetTitle("Заказы");
 		"DISABLE_BASKET_REDIRECT" => "N",
 		"PRODUCT_COLUMNS" => array()
 	)
-);?><?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
+);?>
+
+<?$APPLICATION->IncludeComponent(
+	"quetzal:tracking.order",
+	"",
+	Array(
+		"COMPOSITE_FRAME_MODE" => "A",
+		"COMPOSITE_FRAME_TYPE" => "AUTO",
+		"ORDER_PARAM_TRANSACTION" => $_REQUEST["ORDER_ID"]
+	)
+);?>
+
+<?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
