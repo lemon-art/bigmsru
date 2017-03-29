@@ -36,7 +36,18 @@ $rsData = $entity_data_class::getList(array(
 	"order" => array("UF_NAME"=>"ASC")
 ));
 $rsData = new CDBResult($rsData, $sTableID);
-$arRes = $rsData->Fetch();	
+if ( $arRes = $rsData->Fetch() ){
+
+}
+else {
+		\Bitrix\Iblock\Component\Tools::process404(
+			trim($arParams["MESSAGE_404"]) ?: GetMessage("CATALOG_SECTION_NOT_FOUND")
+			,true
+			,$arParams["SET_STATUS_404"] === "Y"
+			,$arParams["SHOW_404"] === "Y"
+			,$arParams["FILE_404"]
+		);
+}
 
 
 global $arrFilterBrend;
