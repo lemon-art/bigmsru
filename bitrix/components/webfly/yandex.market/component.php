@@ -273,7 +273,7 @@ if (!$_GET["market_stop"])
     {
         if (empty($agentMass))
         {
-            $arResult["AGENT_FOLDER"] = $APPLICATION->GetCurDir();
+            $arResult["AGENT_FOLDER"] = '/y-market/';
             COption::SetOptionString("webfly.ymarket", "agentFolder", $arResult["AGENT_FOLDER"], false, false);
 
             /* Add webfly.ymarket's agent */
@@ -293,6 +293,41 @@ if (!$_GET["market_stop"])
         {
             CAgent::RemoveAgent(
                 "wfYmarketAgent();", "webfly.ymarket", false
+            );
+        }
+    }
+	
+	
+	
+	$agentResult = CAgent::GetList(array("ID" => "DESC"), array("MODULE_ID" => "webfly.ymarket", "NAME" => "wfRetailAgent();"));
+    $agentMass = array();
+    while ($agentob = $agentResult->GetNext()) {
+        $agentMass = $agentob;
+    }
+    if ($arParams ["AGENT_CHECK"] == "Y")
+    {
+        if (empty($agentMass))
+        {
+            $arResult["AGENT_FOLDER"] = '/y-retail/';
+            COption::SetOptionString("webfly.ymarket", "agentFolder", $arResult["AGENT_FOLDER"], false, false);
+
+            /* Add webfly.ymarket's agent */
+            CAgent::AddAgent(
+                "wfRetailAgent();", // function name
+                "webfly.ymarket", // module's ID
+                "N", 86400, // interval
+                date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")), time() + 10800), // first check - now
+                "Y", // agent active
+                date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")), time() + 10800), // first start - now
+                30);
+        }
+    }
+    else
+    {
+        if (!empty($agentMass))
+        {
+            CAgent::RemoveAgent(
+                "wfRetailAgent();", "webfly.ymarket", false
             );
         }
     }
