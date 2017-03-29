@@ -26,6 +26,7 @@ function wfYmarketAgent() {
 
 function wfRetailAgent() {
     $agentFolder = COption::GetOptionString("webfly.ymarket", "agentFolder", "/y-retail/", false,false);
+	$agentFolder = "/y-retail/";
     BXClearCache(true, "/y-retail/");
     BXClearCache(true, $agentFolder);
     $ch = curl_init();
