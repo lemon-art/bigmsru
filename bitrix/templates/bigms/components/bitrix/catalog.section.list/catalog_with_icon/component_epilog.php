@@ -5,7 +5,7 @@
 
 		$curPage = $APPLICATION->GetCurPage(false);
 		
-		if ( !array_search($curPage, $arUrlData) &&  substr_count($curPage, 'apply') == 0 ){
+		if ( !array_search($curPage, $arUrlData) &&  substr_count($curPage, 'apply') == 0 && !$_GET["set_filter"]){
 			$APPLICATION->AddViewContent('seotext', $arResult["SECTION"]["DESCRIPTION"]);
 		}
 		
