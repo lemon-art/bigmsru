@@ -325,7 +325,8 @@ class CSitemap
 
 				$arBrand = array_merge($arBrand1, $arBrand2);
 				foreach ($arBrand as $brand){
-					$arBrandsUrl[] = '/proizvoditeli/inzhenernaya/'.$brand["UF_NAME"].'/';
+					$brandName = mb_strtolower(str_replace(" ", "_", $brand['UF_NAME']));
+					$arBrandsUrl[] = '/proizvoditeli/inzhenernaya/'.$brandName.'/';
 				}
 				
 				$arBrandsUrl[] = '/proizvoditeli/bytovaya/';
@@ -344,7 +345,8 @@ class CSitemap
 
 				$arBrand = array_merge($arBrand1, $arBrand2);
 				foreach ($arBrand as $brand){
-					$arBrandsUrl[] = '/proizvoditeli/bytovaya/'.$brand["UF_NAME"].'/';
+					$brandName = mb_strtolower(str_replace(" ", "_", $brand['UF_NAME']));
+					$arBrandsUrl[] = '/proizvoditeli/bytovaya/'.$brandName.'/';
 				}
 
 				return $arBrandsUrl;
