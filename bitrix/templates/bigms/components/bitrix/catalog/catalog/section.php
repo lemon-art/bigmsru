@@ -107,7 +107,7 @@ if ((substr_count($currentUrl, 'filter') > 0 && substr_count($currentUrl, 'apply
 		
 		
 		
-			$SEO_TEXT = $el['DETAIL_TEXT'];
+		$SEO_TEXT = $el['DETAIL_TEXT'];
 
 		
 		
@@ -151,6 +151,8 @@ $arFilter = Array('IBLOCK_ID'=>$arParams["IBLOCK_ID"], 'CODE'=>$arResult["VARIAB
 $db_list = CIBlockSection::GetList(Array($by=>$order), $arFilter, true, Array('ID', 'NAME', 'DEPTH_LEVEL', 'IBLOCK_SECTION_ID', 'ELEMENT_CNT'));
 $ar_result = $db_list->GetNext();
 
+
+
 // Узнаем количество товаров к текущем разделе
 $arFilterEl = Array(
 	"IBLOCK_ID"=>$arParams["IBLOCK_ID"], 
@@ -187,9 +189,18 @@ if($res->SelectedRowsCount() == 1) {
 
 
 $title = '';
-if ($ar_result['DEPTH_LEVEL'] == 3) {
+if ($ar_result['DEPTH_LEVEL'] == 3 && !array_search($APPLICATION->GetCurPage(false), $arUrlData)) {
 
-    //вытягиваем имя родителя
+	\Bitrix\Iblock\Component\Tools::process404(
+			trim($arParams["MESSAGE_404"]) ?: GetMessage("CATALOG_ELEMENT_NOT_FOUND")
+			,true
+			,$arParams["SET_STATUS_404"] === "Y"
+			,$arParams["SHOW_404"] === "Y"
+			,$arParams["FILE_404"]
+		);
+	
+    /*
+	//вытягиваем имя родителя
     $arFilter = Array('IBLOCK_ID' => $arParams["IBLOCK_ID"], 'ID' => $ar_result["IBLOCK_SECTION_ID"]);
     $db_list_parent = CIBlockSection::GetList(Array($by => $order), $arFilter, true, Array("NAME"));
     $ar_result_parent = $db_list_parent->GetNext();
@@ -197,7 +208,8 @@ if ($ar_result['DEPTH_LEVEL'] == 3) {
 
     ?>
     <h1><?= $title; ?></h1>
-    <?php
+    <?*/
+	
 } else {
     ?>
     <h1><? $APPLICATION->ShowTitle(false) ?></h1>

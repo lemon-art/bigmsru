@@ -1540,10 +1540,12 @@ if(isset($arResult["ID"]))
 	{
 		foreach($arResult["SECTION"]["PATH"] as $arPath)
 		{
-			if ($arPath["IPROPERTY_VALUES"]["SECTION_PAGE_TITLE"] != "")
-				$APPLICATION->AddChainItem($arPath["IPROPERTY_VALUES"]["SECTION_PAGE_TITLE"], $arPath["~SECTION_PAGE_URL"]);
-			else
-				$APPLICATION->AddChainItem($arPath["NAME"], $arPath["~SECTION_PAGE_URL"]);
+			if ( $arPath["DEPTH_LEVEL"] < 3 ){
+				if ($arPath["IPROPERTY_VALUES"]["SECTION_PAGE_TITLE"] != "")
+					$APPLICATION->AddChainItem($arPath["IPROPERTY_VALUES"]["SECTION_PAGE_TITLE"], $arPath["~SECTION_PAGE_URL"]);
+				else
+					$APPLICATION->AddChainItem($arPath["NAME"], $arPath["~SECTION_PAGE_URL"]);
+			}
 		}
 	}
 	if ($arParams["ADD_ELEMENT_CHAIN"])
