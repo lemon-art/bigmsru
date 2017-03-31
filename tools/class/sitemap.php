@@ -325,7 +325,13 @@ class CSitemap
 
 				$arBrand = array_merge($arBrand1, $arBrand2);
 				foreach ($arBrand as $brand){
-					$brandName = mb_strtolower(str_replace(" ", "_", $brand['UF_NAME']));
+					if (preg_match("#[а-яё]+#iu", $brand['UF_NAME'])){
+						$brandName = $brand['UF_NAME'];
+					}
+					else {
+						$brandName = mb_strtolower(str_replace(" ", "_", $brand['UF_NAME']));
+					}
+					
 					$arBrandsUrl[] = '/proizvoditeli/inzhenernaya/'.$brandName.'/';
 				}
 				
@@ -345,7 +351,12 @@ class CSitemap
 
 				$arBrand = array_merge($arBrand1, $arBrand2);
 				foreach ($arBrand as $brand){
-					$brandName = mb_strtolower(str_replace(" ", "_", $brand['UF_NAME']));
+					if (preg_match("#[а-яё]+#iu", $brand['UF_NAME'])){
+						$brandName = $brand['UF_NAME'];
+					}
+					else {
+						$brandName = mb_strtolower(str_replace(" ", "_", $brand['UF_NAME']));
+					}
 					$arBrandsUrl[] = '/proizvoditeli/bytovaya/'.$brandName.'/';
 				}
 
