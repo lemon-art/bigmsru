@@ -33,7 +33,7 @@ if ($USER->IsAdmin()){
 <div class="bx_filter <?=$templateData["TEMPLATE_CLASS"]?>">
 	<div class="bx_filter_section">
 
-		<form name="<?echo $arResult["FILTER_NAME"]."_form"?>" action="<?echo $arResult["FORM_ACTION"]?>#downtofilter" method="get" class="smartfilter">
+		<form name="<?echo $arResult["FILTER_NAME"]."_form"?>" action="<?echo $arResult["FORM_ACTION"]?>#downtofilter" method="post" class="smartfilter">
 			<?foreach($arResult["HIDDEN"] as $arItem):?>
 			<input type="hidden" name="<?echo $arItem["CONTROL_NAME"]?>" id="<?echo $arItem["CONTROL_ID"]?>" value="<?echo $arItem["HTML_VALUE"]?>" />
 			<?endforeach;?>
