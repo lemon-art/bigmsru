@@ -773,10 +773,10 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 						
 						if ( isset($arUrlData[$link]) ){
 							$link = $arUrlData[$link];
+							$arResult["DISPLAY_PROPERTIES"][$pid]["DISPLAY_VALUE"] = "<a href='".$link."'>".$arResult["DISPLAY_PROPERTIES"][$pid]["DISPLAY_VALUE"]."</a>";
 						}
 						
 						
-						$arResult["DISPLAY_PROPERTIES"][$pid]["DISPLAY_VALUE"] = "<a href='".$link."'>".$arResult["DISPLAY_PROPERTIES"][$pid]["DISPLAY_VALUE"]."</a>";
 						
 					} 
 					
