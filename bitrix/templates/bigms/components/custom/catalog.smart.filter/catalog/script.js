@@ -234,6 +234,7 @@ JCSmartFilter.prototype.postHandler = function (result, fromCache)
 
 JCSmartFilter.prototype.bindUrlToButton = function (buttonId, url)
 {
+
 	var button = BX(buttonId);
 	if (button)
 	{
