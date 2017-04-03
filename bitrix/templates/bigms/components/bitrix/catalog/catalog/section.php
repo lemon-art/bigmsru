@@ -69,8 +69,12 @@ $curPage = $APPLICATION->GetCurPage(false);
 			if($uf_value = $db_list->GetNext()): 
 				$custom_url = $uf_value["UF_CUSTOM_URL"];
 			endif;
+			
+			if ( $arUrlData[$custom_url] ){
+				$custom_url = $arUrlData[$custom_url];
+			}
 
-			if($custom_url != "" && !$arUrlData[$custom_url] ){
+			if($custom_url != ""){
 				header("HTTP/1.1 301 Moved Permanently"); 
 				header("Location: ".$custom_url); 
 				exit(); 
