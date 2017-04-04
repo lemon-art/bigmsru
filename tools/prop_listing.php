@@ -203,7 +203,7 @@ TABLE {
 						<?foreach ( $arPropValue as $prop_fields):?>
 
 
-							<?if ( $prop_fields["SORT"] > 550 || $prop_fields["CODE"] == 'BREND'):?>
+							<?if ( $prop_fields["SORT"] > 5 || $prop_fields["CODE"] == 'BREND'):?>
 								<li>
 									<label>
 										<input type="checkbox" class="check" name="prop[<?=$prop_fields["CODE"]?>]" <?if ( in_array($prop_fields["CODE"], $arPropData[$_GET["SECTION_ID"]]) ):?>checked<?endif;?>>  <?=$prop_fields["NAME"]?>
