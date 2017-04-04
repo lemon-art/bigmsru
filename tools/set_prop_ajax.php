@@ -2,6 +2,19 @@
 //файл для загрузки свойств
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
+CModule::IncludeModule("highloadblock");
+
+use Bitrix\Highloadblock as HL;
+use Bitrix\Main\Entity;
+$hlblock_id = 2;
+///////////////////////////////////////////////
+
+
+$hlblock = HL\HighloadBlockTable::getById($hlblock_id)->fetch(); 
+$entity = HL\HighloadBlockTable::compileEntity($hlblock);
+
+$entity_data_class = $entity->getDataClass();
+$entity_table_name = $hlblock['TABLE_NAME'];
 
 CModule::IncludeModule("iblock");
 parse_str($_POST["data"]);
@@ -96,11 +109,29 @@ parse_str($_POST["data"]);
 										$value = $PropID;
 									}
 								} 
+							} 
+							elseif ( $prop_fields["CODE"] == 'BREND' ){
+								$arFilter = array('UF_NAME' => $prop[1]); //задаете фильтр по вашим полям
+
+								$sTableID = 'tbl_'.$entity_table_name;
+								$rsData = $entity_data_class::getList(array(
+									"select" => array('UF_XML_ID', 'UF_NAME'), //выбираем поля
+									"filter" => $arFilter,
+									"order" => array("UF_NAME"=>"ASC")
+								));
+								$rsData = new CDBResult($rsData, $sTableID);
+								if ( $arRes = $rsData->Fetch() ){
+									$value = $arRes["UF_XML_ID"];
+								}
+								
 							}
 							else {
 								$value = $prop[1];
 							}
-							$arSetProps[$prop_fields["ID"]] = $value;
+							
+							if ( $value ){
+								$arSetProps[$prop_fields["ID"]] = $value;
+							}
 						}
 						else {
 							$arPropMinus[$prop[0]] = 1; 				//записываем в массив ненайденных свойств
