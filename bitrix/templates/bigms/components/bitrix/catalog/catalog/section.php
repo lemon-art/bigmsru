@@ -152,7 +152,7 @@ if ((substr_count($currentUrl, 'filter') > 0 && substr_count($currentUrl, 'apply
 
 // Узнаем ID текущего раздела
 $arFilter = Array('IBLOCK_ID'=>$arParams["IBLOCK_ID"], 'CODE'=>$arResult["VARIABLES"]["SECTION_CODE"]);
-$db_list = CIBlockSection::GetList(Array($by=>$order), $arFilter, true, Array('ID', 'NAME', 'DEPTH_LEVEL', 'IBLOCK_SECTION_ID', 'ELEMENT_CNT'));
+$db_list = CIBlockSection::GetList(Array($by=>$order), $arFilter, true, Array('IBLOCK_ID', 'ID', 'NAME', 'DEPTH_LEVEL', 'IBLOCK_SECTION_ID', 'ELEMENT_CNT'));
 $ar_result = $db_list->GetNext();
 
 
@@ -783,4 +783,4 @@ $APPLICATION->AddHeadString('<link href="http://'.$canonical.'" rel="canonical" 
         ), $component
 );?>
 
-<div data-retailrocket-markup-block="58da81ef9872e51d287b54cb" data-category-id="<?=$ar_result['ID']?>"></div>
+<div data-retailrocket-markup-block="58da81ef9872e51d287b54cb" data-category-id="<?=$ar_result['IBLOCK_ID']?><?=$ar_result['ID']?>"></div>

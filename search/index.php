@@ -1844,5 +1844,6 @@ $sectionsMenu = __recursivRenderMenu($ar_SectionList);
     ),
     false
 );?>
- <div data-retailrocket-markup-block="58da833265bf1907bc231484" data-search-phrase="<?$_REQUEST['q']?>"></div>
+
+ <div data-retailrocket-markup-block="58da833265bf1907bc231484" data-search-phrase="<?=$_GET['q']?>"></div>
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
