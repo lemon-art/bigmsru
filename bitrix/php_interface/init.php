@@ -66,6 +66,7 @@ function OnAfterIBlockElementUpdateHandler(&$arFields){
 							}
 							else {
 								$arUrlRewrite[$key]["CONDITION"] = "#^".$shortUrl."#";
+								$arUrlRewrite[$key]["PATH"] = $filterUrl;
 								$found = true;
 							}
 						}
