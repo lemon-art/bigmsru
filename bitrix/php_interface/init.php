@@ -60,9 +60,14 @@ function OnAfterIBlockElementUpdateHandler(&$arFields){
 					
 					$found = false; //индикатор если зайпись на такую страницу
 					foreach ( $arUrlRewrite as $key => $arUrl ){
-						if ( $arUrl["PATH"] == $filterUrl ){
-							$arUrlRewrite[$key]["CONDITION"] = "#^".$shortUrl."#";
-							$found = true;
+						if ( $arUrl["PATH"] == $filterUrl || $arUrl["CONDITION"] == "#^".$shortUrl."#" ){
+							if ( $found ){
+								unset($arUrlRewrite[$key]);
+							}
+							else {
+								$arUrlRewrite[$key]["CONDITION"] = "#^".$shortUrl."#";
+								$found = true;
+							}
 						}
 					}
 
@@ -425,7 +430,7 @@ function GetFilterUrl($url){
 			$itemID = "";
 			$arPropEnum = Array();
 
-			
+	
 			foreach ($smartPart as $i => $smartElement){
 				if ( $i == 0 ){
 					$itemName = $smartElement; //название свойства
@@ -434,7 +439,7 @@ function GetFilterUrl($url){
 					$properties = CIBlockProperty::GetList(Array("sort"=>"asc", "name"=>"asc"), Array("CODE"=>$smartElement, "IBLOCK_ID"=>$IBLOCK_ID));
 					if ($prop_fields = $properties->GetNext()){
 						$itemID = $prop_fields["ID"]; //ID свойства
-						//echo $prop_fields["PROPERTY_TYPE"];
+						//echo $prop_fields["ID"];
 					}
 					
 					if ( $prop_fields["PROPERTY_TYPE"] == 'L' ){
@@ -443,6 +448,9 @@ function GetFilterUrl($url){
 						while($enum_fields = $property_enums->GetNext()){
 							
 							
+							
+							//echo "<br>";
+							//echo $enum_fields["XML_ID"];
 							
 							//получаем ключ 
 							$key = $enum_fields["ID"];
@@ -465,8 +473,8 @@ function GetFilterUrl($url){
 					}
 					elseif ( $smartElement === 'is' || $smartElement === 'or' ){
 					
-						
-						if ( $arPropEnum[$smartElement] ){
+												
+						if ( $arPropEnum[$smartPart[$i+1]] ){
 							//если тип свойства список 
 							$arNewUrl[] = "arrFilter_".$itemID."_".$arPropEnum[$smartPart[$i+1]]."=Y";
 						}

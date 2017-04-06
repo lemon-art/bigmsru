@@ -718,10 +718,6 @@ if ($USER->IsAdmin()){
 
 	$toPrint = [];
 
-	echo '<!--test';
-	print_r($arResult['ITEMS']);
-	echo "-->";
-
 	foreach ($arResult['ITEMS'] as $item) {
 		if (($item['PROPERTY_TYPE'] == 'L') && (count($item['VALUES']) > 0)) {
 			$checkedItems = [];
