@@ -385,6 +385,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 	<div class="title_block">
 		<ul class="tabNavigation">
 			<li><a class="" href="#tab_content1"><h3>технические характеристики</h3></a></li>
+			<li><a class="" href="#tab_content2"><h3>отзывы</h3></a></li>
 			<?if ( is_array( $arResult["COLLECTIONS"] )):?>
 				<li><a class="" href="#tab_content6"><h3>товары из одной коллекции</h3></a></li>
 			<?endif;?>
@@ -465,52 +466,28 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 			<div class="clear"></div>
 		<?endif;?>
 	</div>
-	<?/*
+	
 	<div class="properties tab_content comments" id="tab_content2">
-		<div class="bx_lb">
+		<div class="vl">
 			<div class="tac ovh"></div>
 			<div class="tab-section-container">
-				<?$APPLICATION->IncludeComponent(
-					"bitrix:catalog.comments",
-					"catalog",
-					array(
-						"ELEMENT_ID" => $arResult['ID'],
-						"ELEMENT_CODE" => "",
-						"IBLOCK_ID" => $arParams['IBLOCK_ID'],
-						"SHOW_DEACTIVATED" => $arParams['SHOW_DEACTIVATED'],
-						"URL_TO_COMMENT" => "",
-						"WIDTH" => "",
-						"COMMENTS_COUNT" => "5",
-						"BLOG_USE" => $arParams['BLOG_USE'],
-						"FB_USE" => $arParams['FB_USE'],
-						"FB_APP_ID" => $arParams['FB_APP_ID'],
-						"VK_USE" => $arParams['VK_USE'],
-						"VK_API_ID" => $arParams['VK_API_ID'],
-						"CACHE_TYPE" => $arParams['CACHE_TYPE'],
-						"CACHE_TIME" => $arParams['CACHE_TIME'],
-						'CACHE_GROUPS' => $arParams['CACHE_GROUPS'],
-						"BLOG_TITLE" => "",
-						"BLOG_URL" => $arParams['BLOG_URL'],
-						"PATH_TO_SMILE" => "",
-						"EMAIL_NOTIFY" => $arParams['BLOG_EMAIL_NOTIFY'],
-						"AJAX_POST" => "Y",
-						"SHOW_SPAM" => "Y",
-						"SHOW_RATING" => "Y",
-						"RATING_TYPE" => "standart_text",
-						"FB_TITLE" => "",
-						"FB_USER_ADMIN_ID" => "",
-						"FB_COLORSCHEME" => "light",
-						"FB_ORDER_BY" => "reverse_time",
-						"VK_TITLE" => "",
-						"TEMPLATE_THEME" => $arParams['~TEMPLATE_THEME']
-					),
-					$component,
-					array("HIDE_ICONS" => "Y")
-				);?>
+				<div id="mc-review"></div>
+				<script type="text/javascript">
+				cackle_widget = window.cackle_widget || [];
+				cackle_widget.push({widget: 'Review', id: 52079});
+				(function() {
+					var mc = document.createElement('script');
+					mc.type = 'text/javascript';
+					mc.async = true;
+					mc.src = ('https:' == document.location.protocol ? 'https' : 'http') + '://cackle.me/widget.js';
+					var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+				})();
+				</script>
+				
 			</div>
 		</div>
 	</div>
-	*/?>
+	
 	<div class="properties tab_content" id="tab_content6">
 		<?$count_similar = count($arResult["COLLECTIONS"]);?>
 		<?global $colFilter;?>

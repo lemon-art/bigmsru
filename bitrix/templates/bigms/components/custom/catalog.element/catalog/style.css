@@ -60,3 +60,7 @@ a.char_tab.active_tab {
 	height: 65px;
     margin-top: 10px;
 }
+
+.comments .vl {
+	padding: 20px;
+}
