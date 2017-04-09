@@ -64,3 +64,8 @@ a.char_tab.active_tab {
 .comments .vl {
 	padding: 20px;
 }
+
+.crr-cnt {
+	float: right;
+	padding-left: 5px;
+}

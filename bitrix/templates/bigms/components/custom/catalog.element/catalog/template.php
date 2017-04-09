@@ -385,7 +385,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 	<div class="title_block">
 		<ul class="tabNavigation">
 			<li><a class="" href="#tab_content1"><h3>технические характеристики</h3></a></li>
-			<li><a class="" href="#tab_content2"><h3>отзывы</h3></a></li>
+			<li><a class="" href="#tab_content2"><h3>отзывы <span class="crr-cnt" data-crr-url="http://www.bigms.ru<?=$arResult["DETAIL_PAGE_URL"]?>" data-crr-chan="<?=$arResult["DETAIL_PAGE_URL"]?>"></span></h3></a></li>
 			<?if ( is_array( $arResult["COLLECTIONS"] )):?>
 				<li><a class="" href="#tab_content6"><h3>товары из одной коллекции</h3></a></li>
 			<?endif;?>
@@ -1022,4 +1022,16 @@ BX.message({
 	BTN_MESSAGE_COMPARE_REDIRECT: '<? echo GetMessageJS('CT_BCE_CATALOG_BTN_MESSAGE_COMPARE_REDIRECT') ?>',
 	SITE_ID: '<? echo SITE_ID; ?>'
 });
+</script>
+
+<script type="text/javascript">
+cackle_widget = window.cackle_widget || [];
+cackle_widget.push({widget: 'ReviewRating', id: 52079, html: '({{=it.numv}})', readonly: 'true'});
+(function() {
+    var mc = document.createElement('script');
+    mc.type = 'text/javascript';
+    mc.async = true;
+    mc.src = ('https:' == document.location.protocol ? 'https' : 'http') + '://cackle.me/widget.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+})();
 </script>
