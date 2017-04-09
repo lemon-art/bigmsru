@@ -385,7 +385,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 	<div class="title_block">
 		<ul class="tabNavigation">
 			<li><a class="" href="#tab_content1"><h3>технические характеристики</h3></a></li>
-			<li><a class="" href="#tab_content2"><h3>отзывы <span class="crr-cnt" data-crr-url="http://bigms.ru<?=$arResult["DETAIL_PAGE_URL"]?>" data-crr-chan="<?=$arResult["DETAIL_PAGE_URL"]?>"></span></h3></a></li>
+			<li><a class="" href="#tab_content2"><h3>отзывы <span class="crr-cnt" data-crr-url="http://www.bigms.ru<?=$arResult["DETAIL_PAGE_URL"]?>" data-crr-chan="<?=$arResult["ID"]?>"></span></h3></a></li>
 			<?if ( is_array( $arResult["COLLECTIONS"] )):?>
 				<li><a class="" href="#tab_content6"><h3>товары из одной коллекции</h3></a></li>
 			<?endif;?>
