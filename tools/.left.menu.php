@@ -30,7 +30,7 @@ $aMenuLinks = Array(
 	),
 	Array(
 		"Перелинковка свойств", 
-		"/tools/prop_detail_link.php", 
+		"/tools/perelinkovka.php", 
 		Array(), 
 		Array(), 
 		"" 
