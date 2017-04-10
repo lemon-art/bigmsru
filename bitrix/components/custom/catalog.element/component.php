@@ -695,16 +695,19 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 				$arResult["SECTION"] = $arSection;
 			}
 			
+			
+			$section_id = $arResult["SECTION"]["PATH"][0]["ID"];
+			 
 			//открываем файл с массивом соответствия адресов страниц
 			$data = file_get_contents($_SERVER["DOCUMENT_ROOT"]."/tools/files/seo_url.txt");
 			$arUrlData = unserialize( $data );
 					
 			//считываем дсписок свойств для которых делать перелинковку
-			$data = file_get_contents($_SERVER["DOCUMENT_ROOT"]."/tools/files/prop_link_".$arResult["IBLOCK_ID"].".txt");
+			$data = file_get_contents($_SERVER["DOCUMENT_ROOT"]."/tools/files/perelinkovka_prop_".$arResult["IBLOCK_ID"].".txt");
 			$arPropLinkedData = unserialize( $data );
-			$arPropLinked = Array();
-			foreach ( $arPropLinkedData as $key=>$val){
-				$arPropLinked[] = $key;
+			
+			if ( is_array($arPropLinkedData[$section_id])){
+				$arPropLinked = $arPropLinkedData[$section_id];
 			}
 			
 
@@ -759,7 +762,7 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 					
 					//вставляем ссылки для свойств
 					
-					if ( in_array($prop["ID"], $arPropLinked)){
+					if ( in_array($prop["CODE"], $arPropLinked)){
 						$link = $arResult["SECTION"]["PATH"][0]["SECTION_PAGE_URL"];
 						$link .= 'filter/';
 						if ( $arResult["DISPLAY_PROPERTIES"][$pid]["PROPERTY_TYPE"] == 'S' ){
@@ -1566,11 +1569,21 @@ if(isset($arResult["ID"]))
 			\Bitrix\Catalog\CatalogViewedProductTable::refresh(
 				$arResult['VIEWED_PRODUCT']['OFFER_ID'],
 				CSaleBasket::GetBasketUserID(),
-				SITE_ID,
+				SITE_ID, 
 				$arResult['VIEWED_PRODUCT']['PRODUCT_ID']
 			);
 		}
 	}
+
+	global $APPLICATION;
+	$arVIEWED_PRODUCT = unserialize($APPLICATION->get_cookie("VIEWED_PRODUCT"));
+	if ( !in_array($arResult['ID'], $arVIEWED_PRODUCT) ){
+		$arVIEWED_PRODUCT[] = $arResult['ID'];
+	}
+	$APPLICATION->set_cookie("VIEWED_PRODUCT", serialize( $arVIEWED_PRODUCT ), time()+60*60*24*30*12*2, "/");
+
+
+	
 
 	return $arResult["ID"];
 }
