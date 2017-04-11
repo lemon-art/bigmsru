@@ -44,7 +44,7 @@
             <? endif ?>
             <offers>
                 <? foreach ($arResult["OFFER"] as $arOffer): ?>
-                    <offer id="<?= $arOffer["ID"] ?>" available="<?= $arOffer["AVAIBLE"] ?>"<? if (!empty($arOffer["BID"])): ?> bid="<?= $arOffer["BID"] ?>"<? endif ?><? if (!empty($arOffer["CBID"])): ?> cbid="<?= $arOffer["CBID"] ?>"<? endif ?><? if (!empty($arOffer["FEE"])): ?> fee="<?= $arOffer["FEE"] ?>"<? endif ?>>
+                    <offer id="<?= $arOffer["ID"] ?>" available="true" <? if (!empty($arOffer["BID"])): ?> bid="<?= $arOffer["BID"] ?>"<? endif ?><? if (!empty($arOffer["CBID"])): ?> cbid="<?= $arOffer["CBID"] ?>"<? endif ?><? if (!empty($arOffer["FEE"])): ?> fee="<?= $arOffer["FEE"] ?>"<? endif ?>>
                         <url><?= $arOffer["URL"] ?></url>
                         <price><?= $arOffer["PRICE"] ?></price>
                         <? if (!empty($arOffer["OLD_PRICE"])): ?>
