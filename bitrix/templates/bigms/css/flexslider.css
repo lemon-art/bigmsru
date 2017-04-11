@@ -159,6 +159,12 @@ html[xmlns] .slides {display: block;}
 	padding-top:54px;
 	height:495px;
 }
+
+.buy_with_this.lite_block .flexslider .flex-viewport{
+	padding-top:54px;
+	height:290px;
+}
+
 .carusel_block .slides{
 	border-top:1px solid #e6f4f8;
 }

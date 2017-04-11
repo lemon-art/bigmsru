@@ -14,91 +14,6 @@ $this->setFrameMode(true);
 
 if (!empty($arResult['ITEMS']))
 {
-	$templateLibrary = array('popup');
-	$currencyList = '';
-	if (!empty($arResult['CURRENCIES']))
-	{
-		$templateLibrary[] = 'currency';
-		$currencyList = CUtil::PhpToJSObject($arResult['CURRENCIES'], false, true, true);
-	}
-	$templateData = array(
-		'TEMPLATE_THEME' => $this->GetFolder().'/themes/'.$arParams['TEMPLATE_THEME'].'/style.css',
-		'TEMPLATE_CLASS' => 'bx_'.$arParams['TEMPLATE_THEME'],
-		'TEMPLATE_LIBRARY' => $templateLibrary,
-		'CURRENCIES' => $currencyList
-	);
-	unset($currencyList, $templateLibrary);
-
-	$arSkuTemplate = array();
-	if (!empty($arResult['SKU_PROPS']))
-	{
-		foreach ($arResult['SKU_PROPS'] as &$arProp)
-		{
-			$templateRow = '';
-			if ('TEXT' == $arProp['SHOW_MODE'])
-			{
-				if (5 < $arProp['VALUES_COUNT'])
-				{
-					$strClass = 'bx_item_detail_size full';
-					$strWidth = ($arProp['VALUES_COUNT']*20).'%';
-					$strOneWidth = (100/$arProp['VALUES_COUNT']).'%';
-					$strSlideStyle = '';
-				}
-				else
-				{
-					$strClass = 'bx_item_detail_size';
-					$strWidth = '100%';
-					$strOneWidth = '20%';
-					$strSlideStyle = 'display: none;';
-				}
-				$templateRow .= '<div class="'.$strClass.'" id="#ITEM#_prop_'.$arProp['ID'].'_cont">'.
-'<span class="bx_item_section_name_gray">'.htmlspecialcharsex($arProp['NAME']).'</span>'.
-'<div class="bx_size_scroller_container"><div class="bx_size"><ul id="#ITEM#_prop_'.$arProp['ID'].'_list" style="width: '.$strWidth.';">';
-				foreach ($arProp['VALUES'] as $arOneValue)
-				{
-					$arOneValue['NAME'] = htmlspecialcharsbx($arOneValue['NAME']);
-					$templateRow .= '<li data-treevalue="'.$arProp['ID'].'_'.$arOneValue['ID'].'" data-onevalue="'.$arOneValue['ID'].'" style="width: '.$strOneWidth.';" title="'.$arOneValue['NAME'].'"><i></i><span class="cnt">'.$arOneValue['NAME'].'</span></li>';
-				}
-				$templateRow .= '</ul></div>'.
-'<div class="bx_slide_left" id="#ITEM#_prop_'.$arProp['ID'].'_left" data-treevalue="'.$arProp['ID'].'" style="'.$strSlideStyle.'"></div>'.
-'<div class="bx_slide_right" id="#ITEM#_prop_'.$arProp['ID'].'_right" data-treevalue="'.$arProp['ID'].'" style="'.$strSlideStyle.'"></div>'.
-'</div></div>';
-			}
-			elseif ('PICT' == $arProp['SHOW_MODE'])
-			{
-				if (5 < $arProp['VALUES_COUNT'])
-				{
-					$strClass = 'bx_item_detail_scu full';
-					$strWidth = ($arProp['VALUES_COUNT']*20).'%';
-					$strOneWidth = (100/$arProp['VALUES_COUNT']).'%';
-					$strSlideStyle = '';
-				}
-				else
-				{
-					$strClass = 'bx_item_detail_scu';
-					$strWidth = '100%';
-					$strOneWidth = '20%';
-					$strSlideStyle = 'display: none;';
-				}
-				$templateRow .= '<div class="'.$strClass.'" id="#ITEM#_prop_'.$arProp['ID'].'_cont">'.
-'<span class="bx_item_section_name_gray">'.htmlspecialcharsex($arProp['NAME']).'</span>'.
-'<div class="bx_scu_scroller_container"><div class="bx_scu"><ul id="#ITEM#_prop_'.$arProp['ID'].'_list" style="width: '.$strWidth.';">';
-				foreach ($arProp['VALUES'] as $arOneValue)
-				{
-					$arOneValue['NAME'] = htmlspecialcharsbx($arOneValue['NAME']);
-					$templateRow .= '<li data-treevalue="'.$arProp['ID'].'_'.$arOneValue['ID'].'" data-onevalue="'.$arOneValue['ID'].'" style="width: '.$strOneWidth.'; padding-top: '.$strOneWidth.';"><i title="'.$arOneValue['NAME'].'"></i>'.
-'<span class="cnt"><span class="cnt_item" style="background-image:url(\''.$arOneValue['PICT']['SRC'].'\');" title="'.$arOneValue['NAME'].'"></span></span></li>';
-				}
-				$templateRow .= '</ul></div>'.
-'<div class="bx_slide_left" id="#ITEM#_prop_'.$arProp['ID'].'_left" data-treevalue="'.$arProp['ID'].'" style="'.$strSlideStyle.'"></div>'.
-'<div class="bx_slide_right" id="#ITEM#_prop_'.$arProp['ID'].'_right" data-treevalue="'.$arProp['ID'].'" style="'.$strSlideStyle.'"></div>'.
-'</div></div>';
-			}
-			$arSkuTemplate[$arProp['CODE']] = $templateRow;
-		}
-		unset($templateRow, $arProp);
-	}
-
 	$strElementEdit = CIBlock::GetArrayByID($arParams["IBLOCK_ID"], "ELEMENT_EDIT");
 	$strElementDelete = CIBlock::GetArrayByID($arParams["IBLOCK_ID"], "ELEMENT_DELETE");
 	$arElementDeleteParams = array("CONFIRM" => GetMessage('CT_BCS_TPL_ELEMENT_DELETE_CONFIRM'));
@@ -206,62 +121,9 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 		
 			<div class="title"><a href="<? echo $arItem['DETAIL_PAGE_URL']; ?>" title="<? echo $productTitle; ?>"><? echo $productTitle; ?></a></div>
 	
-			<div class="property_block">
-				<?if ( $arItem["DISPLAY_PROPERTIES"]["STRANA_PROIZVODITEL"]["VALUE"]):?>
-					<div class="country c<?=$arItem["DISPLAY_PROPERTIES"]["STRANA_PROIZVODITEL"]["VALUE_ENUM_ID"]?>">
-						<?=$arItem["DISPLAY_PROPERTIES"]["STRANA_PROIZVODITEL"]["VALUE"]?>
-					</div>
-					<?unset( $arItem["DISPLAY_PROPERTIES"]["STRANA_PROIZVODITEL"] );?>
-				<?endif;?>
-				<?foreach ( $arItem["DISPLAY_PROPERTIES"] as $arProperty):?>
-					<?=$arProperty["NAME"]?>: <?=$arProperty["VALUE"]?><br>
-				<?endforeach;?>			
-			</div>
 	
-			<div class="price_block">
-				<div id="<? echo $arItemIDs['PRICE']; ?>" class="bx_price"><?
-				if (!empty($minPrice))
-				{
-					if ('N' == $arParams['PRODUCT_DISPLAY_MODE'] && isset($arItem['OFFERS']) && !empty($arItem['OFFERS']))
-					{
-						echo GetMessage(
-							'CT_BCS_TPL_MESS_PRICE_SIMPLE_MODE',
-							array(
-								'#PRICE#' => $minPrice['PRINT_DISCOUNT_VALUE'],
-								'#MEASURE#' => GetMessage(
-									'CT_BCS_TPL_MESS_MEASURE_SIMPLE_MODE',
-									array(
-										'#VALUE#' => $minPrice['CATALOG_MEASURE_RATIO'],
-										'#UNIT#' => $minPrice['CATALOG_MEASURE_NAME']
-									)
-								)
-							)
-						);
-					}
-					else
-					{
-						//echo $minPrice['PRINT_DISCOUNT_VALUE'];
-						echo number_format($minPrice['VALUE'],2,'.',' ');
-						echo '<span> руб.</span>';
-					}
-					if ('Y' == $arParams['SHOW_OLD_PRICE'] && $minPrice['DISCOUNT_VALUE'] < $minPrice['VALUE'])
-					{
-						?> <span><? echo $minPrice['PRINT_VALUE']; ?></span><?
-					}
-				}
-				unset($minPrice);
-				?></div>
-			</div>
+			
 
-            <?
-            if($arItem['IBLOCK_SECTION_ID'] == 1405 || $arItem['IBLOCK_SECTION_ID'] == 1385 || $arItem['IBLOCK_SECTION_ID'] == 1386) {
-                echo '<div class="availability">Есть в наличии</div>';
-            } elseif($arItem["CATALOG_QUANTITY"] <= 0) {
-                echo '<div class="availability no">Заказ 1-3 дня</div>';
-            } else {
-                echo '<div class="availability">Есть в наличии</div>';
-            }
-            ?>
 		
 		
 			<?
@@ -270,142 +132,12 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 			if (!isset($arItem['OFFERS']) || empty($arItem['OFFERS']))
 			{
 				?>
-				<div class="bx_catalog_item_controls">
-					<?
-					if ($arItem['CAN_BUY'])
-					{
-						if ('Y' == $arParams['USE_PRODUCT_QUANTITY'])
-						{
-						?>
-							<div class="bx_catalog_item_controls_blockone">
-								<div style="display: inline-block;position: relative;">
-									<a id="<? echo $arItemIDs['QUANTITY_DOWN']; ?>" href="javascript:void(0)" class="bx_bt_button_type_2 bx_small" rel="nofollow">-</a>
-									<input type="text" class="bx_col_input" id="<? echo $arItemIDs['QUANTITY']; ?>" name="<? echo $arParams["PRODUCT_QUANTITY_VARIABLE"]; ?>" value="<? echo $arItem['CATALOG_MEASURE_RATIO']; ?>">
-									<a id="<? echo $arItemIDs['QUANTITY_UP']; ?>" href="javascript:void(0)" class="bx_bt_button_type_2 bx_small" rel="nofollow">+</a>
-									<span id="<? echo $arItemIDs['QUANTITY_MEASURE']; ?>"><? echo $arItem['CATALOG_MEASURE_NAME']; ?></span>
-								</div>
-							</div>
-						<?
-						}
-						?>
-						<div id="<? echo $arItemIDs['BASKET_ACTIONS']; ?>" class="bx_catalog_item_controls_blocktwo">
-							<a id="<? echo $arItemIDs['BUY_LINK']; ?>" class="bx_bt_button bx_medium buy_button" href="javascript:void(0)" rel="nofollow" onclick="yaCounter31721621.reachGoal('basket');"><?
-							if($arItem["CATALOG_QUANTITY"] <= 0){
-								echo GetMessage('CT_BCS_TPL_MESS_BTN_ADD_TO_BASKET_ZAG');
-							}
-							else{
-								if ($arParams['ADD_TO_BASKET_ACTION'] == 'BUY')
-								{
-									echo ('' != $arParams['MESS_BTN_BUY'] ? $arParams['MESS_BTN_BUY'] : GetMessage('CT_BCS_TPL_MESS_BTN_BUY'));
-								}
-								else
-								{
-									echo ('' != $arParams['MESS_BTN_ADD_TO_BASKET'] ? $arParams['MESS_BTN_ADD_TO_BASKET'] : GetMessage('CT_BCS_TPL_MESS_BTN_ADD_TO_BASKET'));
-								}
-							}
-							?></a>
-
-							<div class="byclick">
-								<a href="#" data-id="<?=$arItem["ID"]?>" data-iblock="<?=$arParams["IBLOCK_ID"]?>" class="buy_one_button" onclick="yaCounter31721621.reachGoal('catalog-oneclickbuy-button');">купить в 1 клик</a>
-							</div>				
-						</div>
-						<?
-					}
-					else
-					{
-						?>
-						<div id="<? echo $arItemIDs['NOT_AVAILABLE_MESS']; ?>" class="bx_catalog_item_controls_blockone"><span class="bx_notavailable"><?
-						echo ('' != $arParams['MESS_NOT_AVAILABLE'] ? $arParams['MESS_NOT_AVAILABLE'] : GetMessage('CT_BCS_TPL_MESS_PRODUCT_NOT_AVAILABLE'));
-						?></span></div><?
-					}
-
-					//Уменьшаем картинку для баннера
-					$PICT = ('Y' == $arItem['SECOND_PICT'] ? $arItem['PREVIEW_PICTURE_SECOND'] : $arItem['PREVIEW_PICTURE']);
-					$file = CFile::ResizeImageGet($PICT['ID'], array('width'=>80, 'height'=>150), BX_RESIZE_IMAGE_PROPORTIONAL_ALT, true);
-					$PICT['SRC'] = $file['src'];
-					$PICT['WIDTH'] = $file['width'];
-					$PICT['HEIGHT'] = $file['height'];
-					?>
 				
-				
-					<div class="do_block small">
-						<a id="<? echo $arItemIDs['COMPARE_LINK']; ?>" data-id="<?=$arItem["ID"]?>" class="bx_bt_button_type_2 bx_medium compare_button" href="javascript:void(0)" onclick="yaCounter31721621.reachGoal('add_to_compare'); return true;" data-text="<?=$compareBtnMessage;?>"></a>
-
-						<a class="share_button" data-id="<?=$arItem["ID"]?>" href="javascript:void(0)" onclick="yaCounter31721621.reachGoal('add_to_bookmarks');" data-text="<?=GetMessage('CT_BCS_TPL_MESS_BTN_SHARE');?>"></a>
-						<input type="hidden" name="CAT_PRICE_ID<?=$arItem["ID"]?>" value="<?=$arItem["CATALOG_PRICE_ID_1"]?>"/>
-						<input type="hidden" name="CAT_PRICE<?=$arItem["ID"]?>" value="<?=$arItem["CATALOG_PRICE_1"]?>"/>
-						<input type="hidden" name="ELEM_NAME<?=$arItem["ID"]?>" value="<?=$arItem["NAME"]?>"/>
-						<input type="hidden" name="DETAIL_PAGE<?=$arItem["ID"]?>" value="<?=$arItem["DETAIL_PAGE_URL"]?>"/>
-						<input type="hidden" name="PICTURE<?=$arItem["ID"]?>" value="<?=$PICT['SRC']?>"/>
-					</div>
-				
-				<div class="clear"></div>
-
-			</div>
 		</div>
 
 		
 		<?
-		$emptyProductProperties = empty($arItem['PRODUCT_PROPERTIES']);
-		if ('Y' == $arParams['ADD_PROPERTIES_TO_BASKET'] && !$emptyProductProperties)
-		{
-?>
-		<div id="<? echo $arItemIDs['BASKET_PROP_DIV']; ?>" style="display: none;">
-<?
-			if (!empty($arItem['PRODUCT_PROPERTIES_FILL']))
-			{
-				foreach ($arItem['PRODUCT_PROPERTIES_FILL'] as $propID => $propInfo)
-				{
-?>
-					<input type="hidden" name="<? echo $arParams['PRODUCT_PROPS_VARIABLE']; ?>[<? echo $propID; ?>]" value="<? echo htmlspecialcharsbx($propInfo['ID']); ?>">
-<?
-					if (isset($arItem['PRODUCT_PROPERTIES'][$propID]))
-						unset($arItem['PRODUCT_PROPERTIES'][$propID]);
-				}
-			}
-			$emptyProductProperties = empty($arItem['PRODUCT_PROPERTIES']);
-			if (!$emptyProductProperties)
-			{
-?>
-				<table>
-<?
-					foreach ($arItem['PRODUCT_PROPERTIES'] as $propID => $propInfo)
-					{
-?>
-						<tr><td><? echo $arItem['PROPERTIES'][$propID]['NAME']; ?></td>
-							<td>
-<?
-								if(
-									'L' == $arItem['PROPERTIES'][$propID]['PROPERTY_TYPE']
-									&& 'C' == $arItem['PROPERTIES'][$propID]['LIST_TYPE']
-								)
-								{
-									foreach($propInfo['VALUES'] as $valueID => $value)
-									{
-										?><label><input type="radio" name="<? echo $arParams['PRODUCT_PROPS_VARIABLE']; ?>[<? echo $propID; ?>]" value="<? echo $valueID; ?>" <? echo ($valueID == $propInfo['SELECTED'] ? '"checked"' : ''); ?>><? echo $value; ?></label><br><?
-									}
-								}
-								else
-								{
-									?><select name="<? echo $arParams['PRODUCT_PROPS_VARIABLE']; ?>[<? echo $propID; ?>]"><?
-									foreach($propInfo['VALUES'] as $valueID => $value)
-									{
-										?><option value="<? echo $valueID; ?>" <? echo ($valueID == $propInfo['SELECTED'] ? 'selected' : ''); ?>><? echo $value; ?></option><?
-									}
-									?></select><?
-								}
-?>
-							</td></tr>
-<?
-					}
-?>
-				</table>
-<?
-			}
-?>
-		</div>
-<?
-		}
+		
 		$arJSParams = array(
 			'PRODUCT_TYPE' => $arItem['CATALOG_TYPE'],
 			'SHOW_QUANTITY' => ($arParams['USE_PRODUCT_QUANTITY'] == 'Y'),
