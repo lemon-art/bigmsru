@@ -147,7 +147,7 @@ else:
 
         function itemsCycle(&$savedXML, $arResult, $arParams) {
             foreach ($arResult["OFFER"] as $arOffer):
-                $savedXML .= '<offer id="' . $arOffer["ID"] . '" available="' . $arOffer["AVAIBLE"] . '"' . (!empty($arOffer["BID"]) ? ' bid="' . $arOffer["BID"] . '"' : '') . (!empty($arOffer["CBID"])? ' cbid="' . $arOffer["CBID"] . '"' : '') . (!empty($arOffer["FEE"]) ? ' fee="' . $arOffer["FEE"] . '"' : '') . '>';
+                $savedXML .= '<offer id="' . $arOffer["ID"] . '" available="true"' . (!empty($arOffer["BID"]) ? ' bid="' . $arOffer["BID"] . '"' : '') . (!empty($arOffer["CBID"])? ' cbid="' . $arOffer["CBID"] . '"' : '') . (!empty($arOffer["FEE"]) ? ' fee="' . $arOffer["FEE"] . '"' : '') . '>';
                 $savedXML .= '<url>' . $arOffer["URL"] . '</url>';
                 $savedXML .= '<price>' . $arOffer["PRICE"] . '</price>';
                 if (!empty($arOffer["OLD_PRICE"])):
