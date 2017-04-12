@@ -1372,6 +1372,7 @@ button:hover, input[type="submit"]:hover, input[type="button"]:hover {
 	vertical-align:top;
 	/* padding-top:15px; */
 	padding-bottom:40px;
+	position: relative;
 }
 .catalog .lf_block{
 	width:21%;
