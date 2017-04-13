@@ -1,6 +1,10 @@
 <?php
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
 CModule::IncludeModule("iblock");
+
+function CheckColor(){
+
+
 $IBLOCK_ID = 12;
 $arProp = Array();
 
@@ -24,9 +28,6 @@ foreach ( $arProp as $keyProp => $valProp ){
 	$arItogProperty[$valProp][] = $keyProp;
 }
 
-echo "<pre>";
-print_r($arItogProperty);
-echo "</pre>";
 
 /*
 //убираем дубли
@@ -73,7 +74,7 @@ foreach ( $arItogProperty as $valProp => $keyProp ){
 	if ( count ( $arPropValue ) > 1 ){ 		//двойное значение свойства
 		
 		
-
+		echo $valProp . " - ";
 		
 		//ищем элементы с таким свойством
 		$arSelect = Array("ID", "NAME");
@@ -83,7 +84,6 @@ foreach ( $arItogProperty as $valProp => $keyProp ){
 		while($ob = $res->GetNextElement())	{
 			$arFields = $ob->GetFields();
 			$arElements[] = $arFields["ID"]; //массив с элементами в которые надо внести изменения по свойствам
-			echo $arFields["NAME"] . "<br>";
 		}
 		
 		//определяет свойства для замены
@@ -95,7 +95,6 @@ foreach ( $arItogProperty as $valProp => $keyProp ){
 			else {
 				$ibpenum = new CIBlockPropertyEnum;
 				if($PropID = $ibpenum->Add(Array('PROPERTY_ID'=>$PROPERTY_ID, 'VALUE'=>$valPropValuy))){
-					echo 'New ID:'.$PropID;
 					$arItogProperty[$valPropValuy][0] = $PropID;
 					$arNewProp[] = $PropID;
 				}
@@ -120,6 +119,6 @@ foreach ( $arItogProperty as $valProp => $keyProp ){
 
 }
 
-
+}
 
 ?>

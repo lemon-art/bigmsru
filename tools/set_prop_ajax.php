@@ -2,6 +2,7 @@
 //файл для загрузки свойств
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
+require($_SERVER["DOCUMENT_ROOT"]."/tools/color.php");
 CModule::IncludeModule("highloadblock");
 
 use Bitrix\Highloadblock as HL;
@@ -151,6 +152,8 @@ parse_str($_POST["data"]);
 				
 
 			}
+			
+			CheckColor();
 			
 			echo "<h2>Заполнены свойства:</h2>";
 			echo "<ul>";
