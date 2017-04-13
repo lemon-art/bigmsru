@@ -28,6 +28,7 @@ echo "<pre>";
 print_r($arItogProperty);
 echo "</pre>";
 
+/*
 //убираем дубли
 foreach ( $arItogProperty as $valProp => $keyProp ){
 		
@@ -65,8 +66,8 @@ foreach ( $arItogProperty as $valProp => $keyProp ){
 		
 		}
 }
+*/
 
-/*
 foreach ( $arItogProperty as $valProp => $keyProp ){
 	$arPropValue = explode(', ', $valProp);
 	if ( count ( $arPropValue ) > 1 ){ 		//двойное значение свойства
@@ -119,6 +120,6 @@ foreach ( $arItogProperty as $valProp => $keyProp ){
 
 }
 
-*/
+
 
 ?>
