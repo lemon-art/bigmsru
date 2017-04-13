@@ -214,7 +214,11 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 					<?unset( $arItem["DISPLAY_PROPERTIES"]["STRANA_PROIZVODITEL"] );?>
 				<?endif;?>
 				<?foreach ( $arItem["DISPLAY_PROPERTIES"] as $arProperty):?>
-					<?=$arProperty["NAME"]?>: <?=$arProperty["VALUE"]?><br>
+					<?if ( is_array($arProperty["VALUE"]) ):?>
+						<?=$arProperty["NAME"]?>: <?=implode(', ', $arProperty["VALUE"])?><br>
+					<?else:?>
+						<?=$arProperty["NAME"]?>: <?=$arProperty["VALUE"]?><br>
+					<?endif;?>
 				<?endforeach;?>			
 			</div>
 	
