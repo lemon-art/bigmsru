@@ -51,7 +51,7 @@ function OnAfterIBlockElementUpdateHandler(&$arFields){
 					//проверяем на дубли записей по значению
 					$arUrlInFiles = array_keys( $arUrlData, $shortUrl);
 					if ( count( $arUrlInFiles ) > 1 ){
-						foreach( $arUrlInFiles as $keyIndex => $valIndex ){
+						foreach( $arUrlInFiles as $keyIndex  ){
 							unset( $arUrlData[$keyIndex] );
 						}
 					}
