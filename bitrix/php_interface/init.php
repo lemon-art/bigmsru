@@ -48,6 +48,14 @@ function OnAfterIBlockElementUpdateHandler(&$arFields){
 					$data = file_get_contents( $fileSeoUrl );
 					$arUrlData = unserialize( $data );
 					
+					//проверяем на дубли записей по значению
+					$arUrlInFiles = array_keys( $arUrlData, $shortUrl);
+					if ( count( $arUrlInFiles ) > 1 ){
+						foreach( $arUrlInFiles as $keyIndex => $valIndex ){
+							unset( $arUrlData[$keyIndex] );
+						}
+					}
+					
 					$arUrlData[$longUrl] = $shortUrl;
 					
 					$fd = fopen($fileSeoUrl, 'w') or die("не удалось создать файл");
