@@ -87,7 +87,7 @@ if(isset($_REQUEST) && isset($_GET) && $last_symbol_url != "/"){
 	
 	
 	
-	<script type="text/javascript" src="https://cdn.jsdelivr.net/stopsovetnik/latest/ss.min.js" async="true"></script>
+
 	<?$APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH."/css/style.css");?>
 
 	<!-- fancybox -->
@@ -101,62 +101,10 @@ if(isset($_REQUEST) && isset($_GET) && $last_symbol_url != "/"){
 	<?=$APPLICATION->ShowProperty("PAGER_NAV_NEXT")?>
 
 	
-	<script>
-	// Яндекс Советник
-	//var stopSovetnik=function(){var b=function(d){var c=document.querySelectorAll(d);if(c.length===1){return c[0]}else{if(c.length>1){return c[c.length-1]}else{return null}}};var a=setInterval(function(){var c=parseInt(b("HTML").style.marginTop);if(c>0){b("BODY > DIV").remove();b("BODY > STYLE").remove();clearInterval(a);setTimeout(function(){b("HTML").style.marginTop="0px"},500)}setTimeout(function(){clearInterval(a)},10000)},10)};stopSovetnik();
-	</script>
-	
 </head>
 
 <body>
 
-<style>
-.footer .right {
-   width: 80%;
-}/*
-@media screen and (max-width: 1150px) {
-   .footer .inline {
-      margin-left: 5px;
-   }
-}*/
-</style>
-
-
-<style>
-
-.list a {
-	color: #006db8;
-}
-.catalog .catalog_with_icon .list {
-	border-bottom: 0;
-	padding: 25px 10px;
-}
-.catalog .catalog_with_icon .list li.item {
-	display: block;
-	padding: 0;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-	width: 11.6%;
-	height: 230px;
-	margin:0 12px;
-	border:0;
-	float: left;
-}
-.catalog .catalog_with_icon .list li.item a .icon {
-	width: 100%;
-	max-width: 100px;
-	height: 100px;
-	background-position: 50% 50%;
-	background-repeat: no-repeat;
-	margin: 0 auto 20px;
-	border: 1px solid #e6f4f8 !important;
-}
-.catalog .catalog_with_icon .list li.item a .icon {
-background-size: 100%;
-}
-
-</style>
 
 <!-- Google Tag Manager -->
 <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-TNC5LN"

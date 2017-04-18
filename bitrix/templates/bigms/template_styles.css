@@ -4523,3 +4523,45 @@ input#del_filter{
 .spec_page .field {
 	margin-bottom: 20px;
 }
+
+.old_price {
+	font-size: 0.750em;
+    text-decoration: line-through;
+}
+
+
+.list a {
+	color: #006db8;
+}
+.catalog .catalog_with_icon .list {
+	border-bottom: 0;
+	padding: 25px 10px;
+}
+.catalog .catalog_with_icon .list li.item {
+	display: block;
+	padding: 0;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	width: 11.6%;
+	height: 230px;
+	margin:0 12px;
+	border:0;
+	float: left;
+}
+.catalog .catalog_with_icon .list li.item a .icon {
+	width: 100%;
+	max-width: 100px;
+	height: 100px;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	margin: 0 auto 20px;
+	border: 1px solid #e6f4f8 !important;
+}
+.catalog .catalog_with_icon .list li.item a .icon {
+background-size: 100%;
+}
+
+.footer .right {
+   width: 80%;
+}
