@@ -508,6 +508,13 @@ function GetFilterUrl($url){
 	return $filterUrl;
 }
 
+function GenerateYandexXML()
+{
+	// генерируем яндекс выгрузку
+	CModule::IncludeModule("webfly.ymarket");
+	wfYmarketAgent();
+	return "GenerateYandexXML();";
+}
 
 function GenerateSitemap()
 {
