@@ -314,7 +314,7 @@ if ($normalCount > 0):
 							?>
 								<td class="price">
 										<div class="current_price" id="current_price_<?=$arItem["ID"]?>">
-											<?=$arItem["PRICE_FORMATED"]?>
+											<?=number_format($arItem["PRICE"],0,'.',' ')?> руб.
 										</div>
 										<div class="old_price" id="old_price_<?=$arItem["ID"]?>">
 											<?if (floatval($arItem["DISCOUNT_PRICE_PERCENT"]) > 0):?>

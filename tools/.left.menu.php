@@ -36,6 +36,13 @@ $aMenuLinks = Array(
 		"" 
 	),
 	Array(
+		"Описание свойств", 
+		"/tools/prop_comments.php", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
 		"Настройка sitemap.xml", 
 		"/tools/sitemap.php", 
 		Array(), 

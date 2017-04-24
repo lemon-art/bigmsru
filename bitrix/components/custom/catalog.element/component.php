@@ -706,6 +706,12 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 			$data = file_get_contents($_SERVER["DOCUMENT_ROOT"]."/tools/files/perelinkovka_prop_".$arResult["IBLOCK_ID"].".txt");
 			$arPropLinkedData = unserialize( $data );
 			
+			//КОММЕНТАРИИ К СВОЙСТВАМ
+			//открываем файл с массивом 
+			//$listFile = $_SERVER["DOCUMENT_ROOT"]."/tools/files/comments_prop_".$arParams['IBLOCK_ID'].".txt";
+			//$data = file_get_contents($listFile);
+			//$arPropComment = unserialize( $data );
+			
 			if ( is_array($arPropLinkedData[$section_id])){
 				$arPropLinked = $arPropLinkedData[$section_id];
 			}
@@ -782,6 +788,13 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 						
 						
 					} 
+					
+					//КОММЕНТАРИИ К СВОЙСТВАМ
+
+					//if ( $arPropComment[$arResult["SECTION"]["PATH"][0]["ID"]][$arResult["DISPLAY_PROPERTIES"][$pid]["CODE"]] ){
+					//	$arResult["DISPLAY_PROPERTIES"][$pid]["HINT"] = $arPropComment[$arResult["SECTION"]["PATH"][0]["ID"]][$arResult["DISPLAY_PROPERTIES"][$pid]["CODE"]];
+					//}
+
 					
 					unset($prop);
 				}

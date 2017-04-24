@@ -153,7 +153,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 				if (0 < $arResult['MIN_PRICE']['DISCOUNT_DIFF'])
 				{
 		?>
-			<div class="bx_stick_disc right bottom" id="<? echo $arItemIDs['DISCOUNT_PICT_ID'] ?>"><? echo -$arResult['MIN_PRICE']['DISCOUNT_DIFF_PERCENT']; ?>%</div>
+			<div class="bx_stick_disc right bottom" id="<? echo $arItemIDs['DISCOUNT_PICT_ID'] ?>"></div>
 		<?
 				}
 			}
@@ -269,9 +269,16 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 				$minPrice = (isset($arResult['RATIO_PRICE']) ? $arResult['RATIO_PRICE'] : $arResult['MIN_PRICE']);
 				$boolDiscountShow = (0 < $minPrice['DISCOUNT_DIFF']);
 				?>
-				
+
 				<?if(!empty($minPrice['VALUE'])){?>
-					<div itemprop="price" content="<?echo number_format($minPrice['VALUE'],0,'.','');?>" class="item_current_price" id="<? echo $arItemIDs['PRICE']; ?>"><?echo number_format($minPrice['VALUE'],2,'.',' ');?> <span itemprop="priceCurrency" content="RUB"> руб.</span></div>
+					<?if ('Y' == $arParams['SHOW_OLD_PRICE'] && $minPrice['DISCOUNT_VALUE'] < $minPrice['VALUE']):?>
+						<div itemprop="price" content="<?echo number_format($minPrice['DISCOUNT_VALUE'],0,'.','');?>" class="item_current_price" id="<? echo $arItemIDs['PRICE']; ?>"><?echo number_format($minPrice['DISCOUNT_VALUE'],2,'.',' ');?> <span itemprop="priceCurrency" content="RUB"> руб.</span></div>
+						<div class="old_price">
+							<?echo number_format($minPrice['VALUE'],2,'.',' ');?> руб.
+						</div>
+					<?else:?>
+						<div itemprop="price" content="<?echo number_format($minPrice['VALUE'],0,'.','');?>" class="item_current_price" id="<? echo $arItemIDs['PRICE']; ?>"><?echo number_format($minPrice['VALUE'],2,'.',' ');?> <span itemprop="priceCurrency" content="RUB"> руб.</span></div>
+					<?endif;?>
 				<?}?>
 			</div>
 			
@@ -414,6 +421,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 				array(
 				'DISPLAY_PROPERTIES' => $arResult['DISPLAY_PROPERTIES'], 
 				'IBLOCK_ID' => $arParams['IBLOCK_ID'],
+				'SECTION_ID' => $arResult["SECTION"]["PATH"][0]["ID"],
 				'SHORT_VIEW_GROUP' => Array(1,5)
 				)); ?> 
 		

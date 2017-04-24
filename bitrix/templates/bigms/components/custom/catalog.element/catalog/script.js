@@ -2422,8 +2422,8 @@ window.JCCatalogElement.prototype.CompareResult = function(result)
         // popupContent = '<div style="padding: 10px 20px;"><p>'+BX.message('COMPARE_MESSAGE_OK')+'</p></div>';
 
 		var showPrice = '';
-		if (typeof this.currentBasisPrice.VALUE_VAT !== 'undefined'){
-			showPrice = this.currentBasisPrice.VALUE_VAT.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' руб.';
+		if (typeof this.currentBasisPrice.DISCOUNT_VALUE_VAT !== 'undefined'){
+			showPrice = this.currentBasisPrice.DISCOUNT_VALUE_VAT.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ') + ' руб.';
 		}
         popupContent = '<div class="b-popup__wrap"><span class="popup__close"></span><div class="b-popup__img b-popup-compare__img"><img src="'+ this.product.pict.SRC +'" alt=""/></div><div class="b-popup__item"><div class="b-popup__title b-popup-compare__title">ТОВАР Добавлен в сравнение</div><div class="b-popup__text b-popup-compare__text" style="width: 500px;">'+ this.product.name +'</div><div class="b-popup__descr b-popup-add-cart__descr count_items_in_popup"></div></div><div class="b-popup__price b-popup-compare__price">'+ showPrice +'</div>';
 		
@@ -2784,7 +2784,7 @@ window.JCCatalogElement.prototype.BasketResult = function(arResult)
 			else {
 				popupContent += 'В корзине <span>'+count[0]+'</span> '+declOfNum(count[0]);
 			}
-			popupContent += '</div></div><div class="b-popup__price b-popup-add-cart__price">'+this.currentBasisPrice.VALUE_VAT.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ')+' руб.</div>';
+			popupContent += '</div></div><div class="b-popup__price b-popup-add-cart__price">'+this.currentBasisPrice.DISCOUNT_VALUE_VAT.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ')+' руб.</div>';
 			
 			
 			if (this.config.showClosePopup)

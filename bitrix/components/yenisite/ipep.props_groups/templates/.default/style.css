@@ -57,11 +57,23 @@
     background: #fff;
     position: absolute;
     z-index: 9999;
-    max-width: 300px;
+    max-width: 400px;
     -webkit-box-shadow: 0 0 5px #aaa;
     box-shadow: 0 0 5px #aaa;
-    padding: 4px;
+    padding: 8px;
     font-size: 13px;
+}
+
+.ui-tooltip p{
+	margin-bottom: 20px;
+}
+
+.ui-tooltip p:last-child{
+	margin-bottom: 0px;
+}
+
+.ui-tooltip p b{
+	font-weight: bold;
 }
 
 body .ui-tooltip {

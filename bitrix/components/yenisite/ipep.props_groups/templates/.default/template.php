@@ -16,6 +16,7 @@ if ( count($arResult['GROUPS']) < 1){
 
 ?>
 
+
 <?if(method_exists($this, 'setFrameMode')) $this->setFrameMode(true);?>
 	<table class="text">
 		<tbody>
@@ -34,7 +35,7 @@ if ( count($arResult['GROUPS']) < 1){
 						<td>
 							<?= $arProperty["NAME"] ?>
 							<? if (!empty($arResult['PROPS_COMMENTS'][$pid])): ?>
-								<div title="<?= $arResult['PROPS_COMMENTS'][$pid] ?>" class="yeni_ipep_prop_with_comment_box"></div>
+								<div title="<?=$arResult['PROPS_COMMENTS'][$pid] ?>" class="yeni_ipep_prop_with_comment_box"></div>
 							<? endif ?>
 						</td>
 						<td>

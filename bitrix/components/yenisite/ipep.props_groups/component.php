@@ -36,6 +36,18 @@ $arInitArray = CYenisiteInfoblockpropsplus::GetInitArray(array('IBLOCK_ID' => $a
 
 $arResult['PROPS_COMMENTS'] = $arInitArray['PROPS_COMMENTS'];
 
+	//КОММЕНТАРИИ К СВОЙСТВАМ
+	//открываем файл с массивом 
+	$listFile = $_SERVER["DOCUMENT_ROOT"]."/tools/files/comments_prop_".$arParams['IBLOCK_ID'].".txt";
+	$data = file_get_contents($listFile);
+	$arPropComment = unserialize( $data );
+	
+	foreach ( $arPropComment[$arParams['SECTION_ID']] as $idProp => $commentProp ){
+		$arResult['PROPS_COMMENTS'][$idProp] = $commentProp;
+	}
+
+
+
 $arResult['GROUPS'][0] = array('NAME' => GetMessage('IPEP_NO_GROUP'), 'PROPS' => &$arResult['PROPS_WITHOUT_GROUP']);
 foreach ($arInitArray['PROPS_TO_GROUPS'] as $i) {
 	foreach ($i as $k) {

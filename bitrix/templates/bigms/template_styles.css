@@ -4177,16 +4177,28 @@ input#del_filter{
 	position:absolute;
 	padding: 10px;
 	background: #fff;
-	font-size: 11px;
+	font-size: 12px;
 	color: #202020;
 	line-height: 1.5;
 	top:0;
 	left: 25px;
 	font-weight: normal;
 	text-transform: none;
-	min-width: 200px;
+	min-width: 500px;
 	z-index: 99;
 	text-align: left;
+}
+
+.info-block-tooltip p{
+	margin-bottom: 20px;
+}
+
+.info-block-tooltip p:last-child{
+	margin-bottom: 0px;
+}
+
+.info-block-tooltip p b{
+	font-weight: bold;
 }
 
 .basket_quantity {

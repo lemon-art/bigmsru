@@ -59,3 +59,15 @@ foreach($arResult['ITEMS'][59]['VALUES'] as $arItem){
 if ($countVal === 0){
 	$arResult['ITEMS'][59]['VALUES'] = false;
 }
+	//КОММЕНТАРИИ К СВОЙСТВАМ
+	//открываем файл с массивом 
+	$listFile = $_SERVER["DOCUMENT_ROOT"]."/tools/files/comments_prop_".$arParams['IBLOCK_ID'].".txt";
+	$data = file_get_contents($listFile);
+	$arPropComment = unserialize( $data );
+	
+
+	foreach($arResult["ITEMS"] as $key=>$arItem){
+		if ( $arPropComment[$arParams['SECTION_ID']][$arItem["ID"]] ){
+			$arResult["ITEMS"][$key]["HINT"] = $arPropComment[$arParams['SECTION_ID']][$arItem["ID"]];
+		}
+	}

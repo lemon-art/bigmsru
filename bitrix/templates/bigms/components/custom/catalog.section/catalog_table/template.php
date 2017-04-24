@@ -197,7 +197,7 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 				if ('Y' == $arParams['SHOW_DISCOUNT_PERCENT'])
 				{
 				?>
-					<div id="<?if ($arItem['SECOND_PICT']){echo $arItemIDs['SECOND_PICT'];}else{ echo $arItemIDs['DSC_PERC'];}?>" class="bx_stick_disc right bottom" style="display:<? echo (0 < $minPrice['DISCOUNT_DIFF_PERCENT'] ? '' : 'none'); ?>;">-<? echo $minPrice['DISCOUNT_DIFF_PERCENT']; ?>%</div>
+					<div id="<?if ($arItem['SECOND_PICT']){echo $arItemIDs['SECOND_PICT'];}else{ echo $arItemIDs['DSC_PERC'];}?>" class="bx_stick_disc right bottom" style="display:<? echo 'none'; ?>;"></div>
 				<?
 				}
 				if ($arItem['LABEL'])
@@ -298,12 +298,21 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 				else
 				{
 					//echo $minPrice['PRINT_DISCOUNT_VALUE'];
-					echo number_format($minPrice['VALUE'],2,'.',' ');
-					echo '<span> руб.</span>';
-				}
-				if ('Y' == $arParams['SHOW_OLD_PRICE'] && $minPrice['DISCOUNT_VALUE'] < $minPrice['VALUE'])
-				{
-					?> <span><? echo $minPrice['PRINT_VALUE']; ?></span><?
+
+				
+					if ('Y' == $arParams['SHOW_OLD_PRICE'] && $minPrice['DISCOUNT_VALUE'] < $minPrice['VALUE'])
+					{
+						echo number_format($minPrice['DISCOUNT_VALUE'],2,'.',' ');
+						echo '<span> руб.</span>';
+						echo '<div class="old_price">';
+						echo number_format($minPrice['VALUE'],2,'.',' ');
+						echo '<span> руб.</span>';
+						echo '</div>';
+					}
+					else {
+						echo number_format($minPrice['VALUE'],2,'.',' ');
+						echo '<span> руб.</span>';
+					}
 				}
 			}
 			unset($minPrice);
