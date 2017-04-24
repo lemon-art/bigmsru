@@ -267,7 +267,8 @@ TABLE {
 		?>
 		<br><br>
 		Файл: <?=$_POST['csvFile']?><br>
-		В файле товаров: <b><?=$count?></b>
+		В файле товаров: <b><?=$count?></b><br>
+		<label><input type="checkbox" name="only_articul" id="only_articul" value="y"> Искать только по артикулу</label>
 		<input type="hidden" id="file_k" value="<?=$file_k?>">
 
 		
@@ -311,6 +312,7 @@ TABLE {
 		$('#preloader').show();
 		$('input#readFile').hide();
 		$('#uploadFiles').hide();
+		$('#only_articul').hide();
 		$('#upload_div').hide();
 		return false;
 	});

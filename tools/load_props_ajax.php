@@ -7,6 +7,8 @@ parse_str($_POST["n"]);
 parse_str($_POST["data"]);
 
 
+
+
 		
 		//$n = 0;
 		//считываем временный файл совпадений
@@ -22,18 +24,30 @@ parse_str($_POST["data"]);
 		foreach ( $arData as $arItem ){
 		
 			//получаем артикул
-			$articul = explode(": ",  $arItem[3]);
+			$articul = explode(":",  $arItem[3]);
 			
-			$arFilter = array(
-				"IBLOCK_ID"  => $IBLOCK_ID,
-				"SECTION_ID" => $SECTION_ID,
-				"INCLUDE_SUBSECTIONS" => "Y",
-				array(
-					"LOGIC" => "OR",
-					array( "%NAME" => $arItem["1"] ),
-					array("PROPERTY_CML2_ARTICLE" => $articul[1]),
-				),
-			);
+			if ( $only_articul ){			//искать только по артикулу
+				$arFilter = array(
+					"IBLOCK_ID"  => $IBLOCK_ID,
+					"SECTION_ID" => $SECTION_ID,
+					"INCLUDE_SUBSECTIONS" => "Y",
+					"PROPERTY_CML2_ARTICLE" => $articul[1]
+				);
+			}
+			else {							//искать по артикулу и названию
+				$arFilter = array(
+					"IBLOCK_ID"  => $IBLOCK_ID,
+					"SECTION_ID" => $SECTION_ID,
+					"INCLUDE_SUBSECTIONS" => "Y",
+					array(
+						"LOGIC" => "OR",
+						array( "%NAME" => $arItem["1"] ),
+						array("PROPERTY_CML2_ARTICLE" => $articul[1]),
+					),
+				);
+			}
+			
+			
 			$res = CIBlockElement::GetList(Array(), $arFilter, false, Array(), Array("ID", "NAME", "PROPERTY_CML2_ARTICLE"));
 			while($ar_fields = $res->GetNext()){
 				$arResult[] = Array (
