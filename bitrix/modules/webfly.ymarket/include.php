@@ -2,7 +2,7 @@
 function wfYmarketAgent() {
     $agentFolder = COption::GetOptionString("webfly.ymarket", "agentFolder", "/y-market/", false,false);
     BXClearCache(true, "/y-market/");
-    BXClearCache(true, $agentFolder);aas
+    BXClearCache(true, $agentFolder);
     $ch = curl_init();
 
 // set URL and other appropriate options
