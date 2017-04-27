@@ -309,7 +309,7 @@ class CSitemap
 					$arAllBrand[$arRes['UF_XML_ID']] = $arRes;
 				}
 
-				$arBrandsUrl[] = '/proizvoditeli/inzhenernaya/';
+				
 				$arBrand1 = array();
 				$arBrand2 = array();
 				$arSelect = Array("ID", "NAME", "PROPERTY_BREND");
@@ -335,7 +335,7 @@ class CSitemap
 					$arBrandsUrl[] = '/proizvoditeli/inzhenernaya/'.$brandName.'/';
 				}
 				
-				$arBrandsUrl[] = '/proizvoditeli/bytovaya/';
+				
 				$arBrand1 = array();
 				$arBrand2 = array();
 				$arSelect = Array("ID", "NAME", "PROPERTY_BREND");

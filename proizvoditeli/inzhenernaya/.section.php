@@ -1,5 +1,5 @@
 <?
-$sSectionName = "Инженерная сантехника";
+$sSectionName = "";
 $arDirProperties = Array(
 
 );

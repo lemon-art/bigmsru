@@ -26,6 +26,9 @@ $url = str_replace("/proizvoditeli/bytovaya/", "", addslashes(htmlspecialchars($
 $ar_url = explode("/", $url);
 $url_name = str_replace("_", " ", $ar_url[0]);
 
+if ( !$url_name ){
+	$url_name = "asd312";
+}
 
 $arFilter = array('UF_NAME' => $url_name); //задаете фильтр по вашим полям
 
@@ -38,16 +41,7 @@ $rsData = $entity_data_class::getList(array(
 $rsData = new CDBResult($rsData, $sTableID);
 if ( $arRes = $rsData->Fetch() ){
 
-}
-else {
-		\Bitrix\Iblock\Component\Tools::process404(
-			trim($arParams["MESSAGE_404"]) ?: GetMessage("CATALOG_SECTION_NOT_FOUND")
-			,true
-			,$arParams["SET_STATUS_404"] === "Y"
-			,$arParams["SHOW_404"] === "Y"
-			,$arParams["FILE_404"]
-		);
-}
+
 
 
 global $arrFilterBrend;
@@ -155,4 +149,14 @@ $APPLICATION->SetPageProperty("description", 'Бытовая сантехник�
 </div>
 
 <?
+
+}
+else {
+	
+
+	CHTTP::setStatus("404 Not Found");
+	   
+	$APPLICATION->AddChainItem("Ошибка 404", "");
+	$APPLICATION->SetTitle("К сожалению, такой страницы не существует");
+}
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
