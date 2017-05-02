@@ -1707,10 +1707,10 @@ button:hover, input[type="submit"]:hover, input[type="button"]:hover {
 	display:block;
 	text-decoration:none;
 	line-height:16px;
-	max-height:40px;
+	max-height:37px;
 	overflow:hidden;
 
-	height:40px;
+	height:37px;
 	overflow:hidden;
 	margin-bottom:5px;
 }
