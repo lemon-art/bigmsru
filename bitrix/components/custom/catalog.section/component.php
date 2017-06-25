@@ -941,6 +941,11 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 	}
 	$arParams["PROPERTY_CODE"][] ="STRANA_PROIZVODITEL";
 	
+	//echo $section_id;
+	//echo "<pre>";
+	//print_r($arPropData );
+	//echo "</pre>";
+	
 	
 	if (!empty($arResult["ELEMENTS"]) && ($bGetProperties || ($bCatalog && $boolNeedCatalogCache)))
 	{

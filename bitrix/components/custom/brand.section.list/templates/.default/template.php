@@ -12,50 +12,30 @@
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
 
-$arViewModeList = $arResult['VIEW_MODE_LIST'];
+if ( $arResult['SECTIONS'][0]["IBLOCK_ID"] == 10 ){
+	$blockText = "Инженерная сантехника ";
+}
+else {
+	$blockText = "Бытовая сантехника ";
+}
 
-$arViewStyles = array(
-	'LIST' => array(
-		'CONT' => 'bx_sitemap',
-		'TITLE' => 'bx_sitemap_title',
-		'LIST' => 'bx_sitemap_ul',
-	),
-	'LINE' => array(
-		'CONT' => 'bx_catalog_line',
-		'TITLE' => 'bx_catalog_line_category_title',
-		'LIST' => 'bx_catalog_line_ul',
-		'EMPTY_IMG' => $this->GetFolder().'/images/line-empty.png'
-	),
-	'TEXT' => array(
-		'CONT' => 'bx_catalog_text',
-		'TITLE' => 'bx_catalog_text_category_title',
-		'LIST' => 'bx_catalog_text_ul'
-	),
-	'TILE' => array(
-		'CONT' => 'bx_catalog_tile',
-		'TITLE' => 'bx_catalog_tile_category_title',
-		'LIST' => 'bx_catalog_tile_ul',
-		'EMPTY_IMG' => $this->GetFolder().'/images/tile-empty.png'
-	)
-);
-$arCurView = $arViewStyles[$arParams['VIEW_MODE']];
-
-$strSectionEdit = CIBlock::GetArrayByID($arParams["IBLOCK_ID"], "SECTION_EDIT");
-$strSectionDelete = CIBlock::GetArrayByID($arParams["IBLOCK_ID"], "SECTION_DELETE");
-$arSectionDeleteParams = array("CONFIRM" => GetMessage('CT_BCSL_ELEMENT_DELETE_CONFIRM'));
-
-?><div class="catalog_with_icon"><?
-
-if (0 < $arResult["SECTIONS_COUNT"])
-{
+$APPLICATION->SetTitle($blockText . $arResult['BRAND_NAME']);
+$APPLICATION->SetPageProperty("title", $blockText . $arResult['BRAND_NAME'] . ' - каталог, цены в магазине "Большой Мастер" в Москве');
+$APPLICATION->SetPageProperty("description", $blockText . 'от официального поставщика бренда '.$arResult['BRAND_NAME'] . ' с гарантией качества. Доставка в любой регион России!');
+$APPLICATION->AddChainItem( $arResult['BRAND_NAME'] );
 ?>
+
+<?if (0 < $arResult["SECTIONS_COUNT"]):?>
+
+
+
 <?
 //открываем файл с массивом соответствия адресов страниц
 $data = file_get_contents($_SERVER["DOCUMENT_ROOT"]."/tools/files/seo_url.txt");
 $arUrlData = unserialize( $data );
 ?>
 
-<ul class="list">
+<ul class="content-producer__products brand-products">
 	<?foreach ($arResult['SECTIONS'] as &$arSection):?>
 
 		<?if ( $arSection["IBLOCK_ID"]  == 10 ):?>
@@ -68,19 +48,16 @@ $arUrlData = unserialize( $data );
 				$arSection['SECTION_PAGE_URL'] = $arUrlData[$arSection['SECTION_PAGE_URL']]; //если есть короткий url то берем его
 			}
 		?>
-		<li class="item ">
-			<a href="<? echo $arSection['SECTION_PAGE_URL']; ?>">
-				<div class="icon" style="background-image:url('<? echo $arSection['PICTURE']; ?>');"></div>
-				<span><? echo $arSection['NAME']; ?> <?=$arResult['BRAND_NAME']?></span>
-			</a>
-			<div class="icon" style="background-image:url(/upload/iblock/a07/a07728551a10137406610025005ebdd6.jpg);"></div>
-		</li>
+		<li class="brand-products__item">
+            <div class="brand-products__img-wrap">
+                <a href="<? echo $arSection['SECTION_PAGE_URL']; ?>"><img class="brand-products__img" src="<? echo $arSection['PICTURE']; ?>" alt="<? echo $arSection['NAME']; ?> <?=$arResult['BRAND_NAME']?>"></a>
+            </div>
+            <a href="<? echo $arSection['SECTION_PAGE_URL']; ?>" class="brand-products__name"><? echo $arSection['NAME']; ?> <?=$arResult['BRAND_NAME']?></a>
+        </li>
 	
 	<?endforeach;?>
 
 </ul>
 
 
-<?
-}
-?></div>
+<?endif;?>

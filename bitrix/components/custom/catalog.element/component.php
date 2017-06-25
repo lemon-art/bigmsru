@@ -1016,10 +1016,54 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 			}
 			
 
+			//составляем список свойств для вывода в мини карточке товара
+			$listFile = $_SERVER["DOCUMENT_ROOT"]."/tools/files/listing_prop_".$arResult["IBLOCK_ID"].".txt";
+			$data = file_get_contents($listFile);
+			$arPropData = unserialize( $data );
+			$arPropList = Array();
+			foreach ( $arCurSections as $arCurSection ){
+				if ( is_array($arPropData[$arCurSection])){
+					$arPropList = $arPropData[$arCurSection];
+				}
+			}
+			$arResult["PROP_LIST"] = $arPropList;
+			
+			//получаем похожие товары
+			
+			$similar_items_price = array();
+			$arrSortAlown = array('price'=> 'catalog_PRICE_1' , 'name'=> 'NAME');
+
+			$res = CIBlockElement::GetList(
+				array("catalog_PRICE_1" => 'ASC'),
+				Array(
+					"IBLOCK_ID"=>$arParams["IBLOCK_ID"], 
+					"ACTIVE"=>"Y", 
+					"SECTION_CODE" => $arResult['VARIABLES']['SECTION_CODE'],
+				),
+				false, 
+				array("nPageSize" => "7","nElementID" => $ElementID), 
+				array("IBLOCK_ID", "ID", "NAME","DETAIL_PAGE_URL", "CATALOG_GROUP_1")
+			);
+			$count = 0;
+			$similar_items_ids = array();
+			while($ob = $res->GetNext()){		
+				if($ob['ID'] != $ElementID) {
+					$similar_items_ids[] = $ob['ID'];
+					//$similar_items_price[$count]['RANK'] = $ob['RANK'];
+					//$similar_items_price[$count]['ID'] = $ob['ID'];
+					//$similar_items_price[$count]['IBLOCK_ID'] = $ob['IBLOCK_ID'];
+					//$similar_items_price[$count]['NAME'] = $ob['NAME'];
+					//$similar_items_price[$count]['PRICE'] = $ob['CATALOG_PRICE_1'];
+					$count++;
+				}
+			}
+			$arResult["SIMILAR_ITEMS"] = $similar_items_ids;
+			
+			//////////////////
+			
 
 			
-		
-
+			
 			if ($bCatalog && $bIBlockCatalog)
 			{
 				if (!isset($arResult["CATALOG_MEASURE_RATIO"]))

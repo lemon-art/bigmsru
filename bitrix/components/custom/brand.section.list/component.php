@@ -60,9 +60,10 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 	$arFilter = array(
 		"ACTIVE" => "Y",
 		"GLOBAL_ACTIVE" => "Y",
-		"IBLOCK_ID" => $arParams["IBLOCK_ID"],
+		"IBLOCK_ID" => 10,
 		"CNT_ACTIVE" => "Y",
 	);
+
 
 	$arSelect = array();
 	if(array_key_exists("SECTION_FIELDS", $arParams) && !empty($arParams["SECTION_FIELDS"]) && is_array($arParams["SECTION_FIELDS"]))
@@ -155,13 +156,16 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 		"left_margin"=>"asc",
 	);
 	//EXECUTE
+	//для второго инфоблока
+	$arFilter2 = $arFilter;
+	$arFilter2["IBLOCK_ID"] = 12;
+	
 	$rsSections = CIBlockSection::GetList($arSort, $arFilter, $arParams["COUNT_ELEMENTS"], $arSelect);
 	$rsSections->SetUrlTemplates("", $arParams["SECTION_URL"]);
 	while($arSection = $rsSections->GetNext())
 	{
 		$ipropValues = new \Bitrix\Iblock\InheritedProperty\SectionValues($arSection["IBLOCK_ID"], $arSection["ID"]);
 		$arSection["IPROPERTY_VALUES"] = $ipropValues->getValues();
-
 		
 		$arSection['RELATIVE_DEPTH_LEVEL'] = $arSection['DEPTH_LEVEL'] - $intSectionDepth;
 
@@ -185,8 +189,64 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 
 		$arResult["SECTIONS"][]=$arSection;
 	}
+	
+	
+
+	
+	
+	$rsSections = CIBlockSection::GetList($arSort, $arFilter2, $arParams["COUNT_ELEMENTS"], $arSelect);
+	$rsSections->SetUrlTemplates("", $arParams["SECTION_URL"]);
+	while($arSection = $rsSections->GetNext())
+	{
+		$ipropValues = new \Bitrix\Iblock\InheritedProperty\SectionValues($arSection["IBLOCK_ID"], $arSection["ID"]);
+		$arSection["IPROPERTY_VALUES"] = $ipropValues->getValues();
+
+		
+		$arSection['RELATIVE_DEPTH_LEVEL'] = $arSection['DEPTH_LEVEL'] - $intSectionDepth;
+
+		//получаем картинку элемента раздела по бренду
+		$arFilterElement = Array(
+			"IBLOCK_ID"=>$arSection["IBLOCK_ID"], 
+			"SECTION_ID" => $arSection["ID"], 
+			"ACTIVE"=>"Y", 
+			"INCLUDE_SUBSECTIONS" => "Y",
+			"!DETAIL_PICTURE" => false, 
+			"PROPERTY_BREND" => $arParams["BRAND_XML"],
+		);
+		
+		$res = CIBlockElement::GetList(Array(), $arFilterElement, false, Array("nTopCount"=>1), Array("DETAIL_PICTURE"));
+		if($arElement = $res->GetNext()){
+			$file = CFile::ResizeImageGet($arElement["DETAIL_PICTURE"], array('width'=>140, 'height'=>75), BX_RESIZE_IMAGE_PROPORTIONAL_ALT, true);
+			$arSection['PICTURE'] = $file['src'];
+		}
+		
+		//получаем страну производителя
+		$arFilterElement = Array(
+			"IBLOCK_ID"=>$arSection["IBLOCK_ID"], 
+			"SECTION_ID" => $arSection["ID"], 
+			"ACTIVE"=>"Y", 
+			"INCLUDE_SUBSECTIONS" => "Y",
+			"PROPERTY_BREND" => $arParams["BRAND_XML"],
+			"!PROPERTY_STRANA_PROIZVODITEL" => false
+		);
+		
+		$res = CIBlockElement::GetList(Array(), $arFilterElement, false, Array("nTopCount"=>1), Array("PROPERTY_STRANA_PROIZVODITEL"));
+		if($arElement = $res->GetNext()){
+			$arResult["COUNTRY_NAME"] = $arElement["PROPERTY_STRANA_PROIZVODITEL_VALUE"];
+			$arResult["COUNTRY_ID"] = $arElement["PROPERTY_STRANA_PROIZVODITEL_ENUM_ID"];
+			$arResult["IBLOCK_ID"] = $arSection["IBLOCK_ID"];
+		}
+		////
+
+		$arResult["SECTIONS"][]=$arSection;
+	}
+	
+	
+
 
 	$arResult["SECTIONS_COUNT"] = count($arResult["SECTIONS"]);
+
+
 
 	$this->setResultCacheKeys(array(
 		"SECTIONS_COUNT",
@@ -196,67 +256,6 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 	$this->includeComponentTemplate();
 }
 
-if($arResult["SECTIONS_COUNT"] > 0 || isset($arResult["SECTION"]))
-{
-	if(
-		$USER->IsAuthorized()
-		&& $APPLICATION->GetShowIncludeAreas()
-		&& Loader::includeModule("iblock")
-	)
-	{
-		$UrlDeleteSectionButton = "";
-		if(isset($arResult["SECTION"]) && $arResult["SECTION"]['IBLOCK_SECTION_ID'] > 0)
-		{
-			$rsSection = CIBlockSection::GetList(
-				array(),
-				array("=ID" => $arResult["SECTION"]['IBLOCK_SECTION_ID']),
-				false,
-				array("SECTION_PAGE_URL")
-			);
-			$rsSection->SetUrlTemplates("", $arParams["SECTION_URL"]);
-			$arSection = $rsSection->GetNext();
-			$UrlDeleteSectionButton = $arSection["SECTION_PAGE_URL"];
-		}
 
-		if(empty($UrlDeleteSectionButton))
-		{
-			$url_template = CIBlock::GetArrayByID($arParams["IBLOCK_ID"], "LIST_PAGE_URL");
-			$arIBlock = CIBlock::GetArrayByID($arParams["IBLOCK_ID"]);
-			$arIBlock["IBLOCK_CODE"] = $arIBlock["CODE"];
-			$UrlDeleteSectionButton = CIBlock::ReplaceDetailUrl($url_template, $arIBlock, true, false);
-		}
 
-		$arReturnUrl = array(
-			"add_section" => (
-				'' != $arParams["SECTION_URL"]?
-				$arParams["SECTION_URL"]:
-				CIBlock::GetArrayByID($arParams["IBLOCK_ID"], "SECTION_PAGE_URL")
-			),
-			"add_element" => (
-				'' != $arParams["SECTION_URL"]?
-				$arParams["SECTION_URL"]:
-				CIBlock::GetArrayByID($arParams["IBLOCK_ID"], "SECTION_PAGE_URL")
-			),
-			"delete_section" => $UrlDeleteSectionButton,
-		);
-		$arButtons = CIBlock::GetPanelButtons(
-			$arParams["IBLOCK_ID"],
-			0,
-			$arResult["SECTION"]["ID"],
-			array("RETURN_URL" =>  $arReturnUrl, "CATALOG"=>true)
-		);
-
-		$this->addIncludeAreaIcons(CIBlock::GetComponentMenu($APPLICATION->GetPublicShowMode(), $arButtons));
-	}
-
-	if($arParams["ADD_SECTIONS_CHAIN"] && isset($arResult["SECTION"]) && is_array($arResult["SECTION"]["PATH"]))
-	{
-		foreach($arResult["SECTION"]["PATH"] as $arPath)
-		{
-			if (isset($arPath["IPROPERTY_VALUES"]["SECTION_PAGE_TITLE"]) && $arPath["IPROPERTY_VALUES"]["SECTION_PAGE_TITLE"] != "")
-				$APPLICATION->AddChainItem($arPath["IPROPERTY_VALUES"]["SECTION_PAGE_TITLE"], $arPath["~SECTION_PAGE_URL"]);
-			else
-				$APPLICATION->AddChainItem($arPath["NAME"], $arPath["~SECTION_PAGE_URL"]);
-		}
-	}
-}
+?>
