@@ -15,31 +15,17 @@ $aMenuLinks = Array(
 		"" 
 	),
 	Array(
-		"Доставка", 
-		"/dostavka/", 
-		Array(), 
-		Array(), 
-		"" 
-	),
-	Array(
-		"Оплата", 
-		"/oplata/", 
+		"Доставка и оплата", 
+		"/about/dostavka-oplata/", 
 		Array(), 
 		Array(), 
 		"" 
 	),
 	Array(
 		"Гарантия и возврат", 
-		"/vozvrat-i-obmen/", 
+		"/about/vozvrat-i-obmen/", 
 		Array(), 
 		Array(), 
-		"" 
-	),
-	Array(
-		"Услуги", 
-		"/uslugi/", 
-		Array(),
-		Array(),
 		"" 
 	),
 	Array(

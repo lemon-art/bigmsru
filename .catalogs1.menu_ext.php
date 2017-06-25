@@ -30,11 +30,10 @@ $aMenuLinksExt = $APPLICATION->IncludeComponent("bitrix:menu.sections", "", arra
     "CACHE_TYPE" => "A",
     "CACHE_TIME" => "36000000"
 ),
-    false
+    true
 );
 
-//print_r($aMenuLinksExt);
-
+ 
 foreach ($aMenuLinksExt as $k => $v) {
     if (!empty($v[1])) {
         $v[1] = str_replace('%2F', '/', $v[1]);

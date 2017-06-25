@@ -6,9 +6,8 @@ $APPLICATION->SetTitle("\"Большой мастер\" - Интернет-ма�
 
 
 
+<section class="main-slider">
 
-<div class="slider_block">
-	<div class="flexslider_main">
 		<?$APPLICATION->IncludeComponent(
 	"bitrix:news.list", 
 	"slider", 
@@ -18,7 +17,7 @@ $APPLICATION->SetTitle("\"Большой мастер\" - Интернет-ма�
 		"IBLOCK_ID" => "6",
 		"NEWS_COUNT" => "20",
 		"SORT_BY1" => "SORT",
-		"SORT_ORDER1" => "DESC",
+		"SORT_ORDER1" => "ASC",
 		"SORT_BY2" => "ID",
 		"SORT_ORDER2" => "ASC",
 		"FILTER_NAME" => "",
@@ -76,1179 +75,275 @@ $APPLICATION->SetTitle("\"Большой мастер\" - Интернет-ма�
 	),
 	false
 );?>
-	</div>
-	<div class="clear"></div>
-</div>
 
-<?$GLOBALS['arrFilterSale'] = array("PROPERTY_RASPRODAZHA_VALUE"=>"Да");?>
-<?$GLOBALS['arrFilterNew'] = array("PROPERTY_NOVINKA_VALUE"=>"Да");?>
-
-<!-- <div class="carusel_block tabs main_carusel_block">
-	<div class="title_block">
-		<div class="title_tab">Новинки</div>
-		<div class="select_block">
-			<div class="selectesem">
-				<div data-val="first_cat1" class="item active">Инженерная сантехника</div>
-				<div data-val="first_cat2" class="item">Бытовая сантехника</div>
-			</div>			
-		</div>
-		
-		<a href="/catalog/inzhenernaya/new/" class="link tab2"><span>все предложения</span></a>
-		<a href="/catalog/bytovaya/new/" class="link hidden tab4"><span>все предложения</span></a>
-	</div>
-	
-	<div class="flexslider tab_content_main" id="first_cat1">
-		<?/*$APPLICATION->IncludeComponent("bitrix:catalog.section", "carusel", Array(
-			"COMPONENT_TEMPLATE" => ".default",
-				"IBLOCK_TYPE" => "1c_catalog",
-				"IBLOCK_ID" => "10",
-				"SECTION_ID" => "",
-				"SECTION_CODE" => "",
-				"SECTION_USER_FIELDS" => array(
-					0 => "",
-					1 => "",
-				),
-				"ELEMENT_SORT_FIELD" => "sort",
-				"ELEMENT_SORT_ORDER" => "asc",
-				"ELEMENT_SORT_FIELD2" => "id",
-				"ELEMENT_SORT_ORDER2" => "desc",
-				"FILTER_NAME" => "arrFilterNew",
-				"INCLUDE_SUBSECTIONS" => "Y",
-				"SHOW_ALL_WO_SECTION" => "Y",
-				"HIDE_NOT_AVAILABLE" => "N",
-				"PAGE_ELEMENT_COUNT" => "20",
-				"LINE_ELEMENT_COUNT" => "3",
-				"PROPERTY_CODE" => array(
-					0 => "NEW",
-					1 => "",
-				),
-				"OFFERS_LIMIT" => "5",
-				"TEMPLATE_THEME" => "blue",
-				"PRODUCT_SUBSCRIPTION" => "N",
-				"SHOW_DISCOUNT_PERCENT" => "N",
-				"SHOW_OLD_PRICE" => "N",
-				"SHOW_CLOSE_POPUP" => "Y",
-				"MESS_BTN_BUY" => "Купить",
-				"MESS_BTN_ADD_TO_BASKET" => "В корзину",
-				"MESS_BTN_SUBSCRIBE" => "Подписаться",
-				"MESS_BTN_DETAIL" => "Подробнее",
-				"MESS_NOT_AVAILABLE" => "Нет в наличии",
-				"SECTION_URL" => "",
-				"DETAIL_URL" => "",
-				"SECTION_ID_VARIABLE" => "SECTION_ID",
-				"AJAX_MODE" => "N",
-				"AJAX_OPTION_JUMP" => "N",
-				"AJAX_OPTION_STYLE" => "Y",
-				"AJAX_OPTION_HISTORY" => "N",
-				"AJAX_OPTION_ADDITIONAL" => "",
-				"CACHE_TYPE" => "A",
-				"CACHE_TIME" => "36000000",
-				"CACHE_GROUPS" => "Y",
-				"SET_TITLE" => "N",
-				"SET_BROWSER_TITLE" => "N",
-				"BROWSER_TITLE" => "-",
-				"SET_META_KEYWORDS" => "N",
-				"META_KEYWORDS" => "-",
-				"SET_META_DESCRIPTION" => "N",
-				"META_DESCRIPTION" => "-",
-				"ADD_SECTIONS_CHAIN" => "N",
-				"SET_STATUS_404" => "Y",
-				"CACHE_FILTER" => "N",
-				"ACTION_VARIABLE" => "action",
-				"PRODUCT_ID_VARIABLE" => "id",
-				"PRICE_CODE" => array(
-					0 => "Интернет",
-				),
-				"USE_PRICE_COUNT" => "N",
-				"SHOW_PRICE_COUNT" => "1",
-				"PRICE_VAT_INCLUDE" => "Y",
-				"CONVERT_CURRENCY" => "N",
-				"BASKET_URL" => "/basket/",
-				"USE_PRODUCT_QUANTITY" => "N",
-				"PRODUCT_QUANTITY_VARIABLE" => "",
-				"ADD_PROPERTIES_TO_BASKET" => "Y",
-				"PRODUCT_PROPS_VARIABLE" => "prop",
-				"PARTIAL_PRODUCT_PROPERTIES" => "N",
-				"PRODUCT_PROPERTIES" => "",
-				"ADD_TO_BASKET_ACTION" => "ADD",
-				"DISPLAY_COMPARE" => "Y",
-				"PAGER_TEMPLATE" => ".default",
-				"DISPLAY_TOP_PAGER" => "N",
-				"DISPLAY_BOTTOM_PAGER" => "Y",
-				"PAGER_TITLE" => "Товары",
-				"PAGER_SHOW_ALWAYS" => "N",
-				"PAGER_DESC_NUMBERING" => "N",
-				"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
-				"PAGER_SHOW_ALL" => "N",
-				"MESS_BTN_COMPARE" => "В сравнение",
-				"ADD_PICT_PROP" => "-",
-				"LABEL_PROP" => "-",
-				"COMPARE_PATH" => "/catalog/inzhenernaya/compare/",
-			),
-			false
-		);*/?>
-	</div>
-	<div class="flexslider tab_content_main" id="first_cat2">
-		<?/*$APPLICATION->IncludeComponent("bitrix:catalog.section", "carusel", Array(
-			"COMPONENT_TEMPLATE" => ".default",
-				"IBLOCK_TYPE" => "1c_catalog",
-				"IBLOCK_ID" => "12",
-				"SECTION_ID" => "",
-				"SECTION_CODE" => "",
-				"SECTION_USER_FIELDS" => array(
-					0 => "",
-					1 => "",
-				),
-				"ELEMENT_SORT_FIELD" => "sort",
-				"ELEMENT_SORT_ORDER" => "asc",
-				"ELEMENT_SORT_FIELD2" => "id",
-				"ELEMENT_SORT_ORDER2" => "desc",
-				"FILTER_NAME" => "arrFilterNew",
-				"INCLUDE_SUBSECTIONS" => "Y",
-				"SHOW_ALL_WO_SECTION" => "Y",
-				"HIDE_NOT_AVAILABLE" => "N",
-				"PAGE_ELEMENT_COUNT" => "20",
-				"LINE_ELEMENT_COUNT" => "3",
-				"PROPERTY_CODE" => array(
-					0 => "NEW",
-					1 => "",
-				),
-				"OFFERS_LIMIT" => "5",
-				"TEMPLATE_THEME" => "blue",
-				"PRODUCT_SUBSCRIPTION" => "N",
-				"SHOW_DISCOUNT_PERCENT" => "N",
-				"SHOW_OLD_PRICE" => "N",
-				"SHOW_CLOSE_POPUP" => "Y",
-				"MESS_BTN_BUY" => "Купить",
-				"MESS_BTN_ADD_TO_BASKET" => "В корзину",
-				"MESS_BTN_SUBSCRIBE" => "Подписаться",
-				"MESS_BTN_DETAIL" => "Подробнее",
-				"MESS_NOT_AVAILABLE" => "Нет в наличии",
-				"SECTION_URL" => "",
-				"DETAIL_URL" => "",
-				"SECTION_ID_VARIABLE" => "SECTION_ID",
-				"AJAX_MODE" => "N",
-				"AJAX_OPTION_JUMP" => "N",
-				"AJAX_OPTION_STYLE" => "Y",
-				"AJAX_OPTION_HISTORY" => "N",
-				"AJAX_OPTION_ADDITIONAL" => "",
-				"CACHE_TYPE" => "A",
-				"CACHE_TIME" => "36000000",
-				"CACHE_GROUPS" => "Y",
-				"SET_TITLE" => "N",
-				"SET_BROWSER_TITLE" => "N",
-				"BROWSER_TITLE" => "-",
-				"SET_META_KEYWORDS" => "N",
-				"META_KEYWORDS" => "-",
-				"SET_META_DESCRIPTION" => "N",
-				"META_DESCRIPTION" => "-",
-				"ADD_SECTIONS_CHAIN" => "N",
-				"SET_STATUS_404" => "Y",
-				"CACHE_FILTER" => "N",
-				"ACTION_VARIABLE" => "action",
-				"PRODUCT_ID_VARIABLE" => "id",
-				"PRICE_CODE" => array(
-					0 => "Интернет",
-				),
-				"USE_PRICE_COUNT" => "N",
-				"SHOW_PRICE_COUNT" => "1",
-				"PRICE_VAT_INCLUDE" => "Y",
-				"CONVERT_CURRENCY" => "N",
-				"BASKET_URL" => "/basket/",
-				"USE_PRODUCT_QUANTITY" => "N",
-				"PRODUCT_QUANTITY_VARIABLE" => "",
-				"ADD_PROPERTIES_TO_BASKET" => "Y",
-				"PRODUCT_PROPS_VARIABLE" => "prop",
-				"PARTIAL_PRODUCT_PROPERTIES" => "N",
-				"PRODUCT_PROPERTIES" => "",
-				"ADD_TO_BASKET_ACTION" => "ADD",
-				"DISPLAY_COMPARE" => "Y",
-				"PAGER_TEMPLATE" => ".default",
-				"DISPLAY_TOP_PAGER" => "N",
-				"DISPLAY_BOTTOM_PAGER" => "Y",
-				"PAGER_TITLE" => "Товары",
-				"PAGER_SHOW_ALWAYS" => "N",
-				"PAGER_DESC_NUMBERING" => "N",
-				"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
-				"PAGER_SHOW_ALL" => "N",
-				"MESS_BTN_COMPARE" => "В сравнение",
-				"ADD_PICT_PROP" => "-",
-				"LABEL_PROP" => "-",
-				"COMPARE_PATH" => "/catalog/bytovaya/compare/",
-			),
-			false
-		);*/?>
-	</div>		
-</div> -->
-
-<!-- <div class="carusel_block tabs main_carusel_block second_carusel_block">
-	<div class="title_block">
-		<div class="title_tab">Специальные предложения</div>
-		<div class="select_block">
-			<div class="selectesem">
-				<div data-val="second_cat1" class="item active">Инженерная сантехника</div>
-				<div data-val="second_cat2" class="item">Бытовая сантехника</div>
-			</div>			
-		</div>
-		
-		<a href="/catalog/inzhenernaya/actions/" class="link tab1"><span>все предложения</span></a>
-		<a href="/catalog/bytovaya/actions/" class="link hidden tab3"><span>все предложения</span></a>
-	</div>	
-	
-	<div class="flexslider tab_content_main" id="second_cat1">
-		<?/*$APPLICATION->IncludeComponent("bitrix:catalog.section", "carusel", Array(
-			"COMPONENT_TEMPLATE" => ".default",
-				"IBLOCK_TYPE" => "1c_catalog",
-				"IBLOCK_ID" => "10",
-				"SECTION_ID" => "",
-				"SECTION_CODE" => "",
-				"SECTION_USER_FIELDS" => array(
-					0 => "",
-					1 => "",
-				),
-				"ELEMENT_SORT_FIELD" => "sort",
-				"ELEMENT_SORT_ORDER" => "asc",
-				"ELEMENT_SORT_FIELD2" => "id",
-				"ELEMENT_SORT_ORDER2" => "desc",
-				"FILTER_NAME" => "arrFilterSale",
-				"INCLUDE_SUBSECTIONS" => "Y",
-				"SHOW_ALL_WO_SECTION" => "Y",
-				"HIDE_NOT_AVAILABLE" => "N",
-				"PAGE_ELEMENT_COUNT" => "20",
-				"LINE_ELEMENT_COUNT" => "3",
-				"PROPERTY_CODE" => array(
-					0 => "NEW",
-					1 => "",
-				),
-				"OFFERS_LIMIT" => "5",
-				"TEMPLATE_THEME" => "blue",
-				"PRODUCT_SUBSCRIPTION" => "N",
-				"SHOW_DISCOUNT_PERCENT" => "N",
-				"SHOW_OLD_PRICE" => "N",
-				"SHOW_CLOSE_POPUP" => "Y",
-				"MESS_BTN_BUY" => "Купить",
-				"MESS_BTN_ADD_TO_BASKET" => "В корзину",
-				"MESS_BTN_SUBSCRIBE" => "Подписаться",
-				"MESS_BTN_DETAIL" => "Подробнее",
-				"MESS_NOT_AVAILABLE" => "Нет в наличии",
-				"SECTION_URL" => "",
-				"DETAIL_URL" => "",
-				"SECTION_ID_VARIABLE" => "SECTION_ID",
-				"AJAX_MODE" => "N",
-				"AJAX_OPTION_JUMP" => "N",
-				"AJAX_OPTION_STYLE" => "Y",
-				"AJAX_OPTION_HISTORY" => "N",
-				"AJAX_OPTION_ADDITIONAL" => "",
-				"CACHE_TYPE" => "A",
-				"CACHE_TIME" => "36000000",
-				"CACHE_GROUPS" => "Y",
-				"SET_TITLE" => "N",
-				"SET_BROWSER_TITLE" => "N",
-				"BROWSER_TITLE" => "-",
-				"SET_META_KEYWORDS" => "N",
-				"META_KEYWORDS" => "-",
-				"SET_META_DESCRIPTION" => "N",
-				"META_DESCRIPTION" => "-",
-				"ADD_SECTIONS_CHAIN" => "N",
-				"SET_STATUS_404" => "Y",
-				"CACHE_FILTER" => "N",
-				"ACTION_VARIABLE" => "action",
-				"PRODUCT_ID_VARIABLE" => "id",
-				"PRICE_CODE" => array(
-					0 => "Интернет",
-				),
-				"USE_PRICE_COUNT" => "N",
-				"SHOW_PRICE_COUNT" => "1",
-				"PRICE_VAT_INCLUDE" => "Y",
-				"CONVERT_CURRENCY" => "N",
-				"BASKET_URL" => "/basket/",
-				"USE_PRODUCT_QUANTITY" => "N",
-				"PRODUCT_QUANTITY_VARIABLE" => "",
-				"ADD_PROPERTIES_TO_BASKET" => "Y",
-				"PRODUCT_PROPS_VARIABLE" => "prop",
-				"PARTIAL_PRODUCT_PROPERTIES" => "N",
-				"PRODUCT_PROPERTIES" => "",
-				"ADD_TO_BASKET_ACTION" => "ADD",
-				"DISPLAY_COMPARE" => "Y",
-				"PAGER_TEMPLATE" => ".default",
-				"DISPLAY_TOP_PAGER" => "N",
-				"DISPLAY_BOTTOM_PAGER" => "N",
-				"PAGER_TITLE" => "Товары",
-				"PAGER_SHOW_ALWAYS" => "N",
-				"PAGER_DESC_NUMBERING" => "N",
-				"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
-				"PAGER_SHOW_ALL" => "N",
-				"MESS_BTN_COMPARE" => "В сравнение",
-				"ADD_PICT_PROP" => "-",
-				"LABEL_PROP" => "-",
-				"COMPARE_PATH" => "/catalog/inzhenernaya/compare/",
-			),
-			false
-		);*/?>
-	</div>	
-	<div class="flexslider tab_content_main" id="second_cat2">
-		<?/*$APPLICATION->IncludeComponent("bitrix:catalog.section", "carusel", Array(
-			"COMPONENT_TEMPLATE" => ".default",
-				"IBLOCK_TYPE" => "1c_catalog",
-				"IBLOCK_ID" => "12",
-				"SECTION_ID" => "",
-				"SECTION_CODE" => "",
-				"SECTION_USER_FIELDS" => array(
-					0 => "",
-					1 => "",
-				),
-				"ELEMENT_SORT_FIELD" => "sort",
-				"ELEMENT_SORT_ORDER" => "asc",
-				"ELEMENT_SORT_FIELD2" => "id",
-				"ELEMENT_SORT_ORDER2" => "desc",
-				"FILTER_NAME" => "arrFilterSale",
-				"INCLUDE_SUBSECTIONS" => "Y",
-				"SHOW_ALL_WO_SECTION" => "Y",
-				"HIDE_NOT_AVAILABLE" => "N",
-				"PAGE_ELEMENT_COUNT" => "20",
-				"LINE_ELEMENT_COUNT" => "3",
-				"PROPERTY_CODE" => array(
-					0 => "NEW",
-					1 => "",
-				),
-				"OFFERS_LIMIT" => "5",
-				"TEMPLATE_THEME" => "blue",
-				"PRODUCT_SUBSCRIPTION" => "N",
-				"SHOW_DISCOUNT_PERCENT" => "N",
-				"SHOW_OLD_PRICE" => "N",
-				"SHOW_CLOSE_POPUP" => "Y",
-				"MESS_BTN_BUY" => "Купить",
-				"MESS_BTN_ADD_TO_BASKET" => "В корзину",
-				"MESS_BTN_SUBSCRIBE" => "Подписаться",
-				"MESS_BTN_DETAIL" => "Подробнее",
-				"MESS_NOT_AVAILABLE" => "Нет в наличии",
-				"SECTION_URL" => "",
-				"DETAIL_URL" => "",
-				"SECTION_ID_VARIABLE" => "SECTION_ID",
-				"AJAX_MODE" => "N",
-				"AJAX_OPTION_JUMP" => "N",
-				"AJAX_OPTION_STYLE" => "Y",
-				"AJAX_OPTION_HISTORY" => "N",
-				"AJAX_OPTION_ADDITIONAL" => "",
-				"CACHE_TYPE" => "A",
-				"CACHE_TIME" => "36000000",
-				"CACHE_GROUPS" => "Y",
-				"SET_TITLE" => "N",
-				"SET_BROWSER_TITLE" => "N",
-				"BROWSER_TITLE" => "-",
-				"SET_META_KEYWORDS" => "N",
-				"META_KEYWORDS" => "-",
-				"SET_META_DESCRIPTION" => "N",
-				"META_DESCRIPTION" => "-",
-				"ADD_SECTIONS_CHAIN" => "N",
-				"SET_STATUS_404" => "Y",
-				"CACHE_FILTER" => "N",
-				"ACTION_VARIABLE" => "action",
-				"PRODUCT_ID_VARIABLE" => "id",
-				"PRICE_CODE" => array(
-					0 => "Интернет",
-				),
-				"USE_PRICE_COUNT" => "N",
-				"SHOW_PRICE_COUNT" => "1",
-				"PRICE_VAT_INCLUDE" => "Y",
-				"CONVERT_CURRENCY" => "N",
-				"BASKET_URL" => "/basket/",
-				"USE_PRODUCT_QUANTITY" => "N",
-				"PRODUCT_QUANTITY_VARIABLE" => "",
-				"ADD_PROPERTIES_TO_BASKET" => "Y",
-				"PRODUCT_PROPS_VARIABLE" => "prop",
-				"PARTIAL_PRODUCT_PROPERTIES" => "N",
-				"PRODUCT_PROPERTIES" => "",
-				"ADD_TO_BASKET_ACTION" => "ADD",
-				"DISPLAY_COMPARE" => "Y",
-				"PAGER_TEMPLATE" => ".default",
-				"DISPLAY_TOP_PAGER" => "N",
-				"DISPLAY_BOTTOM_PAGER" => "Y",
-				"PAGER_TITLE" => "Товары",
-				"PAGER_SHOW_ALWAYS" => "N",
-				"PAGER_DESC_NUMBERING" => "N",
-				"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
-				"PAGER_SHOW_ALL" => "N",
-				"MESS_BTN_COMPARE" => "В сравнение",
-				"ADD_PICT_PROP" => "-",
-				"LABEL_PROP" => "-",
-				"COMPARE_PATH" => "/catalog/bytovaya/compare/",
-			),
-			false
-		);*/?>
-	</div>
-</div> -->
-
-<?/*
-<div class="carusel_block tabs carusel_catalog">
-	<div class="title_block">
-		<ul class="tabNavigation">
-			<li><a data-name="cat1" data-tab="tab1" class="" href="#first_cat1">Новинки</a></li>
-			<li><a data-name="cat1" data-tab="tab2" class="" href="#second_cat1">Специальные предложения</a></li>
-			<li><a data-name="cat2" data-tab="tab3" class="hidden" href="#first_cat2">Новинки</a></li>
-			<li><a data-name="cat2" data-tab="tab4" class="hidden" href="#second_cat2">Специальные предложения</a></li>
-		</ul>
-		
-		<div class="select_block">
-			<select class="select" name="tabs" onchange="catalog_active(this.value, 'first');">
-				<option value="cat1">Инженерная сантехника</option>
-				<option value="cat2">Бытовая сантехника</option>
-			</select>			
-		</div>
-		
-		<a href="/catalog/inzhenernaya/actions/" class="link tab1"><span>все предложения</span></a>
-		<a href="/catalog/inzhenernaya/new/" class="link hidden tab2"><span>все предложения</span></a>
-		<a href="/catalog/bytovaya/actions/" class="link hidden tab3"><span>все предложения</span></a>
-		<a href="/catalog/bytovaya/new/" class="link hidden tab4"><span>все предложения</span></a>
-	</div>
-	
-	<?$APPLICATION->IncludeComponent(
-		"bitrix:catalog.compare.list",
-		"simple",
-		array(
-			"IBLOCK_TYPE" => "1c_catalog",
-			"IBLOCK_ID" => 10,
-			"NAME" => "CATALOG_COMPARE_LIST",
-			"DETAIL_URL" => '/catalog/inzhenernaya/#SECTION_CODE#/#ELEMENT_CODE#/',
-			"COMPARE_URL" => '/catalog/inzhenernaya/compare/',
-			"ACTION_VARIABLE" => "action",
-			"PRODUCT_ID_VARIABLE" => "id",
-			'POSITION_FIXED' => "Y",
-			'POSITION' => "top left",
-		),
-		$component,
-		array("HIDE_ICONS" => "Y")
-	);?>
-	
-	<?$APPLICATION->IncludeComponent(
-		"bitrix:catalog.compare.list",
-		"simple",
-		array(
-			"IBLOCK_TYPE" => "1c_catalog",
-			"IBLOCK_ID" => 12,
-			"NAME" => "CATALOG_COMPARE_LIST",
-			"DETAIL_URL" => '/catalog/bytovaya/#SECTION_CODE#/#ELEMENT_CODE#/',
-			"COMPARE_URL" => '/catalog/bytovaya/compare/',
-			"ACTION_VARIABLE" => "action",
-			"PRODUCT_ID_VARIABLE" => "id",
-			'POSITION_FIXED' => "Y",
-			'POSITION' => "top left",
-		),
-		$component,
-		array("HIDE_ICONS" => "Y")
-	);?>
-	
-	<div class="flexslider tab_content" id="first_cat1">
-		<?$APPLICATION->IncludeComponent("bitrix:catalog.section", "carusel", Array(
-			"COMPONENT_TEMPLATE" => ".default",
-				"IBLOCK_TYPE" => "1c_catalog",
-				"IBLOCK_ID" => "10",
-				"SECTION_ID" => "",
-				"SECTION_CODE" => "",
-				"SECTION_USER_FIELDS" => array(
-					0 => "",
-					1 => "",
-				),
-				"ELEMENT_SORT_FIELD" => "sort",
-				"ELEMENT_SORT_ORDER" => "asc",
-				"ELEMENT_SORT_FIELD2" => "id",
-				"ELEMENT_SORT_ORDER2" => "desc",
-				"FILTER_NAME" => "arrFilterNew",
-				"INCLUDE_SUBSECTIONS" => "Y",
-				"SHOW_ALL_WO_SECTION" => "Y",
-				"HIDE_NOT_AVAILABLE" => "N",
-				"PAGE_ELEMENT_COUNT" => "20",
-				"LINE_ELEMENT_COUNT" => "3",
-				"PROPERTY_CODE" => array(
-					0 => "NEW",
-					1 => "",
-				),
-				"OFFERS_LIMIT" => "5",
-				"TEMPLATE_THEME" => "blue",
-				"PRODUCT_SUBSCRIPTION" => "N",
-				"SHOW_DISCOUNT_PERCENT" => "N",
-				"SHOW_OLD_PRICE" => "N",
-				"SHOW_CLOSE_POPUP" => "Y",
-				"MESS_BTN_BUY" => "Купить",
-				"MESS_BTN_ADD_TO_BASKET" => "В корзину",
-				"MESS_BTN_SUBSCRIBE" => "Подписаться",
-				"MESS_BTN_DETAIL" => "Подробнее",
-				"MESS_NOT_AVAILABLE" => "Нет в наличии",
-				"SECTION_URL" => "",
-				"DETAIL_URL" => "",
-				"SECTION_ID_VARIABLE" => "SECTION_ID",
-				"AJAX_MODE" => "N",
-				"AJAX_OPTION_JUMP" => "N",
-				"AJAX_OPTION_STYLE" => "Y",
-				"AJAX_OPTION_HISTORY" => "N",
-				"AJAX_OPTION_ADDITIONAL" => "",
-				"CACHE_TYPE" => "A",
-				"CACHE_TIME" => "36000000",
-				"CACHE_GROUPS" => "Y",
-				"SET_TITLE" => "N",
-				"SET_BROWSER_TITLE" => "N",
-				"BROWSER_TITLE" => "-",
-				"SET_META_KEYWORDS" => "N",
-				"META_KEYWORDS" => "-",
-				"SET_META_DESCRIPTION" => "N",
-				"META_DESCRIPTION" => "-",
-				"ADD_SECTIONS_CHAIN" => "N",
-				"SET_STATUS_404" => "Y",
-				"CACHE_FILTER" => "N",
-				"ACTION_VARIABLE" => "action",
-				"PRODUCT_ID_VARIABLE" => "id",
-				"PRICE_CODE" => array(
-					0 => "Интернет",
-				),
-				"USE_PRICE_COUNT" => "N",
-				"SHOW_PRICE_COUNT" => "1",
-				"PRICE_VAT_INCLUDE" => "Y",
-				"CONVERT_CURRENCY" => "N",
-				"BASKET_URL" => "/basket/",
-				"USE_PRODUCT_QUANTITY" => "N",
-				"PRODUCT_QUANTITY_VARIABLE" => "",
-				"ADD_PROPERTIES_TO_BASKET" => "Y",
-				"PRODUCT_PROPS_VARIABLE" => "prop",
-				"PARTIAL_PRODUCT_PROPERTIES" => "N",
-				"PRODUCT_PROPERTIES" => "",
-				"ADD_TO_BASKET_ACTION" => "ADD",
-				"DISPLAY_COMPARE" => "Y",
-				"PAGER_TEMPLATE" => ".default",
-				"DISPLAY_TOP_PAGER" => "N",
-				"DISPLAY_BOTTOM_PAGER" => "Y",
-				"PAGER_TITLE" => "Товары",
-				"PAGER_SHOW_ALWAYS" => "N",
-				"PAGER_DESC_NUMBERING" => "N",
-				"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
-				"PAGER_SHOW_ALL" => "N",
-				"MESS_BTN_COMPARE" => "В сравнение",
-				"ADD_PICT_PROP" => "-",
-				"LABEL_PROP" => "-",
-				"COMPARE_PATH" => "/catalog/inzhenernaya/compare/",
-			),
-			false
-		);?>
-	</div>
-	<div class="flexslider tab_content" id="second_cat1">
-		<?$APPLICATION->IncludeComponent("bitrix:catalog.section", "carusel", Array(
-			"COMPONENT_TEMPLATE" => ".default",
-				"IBLOCK_TYPE" => "1c_catalog",
-				"IBLOCK_ID" => "10",
-				"SECTION_ID" => "",
-				"SECTION_CODE" => "",
-				"SECTION_USER_FIELDS" => array(
-					0 => "",
-					1 => "",
-				),
-				"ELEMENT_SORT_FIELD" => "sort",
-				"ELEMENT_SORT_ORDER" => "asc",
-				"ELEMENT_SORT_FIELD2" => "id",
-				"ELEMENT_SORT_ORDER2" => "desc",
-				"FILTER_NAME" => "arrFilterSale",
-				"INCLUDE_SUBSECTIONS" => "Y",
-				"SHOW_ALL_WO_SECTION" => "Y",
-				"HIDE_NOT_AVAILABLE" => "N",
-				"PAGE_ELEMENT_COUNT" => "20",
-				"LINE_ELEMENT_COUNT" => "3",
-				"PROPERTY_CODE" => array(
-					0 => "NEW",
-					1 => "",
-				),
-				"OFFERS_LIMIT" => "5",
-				"TEMPLATE_THEME" => "blue",
-				"PRODUCT_SUBSCRIPTION" => "N",
-				"SHOW_DISCOUNT_PERCENT" => "N",
-				"SHOW_OLD_PRICE" => "N",
-				"SHOW_CLOSE_POPUP" => "Y",
-				"MESS_BTN_BUY" => "Купить",
-				"MESS_BTN_ADD_TO_BASKET" => "В корзину",
-				"MESS_BTN_SUBSCRIBE" => "Подписаться",
-				"MESS_BTN_DETAIL" => "Подробнее",
-				"MESS_NOT_AVAILABLE" => "Нет в наличии",
-				"SECTION_URL" => "",
-				"DETAIL_URL" => "",
-				"SECTION_ID_VARIABLE" => "SECTION_ID",
-				"AJAX_MODE" => "N",
-				"AJAX_OPTION_JUMP" => "N",
-				"AJAX_OPTION_STYLE" => "Y",
-				"AJAX_OPTION_HISTORY" => "N",
-				"AJAX_OPTION_ADDITIONAL" => "",
-				"CACHE_TYPE" => "A",
-				"CACHE_TIME" => "36000000",
-				"CACHE_GROUPS" => "Y",
-				"SET_TITLE" => "N",
-				"SET_BROWSER_TITLE" => "N",
-				"BROWSER_TITLE" => "-",
-				"SET_META_KEYWORDS" => "N",
-				"META_KEYWORDS" => "-",
-				"SET_META_DESCRIPTION" => "N",
-				"META_DESCRIPTION" => "-",
-				"ADD_SECTIONS_CHAIN" => "N",
-				"SET_STATUS_404" => "Y",
-				"CACHE_FILTER" => "N",
-				"ACTION_VARIABLE" => "action",
-				"PRODUCT_ID_VARIABLE" => "id",
-				"PRICE_CODE" => array(
-					0 => "Интернет",
-				),
-				"USE_PRICE_COUNT" => "N",
-				"SHOW_PRICE_COUNT" => "1",
-				"PRICE_VAT_INCLUDE" => "Y",
-				"CONVERT_CURRENCY" => "N",
-				"BASKET_URL" => "/basket/",
-				"USE_PRODUCT_QUANTITY" => "N",
-				"PRODUCT_QUANTITY_VARIABLE" => "",
-				"ADD_PROPERTIES_TO_BASKET" => "Y",
-				"PRODUCT_PROPS_VARIABLE" => "prop",
-				"PARTIAL_PRODUCT_PROPERTIES" => "N",
-				"PRODUCT_PROPERTIES" => "",
-				"ADD_TO_BASKET_ACTION" => "ADD",
-				"DISPLAY_COMPARE" => "Y",
-				"PAGER_TEMPLATE" => ".default",
-				"DISPLAY_TOP_PAGER" => "N",
-				"DISPLAY_BOTTOM_PAGER" => "N",
-				"PAGER_TITLE" => "Товары",
-				"PAGER_SHOW_ALWAYS" => "N",
-				"PAGER_DESC_NUMBERING" => "N",
-				"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
-				"PAGER_SHOW_ALL" => "N",
-				"MESS_BTN_COMPARE" => "В сравнение",
-				"ADD_PICT_PROP" => "-",
-				"LABEL_PROP" => "-",
-				"COMPARE_PATH" => "/catalog/inzhenernaya/compare/",
-			),
-			false
-		);?>
-	</div>
-	
-	<div class="flexslider tab_content" id="first_cat2">
-		<?$APPLICATION->IncludeComponent("bitrix:catalog.section", "carusel", Array(
-			"COMPONENT_TEMPLATE" => ".default",
-				"IBLOCK_TYPE" => "1c_catalog",
-				"IBLOCK_ID" => "12",
-				"SECTION_ID" => "",
-				"SECTION_CODE" => "",
-				"SECTION_USER_FIELDS" => array(
-					0 => "",
-					1 => "",
-				),
-				"ELEMENT_SORT_FIELD" => "sort",
-				"ELEMENT_SORT_ORDER" => "asc",
-				"ELEMENT_SORT_FIELD2" => "id",
-				"ELEMENT_SORT_ORDER2" => "desc",
-				"FILTER_NAME" => "arrFilterNew",
-				"INCLUDE_SUBSECTIONS" => "Y",
-				"SHOW_ALL_WO_SECTION" => "Y",
-				"HIDE_NOT_AVAILABLE" => "N",
-				"PAGE_ELEMENT_COUNT" => "20",
-				"LINE_ELEMENT_COUNT" => "3",
-				"PROPERTY_CODE" => array(
-					0 => "NEW",
-					1 => "",
-				),
-				"OFFERS_LIMIT" => "5",
-				"TEMPLATE_THEME" => "blue",
-				"PRODUCT_SUBSCRIPTION" => "N",
-				"SHOW_DISCOUNT_PERCENT" => "N",
-				"SHOW_OLD_PRICE" => "N",
-				"SHOW_CLOSE_POPUP" => "Y",
-				"MESS_BTN_BUY" => "Купить",
-				"MESS_BTN_ADD_TO_BASKET" => "В корзину",
-				"MESS_BTN_SUBSCRIBE" => "Подписаться",
-				"MESS_BTN_DETAIL" => "Подробнее",
-				"MESS_NOT_AVAILABLE" => "Нет в наличии",
-				"SECTION_URL" => "",
-				"DETAIL_URL" => "",
-				"SECTION_ID_VARIABLE" => "SECTION_ID",
-				"AJAX_MODE" => "N",
-				"AJAX_OPTION_JUMP" => "N",
-				"AJAX_OPTION_STYLE" => "Y",
-				"AJAX_OPTION_HISTORY" => "N",
-				"AJAX_OPTION_ADDITIONAL" => "",
-				"CACHE_TYPE" => "A",
-				"CACHE_TIME" => "36000000",
-				"CACHE_GROUPS" => "Y",
-				"SET_TITLE" => "N",
-				"SET_BROWSER_TITLE" => "N",
-				"BROWSER_TITLE" => "-",
-				"SET_META_KEYWORDS" => "N",
-				"META_KEYWORDS" => "-",
-				"SET_META_DESCRIPTION" => "N",
-				"META_DESCRIPTION" => "-",
-				"ADD_SECTIONS_CHAIN" => "N",
-				"SET_STATUS_404" => "Y",
-				"CACHE_FILTER" => "N",
-				"ACTION_VARIABLE" => "action",
-				"PRODUCT_ID_VARIABLE" => "id",
-				"PRICE_CODE" => array(
-					0 => "Интернет",
-				),
-				"USE_PRICE_COUNT" => "N",
-				"SHOW_PRICE_COUNT" => "1",
-				"PRICE_VAT_INCLUDE" => "Y",
-				"CONVERT_CURRENCY" => "N",
-				"BASKET_URL" => "/basket/",
-				"USE_PRODUCT_QUANTITY" => "N",
-				"PRODUCT_QUANTITY_VARIABLE" => "",
-				"ADD_PROPERTIES_TO_BASKET" => "Y",
-				"PRODUCT_PROPS_VARIABLE" => "prop",
-				"PARTIAL_PRODUCT_PROPERTIES" => "N",
-				"PRODUCT_PROPERTIES" => "",
-				"ADD_TO_BASKET_ACTION" => "ADD",
-				"DISPLAY_COMPARE" => "Y",
-				"PAGER_TEMPLATE" => ".default",
-				"DISPLAY_TOP_PAGER" => "N",
-				"DISPLAY_BOTTOM_PAGER" => "Y",
-				"PAGER_TITLE" => "Товары",
-				"PAGER_SHOW_ALWAYS" => "N",
-				"PAGER_DESC_NUMBERING" => "N",
-				"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
-				"PAGER_SHOW_ALL" => "N",
-				"MESS_BTN_COMPARE" => "В сравнение",
-				"ADD_PICT_PROP" => "-",
-				"LABEL_PROP" => "-",
-				"COMPARE_PATH" => "/catalog/bytovaya/compare/",
-			),
-			false
-		);?>
-	</div>
-	<div class="flexslider tab_content" id="second_cat2">
-		<?$APPLICATION->IncludeComponent("bitrix:catalog.section", "carusel", Array(
-			"COMPONENT_TEMPLATE" => ".default",
-				"IBLOCK_TYPE" => "1c_catalog",
-				"IBLOCK_ID" => "12",
-				"SECTION_ID" => "",
-				"SECTION_CODE" => "",
-				"SECTION_USER_FIELDS" => array(
-					0 => "",
-					1 => "",
-				),
-				"ELEMENT_SORT_FIELD" => "sort",
-				"ELEMENT_SORT_ORDER" => "asc",
-				"ELEMENT_SORT_FIELD2" => "id",
-				"ELEMENT_SORT_ORDER2" => "desc",
-				"FILTER_NAME" => "arrFilterSale",
-				"INCLUDE_SUBSECTIONS" => "Y",
-				"SHOW_ALL_WO_SECTION" => "Y",
-				"HIDE_NOT_AVAILABLE" => "N",
-				"PAGE_ELEMENT_COUNT" => "20",
-				"LINE_ELEMENT_COUNT" => "3",
-				"PROPERTY_CODE" => array(
-					0 => "NEW",
-					1 => "",
-				),
-				"OFFERS_LIMIT" => "5",
-				"TEMPLATE_THEME" => "blue",
-				"PRODUCT_SUBSCRIPTION" => "N",
-				"SHOW_DISCOUNT_PERCENT" => "N",
-				"SHOW_OLD_PRICE" => "N",
-				"SHOW_CLOSE_POPUP" => "Y",
-				"MESS_BTN_BUY" => "Купить",
-				"MESS_BTN_ADD_TO_BASKET" => "В корзину",
-				"MESS_BTN_SUBSCRIBE" => "Подписаться",
-				"MESS_BTN_DETAIL" => "Подробнее",
-				"MESS_NOT_AVAILABLE" => "Нет в наличии",
-				"SECTION_URL" => "",
-				"DETAIL_URL" => "",
-				"SECTION_ID_VARIABLE" => "SECTION_ID",
-				"AJAX_MODE" => "N",
-				"AJAX_OPTION_JUMP" => "N",
-				"AJAX_OPTION_STYLE" => "Y",
-				"AJAX_OPTION_HISTORY" => "N",
-				"AJAX_OPTION_ADDITIONAL" => "",
-				"CACHE_TYPE" => "A",
-				"CACHE_TIME" => "36000000",
-				"CACHE_GROUPS" => "Y",
-				"SET_TITLE" => "N",
-				"SET_BROWSER_TITLE" => "N",
-				"BROWSER_TITLE" => "-",
-				"SET_META_KEYWORDS" => "N",
-				"META_KEYWORDS" => "-",
-				"SET_META_DESCRIPTION" => "N",
-				"META_DESCRIPTION" => "-",
-				"ADD_SECTIONS_CHAIN" => "N",
-				"SET_STATUS_404" => "Y",
-				"CACHE_FILTER" => "N",
-				"ACTION_VARIABLE" => "action",
-				"PRODUCT_ID_VARIABLE" => "id",
-				"PRICE_CODE" => array(
-					0 => "Интернет",
-				),
-				"USE_PRICE_COUNT" => "N",
-				"SHOW_PRICE_COUNT" => "1",
-				"PRICE_VAT_INCLUDE" => "Y",
-				"CONVERT_CURRENCY" => "N",
-				"BASKET_URL" => "/basket/",
-				"USE_PRODUCT_QUANTITY" => "N",
-				"PRODUCT_QUANTITY_VARIABLE" => "",
-				"ADD_PROPERTIES_TO_BASKET" => "Y",
-				"PRODUCT_PROPS_VARIABLE" => "prop",
-				"PARTIAL_PRODUCT_PROPERTIES" => "N",
-				"PRODUCT_PROPERTIES" => "",
-				"ADD_TO_BASKET_ACTION" => "ADD",
-				"DISPLAY_COMPARE" => "Y",
-				"PAGER_TEMPLATE" => ".default",
-				"DISPLAY_TOP_PAGER" => "N",
-				"DISPLAY_BOTTOM_PAGER" => "Y",
-				"PAGER_TITLE" => "Товары",
-				"PAGER_SHOW_ALWAYS" => "N",
-				"PAGER_DESC_NUMBERING" => "N",
-				"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
-				"PAGER_SHOW_ALL" => "N",
-				"MESS_BTN_COMPARE" => "В сравнение",
-				"ADD_PICT_PROP" => "-",
-				"LABEL_PROP" => "-",
-				"COMPARE_PATH" => "/catalog/bytovaya/compare/",
-			),
-			false
-		);?>
-	</div>
-</div>
-*/?>
+</section>
 
 
-<div class="sections_block block sections_block_main">
-	<div class="title_block">
-		<div class="title">Каталог продукции</div>
-		
-		<?/*
-		<div class="select_block">
-			<select class="select no_style" name="tabs" onchange="catalog_active_open(this.value);">
-				<option value="cat1">Инженерная сантехника</option>
-				<option value="cat2">Бытовая сантехника</option>
-			</select>
-		</div>
-		*/?>
-		
-		<div class="selectesem">
-			<div class="item active" data-val="cat1" onclick="catalog_active_open_ss(this.getAttribute('data-val'))">Инженерная сантехника</div>
-			<div class="item" data-val="cat2" onclick="catalog_active_open_ss(this.getAttribute('data-val'))">Бытовая сантехника</div>
-			<!-- <div data-val="first_cat1" class="item active">Инженерная сантехника</div>
-			<div data-val="first_cat2" class="item">Бытовая сантехника</div> -->
-		</div>
-		
-		<div class="clear"></div>
-	</div>
-
-	<div>
-		<div class="tab tab1 cat1 tab_tab1_cat1">
-				<?
-	//global $USER;
-	//if ($USER->IsAdmin()):
-	?>
-	<?if(isset($_REQUEST["_escaped_fragment_"])):?>
-			
-			<?$APPLICATION->IncludeComponent(
-				"bitrix:catalog.section.list", 
-				"sections", 
-				Array(
-					"COMPONENT_TEMPLATE" => "sections",
-					"IBLOCK_TYPE" => "1c_catalog",
-					"IBLOCK_ID" => "10",
-					"SECTION_ID" => "",
-					"SECTION_CODE" => "",
-					"COUNT_ELEMENTS" => "N",
-					"TOP_DEPTH" => "2",
-					"SECTION_FIELDS" => array(0 => "", 1 => ""),
-					"SECTION_USER_FIELDS" => array(0 => "UF_ICON",1 => "UF_PICTURE",2 => "UF_CUSTOM_URL", 3 => "UF_ACTIVE"),
-					"VIEW_MODE" => "LINE",
-					"SHOW_PARENT_NAME" => "Y",
-					"SECTION_URL" => "",
-					"CACHE_TYPE" => "A",
-					"CACHE_TIME" => "36000000",
-					"CACHE_GROUPS" => "Y",
-					"ADD_SECTIONS_CHAIN" => "Y",
-				),
-				false
-			);?>
-				<?endif;?>
-	<?//endif;?>
-		</div>
-		<div class="tab tab2 cat2 hidden tab_tab2_cat2">
-				<?
-	//global $USER;
-	//if ($USER->IsAdmin()):
-	?>
-	<?if(isset($_REQUEST["_escaped_fragment_"])):?>
-			
-			<?$APPLICATION->IncludeComponent(
-				"bitrix:catalog.section.list",
-				"sections", 
-				Array(
-					"COMPONENT_TEMPLATE" => "sections",
-					"IBLOCK_TYPE" => "1c_catalog",
-					"IBLOCK_ID" => "12",
-					"SECTION_ID" => "",
-					"SECTION_CODE" => "",
-					"COUNT_ELEMENTS" => "N",
-					"TOP_DEPTH" => "2",
-					"SECTION_FIELDS" => array(0=>"",1=>"",),
-					"SECTION_USER_FIELDS" => array(0=>"UF_ICON",1 => "UF_PICTURE",2 => "UF_CUSTOM_URL", 3 => "UF_ACTIVE"),
-					"VIEW_MODE" => "LINE",
-					"SHOW_PARENT_NAME" => "Y",
-					"SECTION_URL" => "",
-					"CACHE_TYPE" => "A",
-					"CACHE_TIME" => "36000000",
-					"CACHE_GROUPS" => "Y",
-					"ELEMENT_SORT_FIELD" => "sort",
-					"ELEMENT_SORT_ORDER" => "asc",
-					"ADD_SECTIONS_CHAIN" => "Y"
-				)
-			);?>
-				<?endif;?>
-	<?//endif;?>
-		</div>
-	</div>
-</div>
-
-
-
-
-
-<div class="carusel_block tabs carusel_brend">
-	<?
-	//global $USER;
-	//if ($USER->IsAdmin()):
-	?>
-	<?if(isset($_REQUEST["_escaped_fragment_"])):?>
-	
-	<div class="title_block">
-		<ul class="tabNavigation">
-			<li><a data-name="cat1" class="" href="#brend_cat1">Производители</a></li>
-			<li><a data-name="cat2" class="hidden" href="#brend_cat2"></a></li>
-		</ul>
-		
-		<div class="selectesem">
-			<div class="item active" data-val="cat1" onclick="catalog_active_ss(this.getAttribute('data-val'), 'brend')">Инженерная сантехника</div>
-			<div class="item" data-val="cat2" onclick="catalog_active_ss(this.getAttribute('data-val'), 'brend')">Бытовая сантехника</div>
-		</div>		
-		
-		
-		<a data-name="cat1" href="/proizvoditeli/inzhenernaya/" class="link tab1"><span>все предложения</span></a>
-		<a data-name="cat2" href="/proizvoditeli/bytovaya/" class="link hidden tab2"><span>все предложения</span></a>
-		
-	</div>				
-	
-	<div class="flexslider tab_content" id="brend_cat1">
-		<ul class="carusel slides">
-			<?
-			////////////////////////////////////////////////
-			CModule::IncludeModule("highloadblock");
-			
-			//use Bitrix\Highloadblock as HL;
-			//use Bitrix\Main\Entity;
-			
-			$hlblock_id = 2;
-			///////////////////////////////////////////////
-
-			$hlblock = Bitrix\Highloadblock\HighloadBlockTable::getById($hlblock_id)->fetch(); 
-			$entity = Bitrix\Highloadblock\HighloadBlockTable::compileEntity($hlblock);
-			
-			$entity_data_class = $entity->getDataClass();
-			$entity_table_name = $hlblock['TABLE_NAME'];
-			
-			$arFilter = array(); //задаете фильтр по вашим полям
-			
-			$sTableID = 'tbl_'.$entity_table_name;
-			$rsData = $entity_data_class::getList(array(
-				"select" => array('UF_XML_ID', 'UF_NAME', 'UF_FILE'), //выбираем поля
-				"filter" => $arFilter,
-				"order" => array()
-			));
-			$rsData = new CDBResult($rsData, $sTableID);
-			while($arRes = $rsData->Fetch()){
-				$arSelect = Array("ID", "NAME", "PROPERTY_BREND");
-				$arFilter2 = Array("IBLOCK_ID"=>10, "ACTIVE"=>"Y", "PROPERTY_BREND"=>$arRes["UF_XML_ID"]);
-				$res = CIBlockElement::GetList(array(), $arFilter2, false, array("nPageSize"=>1), $arSelect);
-				while($ar_fields = $res->GetNext())
-				{
-				?>
-					<?
-					$file = CFile::ResizeImageGet($arRes["UF_FILE"], array('width'=>148, 'height'=>61), BX_RESIZE_IMAGE_EXACT, true);
-					$name = mb_strtolower(str_replace(" ", "_", $arRes['UF_NAME']));
-					?>
-
-					<li class="item">
-						<a class="logo" href="/proizvoditeli/inzhenernaya/<?=$name?>/" style="background-image:url(<?=$file["src"]?>);"></a>
-						<div class="title"><?echo $arRes["UF_NAME"]?></div>
-					</li>
-				<?
-				}
-			}
-			////////////////////////////////////////////////
-			?>
-		</ul>
-	</div>
-	<div class="flexslider tab_content" id="brend_cat2">
-		<ul class="carusel slides">
-			<?
-			////////////////////////////////////////////////
-			$hlblock = Bitrix\Highloadblock\HighloadBlockTable::getById($hlblock_id)->fetch(); 
-			$entity = Bitrix\Highloadblock\HighloadBlockTable::compileEntity($hlblock);
-			
-			$entity_data_class = $entity->getDataClass();
-			$entity_table_name = $hlblock['TABLE_NAME'];
-			
-			$arFilter = array(); //задаете фильтр по вашим полям
-			
-			$sTableID = 'tbl_'.$entity_table_name;
-			$rsData = $entity_data_class::getList(array(
-				"select" => array('UF_XML_ID', 'UF_NAME', 'UF_FILE'), //выбираем поля
-				"filter" => $arFilter,
-				"order" => array()
-			));
-			$rsData = new CDBResult($rsData, $sTableID);
-			while($arRes = $rsData->Fetch()){
-				$arSelect = Array("ID", "NAME", "PROPERTY_BREND");
-				$arFilter2 = Array("IBLOCK_ID"=>12, "ACTIVE"=>"Y", "PROPERTY_BREND"=>$arRes["UF_XML_ID"]);
-				$res = CIBlockElement::GetList(array(), $arFilter2, false, array("nPageSize"=>1), $arSelect);
-				while($ar_fields = $res->GetNext())
-				{
-				?>
-					<?
-					$file = CFile::ResizeImageGet($arRes["UF_FILE"], array('width'=>148, 'height'=>61), BX_RESIZE_IMAGE_EXACT, true);
-					$name = mb_strtolower(str_replace(" ", "_", $arRes['UF_NAME']));
-					?>
-
-					<li class="item">
-						<a class="logo" href="/proizvoditeli/bytovaya/<?=$name?>/" style="background-image:url(<?=$file["src"]?>);"></a>
-						<div class="title"><?echo $arRes["UF_NAME"]?></div>
-					</li>
-				<?
-				}
-			}
-			////////////////////////////////////////////////
-			?>
-		</ul>
-	</div>
-	
-	
-	<?endif;?>
-	<?//endif;?>
-	
-	
-</div>
-
-
-
-
-
-<div class="main_text_block">
-	<div class="block text_block">
-		<div class="title_block">
-			<?$APPLICATION->IncludeComponent(
-				"bitrix:main.include", 
-				".default", 
-				array(
-					"AREA_FILE_SHOW" => "file",
-					"PATH" => "/include/main_text_block_title.php",
-					"EDIT_TEMPLATE" => "standard.php"
-				),
-				false
-			);?>
-		</div>
-		<div class="text">
-			<?$APPLICATION->IncludeComponent(
-				"bitrix:main.include", 
-				".default", 
-				array(
-					"AREA_FILE_SHOW" => "file",
-					"PATH" => "/include/main_text_block_text.php",
-					"EDIT_TEMPLATE" => "standard.php"
-				),
-				false
-			);?>
-			
-			<a href="/about/" class="link">узнать больше</a>
-		</div>
-	</div>
-
-	<div class="block articl_block">
-		<div class="title_block">
-			<div class="inline finger active_tab" id="tab-articles">статьи</div>
-			<div class="inline finger" id="tab-news">новости</div>
-			<a href="/articles/" class="all inline" id="all-articles">все статьи</a>
-            <a href="/news/" class="all inline" id="all-news" >все новости</a>
-		</div>
-        <div id="tabs-articles">
 		<?$APPLICATION->IncludeComponent(
-			"bitrix:news.list",
-			"articles_main",
-			Array(
-				"COMPONENT_TEMPLATE" => ".default",
-				"IBLOCK_TYPE" => "content",
-				"IBLOCK_ID" => "3",
-				"NEWS_COUNT" => "3",
-				"SORT_BY1" => "ACTIVE_FROM",
-				"SORT_ORDER1" => "DESC",
-				"SORT_BY2" => "SORT",
-				"SORT_ORDER2" => "ASC",
-				"FILTER_NAME" => "",
-				"FIELD_CODE" => array("",""),
-				"PROPERTY_CODE" => array("",""),
-				"CHECK_DATES" => "Y",
-				"DETAIL_URL" => "",
-				"AJAX_MODE" => "N",
-				"AJAX_OPTION_JUMP" => "N",
-				"AJAX_OPTION_STYLE" => "Y",
-				"AJAX_OPTION_HISTORY" => "N",
-				"AJAX_OPTION_ADDITIONAL" => "",
-				"CACHE_TYPE" => "A",
-				"CACHE_TIME" => "36000000",
-				"CACHE_FILTER" => "N",
-				"CACHE_GROUPS" => "Y",
-				"PREVIEW_TRUNCATE_LEN" => "",
-				"ACTIVE_DATE_FORMAT" => "d.m.Y",
-				"SET_TITLE" => "N",
-				"SET_BROWSER_TITLE" => "N",
-				"SET_META_KEYWORDS" => "N",
-				"SET_META_DESCRIPTION" => "N",
-				"SET_STATUS_404" => "Y",
-				"INCLUDE_IBLOCK_INTO_CHAIN" => "N",
-				"ADD_SECTIONS_CHAIN" => "N",
-				"HIDE_LINK_WHEN_NO_DETAIL" => "N",
-				"PARENT_SECTION" => "",
-				"PARENT_SECTION_CODE" => "",
-				"INCLUDE_SUBSECTIONS" => "N",
-				"DISPLAY_DATE" => "N",
-				"DISPLAY_NAME" => "Y",
-				"DISPLAY_PICTURE" => "Y",
-				"DISPLAY_PREVIEW_TEXT" => "Y",
-				"PAGER_TEMPLATE" => ".default",
-				"DISPLAY_TOP_PAGER" => "N",
-				"DISPLAY_BOTTOM_PAGER" => "N",
-				"PAGER_TITLE" => "Новости",
-				"PAGER_SHOW_ALWAYS" => "N",
-				"PAGER_DESC_NUMBERING" => "N",
-				"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
-				"PAGER_SHOW_ALL" => "N"
-			)
-		);?>
-        </div>
-        <div id="tabs-news" style="display: none;">
-            <?$APPLICATION->IncludeComponent(
-	"bitrix:news.list", 
-	"articles_main", 
+	"custom:catalog.section", 
+	"carusel", 
 	array(
-		"COMPONENT_TEMPLATE" => "articles_main",
-		"IBLOCK_TYPE" => "content",
-		"IBLOCK_ID" => "18",
-		"NEWS_COUNT" => "3",
-		"SORT_BY1" => "ACTIVE_FROM",
-		"SORT_ORDER1" => "DESC",
-		"SORT_BY2" => "SORT",
-		"SORT_ORDER2" => "ASC",
-		"FILTER_NAME" => "",
-		"FIELD_CODE" => array(
+		"COMPONENT_TEMPLATE" => "carusel",
+		"IBLOCK_TYPE" => "1c_catalog",
+		"IBLOCK_ID" => "12",
+		"SECTION_ID" => "",
+		"SECTION_CODE" => "",
+		"SECTION_USER_FIELDS" => array(
 			0 => "",
 			1 => "",
 		),
+		"ELEMENT_SORT_FIELD" => "shows",
+		"ELEMENT_SORT_ORDER" => "desc",
+		"ELEMENT_SORT_FIELD2" => "id",
+		"ELEMENT_SORT_ORDER2" => "desc",
+		"FILTER_NAME" => "arrFilterNew",
+		"INCLUDE_SUBSECTIONS" => "Y",
+		"SHOW_ALL_WO_SECTION" => "Y",
+		"HIDE_NOT_AVAILABLE" => "N",
+		"PAGE_ELEMENT_COUNT" => "20",
+		"LINE_ELEMENT_COUNT" => "3",
 		"PROPERTY_CODE" => array(
-			0 => "",
-			1 => "",
+			0 => "ELEKTRICHESKAYA_MOSHCHNOST_NAPRYAZHENIE_VT_V",
+			1 => "RAZMER_CHASHI_SHKHVKHG",
+			2 => "PRISOEDINITELNYY_RAZMER",
+			3 => "MOSHCHNOST_ELEKTRICHESKAYA_KVT",
+			4 => "GARANTIYA_LET",
+			5 => "CML2_BAR_CODE",
+			6 => "CML2_ARTICLE",
+			7 => "CML2_ATTRIBUTES",
+			8 => "CML2_TRAITS",
+			9 => "CML2_BASE_UNIT",
+			10 => "CML2_TAXES",
+			11 => "CML2_MANUFACTURER",
+			12 => "VES_NETTO_BRUTTO_KG",
+			13 => "BLOG_POST_ID",
+			14 => "BLOG_COMMENTS_CNT",
+			15 => "vote_count",
+			16 => "vote_sum",
+			17 => "rating",
+			18 => "WF_NO_YM",
+			19 => "ZASHCHITA_OT_SUKHOGO_KHODA",
+			20 => "VSTRAIVAEMYY",
+			21 => "TRUBNOE_PRISOEDINENIE_PRISOEDINITELNYY_RAZMER",
+			22 => "YA_VREMYA_ZAKAZA_DLYA_DOSTAVKI_NA_SEGODNYA",
+			23 => "DOPUSTIMYY_RAZMER_CHASTITS",
+			24 => "NAZNACHENIE_PO_VODE",
+			25 => "TIP_NASOSA",
+			26 => "MAKSIMALNAYA_TEMPERATURA_S",
+			27 => "NAPOR_M",
+			28 => "PROPUSKNAYA_SPOSOBNOST_KVS_M_CHAS",
+			29 => "TEMPERATURA_RABOCHEY_SREDY_S",
+			30 => "NASTROYKA",
+			31 => "VID_PODDONA",
+			32 => "TOLSHCHINA_MM",
+			33 => "ISPOLNENIE_POLOTNA_DVERI",
+			34 => "CHASTOTA_GTS",
+			35 => "TSVET_ZADNEY_STENKI",
+			36 => "ARMIROVANIE",
+			37 => "NOMINALNOE_NAPRYAZHENIE_V",
+			38 => "DIAPAZON_IZMERENIYA_NAPRYAZHENI_V",
+			39 => "MATERIAL_PODDONA",
+			40 => "KISLORODNYY_SLOY",
+			41 => "NOMINALNYY_TOK_A",
+			42 => "INDIKATSIYA_NAPRYAZHENIYA",
+			43 => "NALICHIE_KRYSHI",
+			44 => "IZLIV_DLYA_VANNY",
+			45 => "DIZAYN",
+			46 => "GABARITS",
+			47 => "TIP_TRUBY",
+			48 => "KOLICHESTVO_POLYUSOV",
+			49 => "YA_ANONS_DLYA_MARKET_1",
+			50 => "KOLICHESTVO_ZAZHIMOV_KLEMM",
+			51 => "RABOCHEE_DAVLENIE_BAR",
+			52 => "RASPOLOZHENIE",
+			53 => "TERMOSTAT",
+			54 => "GLUBINA_MONTAZHA_MM",
+			55 => "SPOSOB_PRISOEDINENIYA",
+			56 => "DLINA_SM_1",
+			57 => "GABARITNYE_RAZMERY_MM",
+			58 => "KONSTRUKTSIYA_DVEREY_1",
+			59 => "TROPICHESKIY_DUSH_1",
+			60 => "KOLICHESTVO_VKHODOV_VVODOV",
+			61 => "VNUTRENNIY_BAK",
+			62 => "MATERIAL_ZADNEY_STENKI",
+			63 => "TEGI",
+			64 => "DIAMETR_SM",
+			65 => "MOSHCHNOST_TEPLOOBMENNIKA_KVT",
+			66 => "MATERIAL_PROFILYA",
+			67 => "NASTENNYE",
+			68 => "VSTROENNYY_TEN_KVT",
+			69 => "POLOCHKI",
+			70 => "TIP_1",
+			71 => "PODSOEDINENIE_KONTURA_OTOPLENIYA",
+			72 => "TIP_IZDELIYA",
+			73 => "YA_ANONS_DLYA_MARKET",
+			74 => "SREDNIY_NOMINALNYY_SROK_SLUZHBY_CH",
+			75 => "PODSOEDINENIE_KONTURA_GVS",
+			76 => "YA_STOIMOST_DOSTAVKI",
+			77 => "YA_SROK_DOSTAVKI",
+			78 => "MOSHCHNOST_VT_1",
+			79 => "RAZMER_MONTAZHNOGO_OTVERSTIYA_POD_MOYKU",
+			80 => "PROIZVODITELNOST_M_CHAS",
+			81 => "KLASS_ENERGOEFFEKTIVNOSTI",
+			82 => "SHIRINA_SHKAFA_SM",
+			83 => "POVERKHNOST_NAGREVA_M",
+			84 => "TSOKOL",
+			85 => "PROIZVODITELNOST_GORYACHEY_VODY_PRI_T_25_L_M",
+			86 => "TIP_MONTAZHA",
+			87 => "ISTOCHNIK_SVETA",
+			88 => "KAMERA_SGORANIYA",
+			89 => "DIAMETR_DYMOKHODA_MM",
+			90 => "PODSOEDINENIE_KONTURA_KHVS",
+			91 => "MEZHOSEVOE_RASSTOYANIE_MM",
+			92 => "FORMA_1",
+			93 => "TEPLOOTDACHA_VT",
+			94 => "STANDART_PODVODKI_DYUYM",
+			95 => "STATUS_NALICHIYA_NA_SKLADE",
+			96 => "VRASHCHENIE_IZLIVA",
+			97 => "VYDVIZHNOY_IZLIV",
+			98 => "KRANBUKSA",
+			99 => "DONNYY_KLAPAN",
+			100 => "AERATOR",
+			101 => "OSNASHCHENIE_1",
+			102 => "TIP",
+			103 => "KARTRIDZH",
+			104 => "ARTIKUL",
+			105 => "IZOLYATSIYA",
+			106 => "UPRAVLENIE",
+			107 => "MATERIAL_VNUTRENNEGO_PROVODNIKA",
+			108 => "VYSOTA_IZLIVA_SM",
+			109 => "MATERIAL_VNESHNEGO_PROVODNIKA",
+			110 => "DLINA_IZLIVA_SM",
+			111 => "MATERIAL_",
+			112 => "NAZNACHENIE_",
+			113 => "MAKSIMALNYY_KOMMUTIRUEMYY_TOK_A",
+			114 => "KLASS_ZASHCHITY_IP",
+			115 => "REZHIM_RABOTY",
+			116 => "TEMPERATURA_OKRUZHAYUSHCHEY_SREDY_S",
+			117 => "KOMPLEKTATSIYA_1",
+			118 => "GRUPPIROVKA_DLYA_SAYTA",
+			119 => "VREMYA_ZARYADKI_AKKUMULYATORA_CH",
+			120 => "KOLLEKTSIYA",
+			121 => "KOLICHESTVO_AKKUMULYATOROV",
+			122 => "OBLAST_PRIMENENIYA",
+			123 => "NAPRYAZHENIE_V",
+			124 => "OTVERSTIE_DLYA_MONTAZHA",
+			125 => "MOSHCHNOST_VT_2",
+			126 => "CHASTOTA_GTS_1",
+			127 => "OSNASHCHENIE",
+			128 => "KLASS_ZASHCHITY",
+			129 => "KOMPLEKTY_SMESITELEY",
+			130 => "GLUBINA_VSASYVANIYA_M",
+			131 => "KOMPLEKTY_SMESITELEY_1",
+			132 => "FUNKTSIYA_EKONOMII_RASKHODA",
+			133 => "MOSHCHNOST_VT",
+			134 => "PROIVODITENOST_L_CH",
+			135 => "FITINGI_DLYA",
+			136 => "MAKSIMALNYY_NAPOR_M",
+			137 => "TIP_MONTAZHA_1",
+			138 => "DLINA_KABELYA_M",
+			139 => "OTAPLIVAEMAYA_PLOSHCHAD_KV_M",
+			140 => "VID_FITINGA_DLYA_TRUB",
+			141 => "BUKHTA_M",
+			142 => "KOMPLEKTATSIYA",
+			143 => "DLINA_SHLANGA_SM",
+			144 => "MAKSIMALNOE_DAVLENIE_BAR",
+			145 => "RAZMER_VERKHNEGO_DUSHA_SM",
+			146 => "DY",
+			147 => "FURNITURA",
+			148 => "VYPUSK_UNITAZA",
+			149 => "ISPOLNENIE_SHLANGA",
+			150 => "PROIZVODITELNOST_GORYACHEY_VODY_RI_T_25",
+			151 => "RUCHNOY_DUSH",
+			152 => "PROIZVODITELNOST_GORYACHEY_VODY_PRI_T_35_L_M",
+			153 => "SOVMESTIMA_S_PROTOCHNYM_VODONAGREVATELEM",
+			154 => "DIAMETR_DYMOOTVODA_TRUB_KOAKS_RAZDELNYKH_MM",
+			155 => "SMESITEL_1",
+			156 => "MAKS_RASKHOD_PRIRODNOGO_SZHIZHENNOGO_GAZA_M_CH_KG_",
+			157 => "IZLIV_DLYA_NAPOLNENIYA_VANN_1",
+			158 => "MAKS_PROIZVODITELNOST_KPD_",
+			159 => "EMKOST_L",
+			160 => "PODACHA_GAZA",
+			161 => "VKHOD_KHOLODNOY_VODY_V_KOTEL",
+			162 => "VOZVRAT_IZ_SISTEMY_OTOPLENIYA",
+			163 => "TSIRKULYATOR",
+			164 => "STEKLO_MM",
+			165 => "KONSTRUKTSIYA_DVEREY",
+			166 => "SIDENE",
+			167 => "ELEKTRONNOE_UPRAVLENIE",
+			168 => "GIDROMASSAZH_SPINY_KOL_VO_FORSUNOK",
+			169 => "TROPICHESKIY_DUSH",
+			170 => "VENTILYATSIYA",
+			171 => "ZERKALO",
+			172 => "RADIO",
+			173 => "ZADNYAYA_STENKA",
+			174 => "ISPOLNENIE_STEKOL",
+			175 => "PODSVETKA",
+			176 => "PROFIL",
+			177 => "SMESITEL",
+			178 => "DIAMETR_MM",
+			179 => "GIDROMASSAZH",
+			180 => "NOVINKA",
+			181 => "RASPRODAZHA",
+			182 => "LIDER_PRODAZH",
+			183 => "METOD_KREPLENIYA",
+			184 => "STANDART_PODVODKI",
+			185 => "TIP_PODVODKI",
+			186 => "MEKHANIZM",
+			187 => "GARANTY",
+			188 => "IZLIV_DLYA_NAPOLNENIYA_VANN",
+			189 => "FORMA",
+			190 => "DIAMETR_VERKHNEGO_DUSHA",
+			191 => "MYLNITSA",
+			192 => "POLKA_V_CHASHE",
+			193 => "SIDENE_V_KOMPLEKTE",
+			194 => "PODVOD_VODY",
+			195 => "REZHIM_SLIVA",
+			196 => "SISTEMA_ANTIVSPLESK",
+			197 => "VYSOTA_CHASHI",
+			198 => "OBEM_SMYVNOGO_BACHKA_L",
+			199 => "VID_USTANOVKI",
+			200 => "SISTEMA_GIDROMASSAZHA",
+			201 => "ORIENTATSIYA",
+			202 => "UGLOVAYA_KONSTRUKTSIYA",
+			203 => "RASPOLOZHENIE_PERELIVA",
+			204 => "ANTISKOLZYASHCHEE_POKRYTIE",
+			205 => "RUCHKI",
+			206 => "NOZHKI",
+			207 => "KARKAS",
+			208 => "SLIV_PERELIV",
+			209 => "PODGOLOVNIK",
+			210 => "PODKLYUCHENIE",
+			211 => "KOLICHESTVO_SEKTSIY",
+			212 => "POVOROTNYY",
+			213 => "TOLSHCHINA_STENKI_TRUBY_MM",
+			214 => "BREND",
+			215 => "STRANA_PROIZVODITEL",
+			216 => "SHIRINA_SM",
+			217 => "DLINA_SM",
+			218 => "VYSOTA_SM",
+			219 => "GLUBINA_MM",
+			220 => "OBYEM_L",
+			221 => "MATERIAL",
+			222 => "TSVET",
+			223 => "STILISTIKA_DIZAYNA",
+			224 => "NEW",
+			225 => "",
 		),
-		"CHECK_DATES" => "Y",
+		"OFFERS_LIMIT" => "5",
+		"TEMPLATE_THEME" => "blue",
+		"PRODUCT_SUBSCRIPTION" => "N",
+		"SHOW_DISCOUNT_PERCENT" => "N",
+		"SHOW_OLD_PRICE" => "N",
+		"SHOW_CLOSE_POPUP" => "Y",
+		"MESS_BTN_BUY" => "Купить",
+		"MESS_BTN_ADD_TO_BASKET" => "В корзину",
+		"MESS_BTN_SUBSCRIBE" => "Подписаться",
+		"MESS_BTN_DETAIL" => "Подробнее",
+		"MESS_NOT_AVAILABLE" => "Нет в наличии",
+		"SECTION_URL" => "",
 		"DETAIL_URL" => "",
+		"SECTION_ID_VARIABLE" => "SECTION_ID",
 		"AJAX_MODE" => "N",
 		"AJAX_OPTION_JUMP" => "N",
 		"AJAX_OPTION_STYLE" => "Y",
@@ -1256,50 +351,120 @@ $APPLICATION->SetTitle("\"Большой мастер\" - Интернет-ма�
 		"AJAX_OPTION_ADDITIONAL" => "",
 		"CACHE_TYPE" => "A",
 		"CACHE_TIME" => "36000000",
-		"CACHE_FILTER" => "N",
 		"CACHE_GROUPS" => "Y",
-		"PREVIEW_TRUNCATE_LEN" => "",
-		"ACTIVE_DATE_FORMAT" => "d.m.Y",
 		"SET_TITLE" => "N",
 		"SET_BROWSER_TITLE" => "N",
+		"BROWSER_TITLE" => "-",
 		"SET_META_KEYWORDS" => "N",
+		"META_KEYWORDS" => "-",
 		"SET_META_DESCRIPTION" => "N",
-		"SET_STATUS_404" => "Y",
-		"INCLUDE_IBLOCK_INTO_CHAIN" => "N",
+		"META_DESCRIPTION" => "-",
 		"ADD_SECTIONS_CHAIN" => "N",
-		"HIDE_LINK_WHEN_NO_DETAIL" => "N",
-		"PARENT_SECTION" => "",
-		"PARENT_SECTION_CODE" => "",
-		"INCLUDE_SUBSECTIONS" => "N",
-		"DISPLAY_DATE" => "N",
-		"DISPLAY_NAME" => "Y",
-		"DISPLAY_PICTURE" => "Y",
-		"DISPLAY_PREVIEW_TEXT" => "Y",
+		"SET_STATUS_404" => "Y",
+		"CACHE_FILTER" => "N",
+		"ACTION_VARIABLE" => "action",
+		"PRODUCT_ID_VARIABLE" => "id",
+		"PRICE_CODE" => array(
+			0 => "Интернет",
+		),
+		"USE_PRICE_COUNT" => "N",
+		"SHOW_PRICE_COUNT" => "1",
+		"PRICE_VAT_INCLUDE" => "Y",
+		"CONVERT_CURRENCY" => "N",
+		"BASKET_URL" => "/basket/",
+		"USE_PRODUCT_QUANTITY" => "N",
+		"PRODUCT_QUANTITY_VARIABLE" => "",
+		"ADD_PROPERTIES_TO_BASKET" => "Y",
+		"PRODUCT_PROPS_VARIABLE" => "prop",
+		"PARTIAL_PRODUCT_PROPERTIES" => "N",
+		"PRODUCT_PROPERTIES" => array(
+		),
+		"ADD_TO_BASKET_ACTION" => "ADD",
+		"DISPLAY_COMPARE" => "Y",
 		"PAGER_TEMPLATE" => ".default",
 		"DISPLAY_TOP_PAGER" => "N",
-		"DISPLAY_BOTTOM_PAGER" => "N",
-		"PAGER_TITLE" => "Новости",
+		"DISPLAY_BOTTOM_PAGER" => "Y",
+		"PAGER_TITLE" => "Товары",
 		"PAGER_SHOW_ALWAYS" => "N",
 		"PAGER_DESC_NUMBERING" => "N",
 		"PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
 		"PAGER_SHOW_ALL" => "N",
+		"MESS_BTN_COMPARE" => "В сравнение",
+		"ADD_PICT_PROP" => "-",
+		"LABEL_PROP" => "-",
+		"COMPARE_PATH" => "/catalog/inzhenernaya/compare/",
+		"BACKGROUND_IMAGE" => "-",
+		"SEF_MODE" => "N",
 		"SET_LAST_MODIFIED" => "N",
+		"USE_MAIN_ELEMENT_SECTION" => "N",
 		"PAGER_BASE_LINK_ENABLE" => "N",
 		"SHOW_404" => "N",
 		"MESSAGE_404" => ""
 	),
 	false
 );?>
-        </div>
-	</div>
-	<div class="clear"></div>
-</div>
+
+		
+		
+		<section class="advantages">
+                <h2 class="content-h2">Наши преимущества</h2>
+                <ul class="advantages__list">
+                  <li class="advantages__item">
+                    <div class="advantages__img-wrap">
+                      <img src="/images/icons/free.png" alt="" class="advantages__img">
+                    </div>
+                    <strong class="advantages__title">Бесплатный<br>пересчет смет</strong>
+                    <p class="advantages__text">Мы помогаем оптимизировать затраты клиентов: приводим сметы в порядок, предлагаем технически и экономически обоснованные решения по проектам.</p>
+                  </li>
+                  <li class="advantages__item">
+                    <div class="advantages__img-wrap">
+                      <img src="/images/icons/partners.png" alt="" class="advantages__img">
+                    </div>
+                    <strong class="advantages__title">Особые условия<br>для партнеров</strong>
+                    <p class="advantages__text">Специальные цены на товары и инструмент в аренду на выгодных условиях для постоянных профессиональных покупателей.</p>
+                  </li>
+                  <li class="advantages__item">
+                    <div class="advantages__img-wrap">
+                      <img src="/images/icons/eng_santech.png" alt="" class="advantages__img">
+                    </div>
+                    <strong class="advantages__title">Установка инженерной<br>сантехники</strong>
+                    <p class="advantages__text">Компания располагает собственным штатом опытных монтажников. Мы устанавливаем инженерную сантехнику с гарантией до 2 лет.</p>
+                  </li>
+                  <li class="advantages__item">
+                    <div class="advantages__img-wrap">
+                      <img src="/images/icons/help.png" alt="" class="advantages__img">
+                    </div>
+                    <strong class="advantages__title">Помощь<br>с гарантией</strong>
+                    <p class="advantages__text">Мы помогаем покупателям решать гарантийные вопросы с сервисными центрами. Берем все связанные с этим заботы на себя.</p>
+                  </li>
+                  <li class="advantages__item">
+                    <div class="advantages__img-wrap">
+                      <img src="/images/icons/brands.png" alt="" class="advantages__img">
+                    </div>
+                    <strong class="advantages__title">Проверенные<br>бренды</strong>
+                    <p class="advantages__text">«Большой мастер» работает только с сертифицированной брендовой сантехникой. Никакого азиатского ширпотреба и подделок, никаких полукустарных решений в стиле «дешево и сердито» на один день</p>
+                  </li>
+                  <li class="advantages__item">
+                    <div class="advantages__img-wrap">
+                      <img src="/images/icons/gifts.png" alt="" class="advantages__img">
+                    </div>
+                    <strong class="advantages__title">Акции<br>и подарки</strong>
+                    <p class="advantages__text">У нас действуют специальные условия на акционные товары. Магазин организует бесплатную доставку или дарит подарок при покупке.</p>
+                  </li>
+                  <li class="advantages__item">
+                    <div class="advantages__img-wrap">
+                      <img src="/images/icons/return.png" alt="" class="advantages__img">
+                    </div>
+                    <strong class="advantages__title">Возврат товара<br>в течение 2 месяцев</strong>
+                    <p class="advantages__text">Если товар не подошел, покупатель может отдать его назад в течение 60 суток со дня приобретения, и мы вернем ему всю сумму.</p>
+                  </li>
+                </ul>
+              </section>
 
 
-
-
-
+<?/*
  <div data-retailrocket-markup-block="58da518b65bf1907bc2310ab" ></div>
+ */?>
 
 
 

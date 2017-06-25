@@ -341,6 +341,7 @@ unset($arRes['BASKET_DATA']['APPLIED_DISCOUNT_LIST'], $arRes['BASKET_DATA']['FUL
 
 $arRes["PARAMS"]["QUANTITY_FLOAT"] = (isset($_POST["quantity_float"]) && $_POST["quantity_float"] == "Y") ? "Y" : "N";
 
+
 $APPLICATION->RestartBuffer();
 header('Content-Type: application/json; charset='.LANG_CHARSET);
 echo CUtil::PhpToJSObject($arRes);

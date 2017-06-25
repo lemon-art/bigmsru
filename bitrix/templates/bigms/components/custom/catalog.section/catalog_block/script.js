@@ -1617,6 +1617,7 @@ window.JCCatalogSection.prototype.BasketResult = function(arResult)
 	}
 	else
 	{
+		
 		console.log('init');
 		this.InitPopupWindow();
 		if (successful)

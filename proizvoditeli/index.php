@@ -3,29 +3,37 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetPageProperty("description", "Производители. Большой мастер - интернет-магазин инженерной и бытовой сантехники");
 $APPLICATION->SetPageProperty("title", "Производители - Большой мастер");
 $APPLICATION->SetTitle("Производители");
+
+//Устанавливаем нужные классы для header
+/*
+$this->SetViewTarget("content__wrap");
+echo "content__wrap_producers";
+$this->EndViewTarget("content__wrap");
+
+$this->SetViewTarget("row_div_class");
+echo "col-lg-30 col-md-30 col-sm-30 content__container content__container_producers";
+$this->EndViewTarget("row_div_class");
+*/
+$arNames = Array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"); 
+
+
 ?>
 
 	<h1><?$APPLICATION->ShowTitle(false)?></h1>
-
-	<div class="tabs brends_all_block">
-		<div class="title_block">
-			<div class="select_block">
-				<?/*
-			<select class="select" name="tabs" onchange="run_tabs(this.value);">
-				<option value="brend_cat1">Инженерная сантехника</option>
-				<option value="brend_cat2">Бытовая сантехника</option>
-			</select>
-			*/?>
-				<div class="selectesem">
-					<div onclick="run_tabs_ss(this.getAttribute('data-val'))" data-val="brend_cat1" class="item active">Инженерная сантехника</div>
-					<div onclick="run_tabs_ss(this.getAttribute('data-val'))" data-val="brend_cat2" class="item">Бытовая сантехника</div>
-				</div>
-			</div>
-		</div>
-
-
-		<div class="tab_content" id="brend_cat1">
-			<ul>
+			
+			
+			<div class="content-producers">
+				<div class="content-producers__filter producers-filter">
+                  <ul class="producers-filter__list">
+                    <li class="producers-filter__item" data-name="0">Все</li>
+                    <li class="producers-filter__item" data-name="0-9">0-9</li>
+                    <?foreach ( $arNames as $bName ):?>
+						<li class="producers-filter__item" data-name="<?=$bName?>"><?=$bName?></li>
+					<?endforeach;?>
+                    <li class="producers-filter__item" data-name="А-Я">А-Я</li>
+                  </ul>
+                </div>
+	
 				<?
 				////////////////////////////////////////////////
 				CModule::IncludeModule("highloadblock");
@@ -48,7 +56,7 @@ $APPLICATION->SetTitle("Производители");
 				$rsData = $entity_data_class::getList(array(
 					"select" => array('UF_XML_ID', 'UF_NAME', 'UF_FILE'), //выбираем поля
 					"filter" => $arFilter,
-					"order" => array()
+					"order" => array("UF_NAME")
 				));
 				$rsData = new CDBResult($rsData, $sTableID);
 				$arIds = array();
@@ -58,50 +66,109 @@ $APPLICATION->SetTitle("Производители");
 					$arAllBrand[$arRes['UF_XML_ID']] = $arRes;
 				}
 
-				$arBrand1 = array();
-				$arBrand2 = array();
-				$arSelect = Array("ID", "NAME", "PROPERTY_BREND");
-				$arFilter2 = Array("IBLOCK_ID"=>10, "ACTIVE"=>"Y", "PROPERTY_BREND"=>$arIds);
-				$res = CIBlockElement::GetList(array(), $arFilter2, array('PROPERTY_BREND'), false, $arSelect);
-				while($ar_fields = $res->GetNext()) {
-					if ($arAllBrand[$ar_fields['PROPERTY_BREND_VALUE']]['UF_FILE']){
-						$arBrand1[] = $arAllBrand[$ar_fields['PROPERTY_BREND_VALUE']];
-					} else {
-						$arBrand2[] = $arAllBrand[$ar_fields['PROPERTY_BREND_VALUE']];
+				$arBrandsNames = Array();
+				foreach ( $arAllBrand as $arBrand ){
+					
+					preg_match_all( '/[а-яё]/ui', $arBrand["UF_NAME"], $matches);
+					if ( count($matches[0]) > 0 ){
+						$arBrandsNames['rus'][] = $arBrand;
 					}
-				}
-
-				$arBrand = array_merge($arBrand1, $arBrand2);
-				foreach ($arBrand as $brand){
-					$file = CFile::ResizeImageGet($brand["UF_FILE"], array('width'=>148, 'height'=>61), BX_RESIZE_IMAGE_EXACT, true);
-					?>
-					<li class="item">
-						<a class="logo" href="/proizvoditeli/inzhenernaya/<?=$brand["UF_NAME"]?>/" style="background-image:url(<?=$file["src"]?>);"></a>
-						<div class="title"><a href="/proizvoditeli/inzhenernaya/<?=$brand["UF_NAME"]?>/"><?echo $brand["UF_NAME"]?></a></div>
-					</li>
-					<?
+					else {
+						$arBrandsNames[mb_substr($arBrand["UF_NAME"], 0, 1)][] = $arBrand;
+					}
+					
 				}
 				?>
-			</ul>
-			<div class="clear"></div>
-		</div>
-		<div class="tab_content hidden" id="brend_cat2">
-			<ul>
-				<script>
-					$(document).ready(function () {
-						$.ajax({
-							type: "POST",
-							url: "/proizvoditeli/ajax_index.php",
-							data: "",
-							success: function(data){
-								$('#brend_cat2 ul').html(data);
-							}
-						});
-					});
-				</script>
-			</ul>
-			<div class="clear"></div>
-		</div>
-	</div>
+				
+				<?foreach ( $arNames as $bName ):?>
+				
+					<?if ( count( $arBrandsNames[$bName] ) > 0 ):?>
+						<div class="content-producers__row producers-row" data-header="<?=$bName?>">
+							<ul class="producers-row__list">
+								
+								<?foreach ( $arBrandsNames[$bName] as $arBrand ):?>
+									
+									
+										<?$APPLICATION->IncludeComponent(
+											"custom:brand.section.list",
+											"list",
+											Array(
+												"ADD_SECTIONS_CHAIN" => "N",
+												"BRAND_NAME" => $arBrand["UF_NAME"],
+												"BRAND_XML" => $arBrand["UF_XML_ID"],
+												"UF_FILE" => $arBrand["UF_FILE"],
+												"CACHE_GROUPS" => "Y",
+												"CACHE_TIME" => "36000000",
+												"CACHE_TYPE" => "A",
+												"COUNT_ELEMENTS" => "N",
+												"IBLOCK_ID" => 12,
+												"IBLOCK_TYPE" => "catalog",
+												"SECTION_CODE" => "",
+												"SECTION_FIELDS" => array("", ""),
+												"SECTION_ID" => "",
+												"SECTION_URL" => "",
+												"SECTION_USER_FIELDS" => array("", ""),
+												"SHOW_PARENT_NAME" => "Y",
+												"TOP_DEPTH" => "2",
+												"VIEW_MODE" => "LINE"
+											)
+										);?>
+										
+
+									  
+								
+								<?endforeach;?>
+								
+							</ul>
+						</div>		
+
+					<?endif;?>
+					
+				<?endforeach;?>
+				
+						<div class="content-producers__row producers-row" data-header="А-Я">
+							<ul class="producers-row__list">
+								
+								<?foreach ( $arBrandsNames['rus'] as $arBrand ):?>
+									
+
+									
+										<?$APPLICATION->IncludeComponent(
+											"custom:brand.section.list",
+											"list",
+											Array(
+												"ADD_SECTIONS_CHAIN" => "N",
+												"BRAND_NAME" => $arBrand["UF_NAME"],
+												"BRAND_XML" => $arBrand["UF_XML_ID"],
+												"UF_FILE" => $arBrand["UF_FILE"],
+												"CACHE_GROUPS" => "Y",
+												"CACHE_TIME" => "36000000",
+												"CACHE_TYPE" => "A",
+												"COUNT_ELEMENTS" => "N",
+												"IBLOCK_ID" => Array(10, 12),
+												"IBLOCK_TYPE" => "catalog",
+												"SECTION_CODE" => "",
+												"SECTION_FIELDS" => array("", ""),
+												"SECTION_ID" => "",
+												"SECTION_URL" => "",
+												"SECTION_USER_FIELDS" => array("", ""),
+												"SHOW_PARENT_NAME" => "Y",
+												"TOP_DEPTH" => "2",
+												"VIEW_MODE" => "LINE"
+											)
+										);?>
+										
+
+									 
+								
+								<?endforeach;?>
+								
+							</ul>
+						</div>	
+	
+
+			</div>
+
+
 
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
