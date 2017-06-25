@@ -1,0 +1,84 @@
+div.news-list
+{
+	word-wrap: break-word;
+}
+div.news-list img.preview_picture
+{
+	float:left;
+	margin:0 4px 6px 0;
+}
+.news-date-time {
+	color:#486DAA;
+}
+
+.flexslider_main .free_block{
+	position:absolute;
+	top:15px;
+	color:#ffffff;
+	width:740px;
+	margin-left:90px;
+}
+
+.flexslider_main .free_block .free_left_block{
+	display:inline-block;
+	float: left;
+    width: 520px;
+}
+
+.flexslider_main .free_block .free_right_block{
+	display:inline-block;
+}
+
+.flexslider_main .free_block .title{
+	font-size:2.250em; /* 36px/16px */
+	font-family: 'MuseoSansBlack';
+	display:inline-block;
+	vertical-align:top;
+	width:450px;
+	padding-right:40px;
+	padding-top:20px;
+	text-transform:uppercase;
+	line-height:38px;
+}
+.flexslider_main .free_block .under_title{
+    font-size: 1.24em;
+    font-family: 'MuseoSansBlack';
+    display: inline-block;
+    vertical-align: top;
+    width: 450px;
+    padding-right: 40px;
+    /* padding-top: 20px; */
+    line-height: 38px;
+}
+
+.flexslider_main .free_block .button a{
+    font-size: 1em;
+    display: inline-block;
+    vertical-align: top;
+    /* padding-top: 20px; */
+	background-color: #ff6d4b;
+    padding: 15px 48px;
+	color:#ffffff;
+	text-transform:uppercase;
+	text-decoration: none;
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+
+.flexslider_main .free_block .metro{
+	background: url(images/subway.png) top left no-repeat;
+	font-family: MuseoSansRegular;
+    padding-left: 30px;
+    font-size: 1.1em;
+    /* margin-top: 35px; */
+    padding-top: 0px;
+    margin: 25px 0px 30px 0px;
+    line-height: 23px;
+}
+
+
+.flexslider_main .free_block .under_button{
+	font-family: MuseoSansRegular;
+    font-size: 14px;
+}
+

@@ -4,106 +4,43 @@ $APPLICATION->SetPageProperty("description", "О компании. Большо�
 $APPLICATION->SetPageProperty("title", "О компании - Большой мастер");
 $APPLICATION->SetTitle("О компании");
 
-
-echo '<div class="padding">';
-
-$APPLICATION->IncludeComponent(
-	"bitrix:main.include", 
-	".default", 
-	array(
-		"AREA_FILE_SHOW" => "file",
-		"PATH" => "/include/right_menu_about.php",
-		"EDIT_TEMPLATE" => "standard.php",
-		"COMPONENT_TEMPLATE" => ".default"
-	),
-	false
-);
 ?>
 
-<div class="left_text_about">Наша компания уже много лет работает на рынке инженерных систем, и за эти годы смогла наладить индивидуальные партнерские отношение с проверенными поставщиками продукции и брендовыми производителями, благодаря чему мы можем гарантировать отличную цену изделий, при неизменно высоком качестве. «Большой Мастер» – это эталон взаимовыгодного сотрудничества, и каждый покупатель может рассчитывать на качественный сервис, своевременную обработку заказа и выполнение наших обязательств в полном объеме.</div>
+				<div class="content-about__content">
+                  <div class="row">
+                    <div class="col-lg-20 col-md-20 col-sm-20 content-about__main content-guarantee">
+						<p class="content-delivery__text">Наша компания уже много лет работает на рынке инженерных систем, и за эти годы смогла наладить индивидуальные партнерские отношение с проверенными поставщиками продукции и брендовыми производителями, благодаря чему мы можем гарантировать отличную цену изделий, при неизменно высоком качестве. «Большой Мастер» – это эталон взаимовыгодного сотрудничества, и каждый покупатель может рассчитывать на качественный сервис, своевременную обработку заказа и выполнение наших обязательств в полном объеме.</p>
+						<br><br><br><br><br><br><br><br>
+					</div>
+                    <div class="col-lg-6 col-lg-offset-4 col-md-6 col-md-offset-4 col-sm-6 col-sm-offset-4 content-about__nav about-nav">
+                      <?$APPLICATION->IncludeComponent(
+								"bitrix:menu",
+								"about",
+								array(
+									"ROOT_MENU_TYPE" => "left",
+									"MENU_CACHE_TYPE" => "Y",
+									"MENU_CACHE_TIME" => "36000000",
+									"MENU_CACHE_USE_GROUPS" => "N",
+									"MENU_CACHE_GET_VARS" => array(),
+									"MAX_LEVEL" => "1",
+									"CHILD_MENU_TYPE" => "left",
+									"USE_EXT" => "N",
+									"DELAY" => "N",
+									"ALLOW_MULTI_SELECT" => "N",
+									"COMPONENT_TEMPLATE" => "menu"
+								),
+								false,
+								array(
+									"ACTIVE_COMPONENT" => "Y"
+								)
+						);?>
+                    </div>
+                  </div>
+                </div>
 
-<?
-echo '
-</div>
-<div class="about_infogr">
-	<div class="item">
-		<div class="img" style="background-image:url('.SITE_TEMPLATE_PATH.'/images/aboit_info1.png);"></div>
-		<div class="title">';
-			$APPLICATION->IncludeComponent(
-	"bitrix:main.include", 
-	".default", 
-	array(
-		"AREA_FILE_SHOW" => "file",
-		"PATH" => "/include/aboit_info1.php",
-		"EDIT_TEMPLATE" => "standard.php",
-		"COMPONENT_TEMPLATE" => ".default"
-	),
-	false
-);
-echo '	</div>
-	</div>
-	<div class="item">
-		<div class="img" style="background-image:url('.SITE_TEMPLATE_PATH.'/images/aboit_info2.png);"></div>
-		<div class="title">';
-			$APPLICATION->IncludeComponent(
-				"bitrix:main.include", 
-				".default", 
-				array(
-					"AREA_FILE_SHOW" => "file",
-					"PATH" => "/include/aboit_info2.php",
-					"EDIT_TEMPLATE" => "standard.php"
-				),
-				false
-			);
-echo '	</div>
-	</div>
-	<div class="item">
-		<div class="img" style="background-image:url('.SITE_TEMPLATE_PATH.'/images/aboit_info3.png);"></div>
-		<div class="title">';
-			$APPLICATION->IncludeComponent(
-				"bitrix:main.include", 
-				".default", 
-				array(
-					"AREA_FILE_SHOW" => "file",
-					"PATH" => "/include/aboit_info3.php",
-					"EDIT_TEMPLATE" => "standard.php"
-				),
-				false
-			);
-echo '	</div>
-	</div>
-	<div class="item">
-		<div class="img" style="background-image:url('.SITE_TEMPLATE_PATH.'/images/aboit_info4.png);"></div>
-		<div class="title">';
-			$APPLICATION->IncludeComponent(
-				"bitrix:main.include", 
-				".default", 
-				array(
-					"AREA_FILE_SHOW" => "file",
-					"PATH" => "/include/aboit_info4.php",
-					"EDIT_TEMPLATE" => "standard.php"
-				),
-				false
-			);
-echo '	</div>
-	</div>
-	<div class="item">
-		<div class="img" style="background-image:url('.SITE_TEMPLATE_PATH.'/images/aboit_info5.png);"></div>
-		<div class="title">';
-			$APPLICATION->IncludeComponent(
-				"bitrix:main.include", 
-				".default", 
-				array(
-					"AREA_FILE_SHOW" => "file",
-					"PATH" => "/include/aboit_info5.php",
-					"EDIT_TEMPLATE" => "standard.php"
-				),
-				false
-			);
-echo '	</div>
-	</div>
-	<div class="clear"></div>
-</div>
-';
 
-require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
+
+
+
+
+<?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
