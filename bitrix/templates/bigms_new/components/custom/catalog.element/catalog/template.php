@@ -138,7 +138,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 										true
 									);
 									?>
-								  	<?if(!empty($renderImage["src"]) && file_exists($renderImage["src"])) {?>
+								  	<?if(!empty($renderImage["src"])) {?>
 										<a data-trigger="slider" class="popup-trigger" href="#"><img itemprop="image" class="content-product__picture" src="<?=$renderImage["src"]?>" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>""></a>
 									<? } else {?>
 										<a data-trigger="slider" class="popup-trigger" href="#"><img itemprop="image" class="content-product__picture" src="/bitrix/templates/bigms/images/logo_bw.png" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>"></a>

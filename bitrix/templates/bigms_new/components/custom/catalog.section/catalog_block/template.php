@@ -113,7 +113,7 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 							$PICT['WIDTH'] = $file['width'];
 							$PICT['HEIGHT'] = $file['height'];
 							?>
-							<?if(!empty($file['src']) && file_exists($file['src'])) {?>
+							<?if(!empty($file['src'])) {?>
 								<img itemprop="image" class="product-card__img" itemprop="image" src="<? echo $file['src'] ?>" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>">
 							<? } else {?>
 								<img itemprop="image" style="height: 205px;" class="product-card__img" itemprop="image" src="/bitrix/templates/bigms/images/logo_bw.png" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>">
