@@ -3691,6 +3691,7 @@ ul.sublist[data-level="3"] .sublist__link:after {
     position: relative;
     padding: 13px;
     width: 100%;
+	min-height: 230px;
     border-bottom: 1px solid #dfe4ea; }
   .product-card__img {
     display: block;
