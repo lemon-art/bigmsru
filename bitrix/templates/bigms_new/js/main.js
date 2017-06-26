@@ -334,6 +334,10 @@ $(document).ready(function() {
     $('.sublist_producers .sublist__item').click(function(e) {
 		window.location = $(this).find('a').attr('href');
 	});
+	
+	$('[data-level="1"] > a').click(function() {
+		return false;
+	});
   
 	$('.popup-add-to-cart').click(function(e) {
 	
