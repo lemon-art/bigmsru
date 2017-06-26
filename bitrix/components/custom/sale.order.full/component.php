@@ -286,6 +286,7 @@ if ( is_array( $arResult["POST"] ) ){
 	if (!$USER->IsAuthorized()){
 		
 		COption::SetOptionString("main","new_user_registration_email_confirmation","N");
+		COption::SetOptionString("main","captcha_registration","N");
 		
 		if ( $arResult["POST"]["PERSON_TYPE"] == 1 ){
 			//физлицо
@@ -316,7 +317,7 @@ if ( is_array( $arResult["POST"] ) ){
 			$arResult["ERROR_MESSAGE"] .= GetMessage("STOF_ERROR_REG").((strlen($arAuthResult["MESSAGE"]) > 0) ? ": ".$arAuthResult["MESSAGE"] : ".<br />" );
 		
 		COption::SetOptionString("main","new_user_registration_email_confirmation","Y");
-		
+		COption::SetOptionString("main","captcha_registration","Y");
 	}
 
 
