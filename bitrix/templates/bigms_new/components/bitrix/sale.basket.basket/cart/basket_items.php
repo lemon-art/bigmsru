@@ -100,11 +100,11 @@ if ($countPropduct > 0):
 
 							if ($arHeader["id"] == "NAME"):
 							?>
-								<td class="itemphoto cart-list__col cart-list__col_img">
+								<td class="itemphoto cart-list__col cart-list__col_img"> 
 										<?
-										if (strlen($arItem["PREVIEW_PICTURE_SRC"]) > 0 && file_exists($arItem["PREVIEW_PICTURE_SRC"])):
+										if (strlen($arItem["PREVIEW_PICTURE_SRC"]) > 0 ):
 											$url = $arItem["PREVIEW_PICTURE_SRC"];
-										elseif (strlen($arItem["DETAIL_PICTURE_SRC"]) > 0 && file_exists($arItem["DETAIL_PICTURE_SRC"])):
+										elseif (strlen($arItem["DETAIL_PICTURE_SRC"]) > 0 ):
 											$url = $arItem["DETAIL_PICTURE_SRC"];
 										else:
 											$url = "/bitrix/templates/bigms/images/logo_bw.png";
