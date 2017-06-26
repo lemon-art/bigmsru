@@ -190,12 +190,14 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 
 								  </div>
 								  <div class="product-info__row product-info__row_icons">
+									<?/*
 									<div class="product-info__icon-wrap">
 									  <span class="product-info__compare-icon"></span>
 									</div>
 									<div class="product-info__icon-wrap">
 									  <span class="product-info__wish-icon active"></span>
 									</div>
+									*/?>
 									<?if(!empty($arResult["DISPLAY_PROPERTIES"]["CML2_ARTICLE"]["VALUE"])):?>
 										<span class="product-info__id">Артикул: <?=$arResult["DISPLAY_PROPERTIES"]["CML2_ARTICLE"]["VALUE"]?></span>
 									<?endif;?>

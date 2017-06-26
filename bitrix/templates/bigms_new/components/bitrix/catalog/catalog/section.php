@@ -361,7 +361,13 @@ if ($ar_result['DEPTH_LEVEL'] == 3 && !array_search($APPLICATION->GetCurPage(fal
 					else {$display=$arParams["DEFAULT_LIST_TEMPLATE"];}
 				} 
 				else { 
-					$display = "block"; 
+				
+					if ( $arParams["IBLOCK_ID"] == 12 ){
+						$display = "block"; 
+					}
+					else {
+						$display = "table"; 
+					}
 				}
 				$template = "catalog_".$display;
 				?>

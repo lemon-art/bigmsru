@@ -20,7 +20,7 @@ if ($arParams['POSITION_FIXED'] == 'Y')
 <script>
 	var <?=$cartId?> = new BitrixSmallCart;
 </script>
-
+				<?/*
                 <li class="status-bar__item status-bar__item_wish">
                   <span class="status-bar__number">0</span>
                   <div class="status-bar__dropdown status-dropdown"></div>
@@ -29,6 +29,7 @@ if ($arParams['POSITION_FIXED'] == 'Y')
                   <span class="status-bar__number">0</span>
                   <div class="status-bar__dropdown status-dropdown"></div>
                 </li>
+				*/?>
                 <li class="status-bar__item status-bar__item_cart <?if($arResult['NUM_PRODUCTS'] > 0):?>status-bar__item_active<?endif;?>">
 					<span class="status-bar__number" id="top_basket_number"><?=$arResult['NUM_PRODUCTS']?></span>
 					<?if($arResult['NUM_PRODUCTS'] > 0):?>

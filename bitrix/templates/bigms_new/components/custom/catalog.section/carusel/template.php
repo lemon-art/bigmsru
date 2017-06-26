@@ -171,8 +171,10 @@ if (!empty($arResult['ITEMS'])):?>
 								
 							  </div>
 							  <div class="product-card__icons">
+								<?/*
 								<span class="product-card__wish-icon active"></span>
 								<span class="product-card__compare-icon"></span>
+								*/?>
 							  </div>
 							</div>
 						  </div>

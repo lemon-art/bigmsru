@@ -183,8 +183,10 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 								<?}	?>
                         </div>
                         <div class="product-card__icons">
+						<?/*
                           <span class="product-card__wish-icon"></span>
                           <span class="product-card__compare-icon"></span>
+						*/?>
                         </div>
                       </div>
                     </div>
