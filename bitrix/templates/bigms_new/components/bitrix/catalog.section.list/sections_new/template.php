@@ -32,7 +32,7 @@ $this->setFrameMode(true);
 						<div class="content-categories__item">
 						  <div class="content-categories__img-wrap">
 						  	<?
-							if( $arSection["PICTURE"]["SRC"] && file_exists($arSection["PICTURE"]["SRC"]) ){
+							if( $arSection["PICTURE"]["SRC"] ){
 								$img = $arSection["PICTURE"]["SRC"];
 							}
 							else{
