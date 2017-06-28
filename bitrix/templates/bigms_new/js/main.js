@@ -367,6 +367,10 @@ $(document).ready(function() {
       thumbsOwl.trigger('to.owl.carousel', [slideIndex-1, 300]);
     }
 	
+	if($(this).data('trigger') == 'youtube') {
+		$('#youtube').html( $(this).data('youtube') );
+    }
+	
 	
     if($(this).hasClass('js-active')) {
 		$(this).removeClass('js-active');

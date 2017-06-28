@@ -5411,15 +5411,24 @@ ul.sublist[data-level="3"] .sublist__link:after {
     border-left: 1px solid #223955;
     border-right: 1px solid #223955;
     border-bottom: 1px solid #223955; }
+	.content-contacts .product-tabs__header-item:hover {
+    color: #ffffff;
+    font-size: 14px;
+    background: #223955;
+    border-top: 3px solid #223955;
+    border-left: 1px solid #223955;
+    border-right: 1px solid #223955;
+    border-bottom: 1px solid #223955; }
+	
   .content-contacts .product-tabs__header-item_engineer {
     border-top: 3px solid #ffa200;
     border-left: 1px solid #ffa200;
     border-right: 1px solid #ffa200;
     border-bottom: 1px solid #dfe4ea;
     margin-left: 0; }
-    .content-contacts .product-tabs__header-item_engineer.active {
-      color: #3c4d64;
+    .content-contacts .product-tabs__header-item_engineer.active, .content-contacts .product-tabs__header-item_engineer:hover  {
       background: #ffa200;
+	  color: #ffffff;
       border-top: 3px solid #ffa200;
       border-left: 1px solid #ffa200;
       border-right: 1px solid #ffa200;
@@ -5429,8 +5438,9 @@ ul.sublist[data-level="3"] .sublist__link:after {
     border-left: 1px solid #1c6bc4;
     border-right: 1px solid #1c6bc4;
     border-bottom: 1px solid #dfe4ea; }
-    .content-contacts .product-tabs__header-item_house.active {
+    .content-contacts .product-tabs__header-item_house.active, .content-contacts .product-tabs__header-item_house:hover {
       background: #1c6bc4;
+	  color: #ffffff;
       border-top: 3px solid #1c6bc4;
       border-left: 1px solid #1c6bc4;
       border-right: 1px solid #1c6bc4;
@@ -5440,8 +5450,9 @@ ul.sublist[data-level="3"] .sublist__link:after {
     border-left: 1px solid #59ce42;
     border-right: 1px solid #59ce42;
     border-bottom: 1px solid #dfe4ea; }
-    .content-contacts .product-tabs__header-item_stores.active {
+    .content-contacts .product-tabs__header-item_stores.active, .content-contacts .product-tabs__header-item_stores:hover {
       background: #59ce42;
+	  color: #ffffff;
       border-top: 3px solid #59ce42;
       border-left: 1px solid #59ce42;
       border-right: 1px solid #59ce42;

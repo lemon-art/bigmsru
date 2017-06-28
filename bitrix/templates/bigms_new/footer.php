@@ -334,6 +334,20 @@
       </div>
     </div>
     <!-- /форма регистрации -->
+	
+	<?if( $isContacts ):?>	
+		
+		    <!-- youtube popup -->
+			<div data-popup="youtube" class="popup popup_youtube">
+			  <div class="popup__container">
+				<div class="popup__wrap">
+					<a role="button" data-trigger="youtube" class="popup__close popup-trigger"></a>
+					<span id="youtube"></span>
+				</div>
+			  </div>
+			</div>
+	
+	<?endif;?>
 
 </body>
 </html>

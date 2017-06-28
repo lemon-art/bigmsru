@@ -57,7 +57,9 @@ $this->EndViewTarget("row_div_class");
 						  <span class="contacts-description__subtitle">Телефон</span>
 						  <span class="contacts-description__text"><?=$aOffice["PROPERTY_13"][0]?></span>
 						</div>
-						<?/*<a data-trigger="youtube" href="#" class="contacts-description__video popup-trigger">Видео проезда</a>*/?>
+						<?if ( $aOffice["PROPERTY_14"] ):?>
+							<a data-trigger="youtube" data-youtube='<?=$aOffice["PROPERTY_14"]?>' href="#" class="contacts-description__video popup-trigger">Видео проезда</a>
+						<?endif;?>
 					  </div>
 					</div>
 				<?endforeach;?>
@@ -90,24 +92,39 @@ $this->EndViewTarget("row_div_class");
 			   </div>
 			</div>
 	<input type="hidden" id="MAP_SECTION" value="0">
-
+	
+	<?/*
+	<? foreach( $arResult['ITEMS'] as $iOfficeInd => $aOffice ): ?>
+		<pre>
+		<?print_r( $aOffice );?>
+		</pre>
+		
+	<?endforeach;?>
+	*/?>
+	
 <script type="text/javascript">
     ymaps.ready(init);
     var myMap;
-	var myCollection;
+
 
     function init(){  
-
+	
+		var myCollection = new ymaps.GeoObjectCollection();
         myMap = new ymaps.Map("map", {
             center: [55.76, 37.64],
-            zoom: 10
-        });
+            zoom: 10,
+			controls: ['zoomControl']
+        }, {suppressMapOpenBlock: true});
+
 		
 		section = $('#MAP_SECTION').val();
-
+		i = 0;
 		<? foreach( $arResult['ITEMS'] as $iOfficeInd => $aOffice ): ?>
 			
 			if ( section == '0' || section == '<?=$aOffice["IBLOCK_SECTION_ID"]?>' ){
+				i++;
+				lastCoord = [<?=$aOffice["PROPERTY_15"]?>];
+				myCollection.add(new ymaps.Placemark([<?=$aOffice["PROPERTY_15"]?>]));
 			
 				myPlacemark<?=$aOffice["ID"]?> = new ymaps.Placemark([<?=$aOffice["PROPERTY_15"]?>], {});
 				myPlacemark<?=$aOffice["ID"]?>.options.set('preset', <?=$aOffice["ID"]?>);
@@ -118,7 +135,8 @@ $this->EndViewTarget("row_div_class");
 					$('.content-contacts__map-wrap').width('65%');
 					$('.content-contacts__container').removeClass('active');
 					$('#office'+id).addClass('active');
-					
+					$('.content-contacts__requisites').removeClass('active');
+					$('.requisites-trigger').removeClass('active');
 					myMap.setCenter( [<?=$aOffice["PROPERTY_15"]?>], 13, {
 						checkZoomRange	: true,
 						duration 		: 300,
@@ -129,30 +147,35 @@ $this->EndViewTarget("row_div_class");
 					
 					return false;
 				});
-
 				myMap.geoObjects.add(myPlacemark<?=$aOffice["ID"]?>);
 			}
 
 		<? endforeach; ?> 
-		
+				if ( i > 1 ){
+					myMap.setBounds(myMap.geoObjects.getBounds());	
+				}
+				else {
+					myMap.setCenter( lastCoord, 13 );
+				}
+			
     }
 	
 	  $('.contacts-description__close').click(function() {
 		$('.content-contacts__container').removeClass('active');
 		$('.content-contacts__map-wrap').width('100%');
-		myMap.setCenter( [55.76, 37.64], 10, {
-					checkZoomRange	: true,
-					duration 		: 300,
-					callback 		: function() {
-					  
-					}
-		});
-
+				if ( i > 1 ){
+					myMap.setBounds(myMap.geoObjects.getBounds());	
+				}
+				else {
+					myMap.setCenter( lastCoord, 13 );
+				}
 	  });
 	  
 	  
 	    $('.map-trigger').click(function() {
 			$('.content-contacts__container').removeClass('active');
+			$('.content-contacts__requisites').removeClass('active');
+			$('.requisites-trigger').removeClass('active');
 			$('.content-contacts__map-wrap').width('100%');
 			$(this).parent().find('.map-trigger').removeClass('active');
 			$(this).addClass('active');
