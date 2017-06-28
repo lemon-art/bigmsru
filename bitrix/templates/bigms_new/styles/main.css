@@ -5374,7 +5374,10 @@ ul.sublist[data-level="3"] .sublist__link:after {
 
 .content-contacts__map {
   width: 100%;
-  height: 470px; }
+  height: 470px; 
+  position: relative; 
+  overflow: hidden;
+}
 
 .content-contacts .product-tabs__header-list {
   display: -webkit-flex;
@@ -5482,7 +5485,7 @@ ul.sublist[data-level="3"] .sublist__link:after {
   padding: 10px;
   background: #f7f9fa;
   position: relative;
-  height: 340px; }
+  height: 470px; }
   .contacts-description__close {
     position: absolute;
     right: 15px;
@@ -5518,7 +5521,9 @@ ul.sublist[data-level="3"] .sublist__link:after {
     line-height: 26px;
     font-family: 'Museo700', sans-serif, Arial;
     font-weight: bold;
-    margin-bottom: 20px; }
+    margin-bottom: 20px;
+	padding-right: 25px;
+	}
   .contacts-description__row {
     display: -webkit-flex;
     display: -ms-flexbox;

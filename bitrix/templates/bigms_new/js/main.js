@@ -20,26 +20,10 @@ $(document).ready(function() {
     mainOwl.trigger('refresh.owl.carousel', []);
   });
 
-  $('.contacts-description__close').click(function() {
-    $('.content-contacts__container').removeClass('active');
-    google.maps.event.trigger(map, 'resize');
-  });
 
-  $('.map-trigger').click(function() {
-    $(this).parent().find('.map-trigger').removeClass('active');
-    $(this).addClass('active');
-  });
-  $('.requisites-trigger').click(function() {
-    if($(this).hasClass('active')) {
-      $(this).toggleClass('active');
-      $('.content-contacts__container').addClass('active');
-      $('.content-contacts__requisites').removeClass('active');
-    } else {
-      $(this).toggleClass('active');
-      $('.content-contacts__container').removeClass('active');
-      $('.content-contacts__requisites').addClass('active');
-    }
-  });
+
+
+
   //city popup
   $('.form-city__link').click(function(e) {
     e.preventDefault();

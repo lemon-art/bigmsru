@@ -13,6 +13,7 @@ if(CSite::InDir(SITE_DIR.'personal/order/make/')){$isOrderMake = true;}
 if(CSite::InDir(SITE_DIR.'proizvoditeli/')){$isProizvoditeli = true;}
 if(CSite::InDir(SITE_DIR.'news/')){$isNews = true;}
 if(CSite::InDir(SITE_DIR.'basket/')){$isBasket = true;}
+if(CSite::InDir(SITE_DIR.'kontakty/')){$isContacts = true;}
 
 if(CSite::InDir(SITE_DIR.'catalog/inzhenernaya')){$isInzhenernaya = true;}
 if(CSite::InDir(SITE_DIR.'catalog/bytovaya/')){$isBytovaya = true;}
@@ -520,6 +521,22 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 						<div class="content-about__header">
 							<h1 class="title-h1 content-about__title"><?$APPLICATION->ShowTitle(false)?></h1>
 						</div>
+			<?elseif( $isContacts ):?>			
+				<div class="content__container content__container_contacts">
+				  <div class="container-fluid">
+					<div class="row">
+					  <div class="col-lg-23 col-md-23 col-sm-23">
+							<?$APPLICATION->IncludeComponent("bitrix:breadcrumb", "breads", Array(
+								"START_FROM" => "0",
+									"PATH" => "",
+									"SITE_ID" => "-",
+								),
+								false
+							);?>
+						<h1 class="title-h1"><?$APPLICATION->ShowTitle(false)?></h1>
+					  </div>
+					</div>		
+						
 			<?elseif( $isOrderMake ):?>	
 
 
