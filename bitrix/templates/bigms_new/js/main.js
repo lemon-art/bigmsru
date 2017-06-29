@@ -357,10 +357,16 @@ $(document).ready(function() {
 	
 	  if ( $(this).data('id') ){
 		$('#slider').html( $('#slider'+$(this).data('id') ).html() );
+		var slideIndex = $('.content-contacts__gallery-item').index($(this));
+        thumbsOwl.trigger('to.owl.carousel', [slideIndex-1, 300]);
+		
+	  }
+	  else {
+	    var slideIndex = $('.content-product__thumbnail').index($(this));
+		thumbsOwl.trigger('to.owl.carousel', [slideIndex-1, 300]);
 	  }
 	
-      var slideIndex = $('.content-product__thumbnail').index($(this));
-      thumbsOwl.trigger('to.owl.carousel', [slideIndex-1, 300]);
+
     }
 	
 	if($(this).data('trigger') == 'youtube') {

@@ -67,7 +67,7 @@ $this->EndViewTarget("row_div_class");
 									});
 								</script>
 						<?endif;?>
-					  <div class="content-contacts__description contacts-description" <?if ( count($aOffice["PHOTO"]) > 0 ):?>style="height: 360px;"<?endif;?>>
+					  <div class="content-contacts__description contacts-description" <?if ( count($aOffice["PHOTO"]) > 0 ):?>style="height: 340px;"<?endif;?>>
 						<span class="contacts-description__close"></span>
 						<strong class="contacts-description__title"><?=$aOffice["NAME"]?></strong>
 						<div class="contacts-description__row">
