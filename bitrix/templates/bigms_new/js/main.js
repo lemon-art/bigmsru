@@ -369,6 +369,17 @@ $(document).ready(function() {
 		var slideIndex = $('.content-contacts__gallery-item').index($(this));
         thumbsOwl.trigger('to.owl.carousel', [slideIndex-1, 300]);
 		
+									$(".preview_pics").mCustomScrollbar({
+										axis:"x",
+										theme:"bigms-contacts",
+										autoExpandScrollbar:true,
+										advanced:{autoExpandHorizontalScroll:true},
+										scrollbarPosition: "inside",
+										mouseWheel: {
+										  enable: false
+										}
+									});
+		
 	  }
 	  else {
 	    var slideIndex = $('.content-product__thumbnail').index($(this));

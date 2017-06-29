@@ -47,11 +47,13 @@ $this->EndViewTarget("row_div_class");
 										<img src="<?=$photo["BIG_IMG"]?>" alt="">
 									<?endforeach;?>
 								  </div>
-								  <ul class="popup-nav">
-									<?foreach ( $aOffice["PHOTO"] as $photo ):?>
-										<li class="popup-nav__item"><img src="<?=$photo["SMALL_IMG"]?>" alt=""></li>
-									<?endforeach;?>
-								 </ul>
+								  <div class="preview_pics">
+									  <ul class="popup-nav">
+										<?foreach ( $aOffice["PHOTO"] as $photo ):?>
+											<li class="popup-nav__item"><img src="<?=$photo["SMALL_IMG"]?>" alt=""></li>
+										<?endforeach;?>
+									 </ul>
+								  </div>
 								</div>
 								
 								<script>
