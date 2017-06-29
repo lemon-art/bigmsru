@@ -357,6 +357,15 @@ $(document).ready(function() {
 	
 	  if ( $(this).data('id') ){
 		$('#slider').html( $('#slider'+$(this).data('id') ).html() );
+		var thumbsOwl = $('.popup-slider__container');
+		  thumbsOwl.owlCarousel({
+			loop: false,
+			items: 1,
+			thumbs: true,
+			thumbImage: true,
+			thumbContainerClass: 'popup-nav',
+			thumbItemClass: 'popup-nav__item'
+		  });
 		var slideIndex = $('.content-contacts__gallery-item').index($(this));
         thumbsOwl.trigger('to.owl.carousel', [slideIndex-1, 300]);
 		
