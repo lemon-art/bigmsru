@@ -41,7 +41,7 @@ $this->EndViewTarget("row_div_class");
 									<?endforeach;?>
 								</ul>
 							</div>
-								<div id="slider<?=$iOfficeInd?>" style="display: none;">
+								<div id="slider<?=$aOffice["ID"]?>" style="display: none;">
 							      <div class="owl-carousel popup-slider__container">
 									<?foreach ( $aOffice["PHOTO"] as $photo ):?>
 										<img src="<?=$photo["BIG_IMG"]?>" alt="">
@@ -68,6 +68,8 @@ $this->EndViewTarget("row_div_class");
 										}
 									});
 								</script>
+						<?else:?>
+							<div id="slider<?=$aOffice["ID"]?>" style="display: none;"></div>
 						<?endif;?>
 					  <div class="content-contacts__description contacts-description" <?if ( count($aOffice["PHOTO"]) > 0 ):?>style="height: 340px;"<?endif;?>>
 						<span class="contacts-description__close"></span>
@@ -181,6 +183,8 @@ $this->EndViewTarget("row_div_class");
 				
 				myPlacemark<?=$aOffice["ID"]?>.events.add('click', function(e) {
 					var id = myPlacemark<?=$aOffice["ID"]?>.options.get('preset');
+					$('#slider').html( $('#slider<?=$aOffice["ID"]?>' ).html() );
+					
 					$('.content-contacts__map-wrap').width('65%');
 					$('.content-contacts__container').removeClass('active');
 					$('#office'+id).addClass('active');

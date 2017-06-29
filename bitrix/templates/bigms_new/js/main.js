@@ -356,7 +356,7 @@ $(document).ready(function() {
     if($(this).data('trigger') == 'slider') {
 	
 	  if ( $(this).data('id') ){
-		$('#slider').html( $('#slider'+$(this).data('id') ).html() );
+		
 		var thumbsOwl = $('.popup-slider__container');
 		  thumbsOwl.owlCarousel({
 			loop: false,

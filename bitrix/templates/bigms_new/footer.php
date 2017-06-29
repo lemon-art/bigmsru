@@ -331,8 +331,9 @@
       <div class="popup__container">
         <div class="popup__wrap">
         <span data-trigger="slider" class="popup__close popup-trigger"></span>
-        <div class="popup-slider" id="slider">
-
+        <div class="popup-slider">
+			<span id="slider">
+			</span>
         </div>
       </div>
       </div>
