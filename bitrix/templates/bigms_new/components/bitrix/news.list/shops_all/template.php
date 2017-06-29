@@ -137,10 +137,29 @@ $this->EndViewTarget("row_div_class");
 			controls: ['zoomControl']
         }, {suppressMapOpenBlock: true});
 
+		MyIconContentLayout27 = ymaps.templateLayoutFactory.createClass(
+				'<div class="bigms-marker"><svg style="width: 47px; height: 60px; fill:#ffa200;" class="bigms-marker__svg">'+
+											'<use xlink:href="#icon-marker"></use>'+
+										'</svg></div>'
+				);
+				
+		MyIconContentLayout28 = ymaps.templateLayoutFactory.createClass(
+				'<div class="bigms-marker"><svg style="width: 47px; height: 60px; fill:#1c6bc4;" class="bigms-marker__svg">'+
+											'<use xlink:href="#icon-marker"></use>'+
+										'</svg></div>'
+				);
+
+		MyIconContentLayout1440 = ymaps.templateLayoutFactory.createClass(
+				'<div class="bigms-marker"><svg style="width: 47px; height: 60px; fill:#59ce42;" class="bigms-marker__svg">'+
+											'<use xlink:href="#icon-marker"></use>'+
+										'</svg></div>'
+				);		
 		
 		section = $('#MAP_SECTION').val();
 		i = 0;
 		<? foreach( $arResult['ITEMS'] as $iOfficeInd => $aOffice ): ?>
+		
+
 			
 			if ( section == '0' || section == '<?=$aOffice["IBLOCK_SECTION_ID"]?>' ){
 				i++;
@@ -148,10 +167,12 @@ $this->EndViewTarget("row_div_class");
 				myCollection.add(new ymaps.Placemark([<?=$aOffice["PROPERTY_15"]?>]));
 			
 				myPlacemark<?=$aOffice["ID"]?> = new ymaps.Placemark([<?=$aOffice["PROPERTY_15"]?>],{}, {
-					//iconLayout: 'default#image',
-					//iconImageHref: '/bitrix/templates/bigms_new/styles/images/icons/bigms_svg_logo.png', // картинка иконки
-					//iconImageSize: [64, 64], // размер иконки
-					//iconImageOffset: [-32, -64], // позиция иконки
+					iconLayout: 'default#imageWithContent',
+					iconImageHref: '', // картинка иконки
+					iconImageSize: [47, 64], // размер иконки
+					iconImageOffset: [-34, -80], // позиция иконки
+					iconContentOffset: [15, 15],
+					iconContentLayout: MyIconContentLayout<?=$aOffice["IBLOCK_SECTION_ID"]?>
 				});
 				
 
