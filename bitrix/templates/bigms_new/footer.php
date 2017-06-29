@@ -349,5 +349,18 @@
 	
 	<?endif;?>
 
+	<!-- slider gallery popup -->
+    <div data-popup="slider" class="popup popup_youtube">
+      <div class="popup__container">
+        <div class="popup__wrap">
+        <span data-trigger="slider" class="popup__close popup-trigger"></span>
+        <div class="popup-slider" id="slider">
+
+        </div>
+      </div>
+      </div>
+    </div>
+	
+	
 </body>
 </html>

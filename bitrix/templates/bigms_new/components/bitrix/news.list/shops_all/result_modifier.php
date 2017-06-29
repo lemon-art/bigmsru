@@ -20,6 +20,8 @@ foreach($arResult["ITEMS"] as $k=>$arItem){
 	$res = CIBlockElement::GetList(array(), $arFilter, false, array("nPageSize"=>1), $arSelect);
 	while($ar_fields = $res->GetNext())
 	{
+		
+		
 		//$nav = CIBlockSection::GetNavChain(false, $ar_fields["IBLOCK_SECTION_ID"]);
 		//while($ar_nav = $nav->GetNext())
 		//{
@@ -32,6 +34,14 @@ foreach($arResult["ITEMS"] as $k=>$arItem){
 
 		//}
 	}
+	$arPhoto = Array();
+	foreach ($arItem["PROPERTIES"]["MORE_PHOTO"]["VALUE"] as $kPhoto => $photo) { 
+        $arFile = CFile::GetFileArray($photo);
+        $file = CFile::ResizeImageGet($photo, array('width' => 138, 'height' => 106), BX_RESIZE_IMAGE_EXACT, true);
+		$arPhoto[] = Array('BIG_IMG' => $arFile["SRC"], 'SMALL_IMG' => $file["src"]);
+	}
+	$arResult["ITEMS"][$k]["PHOTO"] = $arPhoto;
+	
 }
 
 /* echo '<pre>';

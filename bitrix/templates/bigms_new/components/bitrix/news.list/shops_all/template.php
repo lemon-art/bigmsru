@@ -31,18 +31,28 @@ $this->EndViewTarget("row_div_class");
                 </div>
 				<? foreach( $arResult['ITEMS'] as $iOfficeInd => $aOffice ): ?>
 					<div class="content-contacts__container" id="office<?=$aOffice["ID"]?>">
-						<?/*
-						  <div id="contacts_gallery" class="content-contacts__gallery">
-							<ul class="content-contacts__gallery">
-							  <li data-trigger="slider" class="content-contacts__gallery-item popup-trigger"><img src="styles/images/gallery_item.jpg" width="138" height="106" alt=""></li>
-							  <li data-trigger="slider" class="content-contacts__gallery-item popup-trigger"><img src="styles/images/gallery_item.jpg" width="138" height="106" alt=""></li>
-							  <li data-trigger="slider" class="content-contacts__gallery-item popup-trigger"><img src="styles/images/gallery_item.jpg" width="138" height="106" alt=""></li>
-							  <li data-trigger="slider" class="content-contacts__gallery-item popup-trigger"><img src="styles/images/gallery_item.jpg" width="138" height="106" alt=""></li>
-							  <li data-trigger="slider" class="content-contacts__gallery-item popup-trigger"><img src="styles/images/gallery_item.jpg" width="138" height="106" alt=""></li>
-							</ul>
-						  </div>
-						 */?>
-					  <div class="content-contacts__description contacts-description">
+						<?if ( count($aOffice["PHOTO"]) > 0 ):?>
+							<div id="contacts_gallery" class="content-contacts__gallery">
+								<ul class="content-contacts__gallery">
+									<?foreach ( $aOffice["PHOTO"] as $photo ):?>
+										<li data-trigger="slider" data-id="<?=$iOfficeInd?>" class="content-contacts__gallery-item popup-trigger"><img src="<?=$photo["SMALL_IMG"]?>" width="138" height="106" alt=""></li>
+									<?endforeach;?>
+								</ul>
+							</div>
+								<div id="slider<?=$iOfficeInd?>" style="display: none;">
+							      <div class="owl-carousel popup-slider__container">
+									<?foreach ( $aOffice["PHOTO"] as $photo ):?>
+										<img src="<?=$photo["BIG_IMG"]?>" alt="">
+									<?endforeach;?>
+								  </div>
+								  <ul class="popup-nav">
+									<?foreach ( $aOffice["PHOTO"] as $photo ):?>
+										<li class="popup-nav__item"><img src="<?=$photo["SMALL_IMG"]?>" alt=""></li>
+									<?endforeach;?>
+								 </ul>
+								</div>
+						<?endif;?>
+					  <div class="content-contacts__description contacts-description" <?if ( count($aOffice["PHOTO"]) > 0 ):?>style="height: 360px;"<?endif;?>>
 						<span class="contacts-description__close"></span>
 						<strong class="contacts-description__title"><?=$aOffice["NAME"]?></strong>
 						<div class="contacts-description__row">
@@ -93,14 +103,8 @@ $this->EndViewTarget("row_div_class");
 			</div>
 	<input type="hidden" id="MAP_SECTION" value="0">
 	
-	<?/*
-	<? foreach( $arResult['ITEMS'] as $iOfficeInd => $aOffice ): ?>
-		<pre>
-		<?print_r( $aOffice );?>
-		</pre>
-		
-	<?endforeach;?>
-	*/?>
+	
+	
 	
 <script type="text/javascript">
     ymaps.ready(init);
@@ -126,7 +130,14 @@ $this->EndViewTarget("row_div_class");
 				lastCoord = [<?=$aOffice["PROPERTY_15"]?>];
 				myCollection.add(new ymaps.Placemark([<?=$aOffice["PROPERTY_15"]?>]));
 			
-				myPlacemark<?=$aOffice["ID"]?> = new ymaps.Placemark([<?=$aOffice["PROPERTY_15"]?>], {});
+				myPlacemark<?=$aOffice["ID"]?> = new ymaps.Placemark([<?=$aOffice["PROPERTY_15"]?>],{}, {
+					//iconLayout: 'default#image',
+					//iconImageHref: '/bitrix/templates/bigms_new/styles/images/icons/bigms_svg_logo.png', // картинка иконки
+					//iconImageSize: [64, 64], // размер иконки
+					//iconImageOffset: [-32, -64], // позиция иконки
+				});
+				
+
 				myPlacemark<?=$aOffice["ID"]?>.options.set('preset', <?=$aOffice["ID"]?>);
 				myPlacemark<?=$aOffice["ID"]?>.options.set('coordinate', <?=$aOffice["PROPERTY_15"]?>);
 				

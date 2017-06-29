@@ -363,6 +363,11 @@ $(document).ready(function() {
   $('.popup-trigger').click(function(e) {
     e.preventDefault();
     if($(this).data('trigger') == 'slider') {
+	
+	  if ( $(this).data('id') ){
+		$('#slider').html( $('#slider'+$(this).data('id') ).html() );
+	  }
+	
       var slideIndex = $('.content-product__thumbnail').index($(this));
       thumbsOwl.trigger('to.owl.carousel', [slideIndex-1, 300]);
     }
@@ -370,6 +375,7 @@ $(document).ready(function() {
 	if($(this).data('trigger') == 'youtube') {
 		$('#youtube').html( $(this).data('youtube') );
     }
+	
 	
 	
     if($(this).hasClass('js-active')) {
