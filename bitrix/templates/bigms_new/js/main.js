@@ -292,16 +292,7 @@ $(document).ready(function() {
     }
   });
 
-  $("#contacts_gallery").mCustomScrollbar({
-    axis:"x",
-    theme:"bigms-contacts",
-    autoExpandScrollbar:true,
-    advanced:{autoExpandHorizontalScroll:true},
-    scrollbarPosition: "inside",
-    mouseWheel: {
-      enable: false
-    }
-  });
+
 
   //product card thumbs logic
   $('.content-product__thumbnail').mouseenter(function() {

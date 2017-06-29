@@ -30,9 +30,11 @@ $this->EndViewTarget("row_div_class");
                   <div id="map" class="content-contacts__map"></div>
                 </div>
 				<? foreach( $arResult['ITEMS'] as $iOfficeInd => $aOffice ): ?>
+				
+			
 					<div class="content-contacts__container" id="office<?=$aOffice["ID"]?>">
 						<?if ( count($aOffice["PHOTO"]) > 0 ):?>
-							<div id="contacts_gallery" class="content-contacts__gallery">
+							<div id="contacts_gallery<?=$aOffice["ID"]?>" class="content-contacts__gallery">
 								<ul class="content-contacts__gallery">
 									<?foreach ( $aOffice["PHOTO"] as $photo ):?>
 										<li data-trigger="slider" data-id="<?=$iOfficeInd?>" class="content-contacts__gallery-item popup-trigger"><img src="<?=$photo["SMALL_IMG"]?>" width="138" height="106" alt=""></li>
@@ -51,6 +53,19 @@ $this->EndViewTarget("row_div_class");
 									<?endforeach;?>
 								 </ul>
 								</div>
+								
+								<script>
+									$("#contacts_gallery<?=$aOffice["ID"]?>").mCustomScrollbar({
+										axis:"x",
+										theme:"bigms-contacts",
+										autoExpandScrollbar:true,
+										advanced:{autoExpandHorizontalScroll:true},
+										scrollbarPosition: "inside",
+										mouseWheel: {
+										  enable: false
+										}
+									});
+								</script>
 						<?endif;?>
 					  <div class="content-contacts__description contacts-description" <?if ( count($aOffice["PHOTO"]) > 0 ):?>style="height: 360px;"<?endif;?>>
 						<span class="contacts-description__close"></span>
