@@ -389,10 +389,21 @@ $(document).ready(function() {
 
     }
 	
+	if( $(this).data('trigger') == 'callback' && !$(this).hasClass('js-active') ) {
+	
+		$.ajax({
+            type: "POST",
+            url: '/ajax/feedback_form.php',
+            success: function (data) {
+				$('#callback').html( data );
+            }
+        });
+		
+    }
+	
 	if($(this).data('trigger') == 'youtube') {
 		$('#youtube').html( $(this).data('youtube') );
     }
-	
 	
 	
     if($(this).hasClass('js-active')) {

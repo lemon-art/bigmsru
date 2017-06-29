@@ -114,32 +114,9 @@
     <div data-popup="callback" class="popup">
       <div class="popup__container">
         <div class="popup__wrap">
-        <span data-trigger="callback" class="popup__close popup-trigger"></span>
-			<?$APPLICATION->IncludeComponent(
-				"bitrix:form.result.new",
-				"form",
-				Array(
-					"WEB_FORM_ID" => "1",
-					"IGNORE_CUSTOM_TEMPLATE" => "N",
-					"USE_EXTENDED_ERRORS" => "N",
-					"SEF_MODE" => "N",
-					"VARIABLE_ALIASES" => array("WEB_FORM_ID"=>"","RESULT_ID"=>"",),
-					"CACHE_TYPE" => "A",
-					"CACHE_TIME" => "3600",
-					"LIST_URL" => "",
-					"EDIT_URL" => "",
-					"SUCCESS_URL" => "",
-					"CHAIN_ITEM_TEXT" => "",
-					"CHAIN_ITEM_LINK" => "",
-					"AJAX_MODE" => "Y",
-					"AJAX_OPTION_SHADOW" => "N",
-					"AJAX_OPTION_JUMP" => "Y",
-					"AJAX_OPTION_STYLE" => "Y",
-					"AJAX_OPTION_HISTORY" => "N"
-				)
-			);?>
-        
-      </div>
+			<span data-trigger="callback" class="popup__close popup-trigger js-active"></span>
+		    <span id="callback"></span>   
+        </div>
       </div>
     </div>
     <!-- /форма обратного звонка -->
