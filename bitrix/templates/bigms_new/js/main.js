@@ -150,18 +150,7 @@ $(document).ready(function() {
 
   //popup slider
   var thumbsOwl = $('.popup-slider__container');
-  thumbsOwl.owlCarousel({
-    loop: false,
-    items: 1,
-    thumbs: true,
-    thumbImage: true,
-    thumbContainerClass: 'popup-nav',
-    thumbItemClass: 'popup-nav__item'
-  });
-  $('.popup-nav__item').click(function () {
-    thumbsOwl.trigger('to.owl.carousel', [$(this).index(), 300]);
-    thumbsOwl.trigger('refresh.owl.carousel', []);
-  });
+
 
   //nice-select
   $('.form__select').niceSelect();

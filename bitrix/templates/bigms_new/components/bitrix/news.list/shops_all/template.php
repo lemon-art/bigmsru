@@ -187,10 +187,9 @@ $this->EndViewTarget("row_div_class");
 					var id = myPlacemark<?=$aOffice["ID"]?>.options.get('preset');
 					
 					$('#slider').html( $('#slider<?=$aOffice["ID"]?>' ).html() );
-					
-					var thumbsOwl = $('.popup-slider__container');
+					var thumbsOwl = $('#slider .popup-slider__container');
 					  thumbsOwl.owlCarousel({
-						loop: false,
+						loop: true,
 						items: 1,
 						thumbs: true,
 						thumbImage: true,
@@ -201,6 +200,7 @@ $this->EndViewTarget("row_div_class");
 						thumbsOwl.trigger('to.owl.carousel', [$(this).index(), 300]);
 						thumbsOwl.trigger('refresh.owl.carousel', []);
 					  });
+					
 					
 					$('.content-contacts__map-wrap').width('65%');
 					$('.content-contacts__container').removeClass('active');
