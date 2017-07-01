@@ -881,9 +881,11 @@ if ($USER->IsAdmin()){
 										<?$n = 0;?>
 										<?foreach($arItem["VALUES"] as $val => $ar):?>
 
-											<?if ( $n++ > 11 ):?>
+											<?/*
+											<?//if ( $n++ > 11 ):?>
 												<div class="filter-form__content-wrap">
-											<?endif;?>
+											<?//endif;?>
+											*/?>
 											
 													<input
 														type="checkbox"
@@ -905,10 +907,12 @@ if ($USER->IsAdmin()){
 													</label> 
 												
 										<?endforeach;?>
+										<?/*
 										<?if ( $n > 11 ):?>
 											</div>
 											<a href="#" class="filter-form__more">Показать еще</a>
 										<?endif;?>
+										*/?>
 								<?
 								}
 								?>

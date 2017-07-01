@@ -2424,10 +2424,15 @@ body {
   -webkit-flex-flow: column nowrap;
       -ms-flex-flow: column nowrap;
           flex-flow: column nowrap;
-  -webkit-justify-content: space-between;
+
       -ms-flex-pack: justify;
-          justify-content: space-between;
+
   height: 555px; }
+  
+  .product-about__wrap {
+	    margin-bottom: 20px;
+  }
+  
   .product-about__text {
     color: #3d4f65;
     font-size: 14px;
@@ -5633,7 +5638,9 @@ ul.sublist[data-level="3"] .sublist__link:after {
   font-size: 18px;
   color: #162f4d;
   font-family: 'Museo900', sans-serif, Arial;
-  text-decoration: none; }
+  text-decoration: none;
+	margin-bottom: 15px;
+  }
   .footer-callback__phone:hover {
     text-decoration: underline; }
 

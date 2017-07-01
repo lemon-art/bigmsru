@@ -57,24 +57,3 @@ $this->setFrameMode(true);
 	<?
 }
 ?>
-<?if(!empty($arResult["SECTION"]["DESCRIPTION"])){?>
-	<div class="seo_text">
-		<?if(!empty($arResult["SECTION"]["PICTURE_SRC"])){?>
-			<div class="img">
-				<img src="<?=$arResult["SECTION"]["PICTURE_SRC"]?>" alt="" />
-			</div>
-		<?}?>
-
-		<div class="text_block">
-			<div class="anons"><?//=$arResult["SECTION"]["DESCRIPTION"]?></div>
-
-			<?if(!empty($arResult["SECTION"]["UF_TEXT"])){?>
-				<div class="detail"><?=$arResult["SECTION"]["UF_TEXT"]?></div>
-				
-				<div class="more"><a href="#" title="Читать далее">Читать далее</a></div>
-			<?}?>
-		</div>
-		
-		<div class="clear"></div>
-	</div>
-<?}?>
