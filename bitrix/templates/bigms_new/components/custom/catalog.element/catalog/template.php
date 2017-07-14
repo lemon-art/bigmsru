@@ -147,7 +147,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 									
 									<div id="slider<?=$arResult['ID']?>" style="display: none;">
 										<div class="owl-carousel popup-slider__container">
-											<img src="/bitrix/templates/bigms/images/logo_bw.png" alt="">
+											<img src="<?=$arResult['DETAIL_PICTURE']['SRC']?>" alt="">
  									    </div>
 									</div>
 								
