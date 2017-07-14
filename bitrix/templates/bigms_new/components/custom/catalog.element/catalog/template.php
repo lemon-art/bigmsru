@@ -139,12 +139,17 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 									);
 									?>
 								  	<?if(!empty($renderImage["src"])) {?>
-										<a data-trigger="slider" class="popup-trigger" href="#"><img itemprop="image" class="content-product__picture" src="<?=$renderImage["src"]?>" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>""></a>
+										<a data-trigger="slider" data-id="<?=$arResult['ID']?>" class="popup-trigger" href="<?=$arResult['DETAIL_PICTURE']['SRC']?>"><img itemprop="image" class="content-product__picture" src="<?=$renderImage["src"]?>" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>"></a>
 									<? } else {?>
-										<a data-trigger="slider" class="popup-trigger" href="#"><img itemprop="image" class="content-product__picture" src="/bitrix/templates/bigms/images/logo_bw.png" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>"></a>
+										<img itemprop="image" class="content-product__picture" src="/bitrix/templates/bigms/images/logo_bw.png" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>">
 										<?$renderImage["src"] = '/bitrix/templates/bigms/images/logo_bw.png';?>
 									<? } ?>
 									
+									<div id="slider<?=$arResult['ID']?>" style="display: none;">
+										<div class="owl-carousel popup-slider__container">
+											<img src="/bitrix/templates/bigms/images/logo_bw.png" alt="">
+ 									    </div>
+									</div>
 								
 									<input type="hidden" name="CAT_PRICE_ID<?=$arResult["ID"]?>" value="<?=$arResult["CATALOG_PRICE_ID_1"]?>"/>
 									<input type="hidden" name="CAT_PRICE<?=$arResult["ID"]?>" value="<?=number_format($arResult["CATALOG_PRICE_1"],0,'.',' ')?>  ₽"/>
@@ -152,7 +157,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 									<input type="hidden" name="DETAIL_PAGE<?=$arResult["ID"]?>" value="<?=$arResult["DETAIL_PAGE_URL"]?>"/>
 									<input type="hidden" name="PICTURE<?=$arResult["ID"]?>" value="<?=$renderImage["src"]?>"/>
 								</div>
-								<?/*
+								<?/* 
 								<?if( $arResult["MORE_PHOTO_COUNT"] > 1):?>
 									<div id="thumbs" class="content-product__thumbs-wrap right-shadow">
 									  <ul class="content-product__thumbs">
