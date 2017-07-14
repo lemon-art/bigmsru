@@ -82,10 +82,13 @@ global $arLinkedProducts;
 	<?
 	global $similarFilter2;
 	global $count_view_products;
-	$arVIEWED_PRODUCT = unserialize($APPLICATION->get_cookie("VIEWED_PRODUCT"));$arShows = Array();
+	$arVIEWED_PRODUCT = array_reverse(unserialize($APPLICATION->get_cookie("VIEWED_PRODUCT")));$arShows = Array();
+	
+
+	
 	
 	foreach ( $arVIEWED_PRODUCT as $key=>$val){
-		if ( $val == $ElementID ){
+		if ( $val == $ElementID || $key > 20 ){
 			unset( $arVIEWED_PRODUCT[$key] );
 		}
 	}
