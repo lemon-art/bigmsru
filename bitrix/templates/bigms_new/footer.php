@@ -333,6 +333,7 @@
         <span data-trigger="slider" class="popup__close popup-trigger"></span>
         <div class="popup-slider">
 			<span id="slider">
+				<?$APPLICATION->ShowViewContent("slider")?>
 			</span>
         </div>
       </div>

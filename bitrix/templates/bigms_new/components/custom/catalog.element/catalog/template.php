@@ -145,11 +145,12 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 										<?$renderImage["src"] = '/bitrix/templates/bigms/images/logo_bw.png';?>
 									<? } ?>
 									
-									<div id="slider<?=$arResult['ID']?>" style="display: none;">
+									<?$this->SetViewTarget("slider");?>
 										<div class="owl-carousel popup-slider__container">
 											<img src="<?=$arResult['DETAIL_PICTURE']['SRC']?>" alt="">
  									    </div>
-									</div>
+									<?$this->EndViewTarget("slider");?>
+									
 								
 									<input type="hidden" name="CAT_PRICE_ID<?=$arResult["ID"]?>" value="<?=$arResult["CATALOG_PRICE_ID_1"]?>"/>
 									<input type="hidden" name="CAT_PRICE<?=$arResult["ID"]?>" value="<?=number_format($arResult["CATALOG_PRICE_1"],0,'.',' ')?>  ₽"/>
