@@ -146,9 +146,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 									<? } ?>
 									
 									<?$this->SetViewTarget("slider");?>
-										<div class="owl-carousel popup-slider__container">
-											<img src="<?=$arResult['DETAIL_PICTURE']['SRC']?>" alt="">
- 									    </div>
+										<img src="<?=$arResult['DETAIL_PICTURE']['SRC']?>" alt="">
 									<?$this->EndViewTarget("slider");?>
 									
 								
