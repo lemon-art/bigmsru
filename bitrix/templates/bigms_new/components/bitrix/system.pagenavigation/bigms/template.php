@@ -104,7 +104,9 @@ $strNavQueryStringFull = ($arResult["NavQueryString"] != "" ? "?".$arResult["Nav
 <?endif?>
 </div>
 					<div class="pagination__wrap">
-						<a href="#" class="pagination__more">Показать еще 18 товаров</a>
+						<?if ( $arResult["NavPageNomer"] < $arResult["NavPageCount"]):?>
+							<a href="<?=$arResult["sUrlPath"]?>?<?=$strNavQueryString?>PAGEN_<?=$arResult["NavNum"]?>=<?=$arResult["NavPageNomer"]+1?>" class="pagination__more">Показать еще 18 товаров</a>
+						<?endif;?>
 					</div>
 					<?if ($arResult["bShowAll"]):?>
 						<div class="pagination__wrap">
@@ -115,4 +117,5 @@ $strNavQueryStringFull = ($arResult["NavQueryString"] != "" ? "?".$arResult["Nav
 
 
 	</div>
+			<div class="preloader"><img src="/images/762.gif"></div>
 

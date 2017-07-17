@@ -291,7 +291,7 @@ $(document).ready(function() {
   
   
 	  function refresh_top_basket(){
-		alert('1');
+
 	  }
 	  
 	  
@@ -303,8 +303,7 @@ $(document).ready(function() {
 		return false;
 	});
   
-	$('.popup-add-to-cart').click(function(e) {
-	
+	$('.content-products').on('click', '.popup-add-to-cart', function(e) {
 		id = $(this).attr('data-id');
 		var ELEM_NAME = $('input[name="ELEM_NAME'+id+'"]').val();
 		var CAT_PRICE = $('input[name="CAT_PRICE'+id+'"]').val();
@@ -385,6 +384,26 @@ $(document).ready(function() {
 		popupOpen($(this));
     }
   });
+  
+  
+			$('.content-products').on("click", '.pagination__more', function() {
+				$('.preloader').show();
+				$('.content-products__pagination').hide();
+				loading = false;
+				if ( !loading ) {
+					loading = true;
+					$.get( $(this).attr('href'), {is_ajax: 'y'}, function(data){
+						$('.preloader').remove();
+						$('.content-products__pagination').before(data).remove();
+						//$('.preloader').hide();
+						//$('.content-products__pagination').show();
+						loading = false;
+					});
+				}
+				
+				return false;
+			});
+  
   
     $('.popup-trigger-self').click(function(e) {
 

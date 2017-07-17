@@ -32,4 +32,8 @@ if ($arResult["NAV_RESULT"]->NavPageNomer < $arResult["NAV_RESULT"]->NavPageCoun
 	$val = $APPLICATION->GetCurPageParam("", array_keys($_GET), false).'?PAGEN_'.$arResult["NAV_RESULT"]->NavNum.'='.($arResult["NAV_RESULT"]->NavPageNomer+1);
 	$APPLICATION->AddHeadString('<link rel="next" href="http://'.$_SERVER["SERVER_NAME"].$val.'"/>', true);
 }
+
+if (array_key_exists('is_ajax', $_REQUEST) && $_REQUEST['is_ajax']=='y') {
+    die();
+}
 ?>

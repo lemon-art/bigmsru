@@ -1925,6 +1925,14 @@ body {
     text-decoration: none; }
     .pagination__all:hover {
       border: 1px solid #636f80; }
+	  
+	  
+	.preloader {
+		text-align: center;
+		display: none;
+		margin-bottom: 30px;
+		margin-bottom: 30px;
+	}	
 
 .content-product {
   width: 100%; }

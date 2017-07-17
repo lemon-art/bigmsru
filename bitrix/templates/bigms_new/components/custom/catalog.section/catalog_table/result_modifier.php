@@ -2,7 +2,15 @@
 use Bitrix\Main\Type\Collection;
 use Bitrix\Currency\CurrencyTable;
 
+
+
 if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED!==true) die();
+
+
+if (array_key_exists('is_ajax', $_REQUEST) && $_REQUEST['is_ajax']=='y') {
+    $APPLICATION->RestartBuffer();
+}
+
 /** @var CBitrixComponentTemplate $this */
 /** @var array $arParams */
 /** @var array $arResult */
