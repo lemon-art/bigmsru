@@ -10,7 +10,7 @@
 											<span class="product-card__delivery">Доставка бесплатно</span>
 										<?endif;?>
 										
-										<?$file = CFile::ResizeImageGet($arResult['PREVIEW_PICTURE']['ID'], array('height'=>250, 'width'=>200), BX_RESIZE_IMAGE_PROPORTIONAL, true);?>
+										<?$file = CFile::ResizeImageGet($arResult['DETAIL_PICTURE']['ID'], array('height'=>250, 'width'=>200), BX_RESIZE_IMAGE_PROPORTIONAL, true);?>
 										<?if(!$file['src']) {?>
 											<img itemprop="image" class="product-card__img" itemprop="image" src="<? echo $file['src'] ?>" alt="<?=$arResult["NAME"]?>" title="<?=$arResult["NAME"]?>">
 										<? } else {?>
