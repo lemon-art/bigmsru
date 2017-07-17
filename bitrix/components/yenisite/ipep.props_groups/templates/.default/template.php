@@ -82,7 +82,12 @@
 									//if (substr_count($arProperty["DISPLAY_VALUE"], "a href") > 0) {
 									//	$arProperty["DISPLAY_VALUE"] = strip_tags($arProperty["DISPLAY_VALUE"]);
 									//}
-									echo $arProperty["DISPLAY_VALUE"];
+									if ( $arProperty["DISPLAY_VALUE"] ){
+										echo $arProperty["DISPLAY_VALUE"];
+									}
+									else {
+										echo $arProperty["VALUE"];
+									}
 									if ($arParams['SHOW_PROPERTY_VALUE_DESCRIPTION'] != 'N') {
 										echo ' ', $arProperty['DESCRIPTION'];
 									}
