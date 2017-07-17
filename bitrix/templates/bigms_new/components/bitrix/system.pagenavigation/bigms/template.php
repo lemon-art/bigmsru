@@ -12,9 +12,12 @@ if(!$arResult["NavShowAlways"])
 		return;
 }
 
+$arResult["NavQueryString"] = str_replace('&amp;is_ajax=y', '', $arResult["NavQueryString"]);
 $strNavQueryString = ($arResult["NavQueryString"] != "" ? $arResult["NavQueryString"]."&amp;" : "");
 $strNavQueryStringFull = ($arResult["NavQueryString"] != "" ? "?".$arResult["NavQueryString"] : "");
+$navQuery = explode( '&', $arResult["NavQueryString"]);
 
+$arResult["NavQueryString"] = '';
 ?>
 
     <div class="content-products__pagination pagination">
