@@ -6234,6 +6234,14 @@ ul.sublist[data-level="3"] .sublist__link:after {
   color: #0e1a29;
   font-family: 'Museo700', sans-serif, Arial;
   margin: 0; }
+  
+ .content-categories__title a{
+  font-size: 20px;
+  color: #0e1a29;
+  font-family: 'Museo700', sans-serif, Arial;
+  margin: 0; 
+  text-decoration: none;
+  } 
 
 .content-categories__inner-list {
   height: 130px;

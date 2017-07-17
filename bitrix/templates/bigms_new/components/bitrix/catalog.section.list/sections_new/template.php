@@ -46,7 +46,7 @@ $this->setFrameMode(true);
 
 						  </div>
 						  <div class="content-categories__text">
-							<h2 class="content-categories__title"><?=$arSection["NAME"]?></h2>
+							<h2 class="content-categories__title"><a href="<?=$arSection["SECTION_PAGE_URL"];?>"><?=$arSection["NAME"]?></a></h2>
 							<ul class="content-categories__inner-list">
 					
 					<?else:?>
