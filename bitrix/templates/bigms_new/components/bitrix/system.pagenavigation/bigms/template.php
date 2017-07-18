@@ -85,9 +85,9 @@ $strNavQueryStringFull = ($arResult["NavQueryString"] != "" ? "?".$arResult["Nav
 			<li class="pagination__item"><a class="pagination__link active" href=""><?=$arResult["nStartPage"]?></a></li>
 		<?else:?>
 			<?if ( $arResult["nStartPage"] == $arResult["nEndPage"]-1 && ($arResult["nStartPage"] < $arResult["NavPageCount"] - 1) ):?>
-				<li class="pagination__item"><a class="pagination__link" href="<?=$arResult["sUrlPath"]?>?<?=$strNavQueryString?>PAGEN_<?=$arResult["NavNum"]?>=<?=$arResult["nStartPage"]?>">...</a></li>
+				<li class="pagination__item"><a class="pagination__link" href="<?=$arResult["sUrlPath"]?>?<?=$strNavQueryString?>PAGEN_<?=$arResult["NavNum"]?>=<?=$arResult["nStartPage"]?>"><img src="/images/nav-right.png"></a></li>
 			<?elseif ( ($arResult["nStartPage"] > 3) && ($arResult["nStartPage"] == $arResult["nEndPage"]-3)):?>
-				<li class="pagination__item"><a class="pagination__link" href="<?=$arResult["sUrlPath"]?>?<?=$strNavQueryString?>PAGEN_<?=$arResult["NavNum"]?>=<?=$arResult["nStartPage"]?>">...</a></li>
+				<li class="pagination__item"><a class="pagination__link" href="<?=$arResult["sUrlPath"]?>?<?=$strNavQueryString?>PAGEN_<?=$arResult["NavNum"]?>=<?=$arResult["nStartPage"]?>"><img src="/images/nav-left.png"></a></li>
 			<?else:?>
 				<li class="pagination__item"><a class="pagination__link" href="<?=$arResult["sUrlPath"]?>?<?=$strNavQueryString?>PAGEN_<?=$arResult["NavNum"]?>=<?=$arResult["nStartPage"]?>"><?=$arResult["nStartPage"]?></a></li>
 			<?endif;?>
