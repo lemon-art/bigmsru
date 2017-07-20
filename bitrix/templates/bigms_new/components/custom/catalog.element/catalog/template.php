@@ -300,10 +300,12 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 									<strong class="product-about__title">60 дней на обмен</strong>
 									<p class="product-about__text">Вы можете обменять или вернуть товар в течение 2 месяцев со дня покупки</p>
 								  </div>
-								  <div class="product-about__wrap">
-									<strong class="product-about__title">12 месяцев гарантии</strong>
-									<p class="product-about__text">При обнаружении дефекта мы сами обратимся в сервис-центр, обслуживающий продукцию торговой марки (бренд), и поможем решить проблему.</p>
-								  </div>
+								  <?if ( $arResult["DISPLAY_PROPERTIES"]["GARANTIYA_LET"]["VALUE"] ):?>
+									  <div class="product-about__wrap">
+										<strong class="product-about__title"><?=$arResult["DISPLAY_PROPERTIES"]["GARANTIYA_LET"]["VALUE"]?> <?=numberof($arResult["DISPLAY_PROPERTIES"]["GARANTIYA_LET"]["VALUE"], '', array('год', 'года', 'лет'))?> гарантии</strong>
+										<p class="product-about__text">При обнаружении дефекта мы сами обратимся в сервис-центр, обслуживающий продукцию торговой марки (бренд), и поможем решить проблему.</p>
+									  </div>
+								  <?endif;?>
 								  <div class="product-about__wrap">
 									<strong class="product-about__title">Способы оплаты</strong>
 									<ul class="product-about__list">
