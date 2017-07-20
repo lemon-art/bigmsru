@@ -340,6 +340,80 @@
       </div>
     </div>
 	
+	<?if ( $isOrderMake ):?>
+	
+			<div data-popup="order_map" class="popup popup_youtube">
+			  <div class="popup__container">
+				<div class="popup__wrap">
+					<a role="button" data-trigger="order_map" class="popup__close popup-trigger"></a>
+					<div id="order_map"></div>
+				</div>
+			  </div>
+			</div>
+			
+			<script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+			<script>
+
+
+				ymaps.ready(init);
+				var myMap;
+
+				function init(){  
+						
+					var myCollection = new ymaps.GeoObjectCollection();
+					myMap = new ymaps.Map("order_map", {
+						center: [55.76, 37.64],
+						zoom: 10,
+						controls: ['zoomControl']
+					}, {suppressMapOpenBlock: true});
+					
+					
+					
+				};
+				
+
+				
+				function setOffice( coordinateX, coordinateY ){  
+				
+					myMap.destroy();
+					
+					myMap = new ymaps.Map("order_map", {
+						center: [55.76, 37.64],
+						zoom: 10,
+						controls: ['zoomControl']
+					}, {suppressMapOpenBlock: true});
+					
+					MyIconContentLayout = ymaps.templateLayoutFactory.createClass(
+						'<div class="bigms-marker"><svg style="width: 47px; height: 60px; fill:#ffa200;" class="bigms-marker__svg">'+
+						'<use xlink:href="#icon-marker"></use>'+
+						'</svg></div>'
+					);
+					
+					myPlacemark = new ymaps.Placemark([coordinateX, coordinateY],{}, {
+						iconLayout: 'default#imageWithContent',
+						iconImageHref: '', // картинка иконки
+						iconImageSize: [47, 64], // размер иконки
+						iconImageOffset: [-34, -80], // позиция иконки
+						iconContentOffset: [15, 15],
+						iconContentLayout: MyIconContentLayout
+					});
+					
+					myMap.setCenter( [coordinateX, coordinateY], 13, {
+						checkZoomRange	: true,
+						duration 		: 300,
+						callback 		: function() {
+						  
+						}
+					});
+					
+					myMap.geoObjects.add( myPlacemark );
+				};
+				
+
+			</script>
+	
+	<?endif;?>
+	
 	
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">

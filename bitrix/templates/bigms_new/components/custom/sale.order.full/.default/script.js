@@ -13,6 +13,45 @@ function ChangeGenerate(val)
         $('input.phone').inputmask({"mask": "+7(999)999-99-99"});
 		
 		
+		
+		
+
+	
+		$('.content-order').on('click', '.self-delivery__link', function(e) {
+	
+			target = $(this); 
+			var scrollWidth = window.innerWidth - document.documentElement.clientWidth;
+			var targetData = target.data('trigger');
+			var targetMapX = target.data('mapx');
+			var targetMapY = target.data('mapy');
+			
+
+			setOffice( targetMapX, targetMapY );
+		
+			
+			$('[data-popup="'+ targetData +'"]').addClass('js-active').addClass('scroll-fix');
+			$('body').css('paddingRight', scrollWidth).addClass('scroll-fix');
+			$('[data-popup="'+ targetData +'"]').find('.popup-trigger').addClass('js-active');
+			
+			
+			
+			
+			
+			return false;
+		
+		}); 
+		
+		
+		
+		
+
+
+
+
+	
+
+		
+		
 		//order tabs
 		$('.order-tabs__nav-item').click(function() {
 			var data = $(this).data('tab');

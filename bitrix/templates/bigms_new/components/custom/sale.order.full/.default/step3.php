@@ -56,7 +56,7 @@ $db_dtype = CSaleDelivery::GetList(
 								
 								  <?
 									CModule::IncludeModule("iblock");
-									$arSelect = array("ID", "NAME", "PREVIEW_TEXT");
+									$arSelect = array("ID", "NAME", "PREVIEW_TEXT", "PROPERTY_MAP");
 									$res = CIBlockElement::GetList(array("sort" => "asc"), array("IBLOCK_ID" => 9), false, false, $arSelect);
 									$i = 0;
 									$arStores = Array();
@@ -64,7 +64,7 @@ $db_dtype = CSaleDelivery::GetList(
 										$arStores[] = $ar_fields;
 									}
 								  ?>
-				
+
 										<?foreach ( $arStores as $arStore ):?>
 										  <li class="self-delivery__item">
 											<div class="self-delivery__row">
@@ -76,7 +76,10 @@ $db_dtype = CSaleDelivery::GetList(
 											</div>
 											<div class="self-delivery__row self-delivery__row_buttons">
 											  <a href="#" data-store="<?=$arStore["ID"]?>" class="self-delivery__button">Забрать в этом магазине</a>
-											  
+											  <?if ( $arStore["PROPERTY_MAP_VALUE"] ):?>
+													<?$arCoordinate = explode(',', $arStore["PROPERTY_MAP_VALUE"]);?>
+													<a href="#" class="self-delivery__link popup-trigger" data-trigger="order_map" data-mapX="<?=$arCoordinate[0]?>" data-mapY="<?=$arCoordinate[1]?>">Показать магазин на карте</a>
+											  <?endif;?>
 											</div>
 										  </li>
 										  

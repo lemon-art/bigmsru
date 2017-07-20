@@ -1,7 +1,7 @@
 var owl, gallery;
 
 $(document).ready(function() {
-
+ 
   var scrollWidth = window.innerWidth - document.documentElement.clientWidth;
 
   //main slider
@@ -302,8 +302,12 @@ $(document).ready(function() {
 	$('[data-level="1"] > a').click(function() {
 		return false;
 	});
+	
+	
+
+	
   
-	$('.content-products').on('click', '.popup-add-to-cart', function(e) {
+	$('.content-products, .products-similar, .product-props, .demanded-products').on('click', '.popup-add-to-cart', function(e) {
 		id = $(this).attr('data-id');
 		var ELEM_NAME = $('input[name="ELEM_NAME'+id+'"]').val();
 		var CAT_PRICE = $('input[name="CAT_PRICE'+id+'"]').val();
@@ -335,11 +339,12 @@ $(document).ready(function() {
 		e.preventDefault();
 		
 		
-	  
+	   
 	});
 
   //popup
   $('.popup-trigger').click(function(e) {
+
     e.preventDefault();
     if( $(this).data('trigger') == 'slider' && !$(this).hasClass('js-active') ) {
 	
