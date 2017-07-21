@@ -79,6 +79,8 @@ parse_str($_POST["data"]);
 		$data = file_get_contents($_SERVER["DOCUMENT_ROOT"]."/tools/temp/result.txt");
 		$arResult = unserialize( $data );
 		?>
+		
+		
 		<h3>Найденные товары</h3>
 		<p>Верхняя строка: название и артикул в файле</p>
 		<p><b>Нижняя строка</b>: название и артикул на сайте</p>

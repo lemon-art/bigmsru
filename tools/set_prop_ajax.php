@@ -84,59 +84,67 @@ parse_str($_POST["data"]);
 				$arSetProps = Array();
 				foreach( $arItem['DATA'] as $keyData => $valData){ 	//перебираем свойства
 					if ( $keyData > 3 ) { 							//первые 2 пропускаем так как там название и ссылка
+					
+						$prop[1] = '';
 						$prop = explode(": ",  $valData);			//получаем название и значение свойства
-				 
-						//ищем свойство
-						$properties = CIBlockProperty::GetList(Array("sort"=>"asc", "name"=>"asc"), Array("ACTIVE"=>"Y", "IBLOCK_ID"=>$IBLOCK_ID, "NAME" => $prop[0]));
-						if ($prop_fields = $properties->GetNext()){
-							//$arProps[$key] = $prop_fields["ID"];
-							
-							$arPropPlus[$prop[0]] = 1; 				//записываем в массив найденных свойств
+						
+							//ищем свойство
+							$properties = CIBlockProperty::GetList(Array("sort"=>"asc", "name"=>"asc"), Array("ACTIVE"=>"Y", "IBLOCK_ID"=>$IBLOCK_ID, "NAME" => $prop[0]));
+							if ($prop_fields = $properties->GetNext()){
+								//$arProps[$key] = $prop_fields["ID"];
+								
+								$arPropPlus[$prop[0]] = 1; 				//записываем в массив найденных свойств
 
-							
-							//обрабатываем свойства у которых тип "список"
-							if ( $prop_fields["PROPERTY_TYPE"] == 'L' ){
-								$value = '';
-								$property_enums = CIBlockPropertyEnum::GetList(Array("DEF"=>"DESC", "SORT"=>"ASC"), Array("IBLOCK_ID"=>$IBLOCK_ID, "CODE"=>$prop_fields["CODE"]));
-								while($enum_fields = $property_enums->GetNext()){
-									if ( $enum_fields["VALUE"] == $prop[1] ){
-										$value = $enum_fields["ID"];
+								if ( $prop[1] ) {
+									//обрабатываем свойства у которых тип "список"
+									if ( $prop_fields["PROPERTY_TYPE"] == 'L' ){
+										$value = '';
+										$property_enums = CIBlockPropertyEnum::GetList(Array("DEF"=>"DESC", "SORT"=>"ASC"), Array("IBLOCK_ID"=>$IBLOCK_ID, "CODE"=>$prop_fields["CODE"]));
+										while($enum_fields = $property_enums->GetNext()){
+											if ( $enum_fields["VALUE"] == $prop[1] ){
+												$value = $enum_fields["ID"];
+											}
+											//$arEnumValues[$prop_fields["ID"]][$enum_fields["ID"]] = $enum_fields["VALUE"];
+										}
+										if ( !$value ) {						//если значение не найдено, то добавляем его
+											$ibpenum = new CIBlockPropertyEnum;
+											if($PropID = $ibpenum->Add(Array('PROPERTY_ID'=>$prop_fields["ID"], 'VALUE'=>$prop[1]))){
+												$value = $PropID;
+											}
+										} 
+									} 
+									elseif ( $prop_fields["CODE"] == 'BREND' ){
+										$arFilter = array('UF_NAME' => $prop[1]); //задаете фильтр по вашим полям
+
+										$sTableID = 'tbl_'.$entity_table_name;
+										$rsData = $entity_data_class::getList(array(
+											"select" => array('UF_XML_ID', 'UF_NAME'), //выбираем поля
+											"filter" => $arFilter,
+											"order" => array("UF_NAME"=>"ASC")
+										));
+										$rsData = new CDBResult($rsData, $sTableID);
+										if ( $arRes = $rsData->Fetch() ){
+											$value = $arRes["UF_XML_ID"];
+										}
+										
 									}
-									//$arEnumValues[$prop_fields["ID"]][$enum_fields["ID"]] = $enum_fields["VALUE"];
+									else {
+										$value = $prop[1];
+									}
+								
+									if ( $value ){
+										$arSetProps[$prop_fields["ID"]] = $value;
+									}
 								}
-								if ( !$value ) {						//если значение не найдено, то добавляем его
-									$ibpenum = new CIBlockPropertyEnum;
-									if($PropID = $ibpenum->Add(Array('PROPERTY_ID'=>$prop_fields["ID"], 'VALUE'=>$prop[1]))){
-										$value = $PropID;
-									}
-								} 
-							} 
-							elseif ( $prop_fields["CODE"] == 'BREND' ){
-								$arFilter = array('UF_NAME' => $prop[1]); //задаете фильтр по вашим полям
-
-								$sTableID = 'tbl_'.$entity_table_name;
-								$rsData = $entity_data_class::getList(array(
-									"select" => array('UF_XML_ID', 'UF_NAME'), //выбираем поля
-									"filter" => $arFilter,
-									"order" => array("UF_NAME"=>"ASC")
-								));
-								$rsData = new CDBResult($rsData, $sTableID);
-								if ( $arRes = $rsData->Fetch() ){
-									$value = $arRes["UF_XML_ID"];
+								else {
+									$arSetProps[$prop_fields["ID"]] = '';
 								}
 								
 							}
 							else {
-								$value = $prop[1];
+								$arPropMinus[$prop[0]] = 1; 				//записываем в массив ненайденных свойств
 							}
-							
-							if ( $value ){
-								$arSetProps[$prop_fields["ID"]] = $value;
-							}
-						}
-						else {
-							$arPropMinus[$prop[0]] = 1; 				//записываем в массив ненайденных свойств
-						}
+
 					
 					
 					
