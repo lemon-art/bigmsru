@@ -5,6 +5,13 @@ CModule::IncludeModule("sale");
 CModule::IncludeModule("catalog");
 use Bitrix\Sale;
 
+//если не заполнено имя на случай заказа из списка товаров
+
+
+if ( !$_POST['COUNT'] ) {
+	$_POST['COUNT'] = 1;
+}
+
 global $USER;
 
 if ( !$USER->IsAuthorized() ){
@@ -28,9 +35,15 @@ if ( !$USER->IsAuthorized() ){
 }
 else {
 	$newuser = $USER->GetID();	
+	
+	if ( !$_POST['name'] ){
+		$_POST['name'] = $USER->GetFullName();
+	}
 }
 
-
+if ( !$_POST['name'] ){
+	$_POST['name'] = 'user_section_' . $prefix.time();
+}
 
 
 $arFields = array(
@@ -105,7 +118,7 @@ if (0 < $ORDER_ID)
         CSaleBasket::Add($arFields);	
 		
 		echo "<pre>";
-		print_r( $arFields );
+		print_r( $_POST );
 		echo "</pre>";
 		*/
 
@@ -121,21 +134,27 @@ if (0 < $ORDER_ID)
 		   ), 
 			  false,
 			  false,
-		   array("ID", "DELAY")
+		   array("ID", "DELAY", "PRODUCT_ID")
 		);
 		while ($arBasketItems = $dbBasketItems->Fetch())
 		{
-		   $tmpBasketIDs[] = $arBasketItems["ID"];
-		   $arFields["DELAY"] = "Y";
-		   // откладываем товары
-		   CSaleBasket::Update($arBasketItems["ID"], $arFields);
+			if ( $_POST['TYPE'] == 'list' && (int)$_POST["PRODUCT_ID"] == $arBasketItems["PRODUCT_ID"]){
+				
+			}
+			else{
+			   $tmpBasketIDs[] = $arBasketItems["ID"];
+			   $arFields["DELAY"] = "Y";
+			   // откладываем товары
+			   CSaleBasket::Update($arBasketItems["ID"], $arFields);
+			}
 		   
 		   
 		   
 		}
 		
-	
-		Add2BasketByProductID( $_POST["PRODUCT_ID"], $_POST["COUNT"] );
+		if ( $_POST['TYPE'] !== 'list'){	//если заказ происходит из списка товаров, то данный товар уже лежит в корзине и его добавлять не надо
+			Add2BasketByProductID( $_POST["PRODUCT_ID"], $_POST["COUNT"] );
+		}
 		
 		if ( CSaleBasket::OrderBasket($ORDER_ID) ){
 		

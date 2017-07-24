@@ -115,9 +115,8 @@ if(isset($_REQUEST) && isset($_GET) && $last_symbol_url != "/"){
 	<?if($isCatalog):?>
 		<?$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH."/js/filter.js");?>
 	<?endif;?>
-	<?if($isBasket || $isOrderMake):?>
-		<?$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH."/js/jquery.inputmask.bundle.min.js");?>
-	<?endif;?>
+	<?$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH."/js/jquery.inputmask.bundle.min.js");?>
+
 </head>
 
 <body>

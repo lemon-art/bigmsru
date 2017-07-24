@@ -238,9 +238,12 @@
               <input data-trigger="sent" onclick="location.href='/basket/'" class="form__submit popup-trigger" type="submit" name="form_submit" value="ОФОРМИТЬ ЗАКАЗ">
             </div>
           </div>
-        </form>
-		<?/*
+        </form> 
+		
         <form id="form_click" class="form form_click">
+			<input type="hidden" name="PRODUCT_ID" value="">
+			<input type="hidden" name="PRICE" value="">
+			<input type="hidden" name="TYPE" value="list">
           <strong class="form__title form__title_click">Заказать в 1 клик</strong>
           <p class="form__text">Можно не заполнять никаких форм, просто оставить телефон и консультант решит все вопросы по оформлению заказа</p>
           <div class="form__inner-wrap form__inner-wrap_between">
@@ -250,7 +253,7 @@
             <input class="form__submit" type="submit" name="form_submit" value="ЖДУ ЗВОНКА">
           </div>
         </form>
-		*/?>
+		
       </div>
       </div>
     </div>
@@ -263,7 +266,7 @@
         <div class="popup__wrap">
         <span data-trigger="success" class="popup__close popup-trigger"></span>
         <strong class="popup__title form__title">Заявка на обратный звонок отправлена</strong>
-        <p class="popup__text">Наш менеджер свяжется с вами по телефону +7(903) 726-85-16 в течение рабочего дня.</p>
+        <p class="popup__text">Наш менеджер свяжется с вами по телефону в течение рабочего дня.</p>
         <p class="popup__text">Спасибо за обращение!</p>
         <span data-trigger="success" class="button popup-trigger">Закрыть</span>
       </div>
@@ -320,8 +323,8 @@
       <div class="popup__container">
         <div class="popup__wrap">
         <span data-trigger="success_click" class="popup__close popup-trigger"></span>
-        <strong class="popup__title form__title">Зака оформлен</strong>
-        <p class="popup__text">Наш менеджер свяжется с вами по телефону +7(903) 726-85-16 в течение рабочего дня.</p>
+        <strong class="popup__title form__title">Заказ оформлен</strong>
+        <p class="popup__text">Наш менеджер свяжется с вами по телефону в течение рабочего дня.</p>
         <p class="popup__text">Спасибо за обращение!</p>
         <span data-trigger="success_click" class="button popup-trigger">Закрыть</span>
       </div>

@@ -21,7 +21,45 @@ $(document).ready(function() {
   });
 
 
+   
+  
+  
+    //Обработчик формы заказа в один клик из списка товаров
+	
+	$('#form_click').find('input[name=phone]').inputmask({"mask": "+7(999)999-99-99"});
+	
+	$('#form_click').find('input[name=phone]').on('keyup', function() {
+		$(this).parent().removeClass('error');
+	});
+	
+	$('.popup_cart').on('submit', 'form', function () {
+		
+		validate = 1;
 
+		
+		if ( $('#form_click input[name=phone]').val().replace(/(_)/g, '').length < 16 ){
+			validate = 0;
+			$('#form_click input[name=phone]').parent().addClass('error');
+		}
+		
+		
+		if ( validate ){
+			$.ajax({
+				type: "POST",
+				url: '/ajax/oneclick_order.php',
+				data: $(this).serialize(),
+				success: function (data) {
+					
+					$('[data-popup="cart"]').removeClass('js-active');
+					var targetData = 'success_click';
+					$('[data-popup="'+ targetData +'"]').addClass('js-active').addClass('scroll-fix');
+					$('body').css('paddingRight', scrollWidth).addClass('scroll-fix');
+					$('[data-popup="'+ targetData +'"]').find('.popup-trigger').addClass('js-active');
+				}
+			});
+		}
+		return false;
+	});
 
 
   //city popup
@@ -320,7 +358,8 @@ $(document).ready(function() {
 		$('.popup_cart').find('.form__price').text( CAT_PRICE );
 		$('.popup_cart').find('.form__img').attr( 'src', PICTURE );
 		$('.popup_cart').find('.product-card__quantity').removeClass('product-card__quantity_order').removeClass('product-card__quantity_instock').addClass( STATUS_CL ).text( STATUS );
-
+		$('.popup_cart').find('input[name="PRODUCT_ID"]').val( id );
+		$('.popup_cart').find('input[name="PRICE"]').val( '' );
 		
 		$.post("/ajax/add_to_cart.php", { ProductID: id, QUANTITY: COUNT },
 		  function(data){
