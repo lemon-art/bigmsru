@@ -420,7 +420,6 @@ $(document).ready(function() {
 		$('#youtube').html( $(this).data('youtube') );
     }
 	
-	
     if($(this).hasClass('js-active')) {
 		$(this).removeClass('js-active');
 		popupClose($(this));
@@ -454,7 +453,6 @@ $(document).ready(function() {
 		var targetData = $(this).data('close');
 		$('[data-popup="'+ targetData +'"]').removeClass('js-active');
 		$('body').css('paddingRight', '0' ).removeClass('scroll-fix');
-
 		if($(this).hasClass('js-active')) {
 			$(this).removeClass('js-active');
 			popupClose($(this));
@@ -487,7 +485,16 @@ $(document).ready(function() {
     $('[data-popup="'+ targetData +'"]').find('.popup-trigger').addClass('js-active');
   }
   function popupClose(target) {
-    var targetData = target.data('trigger');
+	
+	var targetData = target.data('trigger');
+	
+	if ( targetData == 'success_click' ){		//если это окно о создании заказа в 1 клик из корзины то перенаправляем на главную страницу
+		if ( $('[data-popup="success_click"]').hasClass('follow_main') ){
+			window.location = '/';	
+		}
+	}
+  
+    
     $('[data-popup="'+ targetData +'"]').removeClass('js-active');
     $('body').css('paddingRight', '0' ).removeClass('scroll-fix');
   }

@@ -274,15 +274,16 @@ if ($countPropduct > 0):
 </div>
 				<div class="content-cart__result cart-result">
                   <div class="cart-result__wrap">
-					<?/*
+					
                     <form id="form_one_click" class="cart-result__form form form_cart">
-                      <label class="form__label">Заказать в 1 клик:</label>
-                      <div class="form__row form__row_phone">
-                        <input class="form__input slider-callback__input" type="text" name="phone" value="" placeholder="">
-                      </div>
-                      <input class="form__submit" type="submit" name="one_click_submit" value="Жду звонка">
+						<input type="hidden" name="TYPE" value="cart">
+						<label class="form__label">Заказать в 1 клик:</label>
+						<div class="form__row form__row_phone">
+							<input class="form__input slider-callback__input" type="text" name="phone" value="" placeholder="">
+						</div>
+						<input class="form__submit" type="submit" name="one_click_submit" value="Жду звонка">
                     </form>
-					*/?>
+					
                   </div>
                   <div class="cart-result__wrap cart-result__wrap_flexend">
                     <?/*<span class="cart-result__discount">Скидка: <span class="cart-result__value">9000 ₽</span></span>*/?>

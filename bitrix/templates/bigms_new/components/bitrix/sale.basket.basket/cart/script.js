@@ -1176,3 +1176,52 @@ function declOfNum(number, titles)
     cases = [2, 0, 1, 1, 1, 2];  
     return titles[ (number%100>4 && number%100<20)? 2 : cases[(number%10<5)?number%10:5] ];  
 }
+
+
+
+$(document).ready(function(){
+
+
+	$('.form_cart input[name=phone]').inputmask({"mask": "+7(999)999-99-99"});
+	
+	//Обработчик формы заказа в один клик
+	$('.form_cart').find('input[name=name]').on('keyup', function() {
+		$(this).parent().removeClass('error');
+	});
+	
+	$('.form_cart').find('input[name=phone]').on('keyup', function() {
+		$(this).parent().removeClass('error');
+	});
+	
+	$('.cart-result').on('submit', 'form', function () {
+		
+		validate = 1;
+
+		
+		if ( $('.form_cart input[name=phone]').val().replace(/(_)/g, '').length < 16 ){
+			validate = 0;
+			$('.form_cart input[name=phone]').parent().addClass('error');
+		}
+
+
+		if ( validate ){
+			$.ajax({
+				type: "POST",
+				url: '/ajax/oneclick_order.php',
+				data: $(this).serialize(),
+				success: function (data) {
+					
+					var targetData = 'success_click';
+					$('[data-popup="'+ targetData +'"]').addClass('js-active').addClass('scroll-fix').addClass('follow_main');
+					$('body').css('paddingRight', scrollWidth).addClass('scroll-fix');
+					$('[data-popup="'+ targetData +'"]').find('.popup-trigger').addClass('js-active');	
+
+				}
+			});
+		}
+		return false;
+	});
+	
+	
+	
+});

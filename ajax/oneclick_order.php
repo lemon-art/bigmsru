@@ -85,83 +85,51 @@ if (0 < $ORDER_ID)
 		);
 		CSaleOrderPropsValue::Add($arFields);
    
-   /*
-		global $DB;
-		$strSql = "insert into b_sale_basket (FUSER_ID, ORDER_ID, PRODUCT_ID, QUANTITY, NAME, PRICE, DATE_UPDATE) VALUES( ".
-			  "'".IntVal($newuser)."', ".
-			  "'".$ORDER_ID."', ".
-			  "'".$_POST['PRODUCT_ID']."', ".
-			  "'".$_POST['COUNT']."',".
-			  "'".$_POST['PRODUCT_NAME']."', ".
-			  "'".$_POST['PRICE']."', ".
-			  "'".$DB->GetNowFunction()."'".
-			  ") ";
-		$DB->Query($strSql);
-    
+  		$arFields = Array();
 
-		$arFields = array(
-          "PRODUCT_ID" => $_POST['PRODUCT_ID'],
-          "PRODUCT_PRICE_ID" => $_POST['CAT_PRICE_ID'],
-          "PRICE" => $_POST['PRICE'],
-          "CURRENCY" => 'RUB',
-          "QUANTITY" => $_POST['COUNT'],
-          "LID" => 's1',
-          "DELAY" => "N",
-          "CAN_BUY" => "Y",
-          "NAME" => $_POST['PRODUCT_NAME'],
-          "MODULE" => "express_order",
-          "NOTES" => "",
-          "DETAIL_PAGE_URL" => $_POST['DETAIL_PAGE_URL'],
-          "FUSER_ID" => CSaleBasket::GetBasketUserID(),
-          "ORDER_ID" => $ORDER_ID
-        );
-        CSaleBasket::Add($arFields);	
+		if ( $_POST['TYPE'] !== 'cart' ){
 		
-		echo "<pre>";
-		print_r( $_POST );
-		echo "</pre>";
-		*/
-
-		$arFields = Array();
-
-		$dbBasketItems = CSaleBasket::GetList(
-		   array(),
-		   array( 
-		   "FUSER_ID" => CSaleBasket::GetBasketUserID(),
-		   "LID" => SITE_ID,
-		   "ORDER_ID" => "NULL",
-		   "DELAY" => "N"
-		   ), 
-			  false,
-			  false,
-		   array("ID", "DELAY", "PRODUCT_ID")
-		);
-		while ($arBasketItems = $dbBasketItems->Fetch())
-		{
-			if ( $_POST['TYPE'] == 'list' && (int)$_POST["PRODUCT_ID"] == $arBasketItems["PRODUCT_ID"]){
-				
+			$dbBasketItems = CSaleBasket::GetList(
+			   array(),
+			   array( 
+			   "FUSER_ID" => CSaleBasket::GetBasketUserID(),
+			   "LID" => SITE_ID,
+			   "ORDER_ID" => "NULL",
+			   "DELAY" => "N"
+			   ), 
+				  false,
+				  false,
+			   array("ID", "DELAY", "PRODUCT_ID")
+			);
+			while ($arBasketItems = $dbBasketItems->Fetch())
+			{
+				if ( $_POST['TYPE'] == 'list' && (int)$_POST["PRODUCT_ID"] == $arBasketItems["PRODUCT_ID"]){
+					
+				}
+				else{
+				   $tmpBasketIDs[] = $arBasketItems["ID"];
+				   $arFields["DELAY"] = "Y";
+				   // откладываем товары
+				   CSaleBasket::Update($arBasketItems["ID"], $arFields);
+				}
+			   
+			   
+			   
 			}
-			else{
-			   $tmpBasketIDs[] = $arBasketItems["ID"];
-			   $arFields["DELAY"] = "Y";
-			   // откладываем товары
-			   CSaleBasket::Update($arBasketItems["ID"], $arFields);
+			
+			if ( $_POST['TYPE'] !== 'list'){	//если заказ происходит из списка товаров, то данный товар уже лежит в корзине и его добавлять не надо
+				Add2BasketByProductID( $_POST["PRODUCT_ID"], $_POST["COUNT"] );
 			}
-		   
-		   
-		   
-		}
-		
-		if ( $_POST['TYPE'] !== 'list'){	//если заказ происходит из списка товаров, то данный товар уже лежит в корзине и его добавлять не надо
-			Add2BasketByProductID( $_POST["PRODUCT_ID"], $_POST["COUNT"] );
 		}
 		
 		if ( CSaleBasket::OrderBasket($ORDER_ID) ){
 		
-			foreach($tmpBasketIDs as $tmpBasketID) {
-			   $arFields["DELAY"] = "N";
-			   // возвращаем товары к заказу
-			   CSaleBasket::Update($tmpBasketID, $arFields);
+			if ( $_POST['TYPE'] !== 'cart' ){
+				foreach($tmpBasketIDs as $tmpBasketID) {
+				   $arFields["DELAY"] = "N";
+				   // возвращаем товары к заказу
+				   CSaleBasket::Update($tmpBasketID, $arFields);
+				}
 			}
 		}
 		

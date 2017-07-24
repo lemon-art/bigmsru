@@ -322,11 +322,11 @@
 	<div data-popup="success_click" class="popup popup_success">
       <div class="popup__container">
         <div class="popup__wrap">
-        <span data-trigger="success_click" class="popup__close popup-trigger"></span>
+        <span data-trigger="success_click" class="popup__close popup-trigger js-active"></span>
         <strong class="popup__title form__title">Заказ оформлен</strong>
         <p class="popup__text">Наш менеджер свяжется с вами по телефону в течение рабочего дня.</p>
         <p class="popup__text">Спасибо за обращение!</p>
-        <span data-trigger="success_click" class="button popup-trigger">Закрыть</span>
+        <span data-trigger="success_click" class="button popup-trigger js-active">Закрыть</span>
       </div>
       </div>
     </div>
