@@ -312,6 +312,22 @@
     </div>
     <!-- /форма регистрации -->
 	
+	<div data-popup="click" class="popup popup_click">
+		<?$APPLICATION->ShowViewContent("one_click")?>
+    </div>
+	
+	<div data-popup="success_click" class="popup popup_success">
+      <div class="popup__container">
+        <div class="popup__wrap">
+        <span data-trigger="success_click" class="popup__close popup-trigger"></span>
+        <strong class="popup__title form__title">Зака оформлен</strong>
+        <p class="popup__text">Наш менеджер свяжется с вами по телефону +7(903) 726-85-16 в течение рабочего дня.</p>
+        <p class="popup__text">Спасибо за обращение!</p>
+        <span data-trigger="success_click" class="button popup-trigger">Закрыть</span>
+      </div>
+      </div>
+    </div>
+	
 	<?if( $isContacts ):?>	
 		
 		    <!-- youtube popup -->

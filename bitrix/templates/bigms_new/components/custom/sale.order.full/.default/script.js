@@ -14,7 +14,7 @@ function ChangeGenerate(val)
 		
 		
 		
-		
+
 
 	
 		$('.content-order').on('click', '.self-delivery__link', function(e) {

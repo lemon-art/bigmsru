@@ -540,19 +540,9 @@ $(document).ready(function() {
     $('.content-products').find('[data-view="'+ data +'"]').addClass('active');
   });
 
-  //product incart toggle
-  $('.product-info__buy').click(function(e) {
-    e.preventDefault();
-    $('.product-info__row_buy').toggleClass('active');
-    $('.product-info__row_click').toggleClass('active');
-    $('.product-info__row_incart').toggleClass('active');
-  });
-  $('.product-info__delete').click(function(e) {
-    e.preventDefault();
-    $('.product-info__row_buy').toggleClass('active');
-    $('.product-info__row_click').toggleClass('active');
-    $('.product-info__row_incart').toggleClass('active');
-  });
+
+  
+  
   //filter more button
   $('.filter-form__more').click(function(e) {
     e.preventDefault();
@@ -773,6 +763,9 @@ $(function () {
 
         return false;
     });
+	
+	
+
 
     //Обработчик формы восстановления пароля
     $('#modal-forgot-password').on('submit', 'form', function () {

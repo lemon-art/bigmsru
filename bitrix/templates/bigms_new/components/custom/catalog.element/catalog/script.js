@@ -2958,6 +2958,89 @@ window.JCCatalogElement.prototype.allowViewedCount = function(update)
 })(window);
 
 $(document).ready(function(){
+
+
+	$('input[name=phone]').inputmask({"mask": "+7(999)999-99-99"});
+	
+	  //product incart toggle
+	  $('.product-info__buy.popup-add-to-cart').click(function(e) {
+		e.preventDefault();
+		$('.product-info__row_buy').toggleClass('active');
+		$('.product-info__row_click').toggleClass('active');
+		$('.product-info__row_incart').toggleClass('active');
+	  });
+	  
+	  //удаление данного товара из корзины
+	  $('.product-info__delete').click(function(e) {
+		e.preventDefault();
+		product_id = $(this).data('id');
+			
+		$.ajax({
+			type: "POST",
+			url: '/ajax/delete_product_frombasket.php',
+			data: {PRODUCT_ID: product_id},
+			success: function (data) {
+				
+				$.post("/ajax/top_basket.php", {},
+				  function(data){
+					$('.header__status').html( data );
+					  var _target = $('.status-bar__item_cart');
+					  _target.hover( function() {
+						$( this ).find('.status-dropdown').stop().fadeIn(400);
+					  }, function() {
+						$( this ).find('.status-dropdown').stop().fadeOut(400);
+					  });
+				});
+				
+				$('.product-info__row_buy').toggleClass('active');
+				$('.product-info__row_click').toggleClass('active');
+				$('.product-info__row_incart').toggleClass('active');
+			}
+		});
+
+		return false;
+	  });
+	
+	//Обработчик формы заказа в один клик
+	$('.popup_click').find('input[name=name]').on('keyup', function() {
+		$(this).parent().removeClass('error');
+	});
+	
+	$('.popup_click').find('input[name=phone]').on('keyup', function() {
+		$(this).parent().removeClass('error');
+	});
+	
+	$('.popup_click').on('submit', 'form', function () {
+		
+		validate = 1;
+
+		
+		if ( $('.popup_click input[name=phone]').val().replace(/(_)/g, '').length < 16 ){
+			validate = 0;
+			$('.popup_click input[name=phone]').parent().addClass('error');
+		}
+		if ( $('.popup_click input[name=name]').val().replace(/(_)/g, '').length < 3 ){
+			validate = 0;
+			$('.popup_click input[name=name]').parent().addClass('error');
+		}
+
+		if ( validate ){
+			$.ajax({
+				type: "POST",
+				url: '/ajax/oneclick_order.php',
+				data: $(this).serialize(),
+				success: function (data) {
+					
+					$('[data-popup="click"]').removeClass('js-active');
+					var targetData = 'success_click';
+					$('[data-popup="'+ targetData +'"]').addClass('js-active').addClass('scroll-fix');
+					$('body').css('paddingRight', scrollWidth).addClass('scroll-fix');
+					$('[data-popup="'+ targetData +'"]').find('.popup-trigger').addClass('js-active');
+				}
+			});
+		}
+		return false;
+	});
 	
 	$("a.char_tab").click(function() {
 		var block_id = $(this).attr("href");

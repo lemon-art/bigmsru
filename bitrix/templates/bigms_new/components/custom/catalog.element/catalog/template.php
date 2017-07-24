@@ -21,7 +21,7 @@ $this->SetViewTarget("row_div_class");
 echo "col-lg-23 col-md-23 col-sm-23";
 $this->EndViewTarget("row_div_class");
 
-
+$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH."/js/jquery.inputmask.bundle.min.js");
 
 $this->setFrameMode(true);
 $templateLibrary = array('popup');
@@ -156,6 +156,66 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 									<input type="hidden" name="DETAIL_PAGE<?=$arResult["ID"]?>" value="<?=$arResult["DETAIL_PAGE_URL"]?>"/>
 									<input type="hidden" name="PICTURE<?=$arResult["ID"]?>" value="<?=$renderImage["src"]?>"/>
 								</div>
+								
+								<?
+								//Устанавливаем нужные классы для header
+								$this->SetViewTarget("one_click");
+								?>
+								<div class="popup__container">
+									<div class="popup__wrap">
+									<span data-trigger="click" class="popup__close popup-trigger"></span>
+									<form id="click_form" class="form popup__form">
+									  <input type="hidden" name="PRODUCT_ID" value="<?=$arResult["ID"]?>">
+									  <input type="hidden" name="PRODUCT_NAME" value="<?=$arResult["NAME"]?>">
+									  <input type="hidden" name="DETAIL_PAGE_URL" value="<?=$arResult["DETAIL_PAGE_URL"]?>">
+									  <input type="hidden" name="PRICE" value="<?=$arResult["CATALOG_PRICE_1"]?>">
+									  <input type="hidden" name="CAT_PRICE_ID" value="<?=$arResult["CATALOG_PRICE_ID_1"]?>"/>
+									  <strong class="form__title">Заказ в 1 клик</strong>
+									  <div class="form__container">
+										<div class="form__img-wrap">
+										  <img src="<?=$renderImage["src"]?>" alt="<?=$arResult["NAME"]?>" class="form__img">
+										</div>
+										<div class="form__description">
+										  <strong class="form__subtitle"><?=$arResult["NAME"]?></strong>
+										  <div class="form__inner-wrap">
+											<div class="spinner spinner_cart">
+											  <a role="button" href="#" class="spinner__dec">–</a>
+											  <input class="spinner__input" type="text" name="COUNT" value="1">
+											  <a role="button" href="#" class="spinner__inc">+</a>
+											</div>
+											<span class="form__price"><?=number_format($arResult["CATALOG_PRICE_1"],0,'.',' ')?> ₽</span>
+										  </div>
+										  <?
+											if($arResult['IBLOCK_SECTION_ID'] == 1405 || $arResult['IBLOCK_SECTION_ID'] == 1385 || $arResult['IBLOCK_SECTION_ID'] == 1386) { ?>
+												<span class="product-card__quantity product-card__quantity_instock">В наличии</span>
+												<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_instock" value="В наличии"/>
+											<? } elseif($arResult["CATALOG_QUANTITY"] <= 0){
+												?>
+												<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_order" value="Под заказ 1-3 дня"/>
+												<span class="product-card__quantity product-card__quantity_order">Под заказ 1-3 дня</span><?
+											} else{
+												?>
+												<span class="product-card__quantity product-card__quantity_instock">В наличии</span>
+												<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_instock" value="В наличии"/>
+												<?
+											}
+											?>
+										</div>
+									  </div>
+									  <div class="form__container form__container_fields">
+										<div class="form__row form__row_name">
+										  <input class="form__input" type="text" name="name" value="" placeholder="Как вас зовут?">
+										</div>
+										<div class="form__row form__row_phone">
+										  <input class="form__input" type="text" name="phone" value="" placeholder="Номер телефона">
+										</div>
+										<input class="form__submit" type="submit" name="form_submit" value="ЗАКАЗАТЬ">
+									  </div>
+									</form>
+								  </div>
+								  </div>
+								
+								<?$this->EndViewTarget("one_click");?>
 								<?/* 
 								<?if( $arResult["MORE_PHOTO_COUNT"] > 1):?>
 									<div id="thumbs" class="content-product__thumbs-wrap right-shadow">
@@ -244,14 +304,14 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 									<a role="button" data-trigger="cart" href="#" id="<? echo $arResult['BUY_LINK']; ?>" href="javascript:void(0)" rel="nofollow" class="product-info__buy popup-add-to-cart" onmousedown="try { rrApi.addToBasket(<?=$arResult['ID']?>) } catch(e) {}" onclick="yaCounter31721621.reachGoal('basket');" data-id="<?=$arResult['ID']?>">Купить</a>
                 
 								  </div>
-								  <?/*
+								  
 								  <div class="product-info__row product-info__row_click active">
 									<a role="button" data-trigger="click" href="#" class="product-info__buy product-info__buy_one popup-trigger">Купить в 1 клик</a>
 								  </div>
-								  */?>
+								  
 								  <div class="product-info__row product-info__row_incart">
 									<span href="#" class="button product-info__incart">Товар в корзине</span>
-									<a href="" class="product-info__delete">Удалить</a>
+									<a href="" data-id="<?=$arResult["ID"]?>" class="product-info__delete">Удалить</a>
 								  </div>
 								  <div class="product-info__props tech-props">
 									<strong class="tech-props__title">Технические характеристики</strong>
