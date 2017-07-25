@@ -109,10 +109,14 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 						<ul class="product-tabs__header-list tabs__header">
 							<li data-trigger="all" class="product-tabs__header-item tabs-trigger active">Всё о товаре</li>
 							<li data-trigger="stats" class="product-tabs__header-item tabs-trigger">Характеристики</li>
+							<?if ( count($arResult["COLLECTIONS"]) > 0 ):?>
+								<li data-trigger="collection" class="product-tabs__header-item tabs-trigger">Товары из одной коллекции</li>
+							<?endif;?>
+							
 							<?/*
 							<li data-trigger="service" class="product-tabs__header-item tabs-trigger">Услуги</li>
 							<li data-trigger="additional" class="product-tabs__header-item tabs-trigger">Дополнительные товары</li>
-							<li data-trigger="collection" class="product-tabs__header-item tabs-trigger">Товары из одной коллекции</li>
+							
 							<li data-trigger="comments" class="product-tabs__header-item tabs-trigger">Отзывы (<span class="product-tabs__counter">4</span>)</li>
 							*/?>
 						</ul>
@@ -719,7 +723,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 					
 					</div>
 					<div data-tab="collection" class="product-tabs__content tabs__content">
-					
+						<?include($_SERVER["DOCUMENT_ROOT"].$templateFolder."/collection.php");	//вкладка "коллекции"?>
 					</div>
 				</div>
             </div>

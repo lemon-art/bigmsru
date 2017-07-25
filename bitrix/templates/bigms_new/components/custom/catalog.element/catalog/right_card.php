@@ -72,10 +72,12 @@
 											<?}?>
 										</div>
 										<div class="product-card__icons">
-										  <span class="product-card__wish-icon active"></span>
-										  <span class="product-card__compare-icon"></span>
+											<?/*
+											<span class="product-card__wish-icon active"></span>
+											<span class="product-card__compare-icon"></span>
+											*/?>
 										</div>
 									  </div>
 									</div>
-									<a href="#" class="button button_product">В корзину</a>
+									<a href="#" data-trigger="cart" class="button button_product popup-add-to-cart" data-id="<?=$arResult["ID"]?>">В корзину</a>
 								  </div>
