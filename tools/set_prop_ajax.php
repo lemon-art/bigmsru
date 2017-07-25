@@ -84,9 +84,10 @@ parse_str($_POST["data"]);
 				$arSetProps = Array();
 				foreach( $arItem['DATA'] as $keyData => $valData){ 	//перебираем свойства
 					if ( $keyData > 3 ) { 							//первые 2 пропускаем так как там название и ссылка
-					
+						$value = '';
 						$prop[1] = '';
 						$prop = explode(": ",  $valData);			//получаем название и значение свойства
+
 						
 							//ищем свойство
 							$properties = CIBlockProperty::GetList(Array("sort"=>"asc", "name"=>"asc"), Array("ACTIVE"=>"Y", "IBLOCK_ID"=>$IBLOCK_ID, "NAME" => $prop[0]));
@@ -94,7 +95,7 @@ parse_str($_POST["data"]);
 								//$arProps[$key] = $prop_fields["ID"];
 								
 								$arPropPlus[$prop[0]] = 1; 				//записываем в массив найденных свойств
-
+								
 								if ( $prop[1] ) {
 									//обрабатываем свойства у которых тип "список"
 									if ( $prop_fields["PROPERTY_TYPE"] == 'L' ){
@@ -151,9 +152,6 @@ parse_str($_POST["data"]);
 					}
 				}
 			
-				
-
-
 				
 				CIBlockElement::SetPropertyValuesEx($arItem["PRODUCT_ID"], false, $arSetProps);
 				
