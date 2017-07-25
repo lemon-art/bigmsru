@@ -195,6 +195,11 @@ $arrFilter = Array(
 			97 => "DELIVERY",
 			98 => "GARANTY",
 			99 => "ARMIROVANIE",
+			100 => "PRIS_DIAMETR",
+			101 => "RESBA",
+			102 => "VID_SOEDINENIA",
+			103 => "VID_REM_FITINGA",
+			104 => "MARKIROVKA"
 		),
 		"INCLUDE_SUBSECTIONS" => "Y",
 		"LIST_META_KEYWORDS" => "-",
@@ -301,6 +306,11 @@ $arrFilter = Array(
 			97 => "DELIVERY",
 			98 => "GARANTY",
 			99 => "ARMIROVANIE",
+			100 => "PRIS_DIAMETR",
+			101 => "RESBA",
+			102 => "VID_SOEDINENIA",
+			103 => "VID_REM_FITINGA",
+			104 => "MARKIROVKA"
 		),
 		"DETAIL_META_KEYWORDS" => "-",
 		"DETAIL_META_DESCRIPTION" => "-",
