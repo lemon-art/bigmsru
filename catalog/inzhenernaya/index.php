@@ -199,7 +199,8 @@ $arrFilter = Array(
 			101 => "RESBA",
 			102 => "VID_SOEDINENIA",
 			103 => "VID_REM_FITINGA",
-			104 => "MARKIROVKA"
+			104 => "MARKIROVKA",
+			105 => "TIP_IZDELIYA"
 		),
 		"INCLUDE_SUBSECTIONS" => "Y",
 		"LIST_META_KEYWORDS" => "-",
@@ -310,7 +311,8 @@ $arrFilter = Array(
 			101 => "RESBA",
 			102 => "VID_SOEDINENIA",
 			103 => "VID_REM_FITINGA",
-			104 => "MARKIROVKA"
+			104 => "MARKIROVKA",
+			105 => "TIP_IZDELIYA"
 		),
 		"DETAIL_META_KEYWORDS" => "-",
 		"DETAIL_META_DESCRIPTION" => "-",
