@@ -565,7 +565,9 @@ if ($ar_result['DEPTH_LEVEL'] == 3 && !array_search($APPLICATION->GetCurPage(fal
 				<?elseif($SEO_TEXT):?>
 					<section class="content-promo">
 						<div class="container-fluid">
-							<?=$SEO_TEXT?>
+							<div class="seo_text">
+								<?=$SEO_TEXT?>
+							</div>
 						</div>
 					</section>
 				<?endif;?>
