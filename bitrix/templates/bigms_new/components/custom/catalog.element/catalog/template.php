@@ -21,8 +21,6 @@ $this->SetViewTarget("row_div_class");
 echo "col-lg-23 col-md-23 col-sm-23";
 $this->EndViewTarget("row_div_class");
 
-$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH."/js/jquery.inputmask.bundle.min.js");
-
 $this->setFrameMode(true);
 $templateLibrary = array('popup');
 
@@ -143,15 +141,12 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 									);
 									?>
 								  	<?if(!empty($renderImage["src"])) {?>
-										<a data-trigger="slider" data-id="<?=$arResult['ID']?>" class="popup-trigger" href="<?=$arResult['DETAIL_PICTURE']['SRC']?>"><img itemprop="image" class="content-product__picture" src="<?=$renderImage["src"]?>" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>"></a>
+										<a data-trigger="slider"  class="popup-trigger" href="<?=$arResult['DETAIL_PICTURE']['SRC']?>"><img itemprop="image" class="content-product__picture" src="<?=$renderImage["src"]?>" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>"></a>
 									<? } else {?>
 										<img itemprop="image" class="content-product__picture" src="/bitrix/templates/bigms/images/logo_bw.png" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>">
 										<?$renderImage["src"] = '/bitrix/templates/bigms/images/logo_bw.png';?>
 									<? } ?>
 									
-									<?$this->SetViewTarget("slider");?>
-										<img src="<?=$arResult['DETAIL_PICTURE']['SRC']?>" alt="">
-									<?$this->EndViewTarget("slider");?>
 									
 								
 									<input type="hidden" name="CAT_PRICE_ID<?=$arResult["ID"]?>" value="<?=$arResult["CATALOG_PRICE_ID_1"]?>"/>
@@ -162,7 +157,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 								</div>
 								
 								<?
-								//Устанавливаем нужные классы для header
+								//код для поп ап окна купить в 1 клик
 								$this->SetViewTarget("one_click");
 								?>
 								<div class="popup__container">
@@ -225,7 +220,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 									<div id="thumbs" class="content-product__thumbs-wrap right-shadow">
 									  <ul class="content-product__thumbs">
 									  
-										<?foreach($arResult["MORE_PHOTO"] as $photo):?>
+										<?foreach($arResult["MORE_PHOTO"] as $key => $photo):?>
 											<?
 											$renderImage = CFile::ResizeImageGet(
 												$photo['ID'], 
@@ -233,6 +228,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 												BX_RESIZE_IMAGE_EXACT, 
 												true
 											);
+											$arResult["MORE_PHOTO"][$key]["SMALL"] = $renderImage["src"];
 											?>
 									  			<li data-trigger="slider" data-src="<?=$photo["SRC"]?>" class="content-product__thumbnail popup-trigger">
 													<img src="<?=$renderImage["src"]?>" alt="">
@@ -240,6 +236,28 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 										<?endforeach;?>
 									  </ul>
 									</div>
+									
+									<?//для слайдера в футер?>
+									<?$this->SetViewTarget("slider");?>
+										
+										  <div class="owl-carousel popup-slider__container">
+											<?foreach($arResult["MORE_PHOTO"] as $key => $photo):?>
+												<img src="<?=$photo["SMALL"]?>" alt="">
+											<?endforeach;?>
+										  </div>
+										  <ul class="popup-nav">
+											<?foreach($arResult["MORE_PHOTO"] as $key => $photo):?>
+												<li class="popup-nav__item"><img src="<?=$photo["SRC"]?>" alt=""></li>
+											<?endforeach;?>
+										  </ul>
+										
+									<?$this->EndViewTarget("slider");?>
+									
+								<?else:?>
+									<?//для слайдера в футер?>
+									<?$this->SetViewTarget("slider");?>
+										<img src="<?=$arResult['DETAIL_PICTURE']['SRC']?>" alt="">
+									<?$this->EndViewTarget("slider");?>
 								<?endif;?>
 								
 							  </div>
