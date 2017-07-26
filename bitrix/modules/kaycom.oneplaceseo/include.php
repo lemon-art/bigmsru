@@ -101,7 +101,7 @@ Class CKaycomOneplaceseo
                 $APPLICATION->SetTitle($el["PROPERTY_H1_VALUE"]);
             }
             if ($el["DETAIL_TEXT"]) {
-                $el["~DETAIL_TEXT"] = '<div class="seo_text">' . $el["~DETAIL_TEXT"] . '</div>';
+                $el["~DETAIL_TEXT"] = $el["~DETAIL_TEXT"];
                 $APPLICATION->AddViewContent("seotext", $el["~DETAIL_TEXT"]);
                 $APPLICATION->SetPageProperty("seotext", $el["~DETAIL_TEXT"]);
             }
