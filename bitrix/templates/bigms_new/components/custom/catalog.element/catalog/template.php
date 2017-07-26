@@ -220,22 +220,28 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 								  </div>
 								
 								<?$this->EndViewTarget("one_click");?>
-								<?/* 
+								 
 								<?if( $arResult["MORE_PHOTO_COUNT"] > 1):?>
 									<div id="thumbs" class="content-product__thumbs-wrap right-shadow">
 									  <ul class="content-product__thumbs">
-										<li data-trigger="youtube" data-src="styles/images/product-img.jpg" class="content-product__thumbnail content-product__thumbnail_video popup-trigger"><img src="styles/images/thumb_1.jpg" alt=""></li>
-										<li data-trigger="slider" data-src="styles/images/thumb_2.jpg" class="content-product__thumbnail popup-trigger"><img src="styles/images/thumb_2.jpg" alt=""></li>
-										<li data-trigger="slider" data-src="styles/images/thumb_3.jpg" class="content-product__thumbnail popup-trigger"><img src="styles/images/thumb_3.jpg" alt=""></li>
-										<li data-trigger="slider" data-src="styles/images/thumb_5.jpg" class="content-product__thumbnail popup-trigger"><img src="styles/images/thumb_5.jpg" alt=""></li>
-										<li data-trigger="slider" data-src="styles/images/thumb_1.jpg" class="content-product__thumbnail popup-trigger"><img src="styles/images/thumb_1.jpg" alt=""></li>
-										<li data-trigger="slider" data-src="styles/images/thumb_2.jpg" class="content-product__thumbnail popup-trigger"><img src="styles/images/thumb_2.jpg" alt=""></li>
-										<li data-trigger="slider" data-src="styles/images/thumb_3.jpg" class="content-product__thumbnail popup-trigger"><img src="styles/images/thumb_3.jpg" alt=""></li>
-										<li data-trigger="slider" data-src="styles/images/thumb_5.jpg" class="content-product__thumbnail popup-trigger"><img src="styles/images/thumb_5.jpg" alt=""></li>
+									  
+										<?foreach($arResult["MORE_PHOTO"] as $photo):?>
+											<?
+											$renderImage = CFile::ResizeImageGet(
+												$photo['ID'], 
+												Array("width" => 105, "height" => 105), 
+												BX_RESIZE_IMAGE_EXACT, 
+												true
+											);
+											?>
+									  			<li data-trigger="slider" data-src="<?=$photo["SRC"]?>" class="content-product__thumbnail popup-trigger">
+													<img src="<?=$renderImage["src"]?>" alt="">
+												</li>
+										<?endforeach;?>
 									  </ul>
 									</div>
 								<?endif;?>
-								*/?>
+								
 							  </div>
 							  <div class="col-lg-6 col-lg-offset-0 col-md-9 col-md-offset-1 col-sm-9 col-sm-offset-1">
 								<div class="content-product__info product-info">
