@@ -239,7 +239,8 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 									
 									<?//для слайдера в футер?>
 									<?$this->SetViewTarget("slider");?>
-										
+										<img src="<?=$arResult['DETAIL_PICTURE']['SRC']?>" alt="">
+											<?/*
 										  <div class="owl-carousel popup-slider__container">
 											<?foreach($arResult["MORE_PHOTO"] as $key => $photo):?>
 												<img src="<?=$photo["SMALL"]?>" alt="">
@@ -250,6 +251,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 												<li class="popup-nav__item"><img src="<?=$photo["SRC"]?>" alt=""></li>
 											<?endforeach;?>
 										  </ul>
+										  */?>
 										
 									<?$this->EndViewTarget("slider");?>
 									
