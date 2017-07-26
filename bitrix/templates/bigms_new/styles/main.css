@@ -173,9 +173,21 @@ body {
     border: 1px solid #adc6d2;
     border-radius: 50%; }
 
-.content-h2 {
+.content-h2, .content-promo h2 {
   display: block;
   font-size: 32px;
+  color: #223955;
+  font-family: 'Museo700', sans-serif, Arial; }
+  
+.content-promo h3 {
+  display: block;
+  font-size: 24px;
+  color: #223955;
+  font-family: 'Museo700', sans-serif, Arial; }
+  
+.content-promo h4 {
+  display: block;
+  font-size: 18px;
   color: #223955;
   font-family: 'Museo700', sans-serif, Arial; }
 
@@ -2694,10 +2706,10 @@ body {
       height: 38px;
       font-size: 25px; }
 
-.content-promo__title {
+.content-promo__title, .content-promo h2 {
   margin-top: 0; }
 
-.content-promo__text {
+.content-promo__text, .content-promo p {
   color: #3d4f65;
   font-size: 15px;
   font-family: 'Museo500', sans-serif, Arial;
@@ -2713,14 +2725,19 @@ body {
   -webkit-column-count: 3;
      -moz-column-count: 3;
           column-count: 3; }
+		  
+.content-promo-list, .content-promo ul {
+  -webkit-column-count: 1;
+     -moz-column-count: 1;
+          column-count: 1; }		  
 
-.content-promo__brand {
+.content-promo__brand, .content-promo ul li {
   position: relative;
   color: #3d4f65;
   font-size: 15px;
   padding-left: 15px;
   margin-bottom: 10px; }
-  .content-promo__brand:before {
+  .content-promo__brand:before, .content-promo ul li:before {
     content: '‒';
     font-size: 15px;
     position: absolute;

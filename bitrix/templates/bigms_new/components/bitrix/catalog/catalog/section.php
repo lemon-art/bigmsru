@@ -557,13 +557,17 @@ if ($ar_result['DEPTH_LEVEL'] == 3 && !array_search($APPLICATION->GetCurPage(fal
 		<section class="content-promo">
             <div class="container-fluid">
 				<?if($_REQUEST["PAGEN_1"] == "" && (in_array("filter", explode("/", $APPLICATION->GetCurPage())) != 1)):?>
-					
-						<?$APPLICATION->ShowViewContent('seotext');?>
-					
+					<section class="content-promo">
+						<div class="container-fluid">
+							<?$APPLICATION->ShowViewContent('seotext');?>
+						</div>
+					</section>
 				<?elseif($SEO_TEXT):?>
-					
-						<?=$SEO_TEXT?>
-					
+					<section class="content-promo">
+						<div class="container-fluid">
+							<?=$SEO_TEXT?>
+						</div>
+					</section>
 				<?endif;?>
 				
 				<? if (count($seoUrls)>0) : ?>
