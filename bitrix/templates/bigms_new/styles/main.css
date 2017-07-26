@@ -2715,6 +2715,11 @@ body {
   font-family: 'Museo500', sans-serif, Arial;
   line-height: 1.5;
   margin-bottom: 30px; }
+  
+.content-promo p:first-child {
+	margin-top: 0px;
+} 
+  
   .content-promo__text_subtitle {
     display: block;
     font-size: 18px;
@@ -2729,7 +2734,13 @@ body {
 .content-promo-list, .content-promo ul {
   -webkit-column-count: 1;
      -moz-column-count: 1;
-          column-count: 1; }		  
+          column-count: 1; }	
+
+.seo_text {
+	-webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2;
+}		  
 
 .content-promo__brand, .content-promo ul li {
   position: relative;

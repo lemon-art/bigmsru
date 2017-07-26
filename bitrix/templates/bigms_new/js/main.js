@@ -21,7 +21,17 @@ $(document).ready(function() {
   });
 
 
-   
+	//переставляем h2 за блок в сео тексте
+    if( $('.seo_text').find('h2').length > 0 ) {
+		$(".seo_text h2").each(function(index, value) { 
+			if ( index == 0 ){
+				var h2_text = $(this).html();
+				$(this).remove();
+				$('.seo_text').before('<h2>' + h2_text + '</h2>');
+			}
+		});
+    }
+
   
   
     //Обработчик формы заказа в один клик из списка товаров
@@ -389,7 +399,7 @@ $(document).ready(function() {
 	
 	  if ( $(this).data('id') ){
 		
-		  
+
 		var slideIndex = $('#office'+ $(this).data('id') +' .content-contacts__gallery-item').index($(this));
         thumbsOwl.trigger('to.owl.carousel', [slideIndex-1, 300]);
 		
@@ -397,6 +407,7 @@ $(document).ready(function() {
 		
 	  }
 	  else {
+
 	    var slideIndex = $('.content-product__thumbnail').index($(this));
 		thumbsOwl.trigger('to.owl.carousel', [slideIndex-1, 300]);
 	  }
