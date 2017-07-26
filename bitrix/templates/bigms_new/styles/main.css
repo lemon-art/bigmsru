@@ -2740,6 +2740,7 @@ body {
 	-webkit-column-count: 2;
     -moz-column-count: 2;
     column-count: 2;
+	margin-bottom: 30px;
 }		  
 
 .content-promo__brand, .content-promo .seo_text ul li {
