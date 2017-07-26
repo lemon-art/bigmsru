@@ -86,8 +86,8 @@ parse_str($_POST["data"]);
 					if ( $keyData > 3 ) { 							//первые 2 пропускаем так как там название и ссылка
 						$value = '';
 						$prop[1] = '';
-						$prop = explode(": ",  $valData);			//получаем название и значение свойства
-
+						$prop = explode(":",  $valData);			//получаем название и значение свойства
+						$prop[1] = trim($prop[1]);
 						
 							//ищем свойство
 							$properties = CIBlockProperty::GetList(Array("sort"=>"asc", "name"=>"asc"), Array("ACTIVE"=>"Y", "IBLOCK_ID"=>$IBLOCK_ID, "NAME" => $prop[0]));
