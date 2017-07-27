@@ -2000,9 +2000,6 @@ body {
     display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
-    -webkit-flex-flow: column wrap;
-        -ms-flex-flow: column wrap;
-            flex-flow: column wrap;
     -webkit-align-items: flex-start;
         -ms-flex-align: start;
             align-items: flex-start;
@@ -2732,9 +2729,7 @@ body {
           column-count: 3; }
 		  
 .content-promo-list, .content-promo ul {
-  -webkit-column-count: 1;
-     -moz-column-count: 1;
-          column-count: 1; }	
+}	
 
 .seo_text {
 	-webkit-column-count: 2;

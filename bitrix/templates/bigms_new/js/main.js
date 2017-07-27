@@ -19,6 +19,8 @@ $(document).ready(function() {
     mainOwl.trigger('to.owl.carousel', [$(this).index(), 300]);
     mainOwl.trigger('refresh.owl.carousel', []);
   });
+  
+  
 
 
 	//переставляем h2 за блок в сео тексте

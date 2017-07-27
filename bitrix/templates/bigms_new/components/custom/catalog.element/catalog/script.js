@@ -2962,6 +2962,22 @@ $(document).ready(function(){
 
 	$('input[name=phone]').inputmask({"mask": "+7(999)999-99-99"});
 	
+	
+	 //popup slider
+	  var thumbsOwl = $('.popup-slider__container');
+	  thumbsOwl.owlCarousel({
+		loop: false,
+		items: 1,
+		thumbs: true,
+		thumbImage: true,
+		thumbContainerClass: 'popup-nav',
+		thumbItemClass: 'popup-nav__item'
+	  });
+	  $('.popup-nav__item').click(function () {
+		thumbsOwl.trigger('to.owl.carousel', [$(this).index(), 300]);
+		thumbsOwl.trigger('refresh.owl.carousel', []);
+	  });
+	
 	  //product incart toggle
 	  $('.product-info__buy.popup-add-to-cart').click(function(e) {
 		e.preventDefault();
