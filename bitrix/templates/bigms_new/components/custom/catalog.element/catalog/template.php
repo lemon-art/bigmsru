@@ -243,12 +243,28 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 											
 										  <div class="owl-carousel popup-slider__container">
 											<?foreach($arResult["MORE_PHOTO"] as $key => $photo):?>
-												<img src="<?=$photo["SRC"]?>" alt="">
+												<?
+												$renderImage = CFile::ResizeImageGet(
+													$photo['ID'], 
+													Array("width" => 500, "height" => 400), 
+													BX_RESIZE_IMAGE_EXACT, 
+													true
+												);
+												?>
+												<img src="<?=$renderImage["src"]?>" alt="<?=$arResult["NAME"]?>">
 											<?endforeach;?>
 										  </div>
 										  <ul class="popup-nav">
 											<?foreach($arResult["MORE_PHOTO"] as $key => $photo):?>
-												<li class="popup-nav__item"><img src="<?=$photo["SMALL"]?>" alt=""></li>
+												<?
+												$renderImage = CFile::ResizeImageGet(
+													$photo['ID'], 
+													Array("width" => 70, "height" => 70), 
+													BX_RESIZE_IMAGE_EXACT, 
+													true
+												);
+												?>
+												<li class="popup-nav__item"><img src="<?=$renderImage["src"]?>" alt="<?=$arResult["NAME"]?>"></li>
 											<?endforeach;?>
 										  </ul>
 										  
