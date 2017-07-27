@@ -231,7 +231,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 											$arResult["MORE_PHOTO"][$key]["SMALL"] = $renderImage["src"];
 											?>
 									  			<li data-trigger="slider" data-src="<?=$photo["SRC"]?>" class="content-product__thumbnail popup-trigger">
-													<img src="<?=$renderImage["src"]?>" alt="">
+													<img src="<?=$renderImage["src"]?>" alt="<?=$arResult["NAME"]?>">
 												</li>
 										<?endforeach;?>
 									  </ul>
@@ -243,12 +243,12 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 											
 										  <div class="owl-carousel popup-slider__container">
 											<?foreach($arResult["MORE_PHOTO"] as $key => $photo):?>
-												<img src="<?=$photo["SMALL"]?>" alt="">
+												<img src="<?=$photo["SRC"]?>" alt="">
 											<?endforeach;?>
 										  </div>
 										  <ul class="popup-nav">
 											<?foreach($arResult["MORE_PHOTO"] as $key => $photo):?>
-												<li class="popup-nav__item"><img src="<?=$photo["SRC"]?>" alt=""></li>
+												<li class="popup-nav__item"><img src="<?=$photo["SMALL"]?>" alt=""></li>
 											<?endforeach;?>
 										  </ul>
 										  
