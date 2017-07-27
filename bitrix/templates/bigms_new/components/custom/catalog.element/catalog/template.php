@@ -247,7 +247,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 												$renderImage = CFile::ResizeImageGet(
 													$photo['ID'], 
 													Array("width" => 500, "height" => 400), 
-													BX_RESIZE_IMAGE_EXACT, 
+													BX_RESIZE_IMAGE_PROPORTIONAL, 
 													true
 												);
 												?>
