@@ -225,7 +225,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 											$renderImage = CFile::ResizeImageGet(
 												$photo['ID'], 
 												Array("width" => 105, "height" => 105), 
-												BX_RESIZE_IMAGE_PROPORTIONAL, 
+												BX_RESIZE_IMAGE_EXACT, 
 												true
 											);
 											$arResult["MORE_PHOTO"][$key]["SMALL"] = $renderImage["src"];
@@ -260,7 +260,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 												$renderImage = CFile::ResizeImageGet(
 													$photo['ID'], 
 													Array("width" => 70, "height" => 70), 
-													BX_RESIZE_IMAGE_PROPORTIONAL, 
+													BX_RESIZE_IMAGE_EXACT, 
 													true
 												);
 												?>
