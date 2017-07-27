@@ -39,6 +39,7 @@ $(document).ready(function() {
     //Обработчик формы заказа в один клик из списка товаров
 	
 	$('#form_click').find('input[name=phone]').inputmask({"mask": "+7(999)999-99-99"});
+
 	
 	$('#form_click').find('input[name=phone]').on('keyup', function() {
 		$(this).parent().removeClass('error');
@@ -417,6 +418,7 @@ $(document).ready(function() {
 
     }
 	
+	//заказ обратного звонка
 	if( $(this).data('trigger') == 'callback' && !$(this).hasClass('js-active') ) {
 	
 		$.ajax({
@@ -424,6 +426,19 @@ $(document).ready(function() {
             url: '/ajax/feedback_form.php',
             success: function (data) {
 				$('#callback').html( data );
+            }
+        });
+		
+    }
+	
+	//рассчитать смету
+	if( $(this).data('trigger') == 'estimate' && !$(this).hasClass('js-active') ) {
+	
+		$.ajax({
+            type: "POST",
+            url: '/ajax/smeta_form.php',
+            success: function (data) {
+				$('#estimate').html( data );
             }
         });
 		

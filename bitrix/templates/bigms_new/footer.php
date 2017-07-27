@@ -120,6 +120,18 @@
       </div>
     </div>
     <!-- /форма обратного звонка -->
+	
+	<!-- рассчет сметы -->
+    <div data-popup="estimate" class="popup popup_estimate">
+      <div class="popup__container">
+        <div class="popup__wrap">
+        <span data-trigger="estimate" class="popup__close popup-trigger"></span>
+        <span id="estimate"></span>
+      </div>
+      </div>
+    </div>
+    <!-- /рассчет сметы -->
+	
 
     <!-- форма входа на сайт -->
     <div data-popup="login" class="popup popup_login">
@@ -264,56 +276,29 @@
     <div data-popup="success" class="popup popup_success">
       <div class="popup__container">
         <div class="popup__wrap">
-        <span data-trigger="success" class="popup__close popup-trigger"></span>
+        <span data-trigger="success" class="popup__close popup-trigger js-active"></span>
         <strong class="popup__title form__title">Заявка на обратный звонок отправлена</strong>
         <p class="popup__text">Наш менеджер свяжется с вами по телефону в течение рабочего дня.</p>
         <p class="popup__text">Спасибо за обращение!</p>
-        <span data-trigger="success" class="button popup-trigger">Закрыть</span>
+        <span data-trigger="success" class="button popup-trigger js-active">Закрыть</span>
+      </div>
+      </div>
+    </div>    
+	
+	<div data-popup="success_estimate" class="popup popup_success">
+      <div class="popup__container">
+        <div class="popup__wrap">
+        <span data-trigger="success_estimate" class="popup__close popup-trigger js-active"></span>
+        <strong class="popup__title form__title">Заявка на рассчет сметы отправлена</strong>
+        <p class="popup__text">Наш менеджер свяжется с вами по телефону в течение рабочего дня.</p>
+        <p class="popup__text">Спасибо за обращение!</p>
+        <span data-trigger="success_estimate" class="button popup-trigger js-active">Закрыть</span>
       </div>
       </div>
     </div>
     <!-- /форма пароль отправлен -->
 
-    <!-- форма регистрации -->
-    <div data-popup="estimate" class="popup popup_estimate">
-      <div class="popup__container">
-        <div class="popup__wrap">
-        <span data-trigger="estimate" class="popup__close popup-trigger"></span>
-        <form id="register_form" class="form form_register popup__form">
-          <strong data-trigger="estimate" class="form__title callback-form__title popup-trigger">Рассчитать смету</strong>
-          <div class="form__row validated">
-            <label class="form__label">Как вас зовут</label>
-            <input class="form__input" type="text" name="name" value="Сергей" placeholder="">
-          </div>
-          <div class="form__row">
-            <label class="form__label">Ваш номер телефона</label>
-            <input class="form__input" type="text" name="phone" value="" placeholder="">
-          </div>
-          <div class="form__row">
-            <label class="form__label">Ваш e-mail</label>
-            <input class="form__input" type="text" name="email">
-          </div>
-          <div class="form__row">
-            <label class="form__label">Адрес e-mail</label>
-            <input class="form__input" type="text" name="email">
-          </div>
-          <div class="form__row">
-            <label class="form__label">Выбрать файлы</label>
-            <div class="form__file input-file">
-              <svg class="input-file__button">
-                <use xlink:href="#icon-upload"></use>
-              </svg>
-              <p class="input-file__text form__input">Файл не выбран</p>
-              <input class="input-file__input" type="file">
-            </div>
-          </div>
-          <input class="form__submit" type="submit" name="form_submit" value="Отправить на рассчет">
-
-        </form>
-      </div>
-      </div>
-    </div>
-    <!-- /форма регистрации -->
+    
 	
 	<div data-popup="click" class="popup popup_click">
 		<?$APPLICATION->ShowViewContent("one_click")?>
