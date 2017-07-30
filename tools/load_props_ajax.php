@@ -25,37 +25,56 @@ parse_str($_POST["data"]);
 		
 			//получаем артикул
 			$articul = explode(":",  $arItem[3]);
-			
-			if ( $only_articul ){			//искать только по артикулу
-				$arFilter = array(
-					"IBLOCK_ID"  => $IBLOCK_ID,
-					"SECTION_ID" => $SECTION_ID,
-					"INCLUDE_SUBSECTIONS" => "Y",
-					"PROPERTY_CML2_ARTICLE" => $articul[1]
-				);
-			}
-			else {							//искать по артикулу и названию
-				$arFilter = array(
-					"IBLOCK_ID"  => $IBLOCK_ID,
-					"SECTION_ID" => $SECTION_ID,
-					"INCLUDE_SUBSECTIONS" => "Y",
-					array(
-						"LOGIC" => "OR",
-						array( "%NAME" => $arItem["1"] ),
-						array("PROPERTY_CML2_ARTICLE" => $articul[1]),
-					),
-				);
-			}
-			
-			
-			$res = CIBlockElement::GetList(Array(), $arFilter, false, Array(), Array("ID", "NAME", "PROPERTY_CML2_ARTICLE"));
-			while($ar_fields = $res->GetNext()){
-				$arResult[] = Array (
-					"PRODUCT_ID" => $ar_fields["ID"],
-					"DATA" => $arItem,
-					"ELEMENT" => $ar_fields
-				);
+			$seach = true;
+			if ( $arItem["1"] ) {
+				if ( $articul[1] ) {			//если есть артикул
+				
+					if ( $only_articul ){			//искать только по артикулу
+						$arFilter = array(
+							"IBLOCK_ID"  => $IBLOCK_ID,
+							"SECTION_ID" => $SECTION_ID,
+							"INCLUDE_SUBSECTIONS" => "Y",
+							"PROPERTY_CML2_ARTICLE" => $articul[1]
+						);
+					}
+					else {							//искать по артикулу и названию
+						$arFilter = array(
+							"IBLOCK_ID"  => $IBLOCK_ID,
+							"SECTION_ID" => $SECTION_ID,
+							"INCLUDE_SUBSECTIONS" => "Y",
+							array(
+								"LOGIC" => "OR",
+								array( "%NAME" => $arItem["1"] ),
+								array("PROPERTY_CML2_ARTICLE" => $articul[1]),
+							),
+						);
+					}
+				}
+				else {
+					if ( $only_articul ){
+						$seach = false;		//пропускаем елемент
+					}
+					else {					//поскольку артикула нет ищем только по имени
+						$arFilter = array(
+							"IBLOCK_ID"  => $IBLOCK_ID,
+							"SECTION_ID" => $SECTION_ID,
+							"INCLUDE_SUBSECTIONS" => "Y",
+							"%NAME" => $arItem["1"]
+						);
+					}
+				}
+				
+				if ( $seach ){
+					$res = CIBlockElement::GetList(Array(), $arFilter, false, Array(), Array("ID", "NAME", "PROPERTY_CML2_ARTICLE"));
+					while($ar_fields = $res->GetNext()){
+						$arResult[] = Array (
+							"PRODUCT_ID" => $ar_fields["ID"],
+							"DATA" => $arItem,
+							"ELEMENT" => $ar_fields
+						);
 
+					}
+				}
 			}
 			
 			
