@@ -33,6 +33,17 @@ $(document).ready(function() {
 			}
 		});
     }
+	
+	//вставляем форму в слайдер на главной странице
+    if( $('#montaz_form').length > 0 ) {
+		$.ajax({
+            type: "POST",
+            url: '/ajax/montaz_form.php',
+            success: function (data) {
+				$('#montaz_form').html( data );
+            }
+        });
+    }
 
   
   
