@@ -8,12 +8,12 @@
 										
 										<?
 											//очищаем не нуждные для вывода свойства
-											$arNoShowProp = Array("NOVINKA", "ARTICUL", "LIDER_PRODAZH", "DELIVERY", "FILES", "GARANTY", "CML2_ARTICLE", "RECOMMEND");
+											$arNoShowProp = Array("NOVINKA", "ARTICUL", "LIDER_PRODAZH", "DELIVERY", "FILES", "GARANTY", "CML2_ARTICLE", "RECOMMEND", "VIDEO");
 											$arProperty = $arResult['DISPLAY_PROPERTIES'];
 											foreach ( $arNoShowProp as $val){
 												unset($arProperty[$val]);
 											}
-											
+											$arResult['DISPLAY_PROPERTIES'] = $arProperty;
 										?>
 										
 										<? $APPLICATION->IncludeComponent('yenisite:ipep.props_groups', 
@@ -30,7 +30,7 @@
 										<table class="text">
 											<?
 											foreach($arResult["DISPLAY_PROPERTIES"] as $code=>$properties){
-												if($code !== "RASPRODAZHA" && $code !== "NOVINKA" && $code != "ARTICUL" && $code != "LIDER_PRODAZH" && $code != "DELIVERY" && $code != "FILES" && $code != "GARANTY" && $code != "CML2_ARTICLE" && $code != "RECOMMEND"){
+												if($code !== "RASPRODAZHA" && $code !== "NOVINKA" && $code != "ARTICUL" && $code != "LIDER_PRODAZH" && $code != "DELIVERY" && $code != "FILES" && $code != "GARANTY" && $code != "CML2_ARTICLE" && $code != "RECOMMEND" && $code != "VIDEO"){
 													?>
 													<tr>
 														<td><?=$properties["NAME"]?></td>

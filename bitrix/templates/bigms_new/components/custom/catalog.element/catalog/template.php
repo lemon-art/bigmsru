@@ -373,7 +373,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 										<?
 										$i = 0;
 										foreach($arResult["DISPLAY_PROPERTIES"] as $code=>$properties){
-										if($code !== "RASPRODAZHA" && $code !== "NOVINKA" && $code != "ARTICUL" && $code != "LIDER_PRODAZH" && $code != "DELIVERY" && $code != "FILES" && $code != "GARANTY" && $code != "CML2_ARTICLE" && $code != "RECOMMEND"){
+										if($code !== "RASPRODAZHA" && $code !== "NOVINKA" && $code != "ARTICUL" && $code != "LIDER_PRODAZH" && $code != "DELIVERY" && $code != "FILES" && $code != "GARANTY" && $code != "CML2_ARTICLE" && $code != "RECOMMEND" && $code != "VIDEO"){
 												
 												if($i < 6){?>
 									  <tr class="tech-props__row">
