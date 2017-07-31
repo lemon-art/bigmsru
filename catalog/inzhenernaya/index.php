@@ -312,7 +312,8 @@ $arrFilter = Array(
 			102 => "VID_SOEDINENIA",
 			103 => "VID_REM_FITINGA",
 			104 => "MARKIROVKA",
-			105 => "TIP_IZDELIYA"
+			105 => "TIP_IZDELIYA",
+			106 => "VIDEO"
 		),
 		"DETAIL_META_KEYWORDS" => "-",
 		"DETAIL_META_DESCRIPTION" => "-",

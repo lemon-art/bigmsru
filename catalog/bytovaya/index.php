@@ -310,7 +310,7 @@ $arrFilter = Array(
 			101 => "GARANTY",
 			102 => "DELIVERY",
 			103 => "BRANDS",
-			104 => "",
+			104 => "VIDEO",
 		),
 		"DETAIL_META_KEYWORDS" => "-",
 		"DETAIL_META_DESCRIPTION" => "-",

@@ -316,7 +316,7 @@
       </div>
     </div>
 	
-	<?if( $isContacts ):?>	
+
 		
 		    <!-- youtube popup -->
 			<div data-popup="youtube" class="popup popup_youtube">
@@ -328,7 +328,7 @@
 			  </div>
 			</div>
 	
-	<?endif;?>
+
 
 	<!-- slider gallery popup -->
     <div data-popup="slider" class="popup popup_youtube">

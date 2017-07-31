@@ -215,25 +215,33 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 								  </div>
 								
 								<?$this->EndViewTarget("one_click");?>
+								
 								 
-								<?if( $arResult["MORE_PHOTO_COUNT"] > 1):?>
+								<?if( $arResult["MORE_PHOTO_COUNT"] > 1 || count($arResult["PROPERTIES"]["VIDEO"]["VALUE"]) > 0 ):?>
 									<div id="thumbs" class="content-product__thumbs-wrap right-shadow">
 									  <ul class="content-product__thumbs">
 									  
-										<?foreach($arResult["MORE_PHOTO"] as $key => $photo):?>
-											<?
-											$renderImage = CFile::ResizeImageGet(
-												$photo['ID'], 
-												Array("width" => 105, "height" => 105), 
-												BX_RESIZE_IMAGE_EXACT, 
-												true
-											);
-											$arResult["MORE_PHOTO"][$key]["SMALL"] = $renderImage["src"];
-											?>
-									  			<li data-trigger="slider" data-src="<?=$photo["SRC"]?>" class="content-product__thumbnail popup-trigger">
-													<img src="<?=$renderImage["src"]?>" alt="<?=$arResult["NAME"]?>">
-												</li>
+										<?foreach($arResult["PROPERTIES"]["VIDEO"]["VALUE"] as $key => $video):?>
+											<li data-trigger="youtube" data-youtube='<iframe width="560" height="315" src="https://www.youtube.com/embed/<?=$video?>" frameborder="0" allowfullscreen></iframe>' class="content-product__thumbnail content-product__thumbnail_video popup-trigger">
+												<img src="//img.youtube.com/vi/<?=$video?>/0.jpg" alt="<?=$arResult["NAME"]?>">
+											</li>
 										<?endforeach;?>
+										<?if( $arResult["MORE_PHOTO_COUNT"] > 1 ):?>
+											<?foreach($arResult["MORE_PHOTO"] as $key => $photo):?>
+												<?
+												$renderImage = CFile::ResizeImageGet(
+													$photo['ID'], 
+													Array("width" => 105, "height" => 105), 
+													BX_RESIZE_IMAGE_EXACT, 
+													true
+												);
+												$arResult["MORE_PHOTO"][$key]["SMALL"] = $renderImage["src"];
+												?>
+													<li data-trigger="slider" data-src="<?=$photo["SRC"]?>" class="content-product__thumbnail popup-trigger">
+														<img src="<?=$renderImage["src"]?>" alt="<?=$arResult["NAME"]?>">
+													</li>
+											<?endforeach;?>
+										<?endif;?>
 									  </ul>
 									</div>
 									

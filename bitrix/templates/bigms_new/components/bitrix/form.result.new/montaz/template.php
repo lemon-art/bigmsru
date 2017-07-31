@@ -52,10 +52,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 			$(this).parent('div').removeClass('error');
 		});
 		$('input[name="form_text_14"]').inputmask({"mask": "+7(999)999-99-99"});
-		if( !$('form[name="SIMPLE_FORM_5"]').length > 0 ) {
-			$('#montaz_form_body').hide();
-			$('#montaz_form_result').show();
-		}
+
 		
 		$('.field input[name="form_text_8"]').parent().parent().hide(0);
 		$('.field input[name="form_text_8"]').val("http://bigms.ru"+location.pathname);
