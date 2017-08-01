@@ -34,13 +34,27 @@ $(document).ready(function() {
 		});
     }
 	
-	//вставляем форму в слайдер на главной странице
+
+	
+	//вставляем форму заказ монтажа в слайдер на главной странице
     if( $('#montaz_form').length > 0 ) {
 		$.ajax({
             type: "POST",
             url: '/ajax/montaz_form.php',
             success: function (data) {
 				$('#montaz_form').html( data );
+            }
+        });
+    }
+
+	//вставляем форму заявка на партнерство в слайдер на главной странице
+    if( $('#partner_make_form').length > 0 ) {
+		$.ajax({
+            type: "POST",
+            url: '/ajax/partner_form.php',
+            success: function (data) {
+				$('#partner_make_form').html( data );
+				$('#partner_make_form').hide();
             }
         });
     }
@@ -456,14 +470,21 @@ $(document).ready(function() {
     }
 	
 	if($(this).data('trigger') == 'youtube') {
-		$('#youtube').html( $(this).data('youtube') );
+		if ( !$(this).hasClass('js-active') ){
+			$('#youtube').html( $(this).data('youtube') );
+		}
+		else {
+			$('#youtube').html( '' );
+		}
     }
 	
     if($(this).hasClass('js-active')) {
 		$(this).removeClass('js-active');
 		popupClose($(this));
+		
     } else {
 		popupOpen($(this));
+		
     }
   });
   
@@ -503,8 +524,10 @@ $(document).ready(function() {
   
 
   $(document).mouseup(function (e){
+	
     //popup closing
     var popup = $('.popup');
+	$('#youtube').html( '' );
       popupWrap = popup.find('.popup__wrap');
     if (!popupWrap.is(e.target) && popupWrap.has(e.target).length === 0) {
       popup.removeClass('js-active');
