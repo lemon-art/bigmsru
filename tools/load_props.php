@@ -220,7 +220,9 @@ TABLE {
 						$row++;
 						$arData[] = $data;
 						$num++;
-						$count++;
+						if ( $data[1] ){
+							$count++;
+						}
 				
 						if ( $num > 99 ){
 
@@ -268,7 +270,11 @@ TABLE {
 		<br><br>
 		Файл: <?=$_POST['csvFile']?><br>
 		В файле товаров: <b><?=$count?></b><br>
-		<label><input type="checkbox" name="only_articul" id="only_articul" value="y"> Искать только по артикулу</label>
+		Параметры поиска:<br>
+			<label><input type="radio" name="search_type" checked="checked" value="0"> частичное совпадение в названии или по артикулу</label><Br>
+			<label><input type="radio" name="search_type" value="1"> полное совпадение название или по артикулу</label><Br>
+			<label><input type="radio" name="search_type" value="2"> только по артикулу</label><Br>
+		
 		<input type="hidden" id="file_k" value="<?=$file_k?>">
 
 		

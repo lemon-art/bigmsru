@@ -29,7 +29,7 @@ parse_str($_POST["data"]);
 			if ( $arItem["1"] ) {
 				if ( $articul[1] ) {			//если есть артикул
 				
-					if ( $only_articul ){			//искать только по артикулу
+					if ( $search_type == 2 ){			//искать только по артикулу
 						$arFilter = array(
 							"IBLOCK_ID"  => $IBLOCK_ID,
 							"SECTION_ID" => $SECTION_ID,
@@ -37,7 +37,7 @@ parse_str($_POST["data"]);
 							"PROPERTY_CML2_ARTICLE" => $articul[1]
 						);
 					}
-					else {							//искать по артикулу и названию
+					elseif ( $search_type == 0 ) {							//искать по артикулу и части названия
 						$arFilter = array(
 							"IBLOCK_ID"  => $IBLOCK_ID,
 							"SECTION_ID" => $SECTION_ID,
@@ -49,17 +49,37 @@ parse_str($_POST["data"]);
 							),
 						);
 					}
+					else {
+						$arFilter = array(
+							"IBLOCK_ID"  => $IBLOCK_ID,
+							"SECTION_ID" => $SECTION_ID,
+							"INCLUDE_SUBSECTIONS" => "Y",
+							array(
+								"LOGIC" => "OR",
+								array( "NAME" => $arItem["1"] ),
+								array("PROPERTY_CML2_ARTICLE" => $articul[1]),
+							),
+						);
+					}
 				}
 				else {
-					if ( $only_articul ){
+					if ( $search_type == 2 ){
 						$seach = false;		//пропускаем елемент
 					}
-					else {					//поскольку артикула нет ищем только по имени
+					elseif ( $search_type == 0 ) {					//поскольку артикула нет ищем только по имени
 						$arFilter = array(
 							"IBLOCK_ID"  => $IBLOCK_ID,
 							"SECTION_ID" => $SECTION_ID,
 							"INCLUDE_SUBSECTIONS" => "Y",
 							"%NAME" => $arItem["1"]
+						);
+					}
+					else {
+						$arFilter = array(
+							"IBLOCK_ID"  => $IBLOCK_ID,
+							"SECTION_ID" => $SECTION_ID,
+							"INCLUDE_SUBSECTIONS" => "Y",
+							"NAME" => $arItem["1"]
 						);
 					}
 				}
@@ -88,7 +108,7 @@ parse_str($_POST["data"]);
 ?>
 
 
-Обработано элементов: <?=$count?><br>
+Обработано строк: <?=$count?><br>
 <?if ( count($arResult[0]) > 0 ):?>
 	Найдено совпадений: <?=count($arResult)?><br>
 	<a href="#" id="product_list">Показать найденные товары:</a>
