@@ -970,12 +970,12 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 			foreach ( $arCollections as $keyCollection => $arCollection ){
 				
 					//проверка по разделам
-					if ( $arGift["SECTION"]["VALUE"] ){
+					
 						if ( in_array( $arCollection["SECTION_ID"], $arCurSections ) ){
 							$arColItog[] = $keyCollection; //раздел найден
 							$filterSection = $arCollection["SECTION_ID"];
 						}
-					}
+					 
 			}
 			
 			if ( count($arColItog) > 0){ //если есть совпадения по разделам
