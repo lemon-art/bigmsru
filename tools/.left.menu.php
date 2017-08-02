@@ -49,5 +49,12 @@ $aMenuLinks = Array(
 		Array(), 
 		"" 
 	),
+	Array(
+		"Документация", 
+		"/tools/docs.php", 
+		Array(), 
+		Array(), 
+		"" 
+	),
 );
 ?>

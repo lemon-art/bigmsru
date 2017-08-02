@@ -22,7 +22,7 @@
 						"INCLUDE_SUBSECTIONS" => "Y",
 						"SHOW_ALL_WO_SECTION" => "Y",
 						"HIDE_NOT_AVAILABLE" => "N",
-						"PAGE_ELEMENT_COUNT" => "20",
+						"PAGE_ELEMENT_COUNT" => "36",
 						"LINE_ELEMENT_COUNT" => "3",
 						"PROPERTY_CODE" => array(
 							0 => "NEW",

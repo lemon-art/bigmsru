@@ -19,7 +19,7 @@ CModule::IncludeModule("iblock");
 		
 		if ( !$COLLECTION_ID ){ //если не задана коллекция значит новая 
 			$COLLECTION_ID = count($arResult) + 1;
-		}
+		}  
 
 		$newCol = Array(
 			"NAME" => $NAME,
