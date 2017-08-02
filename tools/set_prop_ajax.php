@@ -96,6 +96,8 @@ parse_str($_POST["data"]);
 								
 								$arPropPlus[$prop[0]] = 1; 				//записываем в массив найденных свойств
 								
+								
+								
 								if ( $prop[1] ) {
 									//обрабатываем свойства у которых тип "список"
 									if ( $prop_fields["PROPERTY_TYPE"] == 'L' ){
@@ -130,7 +132,17 @@ parse_str($_POST["data"]);
 										
 									}
 									else {
-										$value = $prop[1];
+									
+										if ( $prop_fields['MULTIPLE'] == 'Y' ){	//множественное свойство
+											$arMultiProps = explode(';', $prop[1]);
+											$value = Array();
+											foreach ( $arMultiProps as $arMultiProp ){
+												$value[] = trim($arMultiProp);
+											}
+										}
+										else {
+											$value = $prop[1];
+										}
 									}
 								
 									if ( $value ){
