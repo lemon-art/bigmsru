@@ -1157,6 +1157,54 @@ body {
     top: 55px;
     left: 0;
     width: 100%; }
+	
+	.search_text {
+		font-size: 20px;
+	}
+	
+	.search_text a{
+		font-size: 22px;
+		line-height: 28px;
+		border-bottom: 1px dotted #73a0ce;
+		color: #73a0ce;
+		text-decoration: none;
+	}
+	
+	.search_text a:hover{
+		font-size: 22px;
+		line-height: 28px;
+		border-bottom: 0px dotted #73a0ce;
+		color: #73a0ce;
+		text-decoration: none;
+	}
+	
+	.search_section_block {
+		background: #f7f9fa;
+		border: 1px solid #dfe4ea;
+		padding: 15px;
+		-webkit-column-count: 3;
+		-moz-column-count: 3;
+		column-count: 3;
+		margin-top: 20px;
+	}
+	
+	.search_section_block li a{
+		cursor: pointer;
+		border: 1px solid #f7f9fa;
+		border-bottom: 1px dotted #5c737e;
+		color: #5c737e;
+		text-decoration: none;
+		line-height: 24px;
+	}
+	
+	.search_section_block li a:hover{
+		border-bottom: 0px dotted #5c737e;
+	}
+	
+	.search_section_block li a.active{
+		border: 0px solid #f7f9fa;
+		font-weight: bold;
+	}
 
 .status-bar {
   margin: 0;

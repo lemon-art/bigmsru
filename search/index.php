@@ -4,6 +4,8 @@ $APPLICATION->SetTitle("Поиск");
 use Bitrix\Main\Loader;
 Loader::includeModule('search');
 
+
+
 $arParams = array(
     "COMPONENT_TEMPLATE" => "catalog",
     "IBLOCK_TYPE" => "1c_catalog",
@@ -833,7 +835,7 @@ array('HIDE_ICONS' => 'Y')
 				$arResult["QUERY_USER_LANG"] = explode(" ", $_REQUEST["q"]);		
 				foreach($arResult["QUERY_USER_LANG"] as $key => $value){		
 					$arSelect = Array("ID", "NAME", "DATE_ACTIVE_FROM");
-					$arFilter = Array("IBLOCK_ID"=>array(10,12), "NAME"=>"%".$value."%", "ACTIVE"=>"Y");
+					$arFilter = Array("IBLOCK_ID"=>array(10,12), "NAME"=>"%".$value."%", "ACTIVE"=>"Y", "INCLUDE_SUBSECTIONS" => "Y");
 					$res = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
 					while($arFields = $res->GetNext())
 					{
@@ -1066,15 +1068,31 @@ array('HIDE_ICONS' => 'Y')
 		}*/
 		
         if ($_REQUEST['section_id']){
+		
+			//для разделов
+			$arElements_test_sect = array();
+            $arSelect = Array('ID', 'SECTION_ID');
+            $arFilter = Array('IBLOCK_ID' => array(10, 12), 'ACTIVE' => 'Y', "ID"=>$arElements, "INCLUDE_SUBSECTIONS" => "Y");
+            $rsFields = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
+            while ($arFields = $rsFields->Fetch()) {
+               $arElements_test_sect[] = $arFields['ID'];
+            }
+			$arSectionElements = array_unique($arElements_test_sect);
+		
             $arElements_test_sect = array();
             $arSelect = Array('ID', 'SECTION_ID');
-            $arFilter = Array('IBLOCK_ID' => array(10, 12), 'ACTIVE' => 'Y', "ID"=>$arElements, 'SECTION_ID' => $_REQUEST['section_id']);
+            $arFilter = Array('IBLOCK_ID' => array(10, 12), 'ACTIVE' => 'Y', "ID"=>$arElements, 'SECTION_ID' => $_REQUEST['section_id'], "INCLUDE_SUBSECTIONS" => "Y");
             $rsFields = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
             while ($arFields = $rsFields->Fetch()) {
                $arElements_test_sect[] = $arFields['ID'];
             }
 			$arElements = array_unique($arElements_test_sect);
+			
+
         }
+		else {
+			$arSectionElements = $arElements;
+		}
 	//}
 //}
 
@@ -1084,7 +1102,7 @@ $countElements = 0;
 // Отбираем разделы, в которых найдены товары
 $arActiveSection = array();
 $arSelect = array("IBLOCK_SECTION_ID");
-$arFilter = array("IBLOCK_ID"=>Array(10, 12), "ACTIVE"=>"Y", "ID"=>$arElements);
+$arFilter = array("IBLOCK_ID"=>Array(10, 12), "ACTIVE"=>"Y", "ID"=>$arSectionElements, "INCLUDE_SUBSECTIONS" => "Y");
 $res = CIBlockElement::GetList(array(), $arFilter, false, false, $arSelect);
 while($ob = $res->GetNextElement())
 {
@@ -1106,7 +1124,7 @@ $arSectionTrue= array_map("unserialize", array_unique( array_map("serialize", $a
 <?
 $rs_Section = CIBlockSection::GetList(
     array('NAME' => 'asc'),
-    array("IBLOCK_ID"=>$arParams['IBLOCK_ID'], "ID"=>$arSectionTrue, "ACTIVE" => "Y"),
+    array("IBLOCK_ID"=>$arParams['IBLOCK_ID'], "ID"=>$arSectionTrue, "ACTIVE" => "Y", "DEPTH_LEVEL" => 1),
     false,
     array('ID', 'NAME', 'IBLOCK_SECTION_ID', 'DEPTH_LEVEL')
 );
@@ -1176,10 +1194,10 @@ function __recursivRenderMenu($ar_Items) {
         if ( count($ar_Value['SUB_SECTION']) > 0 ) {
             $active = '';
             if ($_GET['section_id'] == $ar_Value['ID'] && strlen($_GET['section_id']) > 0) {
-                $active = 'style="color: #e75938;"';
+                $active = '';
                 $curSectionName = $ar_Value['NAME'];
             } elseif (!in_array($ar_Value['ID'], $count_sections)){
-                $active = 'style="pointer-events: none; text-decoration: none;"';
+                $active = '';
             }
             $res .= '<ul>';
             $res .= '<li class="item">';
@@ -1196,10 +1214,10 @@ function __recursivRenderMenu($ar_Items) {
         } else {
             $active = '';
             if ($_GET['section_id'] == $ar_Value['ID'] && strlen($_GET['section_id']) > 0){
-                $active = 'style="color: #e75938;"';
+                $active = 'class="active"';
                 $curSectionName = $ar_Value['NAME'];
             } elseif (!in_array($ar_Value['ID'], $count_sections)){
-                $active = 'style="pointer-events: none; text-decoration: none;"';
+                $active = '';
             }
             //$res .= '<li class="item"><a href="'.$_SERVER['REQUEST_URI'].'&section_id='.$ar_Value['ID'].'" '.$active.'><span>'.$ar_Value['NAME'].'</span></a></li>';
             $res .= '<li class="item"><a href="'.$page.'" '.$active.'><span>'.$ar_Value['NAME'].'</span></a></li>';
@@ -1230,7 +1248,7 @@ $sectionsMenu = __recursivRenderMenu($ar_SectionList);
 			{
 				$arKeys[] = $key;
 				$arSelect = Array("ID", "NAME", "DATE_ACTIVE_FROM");
-				$arFilter = Array("IBLOCK_ID"=>array(10,12), "NAME"=>"%".$value."%", "ACTIVE"=>"Y");
+				$arFilter = Array("IBLOCK_ID"=>array(10,12), "NAME"=>"%".$value."%", "ACTIVE"=>"Y", "INCLUDE_SUBSECTIONS" => "Y");
 				$res = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
 				while($arFields = $res->GetNext())
 				{
@@ -1355,43 +1373,26 @@ $sectionsMenu = __recursivRenderMenu($ar_SectionList);
 		
 	<?//endif;?>
 	
-	
+	<?/*
     <?if ($curSectionName):?>
-        <div class="search_text">По запросу <span>«<?if($GLOBALS["REQUEST"]["QUERY"] != ""){echo($GLOBALS["REQUEST"]["QUERY"]);}else{echo($_GET["q"]);}?>»</span> найдено <span><?=$countElements?> товаров</span> в разделе <?=$curSectionName?></div>
+        <div class="search_text">Результаты поиска по запросу <span>«<?if($GLOBALS["REQUEST"]["QUERY"] != ""){echo($GLOBALS["REQUEST"]["QUERY"]);}else{echo($_GET["q"]);}?>»</span> в разделе <?=$curSectionName?></div>
     <?else:?>
-        <div class="search_text">По запросу <span>«<?if($GLOBALS["REQUEST"]["QUERY"] != ""){echo($GLOBALS["REQUEST"]["QUERY"]);}else{echo($_GET["q"]);}?>»</span> найдено <span><?=$i?> товаров</span> в <?=count(array_unique($count_sections))?> категории.</div>
+        <div class="search_text">Результаты поиска по запросу <span>«<?if($GLOBALS["REQUEST"]["QUERY"] != ""){echo($GLOBALS["REQUEST"]["QUERY"]);}else{echo($_GET["q"]);}?>»</span></div>
     <?endif;?>
-
-    <div class="catalog">
-
-        <?
-        if (!empty($arElements) && is_array($arElements))
-        {
-            ?>
-
-            <div class="lf_block">
-                <ul class="list">
-                    <?=$sectionsMenu;?>
-                </ul>
-            </div>
-
-            <div class="rt_block">
-                <?
-                if (isset($arParams['USE_COMMON_SETTINGS_BASKET_POPUP']) && $arParams['USE_COMMON_SETTINGS_BASKET_POPUP'] == 'Y')
-                {
-                    $basketAction = (isset($arParams['COMMON_ADD_TO_BASKET_ACTION']) ? $arParams['COMMON_ADD_TO_BASKET_ACTION'] : '');
-                }
-                else
-                {
-                    $basketAction = (isset($arParams['SECTION_ADD_TO_BASKET_ACTION']) ? $arParams['SECTION_ADD_TO_BASKET_ACTION'] : '');
-                }
-                $intSectionID = 0;
-                ?>
-
-
-                <div class="sort_header">
-                    <!--noindex-->
-                    <?
+	*/?>
+	<div class="search_text">Результаты поиска по запросу «<a href="/search/?q=<?if($GLOBALS["REQUEST"]["QUERY"] != ""){echo($GLOBALS["REQUEST"]["QUERY"]);}else{echo($_GET["q"]);}?>"><?if($GLOBALS["REQUEST"]["QUERY"] != ""){echo($GLOBALS["REQUEST"]["QUERY"]);}else{echo($_GET["q"]);}?></a>»</div>
+	
+	<h3>Найдено в категориях:</h3>
+	
+		<section class="search_section_block">
+			<ul>
+				<?=$sectionsMenu;?>
+			</ul>
+		</section>
+	
+		<?if (!empty($arElements) && is_array($arElements)){?>
+		
+					<?
                     if (array_key_exists("display", $_REQUEST) || (array_key_exists("display", $_SESSION)) || $arParams["DEFAULT_LIST_TEMPLATE"])
                     {
                         if ($_REQUEST["display"]&&((trim($_REQUEST["display"])=="block")||(trim($_REQUEST["display"])=="table")))
@@ -1401,94 +1402,89 @@ $sectionsMenu = __recursivRenderMenu($ar_SectionList);
                         else {$display=$arParams["DEFAULT_LIST_TEMPLATE"];}
                     }
                     else {
-                        $display = "block";
+                        $display = "table";
                     }
                     $template = "catalog_".$display;
                     ?>
-
-                    <div class="sort_filter">
-                        <div class="sort_plice">
-                            <a class="button_middle CATALOG_PRICE_1 <?if($_REQUEST["sort"] == "CATALOG_PRICE_1" && $_REQUEST["order"] == "asc"){echo 'current';}?>" href="<?=$APPLICATION->GetCurPageParam('sort=CATALOG_PRICE_1&order=asc', array('sort', 'order', 'mode'))?>" rel="nofollow">
-                                <span>сначала дешевые</span>
-                            </a>
-                            <a class="button_middle CATALOG_PRICE_1 <?if($_REQUEST["sort"] == "CATALOG_PRICE_1" && $_REQUEST["order"] == "desc"){echo 'current';}?>" href="<?=$APPLICATION->GetCurPageParam('sort=CATALOG_PRICE_1&order=desc', array('sort', 'order', 'mode'))?>" rel="nofollow">
-                                <span>сначала  дорогие</span>
-                            </a>
-                        </div>
-
-                        <?
-                        $basePrice = CCatalogGroup::GetBaseGroup();
-                        $priceSort = "CATALOG_PRICE_".$basePrice["ID"];
-                        $arAvailableSort = array(
-                            "POPULARITY" => array("SHOW_COUNTER", "desc"),
-                            "PROPERTY_NOVINKA_VALUE" => array("PROPERTY_NOVINKA_VALUE", "desc"),
-                            "PROPERTY_RASPRODAZHA_VALUE" => array("PROPERTY_RASPRODAZHA_VALUE", "desc"),
-                        );
-
-                        if ((array_key_exists("sort", $_REQUEST) && array_key_exists(ToUpper($_REQUEST["sort"]), $arAvailableSort)) || (array_key_exists("sort", $_SESSION) && array_key_exists(ToUpper($_SESSION["sort"]), $arAvailableSort)) || $arParams["ELEMENT_SORT_FIELD"])
-                        {
-                            if ($_REQUEST["sort"]) {$sort=ToUpper($_REQUEST["sort"]);  $_SESSION["sort"]=ToUpper($_REQUEST["sort"]);}
-                            elseif ($_SESSION["sort"]) {$sort=ToUpper($_SESSION["sort"]);}/*
-                            else {$sort=ToUpper($arParams["ELEMENT_SORT_FIELD"]);}*/
-                        }
-
-
-                        if ((array_key_exists("order", $_REQUEST) && in_array(ToLower($_REQUEST["order"]), Array("asc", "desc")) ) || (array_key_exists("order", $_REQUEST) && in_array(ToLower($_REQUEST["order"]), Array("asc", "desc")) ) || $arParams["ELEMENT_SORT_ORDER"])
-                        {
-                            if ($_REQUEST["order"]) {$sort_order=$_REQUEST["order"]; $_SESSION["order"]=$_REQUEST["order"];}
-                            elseif ($_SESSION["order"]) {$sort_order=$_SESSION["order"];}
-                            else {$sort_order=ToLower($arParams["ELEMENT_SORT_ORDER"]);}
-                        }
-
-
-                        foreach ($arAvailableSort as $key => $val)
-                        {
-                            if($key == 'SORT'){
-                                $newSort = $sort_order == 'desc' ? 'asc' : 'desc';
-                            }
-                            else{
-                                $newSort = $sort_order == 'desc' ? 'asc' : 'desc';
-                            }?>
-                            <a rel="nofollow" href="<?=$APPLICATION->GetCurPageParam('sort='.$key.'&order='.$newSort, 	array('sort', 'order', 'mode'))?>" class="button_middle <?=$sort == $key ? 'current' : ''?> <?=ToLower($sort_order)?> <?=$key?>" rel="nofollow">
-                                <span><?=GetMessage('SECT_SORT_'.$key)?></span>
-                                <i></i>
-                            </a>
-                            <?
-                        }
-                        ?>
-                    </div>
-
-                    <?
-                    $show=20;
-                    if (array_key_exists("show", $_REQUEST))
-                    {
-                        if ( intVal($_REQUEST["show"]) && in_array(intVal($_REQUEST["show"]), array(4, 8, 12, 16, 20, 40, 60, 80, 100)) ) {
-                            $show=intVal($_REQUEST["show"]);
-                            $_SESSION["show"] = $show;
-                        }
-                        elseif ($_SESSION["show"]) {
-                            $show=intVal($_SESSION["show"]);
-                        }
-                    }
-                    //$sort=$arAvailableSort[$sort][0];
-                    ?>
-                    <div class="number_list">
-                        <div class="title">Показать по:</div>
-                        <select class="select" name="str" onchange="redirect_str(this.value);">
-                            <?for( $i = 20; $i <= 100; $i+=20 ){?>
-                                <option value="<?=$APPLICATION->GetCurPageParam('show='.$i, array("show"))?>" <?if($i == $show){echo 'selected="selected"';}?>><?=$i?></option>
-                            <?}?>
-                        </select>
-                    </div>
-
-                    <div class="sort_display">
-                        <div class="title">Вид:</div>
-                        <a href="<?=$APPLICATION->GetCurPageParam('display=block', array('display', 'mode'))?>" class="block <?=$display == 'block' ? 'current' : '';?>"><i></i><span><?//=GetMessage("SECT_DISPLAY_LIST")?></span></a>
-                        <a href="<?=$APPLICATION->GetCurPageParam('display=table', array('display', 'mode'))?>" class="table <?=$display == 'table' ? 'current' : '';?>"><i></i><span><?//=GetMessage("SECT_DISPLAY_TABLE")?></span></a>
-                    </div>
-                    <!--/noindex-->
-                    <div class="clear"></div>
+		
+		
+			<section class="content-products">
+			    <div class="content-products__header">
+                  <ul class="sort">
+                    <li class="sort__item sort__item_title">Сортировка:</li>
+                    <li class="sort__item">
+						<?if($_REQUEST["sort"] == "CATALOG_PRICE_1" && $_REQUEST["order"] == "asc"):?>
+							от дешевых
+						<?else:?>
+							<a class="sort__link" href="<?=$APPLICATION->GetCurPageParam('sort=CATALOG_PRICE_1&order=asc', array('sort', 'order', 'mode'))?>" rel="nofollow">от дешевых</a>
+						<?endif;?>
+					</li>
+                    <li class="sort__item">
+						<?if($_REQUEST["sort"] == "CATALOG_PRICE_1" && $_REQUEST["order"] == "desc"):?>
+							от дорогих
+						<?else:?>
+							<a class="sort__link" href="<?=$APPLICATION->GetCurPageParam('sort=CATALOG_PRICE_1&order=desc', array('sort', 'order', 'mode'))?>" rel="nofollow">от дорогих</a>
+						<?endif;?>
+					</li>
+					<li class="sort__item">
+						<?if($_REQUEST["sort"] == "POPULARITY" && $_REQUEST["order"] == "asc"):?>
+							по популярности
+						<?else:?>
+							<a class="sort__link" href="<?=$APPLICATION->GetCurPageParam('sort=POPULARITY&order=asc', array('sort', 'order', 'mode'))?>" rel="nofollow">по популярности</a>
+						<?endif;?>
+					</li>
+                  </ul>
+                  <ul class="toggle-view">
+                    <li class="toggle-view__item <?=$display == 'table' ? 'active' : '';?>" data-view="list">
+						<a href="<?=$APPLICATION->GetCurPageParam('display=table', array('display', 'mode'))?>">
+						  <svg class="toggle-view__icon-img">
+							<use xlink:href="#icon-list"></use>
+						  </svg>
+						</a>
+                    </li>
+                    <li class="toggle-view__item <?=$display == 'block' ? 'active' : '';?>" data-view="tile">
+						<a href="<?=$APPLICATION->GetCurPageParam('display=block', array('display', 'mode'))?>">
+						  <svg class="toggle-view__icon-img">
+							<use xlink:href="#icon-tile"></use>
+						  </svg>
+						</a>
+                    </li>
+                  </ul>
                 </div>
+
+ 
+                   <?	
+					$show=18;
+					$basePrice = CCatalogGroup::GetBaseGroup();
+					$priceSort = "CATALOG_PRICE_".$basePrice["ID"];
+					$arAvailableSort = array(
+						"POPULARITY" => array("SHOW_COUNTER", "desc"),
+					);
+					
+					if ((array_key_exists("sort", $_REQUEST) && array_key_exists(ToUpper($_REQUEST["sort"]), $arAvailableSort)) || (array_key_exists("sort", $_SESSION) && array_key_exists(ToUpper($_SESSION["sort"]), $arAvailableSort)) || $arParams["ELEMENT_SORT_FIELD"])
+					{
+						if ($_REQUEST["sort"]) {$sort=ToUpper($_REQUEST["sort"]);  $_SESSION["sort"]=ToUpper($_REQUEST["sort"]);}
+						elseif ($_SESSION["sort"]) {$sort=ToUpper($_SESSION["sort"]);}
+						else {$sort=ToUpper($arParams["ELEMENT_SORT_FIELD"]);}
+					}
+					
+					
+					if ((array_key_exists("order", $_REQUEST) && in_array(ToLower($_REQUEST["order"]), Array("asc", "desc")) ) || (array_key_exists("order", $_REQUEST) && in_array(ToLower($_REQUEST["order"]), Array("asc", "desc")) ) || $arParams["ELEMENT_SORT_ORDER"])
+					{
+						if ($_REQUEST["order"]) {$sort_order=$_REQUEST["order"]; $_SESSION["order"]=$_REQUEST["order"];}
+						elseif ($_SESSION["order"]) {$sort_order=$_SESSION["order"];}
+						else {$sort_order=ToLower($arParams["ELEMENT_SORT_ORDER"]);}
+					}
+					?>
+
+				<?
+
+				//чтобы не сохранял сортировку
+				unset($_SESSION['sort']);
+				unset($_SESSION['order']);
+
+				?> 
+		
                 <?
                 global $searchFilter;
                 $searchFilter = array(
@@ -1509,14 +1505,14 @@ $sectionsMenu = __recursivRenderMenu($ar_SectionList);
 		echo("</pre>");
 	}
 			*/	
-				
+
 				$APPLICATION->IncludeComponent(
                     "ibrush:catalog.section",
                     $template,
                     Array(
                         "PRODUCT_SUBSCRIPTION" => "N",
                         "SHOW_DISCOUNT_PERCENT" => "N",
-                        "SHOW_OLD_PRICE" => "N",
+                        "SHOW_OLD_PRICE" => "N", 
                         "SHOW_CLOSE_POPUP" => "Y",
                         "AJAX_MODE" => "Y",
                         "SEF_MODE" => "N",
@@ -1790,7 +1786,7 @@ $sectionsMenu = __recursivRenderMenu($ar_SectionList);
 				
 				?>
 
-            </div>
+            </section>
             <div class="clear"></div>
             <?
         }
