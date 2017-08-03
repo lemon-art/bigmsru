@@ -1072,7 +1072,7 @@ array('HIDE_ICONS' => 'Y')
 			//для разделов
 			$arElements_test_sect = array();
             $arSelect = Array('ID', 'SECTION_ID');
-            $arFilter = Array('IBLOCK_ID' => array(10, 12), 'ACTIVE' => 'Y', "ID"=>$arElements, "INCLUDE_SUBSECTIONS" => "Y");
+            $arFilter = Array('IBLOCK_ID' => array(10, 12), 'ACTIVE' => 'Y', "ID"=>$arElements, "INCLUDE_SUBSECTIONS" => "Y", ">CATALOG_PRICE_1" => 0);
             $rsFields = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
             while ($arFields = $rsFields->Fetch()) {
                $arElements_test_sect[] = $arFields['ID'];
@@ -1081,7 +1081,7 @@ array('HIDE_ICONS' => 'Y')
 		
             $arElements_test_sect = array();
             $arSelect = Array('ID', 'SECTION_ID');
-            $arFilter = Array('IBLOCK_ID' => array(10, 12), 'ACTIVE' => 'Y', "ID"=>$arElements, 'SECTION_ID' => $_REQUEST['section_id'], "INCLUDE_SUBSECTIONS" => "Y");
+            $arFilter = Array('IBLOCK_ID' => array(10, 12), 'ACTIVE' => 'Y', "ID"=>$arElements, 'SECTION_ID' => $_REQUEST['section_id'], "INCLUDE_SUBSECTIONS" => "Y", ">CATALOG_PRICE_1" => 0);
             $rsFields = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
             while ($arFields = $rsFields->Fetch()) {
                $arElements_test_sect[] = $arFields['ID'];
@@ -1091,6 +1091,15 @@ array('HIDE_ICONS' => 'Y')
 
         }
 		else {
+		
+			$arElements_test_sect = array();
+            $arSelect = Array('ID', 'SECTION_ID');
+            $arFilter = Array('IBLOCK_ID' => array(10, 12), 'ACTIVE' => 'Y', "ID"=>$arElements, "INCLUDE_SUBSECTIONS" => "Y", ">CATALOG_PRICE_1" => 0);
+            $rsFields = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
+            while ($arFields = $rsFields->Fetch()) {
+               $arElements_test_sect[] = $arFields['ID'];
+            }
+			$arElements = array_unique($arElements_test_sect);
 			$arSectionElements = $arElements;
 		}
 	//}
