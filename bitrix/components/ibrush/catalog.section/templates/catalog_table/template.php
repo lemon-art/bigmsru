@@ -124,10 +124,11 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 							</a>
                         </div>
                       </div>
+
                       <div class="col-lg-7 col-lg-offset-0 col-md-8 col-md-offset-1 col-sm-8 col-sm-offset-0 product-card__info">
                         <a href="<?=$arItem['DETAIL_PAGE_URL']?>" class="product-card__name"><?=$arItem['NAME']; ?></a>
                         <div class="product-card__row product-card__row_flex">
-						
+
                                     <?if ( $arItem["DISPLAY_PROPERTIES"]["STRANA_PROIZVODITEL"]["VALUE"]):?>
 										<span class="product-card__country">
 											<span class="product-card__flag-icon country c<?=$arItem["DISPLAY_PROPERTIES"]["STRANA_PROIZVODITEL"]["VALUE_ENUM_ID"]?>"></span>
@@ -151,10 +152,12 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
                       </div>
                       <div class="col-lg-5 col-lg-offset-2 col-md-4 col-md-offset-2 col-sm-6 col-sm-offset-1 product-card__props">
 						<?foreach ( $arItem["DISPLAY_PROPERTIES"] as $arProperty):?>
-							<?if ( is_array($arProperty["VALUE"]) ):?>
-								<span class="product-card__text"><?=$arProperty["NAME"]?>: <?=implode(', ', $arProperty["VALUE"])?></span>
-							<?else:?>
-								<span class="product-card__text"><?=$arProperty["NAME"]?>: <?=$arProperty["VALUE"]?></span>
+							<?if ( strlen($arProperty["NAME"]) < 27 ):?>
+								<?if ( is_array($arProperty["VALUE"]) ):?>
+									<span class="product-card__text"><?=$arProperty["NAME"]?>: <?=implode(', ', $arProperty["DISPLAY_VALUE"])?></span>
+								<?else:?>
+									<span class="product-card__text"><?=$arProperty["NAME"]?>: <?=$arProperty["DISPLAY_VALUE"]?></span>
+								<?endif;?>
 							<?endif;?>
 						<?endforeach;?>		
                       </div>

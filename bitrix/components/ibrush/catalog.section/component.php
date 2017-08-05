@@ -132,12 +132,18 @@ if($arParams["PAGE_ELEMENT_COUNT"]<=0)
 $arParams["LINE_ELEMENT_COUNT"] = intval($arParams["LINE_ELEMENT_COUNT"]);
 if($arParams["LINE_ELEMENT_COUNT"]<=0)
 	$arParams["LINE_ELEMENT_COUNT"]=3;
+	
+	
+
 
 if(!is_array($arParams["PROPERTY_CODE"]))
 	$arParams["PROPERTY_CODE"] = array();
 foreach($arParams["PROPERTY_CODE"] as $k=>$v)
 	if($v==="")
 		unset($arParams["PROPERTY_CODE"][$k]);
+		
+	
+		
 
 if(!is_array($arParams["PRICE_CODE"]))
 	$arParams["PRICE_CODE"] = array();
@@ -644,7 +650,8 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 		"IBLOCK_SECTION_ID",
 		"DETAIL_PAGE_URL",
 		"DETAIL_PICTURE",
-		"PREVIEW_PICTURE"
+		"PREVIEW_PICTURE",
+		"PROPERTY_*"
 	);
 	if ($bIBlockCatalog)
 		$arSelect[] = "CATALOG_QUANTITY";
@@ -910,54 +917,75 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 	$arResult["NAV_RESULT"] = $rsElements;
 	if (isset($arItem))
 		unset($arItem);
+		
+		
+
+		
 
 	if (!empty($arResult["ELEMENTS"]) && ($bGetProperties || ($bCatalog && $boolNeedCatalogCache)))
 	{
-		$arPropFilter = array(
-			'ID' => $arResult["ELEMENTS"],
-			'IBLOCK_ID' => $arParams['IBLOCK_ID']
-		);
-		CIBlockElement::GetPropertyValuesArray($arElementLink, $arParams["IBLOCK_ID"], $arPropFilter);
+		
+		//открываем файл с массивом свойств выводимых на листинг
+		$listFile = $_SERVER["DOCUMENT_ROOT"]."/tools/files/listing_prop_".$arResult["IBLOCK_ID"].".txt";
+		$data = file_get_contents($listFile);
+		$arPropData = unserialize( $data );
+		
+		foreach ( $arParams["IBLOCK_ID"] as $IBLOCK_ID){
+		
+			$arPropFilter = array(
+				'ID' => $arResult["ELEMENTS"],
+				'IBLOCK_ID' => $IBLOCK_ID
+			);
+			CIBlockElement::GetPropertyValuesArray($arElementLink, $IBLOCK_ID, $arPropFilter);
 
-		foreach ($arResult["ITEMS"] as &$arItem)
-		{
-			if ($bCatalog && $boolNeedCatalogCache)
+			foreach ($arResult["ITEMS"] as &$arItem)
 			{
-				CCatalogDiscount::SetProductPropertiesCache($arItem['ID'], $arItem["PROPERTIES"]);
-			}
-
-			if ($bGetProperties)
-			{
-				foreach($arParams["PROPERTY_CODE"] as $pid)
+				
+				if ($bCatalog && $boolNeedCatalogCache)
 				{
-					if (!isset($arItem["PROPERTIES"][$pid]))
-						continue;
-					$prop = &$arItem["PROPERTIES"][$pid];
-					$boolArr = is_array($prop["VALUE"]);
-					if(
-						($boolArr && !empty($prop["VALUE"]))
-						|| (!$boolArr && strlen($prop["VALUE"]) > 0)
-					)
-					{
-						$arItem["DISPLAY_PROPERTIES"][$pid] = CIBlockFormatProperties::GetDisplayValue($arItem, $prop, "catalog_out");
-					}
+					CCatalogDiscount::SetProductPropertiesCache($arItem['ID'], $arItem["PROPERTIES"]);
 				}
 
-				if ($bGetProductProperties)
+
+				if ($bGetProperties)
 				{
-					$arItem["PRODUCT_PROPERTIES"] = CIBlockPriceTools::GetProductProperties(
-						$arParams["IBLOCK_ID"],
-						$arItem["ID"],
-						$arParams["PRODUCT_PROPERTIES"],
-						$arItem["PROPERTIES"]
-					);
-					if (!empty($arItem["PRODUCT_PROPERTIES"]))
+
+					foreach($arParams["PROPERTY_CODE"] as $pid)
 					{
-						$arItem['PRODUCT_PROPERTIES_FILL'] = CIBlockPriceTools::getFillProductProperties($arItem['PRODUCT_PROPERTIES']);
+						
+						if (!isset($arItem["PROPERTIES"][$pid]))
+							continue;
+
+						$prop = &$arItem["PROPERTIES"][$pid];
+						$boolArr = is_array($prop["VALUE"]);
+						if(
+							($boolArr && !empty($prop["VALUE"]))
+							|| (!$boolArr && strlen($prop["VALUE"]) > 0)
+						)
+						{
+							$arItem["DISPLAY_PROPERTIES"][$pid] = CIBlockFormatProperties::GetDisplayValue($arItem, $prop, "catalog_out");
+						}
+					}
+
+					if ($bGetProductProperties)
+					{
+						$arItem["PRODUCT_PROPERTIES"] = CIBlockPriceTools::GetProductProperties(
+							$arParams["IBLOCK_ID"],
+							$arItem["ID"],
+							$arParams["PRODUCT_PROPERTIES"],
+							$arItem["PROPERTIES"]
+						);
+						if (!empty($arItem["PRODUCT_PROPERTIES"]))
+						{
+							$arItem['PRODUCT_PROPERTIES_FILL'] = CIBlockPriceTools::getFillProductProperties($arItem['PRODUCT_PROPERTIES']);
+						}
 					}
 				}
 			}
 		}
+		
+	
+		
 		if (isset($arItem))
 			unset($arItem);
 	}

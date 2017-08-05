@@ -159,10 +159,12 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
                         </div>
 								<div class="product-card__props">
 									<?foreach ( $arItem["DISPLAY_PROPERTIES"] as $arProperty):?>
-										<?if ( is_array($arProperty["VALUE"]) ):?>
-											<span class="product-card__text"><?=$arProperty["NAME"]?>: <?=implode(', ', $arProperty["VALUE"])?></span>
-										<?else:?>
-											<span class="product-card__text"><?=$arProperty["NAME"]?>: <?=$arProperty["VALUE"]?></span>
+										<?if ( strlen($arProperty["NAME"]) < 27 ):?>
+											<?if ( is_array($arProperty["VALUE"]) ):?>
+												<span class="product-card__text"><?=$arProperty["NAME"]?>: <?=implode(', ', $arProperty["DISPLAY_VALUE"])?></span>
+											<?else:?>
+												<span class="product-card__text"><?=$arProperty["NAME"]?>: <?=$arProperty["DISPLAY_VALUE"]?></span>
+											<?endif;?>
 										<?endif;?>
 									<?endforeach;?>		
 								</div>
