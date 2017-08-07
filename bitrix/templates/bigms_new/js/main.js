@@ -13,7 +13,7 @@ $(document).ready(function() {
     autoplay: true,
     autoplayTimeout: 5000,
     autoplayHoverPause: true,
-    loop: true,
+    loop: false,
   });
   $('.slider-nav__item').click(function () {
     mainOwl.trigger('to.owl.carousel', [$(this).index(), 300]);
@@ -34,30 +34,45 @@ $(document).ready(function() {
 		});
     }
 	
+	
+	$(".owl-item").each(function(index, value) { 
+			
+			if ( !$(this).hasClass('cloned')){
+				
+				
+				//вставляем форму заказ монтажа в слайдер на главной странице
+				if( $(this).find('.montaz_form').length > 0 ) {
+					m = $(this).find('.montaz_form');
+					$.ajax({
+						type: "POST",
+						url: '/ajax/montaz_form.php',
+						success: function (data) {
+							m.html( data );
+						}
+					});
+				}
+				//вставляем форму заявка на партнерство в слайдер на главной странице
+				if( $(this).find('.partner_make_form').length > 0 ) {
+					e = $(this).find('.partner_make_form');
+					$.ajax({
+						type: "POST",
+						url: '/ajax/partner_form.php',
+						success: function (data) {
+							e.html( data );
+						}
+					});
+				}
+				
+			
+			}
+	});
+	
+	
+	
 
 	
-	//вставляем форму заказ монтажа в слайдер на главной странице
-    if( $('#montaz_form').length > 0 ) {
-		$.ajax({
-            type: "POST",
-            url: '/ajax/montaz_form.php',
-            success: function (data) {
-				$('#montaz_form').html( data );
-            }
-        });
-    }
-
-	//вставляем форму заявка на партнерство в слайдер на главной странице
-    if( $('#partner_make_form').length > 0 ) {
-		$.ajax({
-            type: "POST",
-            url: '/ajax/partner_form.php',
-            success: function (data) {
-				$('#partner_make_form').html( data );
-				$('#partner_make_form').hide();
-            }
-        });
-    }
+	
+	
 
   
   
