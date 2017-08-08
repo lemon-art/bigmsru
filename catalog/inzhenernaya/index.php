@@ -313,7 +313,8 @@ $arrFilter = Array(
 			103 => "VID_REM_FITINGA",
 			104 => "MARKIROVKA",
 			105 => "TIP_IZDELIYA",
-			106 => "VIDEO"
+			106 => "VIDEO",
+			107 => "DIAMETR_RESBA"
 		),
 		"DETAIL_META_KEYWORDS" => "-",
 		"DETAIL_META_DESCRIPTION" => "-",
@@ -457,6 +458,7 @@ $arrFilter = Array(
 			96 => "DELIVERY",
 			97 => "GARANTY",
 			98 => "ARMIROVANIE",
+			99 => "DIAMETR_RESBA"
 		),
 		"FILTER_PRICE_CODE" => array(
 			0 => "Интернет",
@@ -573,6 +575,7 @@ $arrFilter = Array(
 			96 => "LIDER_PRODAZH",
 			97 => "GARANTY",
 			98 => "ARMIROVANIE",
+			99 => "DIAMETR_RESBA"
 		),
 		"COMPARE_ELEMENT_SORT_FIELD" => "CATALOG_PRICE_1",
 		"COMPARE_ELEMENT_SORT_ORDER" => "asc",
@@ -623,6 +626,6 @@ $arrFilter = Array(
 		)
 	),
 	false
-);?>
+);?> 
 
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
