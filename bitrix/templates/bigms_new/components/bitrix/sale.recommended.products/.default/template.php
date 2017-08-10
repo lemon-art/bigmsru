@@ -30,7 +30,12 @@ if(!isset($request)){
 
 
 if (!empty($arResult['ITEMS'])):
+
+$this->SetViewTarget("additional");
+echo '<li data-trigger="additional" class="product-tabs__header-item tabs-trigger">Дополнительные товары</li>';
+$this->EndViewTarget("additional");
 ?>
+
 <div class="order-add">
     <strong class="content-product__title order-add__title">Дополнительные товары</strong>	
 <ul class="order-add__list">
@@ -218,5 +223,5 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 	</ul>
 	
 </div>
-	
+
 <?endif;?>
