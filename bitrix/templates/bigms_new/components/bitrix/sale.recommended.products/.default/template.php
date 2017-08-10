@@ -155,13 +155,15 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
                         </div>
                       </div>
                       <div class="col-lg-5 col-lg-offset-2 col-md-4 col-md-offset-2 col-sm-6 col-sm-offset-1 product-card__props">
-						<?foreach ( $arItem["DISPLAY_PROPERTIES"] as $arProperty):?>
-							<?if ( is_array($arProperty["VALUE"]) ):?>
-								<span class="product-card__text"><?=$arProperty["NAME"]?>: <?=implode(', ', $arProperty["VALUE"])?></span>
-							<?else:?>
-								<span class="product-card__text"><?=$arProperty["NAME"]?>: <?=$arProperty["VALUE"]?></span>
-							<?endif;?>
-						<?endforeach;?>		
+									<?foreach ( $arItem["DISPLAY_PROPERTIES"] as $arProperty):?>
+										<?if ( strlen($arProperty["NAME"]) < 27 ):?>
+											<?if ( is_array($arProperty["VALUE"]) ):?>
+												<span class="product-card__text"><?=$arProperty["NAME"]?>: <?=implode(', ', $arProperty["DISPLAY_VALUE"])?></span>
+											<?else:?>
+												<span class="product-card__text"><?=$arProperty["NAME"]?>: <?=$arProperty["DISPLAY_VALUE"]?></span>
+											<?endif;?>
+										<?endif;?>
+									<?endforeach;?>								
                       </div>
 					  
 					  
