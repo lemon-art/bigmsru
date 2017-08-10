@@ -908,7 +908,6 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 								94 => "NOVINKA",
 								95 => "RASPRODAZHA",
 								96 => "LIDER_PRODAZH",
-								97 => "DELIVERY",
 								98 => "GARANTY",
 								99 => "ARMIROVANIE",
 								100 => "PRIS_DIAMETR",
