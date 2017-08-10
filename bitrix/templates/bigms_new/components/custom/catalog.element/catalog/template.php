@@ -110,7 +110,8 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 							<?if ( count($arResult["COLLECTIONS"]) > 0 ):?>
 								<li data-trigger="collection" class="product-tabs__header-item tabs-trigger">Товары из одной коллекции</li>
 							<?endif;?>
-							<?$APPLICATION->ShowViewContent("additional")?>
+							<li data-trigger="additional" class="product-tabs__header-item tabs-trigger">Дополнительные товары</li>
+							 
 							<?/*
 							<li data-trigger="service" class="product-tabs__header-item tabs-trigger">Услуги</li>
 							

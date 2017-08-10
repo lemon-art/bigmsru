@@ -31,9 +31,9 @@ if(!isset($request)){
 
 if (!empty($arResult['ITEMS'])):
 
-$this->SetViewTarget("additional");
-echo '<li data-trigger="additional" class="product-tabs__header-item tabs-trigger">Дополнительные товары</li>';
-$this->EndViewTarget("additional");
+//$this->SetViewTarget("additional");
+//echo '<li data-trigger="additional" class="product-tabs__header-item tabs-trigger">Дополнительные товары</li>';
+//$this->EndViewTarget("additional");
 ?>
 
 <div class="order-add">
