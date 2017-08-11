@@ -37,7 +37,7 @@ if (!empty($arResult['ITEMS'])):
 ?>
 
 <div class="order-add">
-    <strong class="content-product__title order-add__title">Дополнительные товары</strong>	
+    <strong class="content-product__title order-add__title"><?=$arParams['TITLE']?></strong>	
 <ul class="order-add__list">
 
 <?
