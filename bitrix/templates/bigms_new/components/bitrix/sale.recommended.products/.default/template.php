@@ -223,7 +223,15 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
                 </li>
 		<?endforeach;?>
 	</ul>
+	<?global $countDopElements;?>
+
+	<?if ( $countDopElements > count( $arResult['ITEMS'] ) ):?>
+		<div class="order-add__more-wrap">
+			<a href="#" class="order-add__more">Еще сопутствующие товары</a>
+		</div>
+	<?endif;?>
 	
 </div>
 
 <?endif;?>
+

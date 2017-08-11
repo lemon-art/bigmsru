@@ -108,9 +108,63 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 							<li data-trigger="all" class="product-tabs__header-item tabs-trigger active">Всё о товаре</li>
 							<li data-trigger="stats" class="product-tabs__header-item tabs-trigger">Характеристики</li>
 							<?if ( count($arResult["COLLECTIONS"]) > 0 ):?>
-								<li data-trigger="collection" class="product-tabs__header-item tabs-trigger">Товары из одной коллекции</li>
+								<li data-trigger="collection" class="product-tabs__header-item tabs-trigger">Товары из одной коллекции (<?=count($arResult["COLLECTIONS"])?>)</li>
 							<?endif;?>
-							<li data-trigger="additional" class="product-tabs__header-item tabs-trigger">Дополнительные товары</li>
+							 
+							 
+							<?$APPLICATION->IncludeComponent(
+								"bitrix:sale.recommended.products",
+								"title",
+								Array(
+									"ACTION_VARIABLE" => "action",
+									"TITLE" => "Добавить к заказу",
+									"ADDITIONAL_PICT_PROP_1" => "FILES",
+									"ADDITIONAL_PICT_PROP_10" => "MORE_PHOTO",
+									"ADDITIONAL_PICT_PROP_12" => "MORE_PHOTO",
+									"ADDITIONAL_PICT_PROP_8" => "",
+									"ADD_PROPERTIES_TO_BASKET" => "Y",
+									"BASKET_URL" => "/personal/basket.php",
+									"CACHE_TIME" => "86400",
+									"CACHE_TYPE" => "A",
+									"CART_PROPERTIES_10" => array("",""),
+									"CART_PROPERTIES_12" => array("",""),
+									"CODE" => $arResult['CODE'],
+									"CONVERT_CURRENCY" => "N",
+									"DETAIL_URL" => "",
+									"HIDE_NOT_AVAILABLE" => "N",
+									"IBLOCK_ID" => "10",
+									"IBLOCK_TYPE" => "1c_catalog",
+									"ID" => $arResult['ID'],
+									"LABEL_PROP_10" => "-",
+									"LABEL_PROP_12" => "-",
+									"LINE_ELEMENT_COUNT" => "3",
+									"MESS_BTN_BUY" => "Купить",
+									"MESS_BTN_DETAIL" => "Подробнее",
+									"MESS_BTN_SUBSCRIBE" => "Подписаться",
+									"MESS_NOT_AVAILABLE" => "Нет в наличии",
+									"MIN_BUYES" => "1",
+									"PAGE_ELEMENT_COUNT" => "100",
+									"PARTIAL_PRODUCT_PROPERTIES" => "N",
+									"PRICE_CODE" => array("Интернет"),
+									"PRICE_VAT_INCLUDE" => "Y",
+									"PRODUCT_ID_VARIABLE" => "id",
+									"PRODUCT_PROPS_VARIABLE" => "prop",
+									"PRODUCT_QUANTITY_VARIABLE" => "quantity",
+									"PRODUCT_SUBSCRIPTION" => "N",
+									"PROPERTY_CODE_10" => array(
+									),
+									"PROPERTY_CODE_12" => array(
+									),
+									"SHOW_DISCOUNT_PERCENT" => "N",
+									"SHOW_IMAGE" => "Y",
+									"SHOW_NAME" => "Y",
+									"SHOW_OLD_PRICE" => "N",
+									"SHOW_PRICE_COUNT" => "1",
+									"TEMPLATE_THEME" => "blue",
+									"USE_PRODUCT_QUANTITY" => "N"
+								)
+							);?> 
+							 
 							 
 							<?/*
 							<li data-trigger="service" class="product-tabs__header-item tabs-trigger">Услуги</li>
@@ -498,7 +552,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 							"MESS_BTN_SUBSCRIBE" => "Подписаться",
 							"MESS_NOT_AVAILABLE" => "Нет в наличии",
 							"MIN_BUYES" => "1",
-							"PAGE_ELEMENT_COUNT" => "8",
+							"PAGE_ELEMENT_COUNT" => "4",
 							"PARTIAL_PRODUCT_PROPERTIES" => "N",
 							"PRICE_CODE" => array("Интернет"),
 							"PRICE_VAT_INCLUDE" => "Y",
