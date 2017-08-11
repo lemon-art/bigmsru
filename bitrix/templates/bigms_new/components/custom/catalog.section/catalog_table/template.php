@@ -99,7 +99,7 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
                         <div class="product-card__img-wrap">
 							<?
 							//Уменьшаем картинку для баннера
-							$PICT = ('Y' == $arItem['SECOND_PICT'] ? $arItem['PREVIEW_PICTURE_SECOND'] : $arItem['PREVIEW_PICTURE']);
+							$PICT = ('Y' == $arItem['SECOND_PICT'] ? $arItem['PREVIEW_PICTURE'] : $arItem['PREVIEW_PICTURE']);
 							$file = CFile::ResizeImageGet($PICT['ID'], array('width'=>150, 'height'=>150), BX_RESIZE_IMAGE_PROPORTIONAL_ALT, true);
 							$PICT['SRC'] = $file['src'];
 							$PICT['WIDTH'] = $file['width'];
