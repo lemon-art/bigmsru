@@ -314,7 +314,12 @@ $arrFilter = Array(
 			104 => "MARKIROVKA",
 			105 => "TIP_IZDELIYA",
 			106 => "VIDEO",
-			107 => "DIAMETR_RESBA"
+			107 => "DIAMETR_RESBA",
+			108 => "STANGA",
+			109 => "MAX_BAR",
+			110 => "MAX_WORK_TEMP",
+			111 => "TIME_WORK",
+			112 => "NAZN_TRUBI"
 		),
 		"DETAIL_META_KEYWORDS" => "-",
 		"DETAIL_META_DESCRIPTION" => "-",

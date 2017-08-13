@@ -395,7 +395,7 @@ $(document).ready(function() {
 	});
 	
 	//добавление в избранное товара
-	$('.content-products, .content-products__list, .content-product, .demanded-products').on('click', '.product-card__wish-icon, .product-info__wish-icon', function(e) {
+	$('.content-products, .content-product, .demanded-products').on('click', '.product-card__wish-icon, .product-info__wish-icon', function(e) {
 		if ( $(this).hasClass('active') ){
 			var action = 'delete';
 		}
@@ -406,6 +406,7 @@ $(document).ready(function() {
 		$('.product-card__wish-icon[data-id=' + id + ']').toggleClass('active');
 		$('.product-info__wish-icon[data-id=' + id + ']').toggleClass('active');
 		
+
 		
 		$.post("/ajax/add_to_like.php", { ProductID: id, ACTION: action },
 		  function(data){
