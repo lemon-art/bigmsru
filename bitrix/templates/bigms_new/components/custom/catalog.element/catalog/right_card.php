@@ -71,12 +71,13 @@
 												<?endif;?>
 											<?}?>
 										</div>
-										<div class="product-card__icons">
+										  <div class="product-card__icons">
+											
+											  <span class="product-card__wish-icon <?if ( in_array($arResult['ID'], $arResult["FAVORITES"])):?>active<?endif;?>" data-id="<?=$arResult['ID']?>"></span>
 											<?/*
-											<span class="product-card__wish-icon active"></span>
-											<span class="product-card__compare-icon"></span>
+											  <span class="product-card__compare-icon"></span>
 											*/?>
-										</div>
+											</div>
 									  </div>
 									</div>
 									<a href="#" data-trigger="cart" class="button button_product popup-add-to-cart" data-id="<?=$arResult["ID"]?>">В корзину</a>

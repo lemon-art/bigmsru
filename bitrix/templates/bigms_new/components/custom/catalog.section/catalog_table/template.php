@@ -198,8 +198,9 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 						<a data-trigger="cart" href="#" id="<? echo $arItemIDs['BUY_LINK']; ?>" href="javascript:void(0)" rel="nofollow" class="button popup-add-to-cart button_product" onmousedown="try { rrApi.addToBasket(<?=$arItem['ID']?>) } catch(e) {}" onclick="yaCounter31721621.reachGoal('basket');" data-id="<?=$arItem['ID']?>">В корзину</a>
                 
                         <div class="product-card__icons">
+						
+                          <span class="product-card__wish-icon <?if ( in_array($arItem['ID'], $arResult["FAVORITES"])):?>active<?endif;?>" data-id="<?=$arItem['ID']?>"></span>
 						<?/*
-                          <span class="product-card__wish-icon active"></span>
                           <span class="product-card__compare-icon"></span>
 						*/?>
                         </div>

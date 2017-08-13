@@ -366,10 +366,11 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 									<div class="product-info__icon-wrap">
 									  <span class="product-info__compare-icon"></span>
 									</div>
-									<div class="product-info__icon-wrap">
-									  <span class="product-info__wish-icon active"></span>
-									</div>
 									*/?>
+									<div class="product-info__icon-wrap">
+										<span class="product-info__wish-icon <?if ( in_array($arResult['ID'], $arResult["FAVORITES"])):?>active<?endif;?>" data-id="<?=$arResult['ID']?>"></span>
+									</div>
+									
 									<?if(!empty($arResult["DISPLAY_PROPERTIES"]["CML2_ARTICLE"]["VALUE"])):?>
 										<span class="product-info__id">Артикул: <?=$arResult["DISPLAY_PROPERTIES"]["CML2_ARTICLE"]["VALUE"]?></span>
 									<?endif;?>
