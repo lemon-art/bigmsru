@@ -20,11 +20,18 @@ if ($arParams['POSITION_FIXED'] == 'Y')
 <script>
 	var <?=$cartId?> = new BitrixSmallCart;
 </script>
-				<?/*
-                <li class="status-bar__item status-bar__item_wish">
-                  <span class="status-bar__number">0</span>
-                  <div class="status-bar__dropdown status-dropdown"></div>
+				
+                <li class="status-bar__item status-bar__item_wish <?if( !empty($arResult['FAVORITES'])):?>status-bar__item_active<?endif;?>">
+					<?if( !empty($arResult['FAVORITES'])):?>
+						<a href="/catalog/wishlist/" rel="nofollow">
+					<?endif;?>
+						<span class="status-bar__number"><?=count( $arResult["FAVORITES"] )?></span>
+						<div class="status-bar__dropdown status-dropdown"></div>
+					<?if( !empty($arResult['FAVORITES'])):?>
+						</a>
+					<?endif;?>	
                 </li>
+				<?/*
                 <li class="status-bar__item status-bar__item_compare">
                   <span class="status-bar__number">0</span>
                   <div class="status-bar__dropdown status-dropdown"></div>
@@ -36,8 +43,8 @@ if ($arParams['POSITION_FIXED'] == 'Y')
 					  <div class="status-bar__dropdown status-dropdown">
 						<p class="status-dropdown__goods" id="top_basket_number_text"><span class="status-dropdown__number"><?=$arResult['NUM_PRODUCTS']?></span> <?=numberof($arResult['NUM_PRODUCTS'], 'товар', array('', 'а', 'ов'))?></p>
 						<p class="status-dropdown__sum" id="top_basket_summ">на сумму <span class="status-dropdown__price"><?=$arResult["ALL_SUMM"]?></span> &#8381</p>
-						<a href="/personal/order/make/" class="button status-dropdown__button">ОФОРМИТЬ ЗАКАЗ</a>
-						<a href="/basket/" class="button status-dropdown__button">Перейти в корзину</a>
+						<a href="/personal/order/make/" rel="nofollow" class="button status-dropdown__button">ОФОРМИТЬ ЗАКАЗ</a>
+						<a href="/basket/" rel="nofollow" class="button status-dropdown__button">Перейти в корзину</a>
 					  </div>
 					<?endif;?>
                 </li>

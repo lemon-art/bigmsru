@@ -396,3 +396,26 @@ if (isset($arResult['ITEMS']) && !empty($arResult['ITEMS']))
 	$arResult['DEFAULT_PICTURE'] = $arEmptyPreview;
 }
 ?>
+
+
+<?
+		global $USER;
+		$arResult["FAVORITES"] = Array();
+		if(!$USER->IsAuthorized()){
+			$arElements = unserialize($APPLICATION->get_cookie('favorites'));
+		}
+		else{
+			$idUser = $USER->GetID();
+			$rsUser = CUser::GetByID($idUser);
+			$arUser = $rsUser->Fetch();
+			$arElements = unserialize($arUser['UF_FAVORITES']);
+        }  
+		foreach ( $arElements as $key => $arElement){
+			if ( $arElement == $ProductID ) {
+				unset( $arElements[$key] );
+			}
+		}
+		$arResult["FAVORITES"] = $arElements;
+
+
+?>

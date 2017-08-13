@@ -30,15 +30,9 @@ if(!isset($request)){
 
 
 if (!empty($arResult['ITEMS'])):
-
-//$this->SetViewTarget("additional");
-//echo '<li data-trigger="additional" class="product-tabs__header-item tabs-trigger">Дополнительные товары</li>';
-//$this->EndViewTarget("additional");
 ?>
-
-<div class="order-add">
-    <strong class="content-product__title order-add__title"><?=$arParams['TITLE']?></strong>	
-<ul class="order-add__list">
+	
+<ul class="content-products__list" data-view="list">
 
 <?
 $minimal_price = [];
@@ -99,9 +93,9 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 	}
 	?> 
 	
-				<li class="product-card product-card_list content-products__item">
+				<li class="product-card product-card_list content-products__item" id="whishlist_<?=$arItem['ID']?>">
 					<div class="row">
-                      <div class="col-lg-2 col-lg-offset-0 col-md-2 col-md-offset-0 col-sm-3 col-sm-offset-0">
+                      <div class="col-lg-3 col-lg-offset-0 col-md-3 col-md-offset-0 col-sm-4 col-sm-offset-0">
                         <div class="product-card__img-wrap">
 							<?
 							//Уменьшаем картинку для баннера
@@ -126,13 +120,15 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 							<input type="hidden" name="ELEM_NAME<?=$arItem["ID"]?>" value="<?=$arItem["NAME"]?>"/>
 							<input type="hidden" name="DETAIL_PAGE<?=$arItem["ID"]?>" value="<?=$arItem["DETAIL_PAGE_URL"]?>"/>
 							<input type="hidden" name="PICTURE<?=$arItem["ID"]?>" value="<?=$PICT['SRC']?>"/>
+							<input type="hidden" name="COUNT<?=$arItem["ID"]?>" value="1"/>
 							</a>
                         </div>
                       </div>
-					  <div class="col-lg-7 col-lg-offset-0 col-md-8 col-md-offset-1 col-sm-8 col-sm-offset-0 product-card__info">
+
+                      <div class="col-lg-7 col-lg-offset-0 col-md-8 col-md-offset-1 col-sm-8 col-sm-offset-0 product-card__info">
                         <a href="<?=$arItem['DETAIL_PAGE_URL']?>" class="product-card__name"><?=$arItem['NAME']; ?></a>
                         <div class="product-card__row product-card__row_flex">
-						
+
                                     <?if ( $arItem["DISPLAY_PROPERTIES"]["STRANA_PROIZVODITEL"]["VALUE"]):?>
 										<span class="product-card__country">
 											<span class="product-card__flag-icon country c<?=$arItem["DISPLAY_PROPERTIES"]["STRANA_PROIZVODITEL"]["VALUE_ENUM_ID"]?>"></span>
@@ -155,20 +151,19 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
                         </div>
                       </div>
                       <div class="col-lg-5 col-lg-offset-2 col-md-4 col-md-offset-2 col-sm-6 col-sm-offset-1 product-card__props">
-									<?foreach ( $arItem["DISPLAY_PROPERTIES"] as $arProperty):?>
-										<?if ( strlen($arProperty["NAME"]) < 27 ):?>
-											<?if ( is_array($arProperty["VALUE"]) ):?>
-												<span class="product-card__text"><?=$arProperty["NAME"]?>: <?=implode(', ', $arProperty["DISPLAY_VALUE"])?></span>
-											<?else:?>
-												<span class="product-card__text"><?=$arProperty["NAME"]?>: <?=$arProperty["DISPLAY_VALUE"]?></span>
-											<?endif;?>
-										<?endif;?>
-									<?endforeach;?>								
+						<?foreach ( $arItem["DISPLAY_PROPERTIES"] as $arProperty):?>
+							<?if ( strlen($arProperty["NAME"]) < 27 ):?>
+								<?if ( is_array($arProperty["VALUE"]) ):?>
+									<span class="product-card__text"><?=$arProperty["NAME"]?>: <?=implode(', ', $arProperty["DISPLAY_VALUE"])?></span>
+								<?else:?>
+									<span class="product-card__text"><?=$arProperty["NAME"]?>: <?=$arProperty["DISPLAY_VALUE"]?></span>
+								<?endif;?>
+							<?endif;?>
+						<?endforeach;?>		
                       </div>
 					  
-					  
-					       <div class="col-lg-3 col-lg-offset-2 col-md-3 col-md-offset-1 col-sm-3 col-sm-offset-1 product-card__buy">
-                              <div class="product-card__row product-card__row_add">
+                      <div class="col-lg-2 col-lg-offset-4 col-md-4 col-md-offset-3 col-sm-4 col-sm-offset-1 product-card__buy">
+                        <div class="product-card__row">
 								<?
 								if ('Y' == $arParams['SHOW_OLD_PRICE'] && $minPrice['DISCOUNT_VALUE'] < $minPrice['VALUE'])
 								{?>
@@ -185,54 +180,46 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 									</span>
 									
 								<?}	?>
-                              </div>
-                              <div class="product-card__row product-card__row_flex">
-                                <?if($arItem["IS_GIFT"] == 1):?>
-									<svg class="product-card__gift">
-										<use xlink:href="#icon-gift"></use>
+                        </div>
+                        <div class="product-card__row product-card__row_flex">
+							<?if($arItem["IS_GIFT"] == 1):?>
+								<svg class="product-card__gift">
+									<use xlink:href="#icon-gift"></use>
+								</svg>
+							<?endif;?>
+							<?if($arItem["IS_DELIVERY"] == 1):?>
+								<span class="product-card__delivery">
+									<svg class="product-card__delivery-icon">
+										<use xlink:href="#icon-delivery"></use>
 									</svg>
-								<?endif;?>
-								<?if($arItem["IS_DELIVERY"] == 1):?>
-									<span class="product-card__delivery">
-										<svg class="product-card__delivery-icon">
-											<use xlink:href="#icon-delivery"></use>
-										</svg>
-										<span class="product-card__delivery-text">Доставка<br>бесплатно</span>
-									</span>
-								<?endif;?>
-                              </div>
-                            </div> 
-					  
-					  
-                       
-					   <div class="col-lg-7 col-lg-offset-1 col-md-8 col-md-offset-0 col-sm-8 col-sm-offset-0 product-card__cart product-card__cart_add">
-							  <div class="product-card__icons">
-								
-								  <span class="product-card__wish-icon <?if ( in_array($arItem['ID'], $arResult["FAVORITES"])):?>active<?endif;?>" data-id="<?=$arItem['ID']?>"></span>
-								<?/*
-								  <span class="product-card__compare-icon"></span>
-								*/?>
-								</div>
-                              <div class="spinner spinner_add">
-                                <a role="button" href="#" class="spinner__dec">–</a>
-                                <input class="spinner__input" type="text" name="COUNT<?=$arItem["ID"]?>" value="1">
-                                <a role="button" href="#" class="spinner__inc">+</a>
-                              </div>
-                              <a data-trigger="cart" href="#" id="<? echo $arItemIDs['BUY_LINK']; ?>" href="javascript:void(0)" rel="nofollow" class="button popup-add-to-cart button_product" onmousedown="try { rrApi.addToBasket(<?=$arItem['ID']?>) } catch(e) {}" onclick="yaCounter31721621.reachGoal('basket');" data-id="<?=$arItem['ID']?>">В корзину</a>
-                            </div>
-                    </div>
+									<span class="product-card__delivery-text">Доставка<br>бесплатно</span>
+								</span>
+							<?endif;?>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-0 col-sm-4">
+						<a data-trigger="cart" href="#" id="<? echo $arItemIDs['BUY_LINK']; ?>" href="javascript:void(0)" rel="nofollow" class="button popup-add-to-cart button_product" onmousedown="try { rrApi.addToBasket(<?=$arItem['ID']?>) } catch(e) {}" onclick="yaCounter31721621.reachGoal('basket');" data-id="<?=$arItem['ID']?>">В корзину</a>
+                
+                        <div class="product-card__icons">
+						<?/*
+                          <span class="product-card__wish-icon active"></span>
+                          <span class="product-card__compare-icon"></span>
+						*/?>
+                        </div>
+
+                      </div>
+					  <div class="col-lg-2 col-lg-offset-2 col-md-5 col-md-offset-0 col-sm-2 product-card__cart">
+					
+							<div class="cart-list__col">
+								<a role="button" data-id="<?=$arItem['ID']?>" href="#" class="cart-list__delete del delete_from_whishlist"></a>
+							</div>
+					<div>
                 </li>
 		<?endforeach;?>
 	</ul>
-	<?global $countDopElements;?>
-
-	<?if ( $countDopElements > count( $arResult['ITEMS'] ) ):?>
-		<div class="order-add__more-wrap">
-			<a href="#" class="order-add__more">Еще сопутствующие товары</a>
-		</div>
+	
+	<?if ($arParams["DISPLAY_BOTTOM_PAGER"]):?>
+		<? echo $arResult["NAV_STRING"]; ?>
 	<?endif;?>
 	
-</div>
-
 <?endif;?>
-

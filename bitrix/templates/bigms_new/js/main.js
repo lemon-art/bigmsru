@@ -394,11 +394,58 @@ $(document).ready(function() {
 		return false;
 	});
 	
+	//добавление в избранное товара
+	$('.content-products, .content-products__list, .content-product, .demanded-products').on('click', '.product-card__wish-icon, .product-info__wish-icon', function(e) {
+		if ( $(this).hasClass('active') ){
+			var action = 'delete';
+		}
+		else {
+			var action = 'add';	
+		}
+		id = $(this).attr('data-id');
+		$('.product-card__wish-icon[data-id=' + id + ']').toggleClass('active');
+		$('.product-info__wish-icon[data-id=' + id + ']').toggleClass('active');
+		
+		
+		$.post("/ajax/add_to_like.php", { ProductID: id, ACTION: action },
+		  function(data){
+			$.post("/ajax/top_basket.php", {},
+			  function(data){
+				$('.header__status').html( data );
+				  var _target = $('.status-bar__item_cart');
+				  _target.hover( function() {
+					$( this ).find('.status-dropdown').stop().fadeIn(400);
+				  }, function() {
+					$( this ).find('.status-dropdown').stop().fadeOut(400);
+				  });
+			});
+		});
+		
+	}); 
 	
-
-	
+	//удаление избранное товара
+	$('.content-products__list').on('click', '.delete_from_whishlist', function(e) {
+		var action = 'delete';	
+		id = $(this).attr('data-id');
+		$('#whishlist_'+id).remove();
+		
+		$.post("/ajax/add_to_like.php", { ProductID: id, ACTION: action },
+		  function(data){
+			$.post("/ajax/top_basket.php", {},
+			  function(data){
+				$('.header__status').html( data );
+				  var _target = $('.status-bar__item_cart');
+				  _target.hover( function() {
+					$( this ).find('.status-dropdown').stop().fadeIn(400);
+				  }, function() {
+					$( this ).find('.status-dropdown').stop().fadeOut(400);
+				  });
+			});
+		});
+		
+	}); 
   
-	$('.content-products, .products-similar, .product-props, .content-product, .demanded-products').on('click', '.popup-add-to-cart', function(e) {
+	$('.content-products, .products-similar, .content-products__list, .product-props, .content-product, .demanded-products').on('click', '.popup-add-to-cart', function(e) {
 		id = $(this).attr('data-id');
 		var ELEM_NAME = $('input[name="ELEM_NAME'+id+'"]').val();
 		var CAT_PRICE = $('input[name="CAT_PRICE'+id+'"]').val();

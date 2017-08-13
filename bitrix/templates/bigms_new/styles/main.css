@@ -1742,6 +1742,11 @@ body {
     width: 23%;
     margin-right: 2.666666%;
     margin-bottom: 25px; }
+	
+	.content-products__item .cart-list__col{
+		margin-top: 10px;
+		text-align: right;
+	}
     .content-products__item:nth-child(4n) {
       margin-right: 0; }
 
@@ -3914,7 +3919,9 @@ ul.sublist[data-level="3"] .sublist__link:after {
     width: 16px;
     height: 19px;
     background: url(images/icons/wish.png) no-repeat center;
-    background-size: cover; }
+    background-size: cover; 
+	cursor: pointer;
+	}
     .product-card__wish-icon.active {
       background: url(images/icons/wish_active.png) no-repeat center;
       background-size: cover; }
@@ -3924,7 +3931,9 @@ ul.sublist[data-level="3"] .sublist__link:after {
     width: 24px;
     height: 21px;
     background: url(images/icons/compare.png) no-repeat center;
-    background-size: cover; }
+    background-size: cover;
+	cursor: pointer;
+	}
     .product-card__compare-icon.active {
       background: url(images/icons/compare_active.png) no-repeat center;
       background-size: cover; }
