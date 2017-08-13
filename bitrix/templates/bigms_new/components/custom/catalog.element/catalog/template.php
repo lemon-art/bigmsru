@@ -440,7 +440,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 												echo $properties["DISPLAY_VALUE"];
 											}
 											else{
-												echo $properties["VALUE"];
+												echo $properties["DISPLAY_VALUE"];
 											}
 											?>
 										</td>
