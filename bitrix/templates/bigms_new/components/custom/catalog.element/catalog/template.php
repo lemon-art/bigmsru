@@ -434,14 +434,14 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 									  <tr class="tech-props__row">
 										<td class="tech-props__td"><?=$properties["NAME"]?></td>
 										<td class="tech-props__td">
-											<?
-											if(!empty($properties["DISPLAY_VALUE"])){
-												//echo strip_tags($properties["DISPLAY_VALUE"], "");
-												echo $properties["DISPLAY_VALUE"];
+											
+											<?if (is_array($properties['DISPLAY_VALUE'])){
+												echo implode("&nbsp;/&nbsp;", $properties["DISPLAY_VALUE"]);
+											}else{
+												echo $properties['DISPLAY_VALUE'];
 											}
-											else{
-												echo $properties["DISPLAY_VALUE"];
-											}
+										
+ 
 											?>
 										</td>
 									  </tr>
