@@ -1408,6 +1408,8 @@ body {
       padding-right: 30px;
       padding-left: 30px;
       margin-top: 30px; }
+	  .content__container_contacts {
+		margin-top: 5px; }
     .content__container_contacts {
       padding-bottom: 50px; }
     .content__container_ordered {
@@ -5471,7 +5473,7 @@ ul.sublist[data-level="3"] .sublist__link:after {
 
 .content-contacts__map {
   width: 100%;
-  height: 470px; 
+  height: 550px; 
   position: relative; 
   overflow: hidden;
 }
