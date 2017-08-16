@@ -112,6 +112,12 @@ body {
     background: url(images/icons/tank.png) no-repeat center; }
     .icon_tank:hover {
       background: url(images/icons/tank_active.png) no-repeat center, #6495cc; }
+	  
+	  .icon_fiting {
+    background: url(images/icons/fiting.png) no-repeat center; }
+    .icon_fiting:hover {
+      background: url(images/icons/fiting_active.png) no-repeat center, #6495cc; }  
+	  
   .icon_filter {
     background: url(images/icons/filter.png) no-repeat center; }
     .icon_filter:hover {
@@ -3000,6 +3006,9 @@ body {
       background: url(images/icons/heating_active.png) no-repeat center; }
     .side-nav__item_tank:hover .icon_tank {
       background: url(images/icons/tank_active.png) no-repeat center; }
+	.side-nav__item_fiting:hover .icon_fiting {
+      background: url(images/icons/fiting_active.png) no-repeat center; }  
+	  
     .side-nav__item_filter:hover .icon_filter {
       background: url(images/icons/filter_active.png) no-repeat center; }
     .side-nav__item_producers:hover .icon_producers {
