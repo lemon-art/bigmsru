@@ -6,8 +6,8 @@ $config = array(
      */
     'tiu_xml_url' => '',
 
-    'retailcrm_url' => 'https://demo.retailcrm.ru',
-    'retailcrm_apikey' => 'apiKeyValue',
+    'retailcrm_url' => 'https://bigms.retailcrm.ru',
+    'retailcrm_apikey' => 'lEFlWKrChHcFIl6colcsCUD6gIVJd75H',
     'retailcrm_order_chunk_size' => 50,
 
     /**
@@ -53,6 +53,6 @@ $config = array(
     /**
      * email address for notification
      */
-    'support_email' => 'support@example.org',
+    'support_email' => 'info@bigms.ru',
     'support_email_subject' => 'Integration problem'
 );
