@@ -394,6 +394,10 @@ $(document).ready(function() {
 		return false;
 	});
 	
+	$('.header__status').on('click', '.status-bar_cursor', function(e) {
+		window.location = $(this).data('url');
+	});
+	
 	//добавление в избранное товара
 	$('.content-products, .content-product, .demanded-products').on('click', '.product-card__wish-icon, .product-info__wish-icon', function(e) {
 		if ( $(this).hasClass('active') ){

@@ -1,3 +1,3 @@
 <?
-$sSectionName="Список желаний";
+$sSectionName="Избранное";
 ?>

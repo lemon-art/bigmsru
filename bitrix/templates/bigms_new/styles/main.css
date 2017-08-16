@@ -1226,6 +1226,12 @@ body {
       margin-right: 0; }
     .status-bar__item:first-child {
       margin-left: 0; }
+	  
+	.status-bar_cursor {
+		cursor: pointer;
+	}	
+	  
+	  
     .status-bar__item_active .status-bar__number {
       border: 2px solid #ffc600;
       color: #1b2036;
@@ -5578,6 +5584,7 @@ ul.sublist[data-level="3"] .sublist__link:after {
   height: 61px;
   background: url(images/icons/bigms_svg_shadow.png) no-repeat center;
   z-index: 1; }
+  
 
 .bigms-marker__svg {
   position: absolute;

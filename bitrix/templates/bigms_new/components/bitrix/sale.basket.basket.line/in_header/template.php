@@ -21,7 +21,7 @@ if ($arParams['POSITION_FIXED'] == 'Y')
 	var <?=$cartId?> = new BitrixSmallCart;
 </script>
 				
-                <li class="status-bar__item status-bar__item_wish <?if( !empty($arResult['FAVORITES'])):?>status-bar__item_active<?endif;?>">
+                <li data-url="/catalog/wishlist/" class="status-bar__item status-bar__item_wish <?if( !empty($arResult['FAVORITES'])):?>status-bar_cursor status-bar__item_active<?endif;?>">
 					<?if( !empty($arResult['FAVORITES'])):?>
 						<a href="/catalog/wishlist/" rel="nofollow">
 					<?endif;?>
