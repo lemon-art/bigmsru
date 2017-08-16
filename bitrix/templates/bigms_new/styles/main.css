@@ -440,6 +440,12 @@ body {
   .form__submit:hover {
     background: #ffcc1a; }
 
+	.form__submit:disabled { 
+		background: #dddddd;
+		cursor: default;
+	}	
+	
+	
 .form__captcha {
   margin-bottom: 16px; }
 
@@ -6080,6 +6086,18 @@ ul.sublist[data-level="3"] .sublist__link:after {
     color: #829dbe;
     font-size: 16px; }
 
+	.form__text input[type=checkbox]{
+		vertical-align: top;
+	}
+	
+	.form__text a {
+		color: #829dbe;
+	}
+	
+
+	
+	
+	
 .filter-result {
   padding: 25px 30px 30px 30px;
   box-shadow: 0px 2px 4px 1px #e4e8ea; }

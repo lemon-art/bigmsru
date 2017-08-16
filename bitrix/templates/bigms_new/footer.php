@@ -13,7 +13,7 @@
 					"bitrix:menu", 
 					"bottom_menu", 
 					Array(
-						"ROOT_MENU_TYPE" => "top",
+						"ROOT_MENU_TYPE" => "bottom",
 						"MENU_CACHE_TYPE" => "Y",
 						"MENU_CACHE_TIME" => "36000000",
 						"MENU_CACHE_USE_GROUPS" => "N",

@@ -15,46 +15,32 @@ $aMenuLinks = Array(
 		"" 
 	),
 	Array(
-		"Доставка", 
-		"/dostavka/", 
-		Array(), 
-		Array(), 
-		"" 
-	),
-	Array(
-		"Оплата", 
-		"/oplata/", 
+		"Доставка и оплата", 
+		"/about/dostavka-oplata/", 
 		Array(), 
 		Array(), 
 		"" 
 	),
 	Array(
 		"Гарантия и возврат", 
-		"/vozvrat-i-obmen/", 
+		"/about/vozvrat-i-obmen/", 
 		Array(), 
 		Array(), 
 		"" 
 	),
-    Array(
-        "Проектирование отопления",
-        "/uslugi/proektirovanie-sistemy-otopleniya/",
-        Array(),
-        Array(),
-        ""
-    ),
-    Array(
-        "Монтаж сантехники",
-        "/uslugi/montazh-inzhenernoy-i-bytovoy-santekhniki/",
-        Array(),
-        Array(),
-        ""
-    ),
 	Array(
 		"Контакты", 
 		"/kontakty/", 
 		Array(), 
 		Array(), 
 		"" 
-	)
+	),
+	Array(
+		"Политика конфиденциальности", 
+		"/politika-konfidentsialnosti/", 
+		Array(), 
+		Array(), 
+		"" 
+	)	
 );
 ?>

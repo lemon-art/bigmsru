@@ -19,8 +19,14 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
           <div class="form__row form__row_phone <?if (count($arResult['arrVALUES'])>0 && $arResult['arrVALUES']['form_text_2'] == ''):?>error<?endif?>">
             <input class="form__input" type="text" name="form_text_2" placeholder="Номер телефона" value="<?if ( $arResult['arrVALUES']['form_text_2']):?><?=$arResult['arrVALUES']['form_text_2']?><?endif;?>">
           </div>
-          <p class="form__text">Перезвоним в течении рабочего дня<br>с 9:00 до 19:00</p>		
-		  <input class="form__submit" type="submit" name="web_form_submit" value="ЖДУ ЗВОНКА">
+          <p class="form__text">Перезвоним в течении рабочего дня<br>с 9:00 до 19:00</p>
+		  <p class="form__text">
+				<label>
+					<input type="checkbox" name="agree_politic" <?if ( $arResult['arrVALUES']['agree_politic'] == 'on' ):?>checked<?endif;?>>
+					Я согласен с <a href="/politika-konfidentsialnosti/" target="_blank">политикой конфиденциальности</a>
+				</label>
+		  </p>
+		  <input class="form__submit" type="submit" <?if ( $arResult['arrVALUES']['agree_politic'] !== 'on' ):?>disabled<?endif;?> name="web_form_submit" value="ЖДУ ЗВОНКА">
 
 	
 
@@ -38,6 +44,17 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 			if ($(this).find('input[name="form_text_1"]').val() !== '' && $(this).find('input[name="form_text_2"]').val() !== '') {
 				yaCounter31721621.reachGoal('feedback-submit');
 			}
+		});
+		
+		$('form[name="SIMPLE_FORM_1"]').find('input[name="agree_politic"]').change(function() {
+
+			if ( $(this).prop("checked")){
+				$('form[name="SIMPLE_FORM_1"]').find('.form__submit').prop('disabled',false);
+			}
+			else {
+				$('form[name="SIMPLE_FORM_1"]').find('.form__submit').prop('disabled',true);
+			}
+			
 		});
 		
 		if( !$('form[name="SIMPLE_FORM_1"]').length > 0 ) {
