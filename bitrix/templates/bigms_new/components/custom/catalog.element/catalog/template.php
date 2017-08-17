@@ -108,7 +108,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 							<li data-trigger="all" class="product-tabs__header-item tabs-trigger active">Всё о товаре</li>
 							<li data-trigger="stats" class="product-tabs__header-item tabs-trigger">Характеристики</li>
 							<?if ( count($arResult["COLLECTIONS"]) > 0 ):?>
-								<li data-trigger="collection" class="product-tabs__header-item tabs-trigger">Товары из одной коллекции (<?=count($arResult["COLLECTIONS"])?>)</li>
+								<li data-trigger="collection" class="product-tabs__header-item tabs-trigger">Товары из одной коллекции (<?=count($arResult["COLLECTIONS"])-1?>)</li>
 							<?endif;?>
 							 
 							 
