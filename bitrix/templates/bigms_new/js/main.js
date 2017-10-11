@@ -20,7 +20,18 @@ $(document).ready(function() {
     mainOwl.trigger('refresh.owl.carousel', []);
   });
   
-  
+  $(".fancybox").fancybox({
+        openEffect: 'none',
+        closeEffect: 'none',
+        scrolling: 'no',
+        padding: [0, 0, 0, 0],
+        minWidth: 230,
+        helpers: {
+            overlay: {
+                locked: false
+            }
+        }
+    });
 
 
 	//переставляем h2 за блок в сео тексте
