@@ -1,14 +1,15 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+require($_SERVER["DOCUMENT_ROOT"]."/include/product_description.php");
 $GLOBALS["arLinkedProducts"]["XML_ID"] = $arResult["PROPERTIES"]["RECOMMEND"]["VALUE"];
 /** @var array $arParams */
 /** @var array $arResult */
 /** @global CMain $APPLICATION */
 /** @global CUser $USER */
-/** @global CDatabase $DB */
+/** @global CDatabase $DB */ 
 /** @var CBitrixComponentTemplate $this */
 /** @var string $templateName */
 /** @var string $templateFile */
-/** @var string $templateFolder */
+/** @var string $templateFolder */ 
 /** @var string $componentPath */
 /** @var CBitrixComponent $component */
 
@@ -466,25 +467,21 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 								  </div>
 								*/?> 
 								  <div class="product-about__wrap">
-									<strong class="product-about__title">60 дней на обмен</strong>
-									<p class="product-about__text">Вы можете обменять или вернуть товар в течение 2 месяцев со дня покупки</p>
+									<strong class="product-about__title"><?=$arDescription['exchange']['title']?></strong>
+									<p class="product-about__text"><?=$arDescription['exchange']['text']?></p>
 								  </div>
 								  <?if ( $arResult["DISPLAY_PROPERTIES"]["GARANTIYA_LET"]["VALUE"] ):?>
 									  <div class="product-about__wrap">
-										<strong class="product-about__title"><?=$arResult["DISPLAY_PROPERTIES"]["GARANTIYA_LET"]["VALUE"]?> <?=numberof($arResult["DISPLAY_PROPERTIES"]["GARANTIYA_LET"]["VALUE"], '', array('год', 'года', 'лет'))?> гарантии</strong>
-										<p class="product-about__text">При обнаружении дефекта мы сами обратимся в сервис-центр, обслуживающий продукцию торговой марки (бренд), и поможем решить проблему.</p>
+										<strong class="product-about__title"><?=$arResult["DISPLAY_PROPERTIES"]["GARANTIYA_LET"]["VALUE"]?> <?=numberof($arResult["DISPLAY_PROPERTIES"]["GARANTIYA_LET"]["VALUE"], '', array('год', 'года', 'лет'))?> гарантии от производителя</strong>
 									  </div>
 								  <?endif;?>
 								  <div class="product-about__wrap">
-									<strong class="product-about__title">Способы оплаты</strong>
-									<ul class="product-about__list">
-									  <li class="product-about__list-item">наличные</li>
-									  <li class="product-about__list-item">банковские карты</li>
-									  <li class="product-about__list-item">банковский перевод</li>
-									  <li class="product-about__list-item">Сбербанк Онлайн</li>
-									  <li class="product-about__list-item">Альфа клик</li>
-									  <li class="product-about__list-item">ВТБ24-Онлайн</li>
-									</ul>
+									<strong class="product-about__title"><?=$arDescription['payment']['title']?></strong>
+									<?=$arDescription['payment']['text']?>
+								  </div>
+								  <div class="product-about__wrap">
+									<strong class="product-about__title"><?=$arDescription['delivery']['title']?></strong>
+									<?=$arDescription['delivery']['text']?>
 								  </div>
 								</div>
 							  </div>
