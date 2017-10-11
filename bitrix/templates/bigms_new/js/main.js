@@ -177,6 +177,7 @@ $(document).ready(function() {
         if (menuTop < sidebarMarginTop || PageScrollY > bodyHeight - screenHeight  ) {
           menuTop = sidebarMarginTop;
         }
+
         $('.sidebar').css('top', menuTop+'px');
       } else {
         $('.sidebar').removeClass('top-fixed');

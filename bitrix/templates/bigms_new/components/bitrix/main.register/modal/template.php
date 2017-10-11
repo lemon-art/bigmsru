@@ -176,7 +176,20 @@ $this->setFrameMode(true);
 								<input class="form__input" type="text" maxlength="50" name="captcha_word">
 						</div>
 					<?endif;?>
+					
+					
+					<div class="form__row form__row_checkbox">
+							<input type="checkbox" id="agree_politic" class="checkbox form__checkbox" name="agree_politic">
+							<label for="agree_politic" class="form__label"><span>Я согласен с <a href="/politika-konfidentsialnosti/" target="_blank">политикой конфиденциальности</a></span></label>
+					</div>
 
+					<p class="form__text">
+						<label>
+							<input type="checkbox" name="agree_politic" <?if ( $arResult['arrVALUES']['agree_politic'] == 'on' ):?>checked<?endif;?>>
+							Я согласен с <a href="/politika-konfidentsialnosti/" target="_blank">политикой конфиденциальности</a>
+						</label>
+				  </p>
+					
 					<input class="form__submit" name="register_submit_button" type="submit" name="form_submit" value="ЗАРЕГИСТРИРОВАТЬСЯ">
 					
 

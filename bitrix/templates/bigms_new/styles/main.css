@@ -3603,8 +3603,6 @@ ul.sublist[data-level="3"] .sublist__link:after {
     box-sizing: border-box;
 	text-align:center;
 
-	border-bottom:1px solid #e6f4f8;
-	border-right:1px solid #e6f4f8;
 }
 .sertifikaty_list .item:nth-child(1), .sertifikaty_list .item:nth-child(2), .sertifikaty_list .item:nth-child(3), .sertifikaty_list .item:nth-child(4), .sertifikaty_list .item:nth-child(5){
 	border-top:0;

@@ -100,6 +100,9 @@ if(isset($_REQUEST) && isset($_GET) && $last_symbol_url != "/"){
 	<?$APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH."/styles/main.css");?>
 	<?$APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH."/styles/plugins/mCustomScrollbar/jquery.mCustomScrollbar.min.css");?>
 
+	<?if ( $isSertifikaty ):?>
+		<?$APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH."/styles/jquery.fancybox.css");?>
+	<?endif;?>
 
 	<?=$APPLICATION->ShowProperty("PAGER_NAV_PREV")?>
 	<?=$APPLICATION->ShowProperty("PAGER_NAV_NEXT")?>
@@ -114,6 +117,9 @@ if(isset($_REQUEST) && isset($_GET) && $last_symbol_url != "/"){
 	<?$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH."/js/main.js");?>
 	<?if($isCatalog):?>
 		<?$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH."/js/filter.js");?>
+	<?endif;?>
+	<?if ( $isSertifikaty ):?>
+		<?$APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH."/js/jquery.fancybox.pack.js");?>
 	<?endif;?>
 	<?$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH."/js/jquery.inputmask.bundle.min.js");?>
 
