@@ -215,7 +215,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 							);?>
 				  <a href="#" class="header__callback-link popup-trigger" data-trigger="callback">Обратный звонок</a>
 				</div>
-				<div class="col-lg-12 col-md-11 col-sm-12">
+				<div class="col-lg-12 col-md-11 col-sm-14">
 				  <nav class="header__menu">
 					<?$APPLICATION->IncludeComponent(
 						"bitrix:menu", 
@@ -239,7 +239,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 					);?>
 				  </nav>
 				</div>
-				<div class="col-lg-9 col-lg-offset-0 col-md-9 col-md-offset-0 col-sm-7 col-sm-offset-1">
+				<div class="col-lg-9 col-lg-offset-0 col-md-9 col-md-offset-0 col-sm-5 col-sm-offset-1">
 				  <ul class="header__auth auth">
 					<?
 						global $USER;
