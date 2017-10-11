@@ -117,7 +117,7 @@ $this->EndViewTarget("row_div_class");
 						<span class="contacts-description__text">84727931</span>
 					  </div>
 					  <div class="contacts-description__row">
-						<strong class="contacts-description__title">Ген. Директор Шинкевич А. Н.</strong>
+						<strong class="contacts-description__title">Ген. Директор Павленкович С.М</strong>
 					  </div>
 					</div>
 			   </div>
