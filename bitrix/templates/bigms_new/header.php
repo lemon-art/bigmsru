@@ -119,7 +119,7 @@ if(isset($_REQUEST) && isset($_GET) && $last_symbol_url != "/"){
 		<?$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH."/js/filter.js");?>
 	<?endif;?>
 	<?if ( $isSertifikaty ):?>
-		<?$APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH."/js/jquery.fancybox.pack.js");?>
+		<?$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH."/js/jquery.fancybox.pack.js");?>
 	<?endif;?>
 	<?$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH."/js/jquery.inputmask.bundle.min.js");?>
 
