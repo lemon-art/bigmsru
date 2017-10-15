@@ -39,3 +39,7 @@ $this->setFrameMode(true);
 <?if($arParams["DISPLAY_BOTTOM_PAGER"]):?>
 	<br /><?=$arResult["NAV_STRING"]?>
 <?endif;?>
+
+<script>
+  $(".fancybox").fancybox();
+</script>

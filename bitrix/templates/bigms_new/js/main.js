@@ -21,7 +21,7 @@ $(document).ready(function() {
   });
   
   
-  $(".fancybox").fancybox();
+
 	
 
 	//переставляем h2 за блок в сео тексте
