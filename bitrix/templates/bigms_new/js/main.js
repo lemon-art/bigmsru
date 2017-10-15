@@ -20,19 +20,9 @@ $(document).ready(function() {
     mainOwl.trigger('refresh.owl.carousel', []);
   });
   
-  $(".fancybox").fancybox({
-        openEffect: 'none',
-        closeEffect: 'none',
-        scrolling: 'no',
-        padding: [0, 0, 0, 0],
-        minWidth: 230,
-        helpers: {
-            overlay: {
-                locked: false
-            }
-        }
-    });
-
+  
+  $(".fancybox").fancybox();
+	
 
 	//переставляем h2 за блок в сео тексте
     if( $('.seo_text').find('h2').length > 0 ) {
