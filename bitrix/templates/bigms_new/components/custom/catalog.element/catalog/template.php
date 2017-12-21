@@ -239,10 +239,15 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 											</div>
 											<span class="form__price"><?=number_format($arResult["CATALOG_PRICE_1"],0,'.',' ')?> ₽</span>
 										  </div>
+										  
 										  <?
-											if($arResult['IBLOCK_SECTION_ID'] == 1405 || $arResult['IBLOCK_SECTION_ID'] == 1385 || $arResult['IBLOCK_SECTION_ID'] == 1386) { ?>
+											if($arResult['IBLOCK_SECTION_ID'] == 1405 || !$arResult['PROPERTIES']['DELIVERY_TIME']['VALUE'] || $arResult['IBLOCK_SECTION_ID'] == 1385 || $arResult['IBLOCK_SECTION_ID'] == 1386) { ?>
 												<span class="product-card__quantity product-card__quantity_instock">В наличии</span>
 												<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_instock" value="В наличии"/>
+											<? } elseif( $arResult['PROPERTIES']['DELIVERY_TIME']['VALUE'] ){
+												?>
+												<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_order" value="Под заказ 1-3 дня"/>
+												<span class="product-card__quantity product-card__quantity_order">Под заказ <?=$arResult['PROPERTIES']['DELIVERY_TIME']['VALUE']?></span>
 											<? } elseif($arResult["CATALOG_QUANTITY"] <= 0){
 												?>
 												<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_order" value="Под заказ 1-3 дня"/>
@@ -384,9 +389,13 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 									</div>
 									<div class="product-info__status">
 										<?
-										if($arResult['IBLOCK_SECTION_ID'] == 1405 || $arResult['IBLOCK_SECTION_ID'] == 1385 || $arResult['IBLOCK_SECTION_ID'] == 1386) { ?>
+										if($arResult['IBLOCK_SECTION_ID'] == 1405 || !$arResult['PROPERTIES']['DELIVERY_TIME']['VALUE'] || $arResult['IBLOCK_SECTION_ID'] == 1385 || $arResult['IBLOCK_SECTION_ID'] == 1386) { ?>
 											<span class="product-card__quantity product-card__quantity_instock">В наличии</span>
 											<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_instock" value="В наличии"/>
+										<? } elseif( $arResult['PROPERTIES']['DELIVERY_TIME']['VALUE'] ){
+												?>
+												<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_order" value="Под заказ 1-3 дня"/>
+												<span class="product-card__quantity product-card__quantity_order">Под заказ <?=$arResult['PROPERTIES']['DELIVERY_TIME']['VALUE']?></span>
 										<? } elseif($arResult["CATALOG_QUANTITY"] <= 0){
 											?>
 											<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_order" value="Под заказ 1-3 дня"/>
