@@ -25,7 +25,7 @@ if (defined('PULL_USER_ID'))
 {
 	$userId = PULL_USER_ID;
 }
-else if (!$USER->IsAuthorized() && IsModuleInstalled('statistic') && intval($_SESSION["SESS_SEARCHER_ID"]) <= 0 && intval($_SESSION["SESS_GUEST_ID"]) > 0 && COption::GetOptionString("pull", "guest") == 'Y')
+else if (!$USER->IsAuthorized() && intval($_SESSION["SESS_SEARCHER_ID"]) <= 0 && intval($_SESSION["SESS_GUEST_ID"]) > 0 && \CPullOptions::GetGuestStatus())
 {
 	$userId = intval($_SESSION["SESS_GUEST_ID"])*-1;
 }
@@ -89,7 +89,13 @@ if (check_bitrix_sessid())
 			$arMessage[] = Array(
 				'module_id' => 'main',
 				'command' => 'user_counter',
-				'params' => $arResult["COUNTERS"]
+				'params' => $arResult["COUNTERS"],
+				'extra' => Array(
+					'server_time' => date('c'),
+					'server_name' => COption::GetOptionString('main', 'server_name', $_SERVER['SERVER_NAME']),
+					'revision' => PULL_REVISION,
+					'revisionMobile' => PULL_MOBILE_REVISION,
+				),
 			);
 		}
 		echo CUtil::PhpToJsObject(Array('MESSAGE' => $arMessage, 'ERROR' => ''));

@@ -44,7 +44,7 @@ $publicMode = isset($arParams["PUBLIC_MODE"]) && $arParams["PUBLIC_MODE"] === tr
 	BX.ready(
 		function()
 		{
-			if(typeof(window["BXIM"]) === "undefined")
+			if(typeof(window["BXIM"]) === "undefined" || typeof(BX.CrmSipManager) === "undefined")
 			{
 				return;
 			}

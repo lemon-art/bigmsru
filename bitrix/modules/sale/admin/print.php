@@ -1,5 +1,8 @@
 <?
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
+
+global $USER, $APPLICATION;
+IncludeModuleLangFile(__FILE__);
 $SALE_RIGHT = $APPLICATION->GetGroupRight("sale");
 if ($SALE_RIGHT=="D") $APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
 //require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
@@ -50,17 +53,33 @@ if (CModule::IncludeModule("sale"))
 {
 	if ($arOrder = CSaleOrder::GetByID($ORDER_ID))
 	{
+		$allowedStatusesView = \Bitrix\Sale\OrderStatus::getStatusesUserCanDoOperations($USER->GetID(), array('view'));
+
+
 		if (isset($_REQUEST['SHIPMENT_ID']) && intval($_REQUEST['SHIPMENT_ID']) > 0)
 		{
 			$shipmentId = $_REQUEST['SHIPMENT_ID'];
 			$res = \Bitrix\Sale\Internals\ShipmentTable::getList(array(
-				'select' => array('PRICE_DELIVERY'),
+				'select' => array('PRICE_DELIVERY', 'STATUS_ID'),
 				'filter' => array(
 					'ID' => $_REQUEST['SHIPMENT_ID']
 				)
 			));
 			$data = $res->fetch();
+
+			$allowedStatusesDeliveryView = \Bitrix\Sale\DeliveryStatus::getStatusesUserCanDoOperations($USER->GetID(), array('view'));
+			if(!in_array($data["STATUS_ID"], $allowedStatusesDeliveryView))
+			{
+				ShowError(\Bitrix\Main\Localization\Loc::getMessage("SALE_PRINT_DENIED_PRINT_PERMISSION"));
+				exit;
+			}
+
 			$arOrder['PRICE_DELIVERY'] = $data['PRICE_DELIVERY'];
+		}
+		elseif (!in_array($arOrder["STATUS_ID"], $allowedStatusesView))
+		{
+			ShowError(\Bitrix\Main\Localization\Loc::getMessage("SALE_PRINT_DENIED_PRINT_PERMISSION"));
+			exit;
 		}
 
 		$shipmentRes = \Bitrix\Sale\Shipment::getList(array(

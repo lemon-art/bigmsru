@@ -24,4 +24,5 @@ $MESS["CP_BND_SET_META_DESCRIPTION"] = "Set page description";
 $MESS["CP_BND_SET_BROWSER_TITLE"] = "Set browser window title";
 $MESS["CP_BND_SET_CANONICAL_URL"] = "Set canonical URL";
 $MESS["CP_BND_SET_LAST_MODIFIED"] = "Set page last modified date to response header";
+$MESS["CP_BND_STRICT_SECTION_CHECK"] = "Check parent section when showing item";
 ?>

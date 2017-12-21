@@ -38,4 +38,8 @@ $MESS["PULL_OPTIONS_HEAD_SUB_WS"] = "Command reading URL for Web Socket enabled 
 $MESS["PULL_OPTIONS_HEAD_BLOCK"] = "Exclude sites";
 $MESS["PULL_OPTIONS_GUEST"] = "Enable module for anonymous users";
 $MESS["PULL_OPTIONS_GUEST_DESC"] = "User information provided by Web Analytics module";
+$MESS["PULL_OPTIONS_SIGNATURE_KEY"] = "Signature code for server interaction";
+$MESS["PULL_OPTIONS_NGINX_2"] = "<b>\"Push server\"</b> is installed and active on the server";
+$MESS["PULL_OPTIONS_NGINX_VERSION_710"] = "Bitrix Virtual Appliance 7.1 and higher (Bitrix Push server)";
+$MESS["PULL_BATCH_MAX_COUNT_MESSAGES"] = "Maximum number of push notifications to send simultaneously";
 ?>

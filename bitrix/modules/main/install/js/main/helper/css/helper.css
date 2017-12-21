@@ -30,16 +30,32 @@
 	height: 100%;
 	display: none;
 	overflow-x: hidden;
-	overflow-y: scroll;
+	overflow-y: scroll !important;
 	right: 0;
 	position: absolute;
 	width: 0;
-
 	-webkit-transition: width 0.3s linear;
 	transition: width 0.3s linear;
+	-webkit-overflow-scrolling: touch !important;
 	z-index: 250;
 }
 
+.bx-help-main:before {
+	content:'';
+	display: block;
+	width: 1px;
+	float: left;
+	height: -webkit-calc(100% + 1px);
+	height: calc(100% + 1px);
+	margin-left: -1px;
+
+}
+.bx-help-main:after{
+	content:'';
+	display: block;
+	width: 100%;
+	clear: both;
+}
 
 .bx-help-popup-loader {
 	background: url(images/help-popup-loader.png?1) no-repeat 0 0;
@@ -175,7 +191,7 @@
 
 .bx-help-nav-fixed {
 	left: auto;
-	right: 0px;
+	right: 0;
 	position: fixed;
 }
 
@@ -213,6 +229,9 @@
 	height: 52px;
 }
 
+.bx-help-nav-fixed.bx-help-nav-wrap .bx-help-top-title {
+	margin: 0 17px 0 0;
+}
 
 .bx-help-center {
 	text-align: center;
@@ -250,6 +269,10 @@
 
 	-webkit-transition: opacity 0.3s linear;
 	transition: opacity 0.3s linear;
+}
+
+.bx-help-nav-fixed .bx-help-nav {
+	margin: 0 17px 0 0;
 }
 
 .bx-help-nav-show .bx-help-nav {

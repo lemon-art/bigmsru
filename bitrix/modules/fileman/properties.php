@@ -3,29 +3,20 @@ IncludeModuleLangFile(__FILE__);
 
 $GLOBALS['YANDEX_MAP_PROPERTY'] = array();
 
-class CIBlockPropertyMapInterface
+abstract class CIBlockPropertyMapInterface
 {
-	function GetUserTypeDescription()
-	{
-		return array();
-	}
+	abstract public static function GetUserTypeDescription();
 
-	function GetPropertyFieldHtml($arProperty, $value, $strHTMLControlName)
-	{
-		return '';
-	}
+	abstract public static function GetPropertyFieldHtml($arProperty, $value, $strHTMLControlName);
 
-	function GetAdminListViewHTML($arProperty, $value, $strHTMLControlName)
+	public static function GetAdminListViewHTML($arProperty, $value, $strHTMLControlName)
 	{
 		return $value['VALUE'];
 	}
 
-	function GetPublicViewHTML($arProperty, $value, $strHTMLControlName)
-	{
-		return '';
-	}
+	abstract public static function GetPublicViewHTML($arProperty, $value, $strHTMLControlName);
 
-	function ConvertFromDB($arProperty, $value)
+	public static function ConvertFromDB($arProperty, $value)
 	{
 		$arResult = array('VALUE' => '');
 
@@ -43,7 +34,7 @@ class CIBlockPropertyMapInterface
 		return $arResult;
 	}
 
-	function ConvertToDB($arProperty, $value)
+	public static function ConvertToDB($arProperty, $value)
 	{
 		$arResult = array('VALUE' => '');
 
@@ -61,7 +52,7 @@ class CIBlockPropertyMapInterface
 		return $arResult;
 	}
 
-	function _GetMapKey($map_type, &$strDomain)
+	public static function _GetMapKey($map_type, &$strDomain)
 	{
 		$MAP_KEY = '';
 		$strMapKeys = COPtion::GetOptionString('fileman', 'map_'.$map_type.'_keys');
@@ -85,23 +76,28 @@ class CIBlockPropertyMapInterface
 
 class CIBlockPropertyMapGoogle extends CIBlockPropertyMapInterface
 {
-	function GetUserTypeDescription()
+	public static function GetUserTypeDescription()
 	{
 		return array(
 			"PROPERTY_TYPE" => "S",
 			"USER_TYPE" => "map_google",
 			"DESCRIPTION" => GetMessage("IBLOCK_PROP_MAP_GOOGLE"),
-			"GetPropertyFieldHtml" => array("CIBlockPropertyMapGoogle","GetPropertyFieldHtml"),
-			"GetPublicViewHTML" => array("CIBlockPropertyMapGoogle","GetPublicViewHTML"),
-			"ConvertToDB" => array("CIBlockPropertyMapGoogle","ConvertToDB"),
-			"ConvertFromDB" => array("CIBlockPropertyMapGoogle","ConvertFromDB"),
-			"GetSettingsHTML" => array("CIBlockPropertyMapGoogle", "GetSettingsHTML"),
-			"PrepareSettings" => array("CIBlockPropertyMapGoogle", "PrepareSettings"),
+			"GetPropertyFieldHtml" => array(__CLASS__,"GetPropertyFieldHtml"),
+			"GetPublicViewHTML" => array(__CLASS__,"GetPublicViewHTML"),
+			"ConvertToDB" => array(__CLASS__,"ConvertToDB"),
+			"ConvertFromDB" => array(__CLASS__,"ConvertFromDB"),
+			"GetSettingsHTML" => array(__CLASS__, "GetSettingsHTML"),
+			"PrepareSettings" => array(__CLASS__, "PrepareSettings"),
 		);
 	}
 
-	function GetSettingsHTML($arProperty, $strHTMLControlName, &$arPropertyFields)
+	public static function GetSettingsHTML($arProperty, $strHTMLControlName, &$arPropertyFields)
 	{
+		$arPropertyFields = array(
+			'HIDE' => array('ROW_COUNT', 'COL_COUNT', 'SMART_FILTER', 'FILTRABLE', 'SEARCHABLE'),
+			'SET' => array('SMART_FILTER' => 'N', 'FILTRABLE' => 'N', 'SEARCHABLE' => 'N')
+		);
+
 		$settings = \CIBlockPropertyMapGoogle::PrepareSettings($arProperty);
 		$settings = $settings['USER_TYPE_SETTINGS'];
 		$apiKey = isset($settings['API_KEY']) ? htmlspecialcharsbx($settings['API_KEY']) : '';
@@ -115,16 +111,18 @@ class CIBlockPropertyMapGoogle extends CIBlockPropertyMapInterface
 			</tr>';
 	}
 
-	function PrepareSettings($arProperty)
+	public static function PrepareSettings($arProperty)
 	{
-		return array(
-			'USER_TYPE_SETTINGS' => array(
-				'API_KEY' => isset($arProperty['USER_TYPE_SETTINGS']['API_KEY']) ? $arProperty['USER_TYPE_SETTINGS']['API_KEY'] : ''
-			)
+		$arProperty['SMART_FILTER'] = 'N';
+		$arProperty['FILTRABLE'] = 'N';
+		$arProperty['SEARCHABLE'] = 'N';
+		$arProperty['USER_TYPE_SETTINGS'] = array(
+			'API_KEY' => isset($arProperty['USER_TYPE_SETTINGS']['API_KEY']) ? $arProperty['USER_TYPE_SETTINGS']['API_KEY'] : ''
 		);
+		return $arProperty;
 	}
 
-	function GetPropertyFieldHtml($arProperty, $value, $strHTMLControlName)
+	public static function GetPropertyFieldHtml($arProperty, $value, $strHTMLControlName)
 	{
 		global $APPLICATION;
 
@@ -418,7 +416,9 @@ function updatePointPosition_<?echo $MAP_ID?>__n<?=$googleMapLastNumber?>_(obPoi
 	BX('point_<?echo $MAP_ID?>__n<?=$googleMapLastNumber?>_lon').value = obP ? obP[1] : '';
 }
 
-	BX.ready(setTimeout(BXWaitForMap_<?echo $MAP_ID?>__n<?=$googleMapLastNumber?>_, 1));
+   BX.ready(function(){
+   	setTimeout(BXWaitForMap_<?echo $MAP_ID?>__n<?=$googleMapLastNumber?>_, 100);
+   });
 
 var jsGoogleCESearch_<?echo $MAP_ID;?> = {
 	bInited: false,
@@ -642,11 +642,11 @@ var jsGoogleCESearch_<?echo $MAP_ID;?> = {
 
 	if ($arProperty['MULTIPLE'] == 'Y')
 		$googleMapLastNumber++;
-		
+
 	return $out;
 	}
 
-	function GetPublicViewHTML($arProperty, $value, $arParams)
+	public static function GetPublicViewHTML($arProperty, $value, $arParams)
 	{
 		$s = '';
 		if(strlen($value["VALUE"])>0)
@@ -654,7 +654,7 @@ var jsGoogleCESearch_<?echo $MAP_ID;?> = {
 			$value = parent::ConvertFromDB($arProperty, $value);
 			if ($arParams['MODE'] == 'CSV_EXPORT')
 			{
-				$s = $value;
+				$s = $value["VALUE"];
 			}
 			else
 			{
@@ -694,21 +694,23 @@ var jsGoogleCESearch_<?echo $MAP_ID;?> = {
 
 class CIBlockPropertyMapYandex extends CIBlockPropertyMapInterface
 {
-	function GetUserTypeDescription()
+	public static function GetUserTypeDescription()
 	{
 		return array(
 			"PROPERTY_TYPE" => "S",
 			"USER_TYPE" => "map_yandex",
 			"DESCRIPTION" => GetMessage("IBLOCK_PROP_MAP_YANDEX"),
-			"GetPropertyFieldHtml" => array("CIBlockPropertyMapYandex", "GetPropertyFieldHtml"),
-			"GetPublicViewHTML"	=> array("CIBlockPropertyMapYandex", "GetPublicViewHTML"),
-			"GetPublicEditHTML"	=> array("CIBlockPropertyMapYandex", "GetPublicEditHTML"),
-			"ConvertToDB" => array("CIBlockPropertyMapYandex", "ConvertToDB"),
-			"ConvertFromDB" => array("CIBlockPropertyMapYandex", "ConvertFromDB"),
+			"GetPropertyFieldHtml" => array(__CLASS__, "GetPropertyFieldHtml"),
+			"GetPublicViewHTML"	=> array(__CLASS__, "GetPublicViewHTML"),
+			"GetPublicEditHTML"	=> array(__CLASS__, "GetPublicEditHTML"),
+			"ConvertToDB" => array(__CLASS__, "ConvertToDB"),
+			"ConvertFromDB" => array(__CLASS__, "ConvertFromDB"),
+			"GetSettingsHTML" => array(__CLASS__, "GetSettingsHTML"),
+			"PrepareSettings" => array(__CLASS__, "PrepareSettings"),
 		);
 	}
 
-	function _DrawKeyInputControl($MAP_ID, $strDomain)
+	public static function _DrawKeyInputControl($MAP_ID, $strDomain)
 	{
 		echo BeginNote();
 ?>
@@ -752,7 +754,26 @@ function saveYandexKey(domain, input)
 <?
 	} // _DrawKeyInputControl()
 
-	function GetPropertyFieldHtml($arProperty, $value, $strHTMLControlName)
+	public static function GetSettingsHTML($arProperty, $strHTMLControlName, &$arPropertyFields)
+	{
+		$arPropertyFields = array(
+			'HIDE' => array('ROW_COUNT', 'COL_COUNT', 'SMART_FILTER', 'FILTRABLE', 'SEARCHABLE'),
+			'SET' => array('SMART_FILTER' => 'N', 'FILTRABLE' => 'N', 'SEARCHABLE' => 'N')
+		);
+		
+		return '';
+	}
+
+	public static function PrepareSettings($arProperty)
+	{
+		$arProperty['SMART_FILTER'] = 'N';
+		$arProperty['FILTRABLE'] = 'N';
+		$arProperty['SEARCHABLE'] = 'N';
+		$arProperty['USER_TYPE_SETTINGS'] = array();
+		return $arProperty;
+	}
+
+	public static function GetPropertyFieldHtml($arProperty, $value, $strHTMLControlName)
 	{
 		global $APPLICATION;
 
@@ -1051,7 +1072,10 @@ function saveYandexKey(domain, input)
 		BX('point_<?echo $MAP_ID?>__n<?=$yandexMapLastNumber?>_lon').value = obPoint ? obPoint[1] : '';
 	}
 
-	BX.ready(setTimeout(BXWaitForMap_<?echo $MAP_ID?>__n<?=$yandexMapLastNumber?>_, 1));
+	BX.ready(function(){
+		setTimeout(BXWaitForMap_<?echo $MAP_ID?>__n<?=$yandexMapLastNumber?>_, 100);
+   });
+
 	var jsYandexCESearch_<?echo $MAP_ID;?> = {
 
 		bInited: false,
@@ -1255,7 +1279,7 @@ function saveYandexKey(domain, input)
 		return $out;
 	}
 
-	function GetPublicEditHTML($arProperty, $value, $strHTMLControlName)
+	public static function GetPublicEditHTML($arProperty, $value, $strHTMLControlName)
 	{
 		global $APPLICATION;
 
@@ -1632,8 +1656,11 @@ function saveYandexKey(domain, input)
 		BX('point_<?echo $MAP_ID?>__n<?=$yandexMapLastNumber?>_lon').value = obPoint ? obPoint[1] : '';
 	}
 
-	BX.ready(setTimeout(BXWaitForMap_<?echo $MAP_ID?>__n<?=$yandexMapLastNumber?>_, 1));
-	var jsYandexCESearch_<?echo $MAP_ID;?> = {
+   BX.ready(function(){
+   	setTimeout(BXWaitForMap_<?echo $MAP_ID?>__n<?=$yandexMapLastNumber?>_, 100);
+   });
+
+   var jsYandexCESearch_<?echo $MAP_ID;?> = {
 
 		bInited: false,
 
@@ -1837,14 +1864,16 @@ function saveYandexKey(domain, input)
 		return $out;
 	}
 
-	function GetPublicViewHTML($arProperty, $value, $arParams)
+	public static function GetPublicViewHTML($arProperty, $value, $arParams)
 	{
 		$s = '';
 		if ($arParams['MODE'] == 'CSV_EXPORT')
 		{
 			if (strlen($value["VALUE"])>0)
 			{
-				$s = parent::ConvertFromDB($arProperty, $value);
+				$coordValue = parent::ConvertFromDB($arProperty, $value);
+				$s = $coordValue["VALUE"];
+
 			}
 		}
 		else
@@ -1963,6 +1992,7 @@ class CVideoProperty
 	public static function BaseGetSettingsHTML($name, $val)
 	{
 		$arSkins = GetSkinsEx(CUserTypeVideo::GetSkinPath());
+		$name = htmlspecialcharsbx($name);
 		ob_start();
 ?>
 <tr><td colSpan="2">
@@ -2089,6 +2119,7 @@ jsUtils.loadJSFile("/bitrix/components/bitrix/player/js/prop_skin_selector.js", 
 		global $APPLICATION;
 		$id = str_replace(array("[","]",":"), "_", $name);
 		$path = $val["path"];
+		$name = htmlspecialcharsbx($name);
 
 		if (intval($val['width']) <= 0)
 			$val['width'] = intval($set['WIDTH']);
@@ -2475,7 +2506,7 @@ function ChangeOrLeaveFile<?= $id?>(bChange)
 	{
 		if (!is_array($val) || strlen($val["path"]) == 0)
 			return '';
-		return "<span style='white-space: nowrap;' title='".$val["path"]."'>".GetMessage("IBLOCK_PROP_VIDEO")." [".htmlspecialcharsex($val["path"])."]</span>";
+		return '<span style="white-space: nowrap;" title="'.htmlspecialcharsbx($val["path"]).'">'.GetMessage("IBLOCK_PROP_VIDEO").' ['.htmlspecialcharsex($val["path"]).']</span>';
 	}
 
 	public static function BaseGetPublicHTML($set, $val)
@@ -2593,7 +2624,7 @@ if (!function_exists('getSkinsEx'))
 	function getSkinsFromDir($path) //http://jabber.bx/view.php?id=28856
 	{
 		$basePath = $_SERVER["DOCUMENT_ROOT"].Rel2Abs("/", $path);
-		$arSkinExt = array('swf', 'zip');
+		$arSkinExt = array('swf', 'zip', 'css');
 		$arPreviewExt = array('png', 'gif', 'jpg', 'jpeg');
 		$prExtCnt = count($arPreviewExt);
 		$arSkins = Array();
@@ -2609,6 +2640,9 @@ if (!function_exists('getSkinsEx'))
 			{
 				$name = substr($f, 0, - strlen($ext) - 1); // name of the skin
 				if (strlen($name) <= 0)
+					continue;
+
+				if (strpos($name, '.min') !== false)
 					continue;
 
 				$Skin = array('filename' => $f);
@@ -2635,59 +2669,65 @@ if (!function_exists('getSkinsEx'))
 // ### Iblock property ###
 class CIBlockPropertyVideo extends CVideoProperty
 {
-	function GetUserTypeDescription()
+	public static function GetUserTypeDescription()
 	{
 		return array(
 			"PROPERTY_TYPE" => "S",
 			"USER_TYPE" => "video",
 			"DESCRIPTION" => GetMessage("IBLOCK_PROP_VIDEO"),
-			"GetPropertyFieldHtml" => array("CIBlockPropertyVideo", "GetPropertyFieldHtml"),
-			"GetPublicViewHTML" => array("CIBlockPropertyVideo", "GetPublicViewHTML"),
-			"ConvertToDB" => array("CIBlockPropertyVideo", "ConvertToDB"),
-			"ConvertFromDB" => array("CIBlockPropertyVideo", "ConvertFromDB"),
-			"CheckFields" => array("CIBlockPropertyVideo", "CheckFields"),
-			"GetSearchContent" => array("CIBlockPropertyVideo", "GetSearchContent"),
-			"GetSettingsHTML" => array("CIBlockPropertyVideo", "GetSettingsHTML"),
-			"PrepareSettings" => array("CIBlockPropertyVideo", "PrepareSettings"),
-			"GetAdminListViewHTML" => array("CIBlockPropertyVideo", "GetAdminListViewHTML"),
-			"GetLength" => array("CIBlockPropertyVideo", "GetLength"),
+			"GetPropertyFieldHtml" => array(__CLASS__, "GetPropertyFieldHtml"),
+			"GetPublicViewHTML" => array(__CLASS__, "GetPublicViewHTML"),
+			"ConvertToDB" => array(__CLASS__, "ConvertToDB"),
+			"ConvertFromDB" => array(__CLASS__, "ConvertFromDB"),
+			"CheckFields" => array(__CLASS__, "CheckFields"),
+			"GetSearchContent" => array(__CLASS__, "GetSearchContent"),
+			"GetSettingsHTML" => array(__CLASS__, "GetSettingsHTML"),
+			"PrepareSettings" => array(__CLASS__, "PrepareSettings"),
+			"GetAdminListViewHTML" => array(__CLASS__, "GetAdminListViewHTML"),
+			"GetLength" => array(__CLASS__, "GetLength"),
 		);
 	}
 
-	function GetPropertyFieldHtml($arProperty, $value, $strHTMLControlName)
+	public static function GetPropertyFieldHtml($arProperty, $value, $strHTMLControlName)
 	{
 		$dbVal = CUserTypeVideo::BaseConvertToDB($value["VALUE"]);
 		$val = CUserTypeVideo::BaseConvertFromDB($dbVal);
 		return CIBlockPropertyVideo::BaseGetEditFormHTML($arProperty["USER_TYPE_SETTINGS"], $val, $strHTMLControlName["VALUE"], $strHTMLControlName["MODE"]);
 	}
 
-	function GetAdminListViewHTML($arProperty, $value, $strHTMLControlName)
+	public static function GetAdminListViewHTML($arProperty, $value, $strHTMLControlName)
 	{
 		return CIBlockPropertyVideo::BaseGetAdminListViewHTML($value["VALUE"]);
 	}
 
-	function GetPublicViewHTML($arProperty, $value, $strHTMLControlName)
+	public static function GetPublicViewHTML($arProperty, $value, $strHTMLControlName)
 	{
-		return CIBlockPropertyVideo::BaseGetPublicHTML($arProperty["USER_TYPE_SETTINGS"], $value["VALUE"]);
+		$pathExist = (isset($value['VALUE']['path']) && $value['VALUE']['path'] != '');
+		if (isset($strHTMLControlName['MODE']) && $strHTMLControlName['MODE'] == 'CSV_EXPORT')
+			return ($pathExist ? $value['VALUE']['path'] : '');
+		elseif (isset($strHTMLControlName['MODE']) && $strHTMLControlName['MODE'] == 'SIMPLE_TEXT')
+			return ($pathExist ? $value['VALUE']['path'] : '');
+		else
+			return CIBlockPropertyVideo::BaseGetPublicHTML($arProperty["USER_TYPE_SETTINGS"], $value["VALUE"]);
 	}
 
-	function ConvertFromDB($arProperty, $value)
+	public static function ConvertFromDB($arProperty, $value)
 	{
 		$value['VALUE'] = CIBlockPropertyVideo::BaseConvertFromDB($value['VALUE']);
 		return $value;
 	}
 
-	function ConvertToDB($arProperty, $value)
+	public static function ConvertToDB($arProperty, $value)
 	{
 		return CIBlockPropertyVideo::BaseConvertToDB($value["VALUE"]);
 	}
 
-	function CheckFields($arProperty, $value)
+	public static function CheckFields($arProperty, $value)
 	{
 		return CIBlockPropertyVideo::BaseCheckFields($value["VALUE"]);
 	}
 
-	function GetLength($arProperty, $value)
+	public static function GetLength($arProperty, $value)
 	{
 		if(
 			is_array($value)
@@ -2719,16 +2759,17 @@ class CIBlockPropertyVideo extends CVideoProperty
 		return 0;
 	}
 
-	function PrepareSettings($arProperty)
+	public static function PrepareSettings($arProperty)
 	{
 		$arResult = CUserTypeVideo::BasePrepareSettings($arProperty, "USER_TYPE_SETTINGS");
-		$arResult['SMART_FILTER'] = 'N';
+		$arFields['SMART_FILTER'] = 'N';
+		$arFields['FILTRABLE'] = 'N';
 		$arFields['USER_TYPE_SETTINGS'] = $arResult;
 
 		return $arFields;
 	}
 
-	function GetSettingsHTML($arProperty, $strHTMLControlName, &$arPropertyFields)
+	public static function GetSettingsHTML($arProperty, $strHTMLControlName, &$arPropertyFields)
 	{
 		$arPropertyFields = array(
 			"HIDE" => array("FILTRABLE", "ROW_COUNT", "COL_COUNT", "DEFAULT_VALUE", "SMART_FILTER"), //will hide the field
@@ -2743,7 +2784,7 @@ class CIBlockPropertyVideo extends CVideoProperty
 		return CIBlockPropertyVideo::BaseGetSettingsHTML($strHTMLControlName["NAME"], $arSettings);
 	}
 
-	function GetSearchContent($arProperty, $value, $strHTMLControlName)
+	public static function GetSearchContent($arProperty, $value, $strHTMLControlName)
 	{
 		return CIBlockPropertyVideo::BaseOnSearchContent($value["VALUE"]);
 	}

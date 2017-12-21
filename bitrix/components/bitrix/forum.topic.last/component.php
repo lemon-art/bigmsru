@@ -178,7 +178,7 @@ $arTopics = array();
 				$res["~POST_MESSAGE_TEXT"] = (COption::GetOptionString("forum", "FILTER", "Y")=="Y" ? $res["~POST_MESSAGE_FILTER"] : $res["~POST_MESSAGE"]);
 				if (!empty($arParams["NAME_TEMPLATE"]) && $res["SHOW_NAME"] != "Y")
 				{
-					$name = CUser::FormatName(
+					$res["~AUTHOR_NAME"] =  CUser::FormatName(
 						$arParams["NAME_TEMPLATE"],
 						array(
 							"NAME"			=> $res["NAME"],
@@ -189,11 +189,17 @@ $arTopics = array();
 						true,
 						false
 					);
-					if (!!$name)
-					{
-						$res["~AUTHOR_NAME"] = $name;
-						$res["AUTHOR_NAME"] = htmlspecialcharsbx($name);
-					}
+					$res["AUTHOR_NAME"] =  CUser::FormatName(
+						$arParams["NAME_TEMPLATE"],
+						array(
+							"NAME"			=> $res["NAME"],
+							"LAST_NAME"		=> $res["LAST_NAME"],
+							"SECOND_NAME"	=> $res["SECOND_NAME"],
+							"LOGIN"			=> $res["LOGIN"]
+						),
+						true,
+						true
+					);
 				}
 				$res["AUTHOR_ID"] = intval($res["AUTHOR_ID"]);
 				$res["AUTHOR_URL"] = "";

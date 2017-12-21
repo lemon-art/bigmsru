@@ -92,6 +92,12 @@ class currency extends CModule
 		ModuleManager::registerModule('currency');
 		self::installCurrencies();
 
+		$eventManager = \Bitrix\Main\EventManager::getInstance();
+		$eventManager->registerEventHandlerCompatible('iblock', 'OnIBlockPropertyBuildList', 'currency',
+			'\Bitrix\Currency\Integration\IblockMoneyProperty', 'getUserTypeDescription');
+		$eventManager->registerEventHandlerCompatible('main', 'OnUserTypeBuildList', 'currency',
+			'\Bitrix\Currency\UserField\Money', 'getUserTypeDescription');
+
 		return true;
 	}
 
@@ -110,6 +116,13 @@ class currency extends CModule
 				return false;
 			}
 		}
+
+		$eventManager = \Bitrix\Main\EventManager::getInstance();
+		$eventManager->unRegisterEventHandler('iblock', 'OnIBlockPropertyBuildList', 'currency',
+			'\Bitrix\Currency\Integration\IblockMoneyProperty', 'getUserTypeDescription');
+		$eventManager->unRegisterEventHandler('main', 'OnUserTypeBuildList', 'currency',
+			'\Bitrix\Currency\UserField\Money', 'getUserTypeDescription');
+
 		CAgent::RemoveModuleAgents('currency');
 		ModuleManager::unRegisterModule('currency');
 
@@ -316,6 +329,20 @@ class currency extends CModule
 					array('CURRENCY' => 'EUR', 'NUMCODE' => '978', 'AMOUNT' => 4.29, 'AMOUNT_CNT' => 1, 'SORT' => 300, 'BASE' => 'N', 'CURRENT_BASE_RATE' => 4.29),
 					array('CURRENCY' => 'CNY', 'NUMCODE' => '156', 'AMOUNT' => 61.44, 'AMOUNT_CNT' => 100, 'SORT' => 400, 'BASE' => 'N', 'CURRENT_BASE_RATE' => 0.6144),
 					array('CURRENCY' => 'INR', 'NUMCODE' => '356', 'AMOUNT' => 5.99, 'AMOUNT_CNT' => 100, 'SORT' => 500, 'BASE' => 'N', 'CURRENT_BASE_RATE' => 0.0599),
+				);
+				break;
+			case 'PLN':
+				$addCurrency = array(
+					array('CURRENCY' => 'PLN', 'NUMCODE' => '985', 'AMOUNT' => 1, 'AMOUNT_CNT' => 1, 'SORT' => 100, 'BASE' => 'Y', 'CURRENT_BASE_RATE' => 1),
+					array('CURRENCY' => 'USD', 'NUMCODE' => '840', 'AMOUNT' => 3.77, 'AMOUNT_CNT' => 1, 'SORT' => 200, 'BASE' => 'N', 'CURRENT_BASE_RATE' => 3.77),
+					array('CURRENCY' => 'EUR', 'NUMCODE' => '978', 'AMOUNT' => 4.22, 'AMOUNT_CNT' => 1, 'SORT' => 300, 'BASE' => 'N', 'CURRENT_BASE_RATE' => 4.22),
+				);
+				break;
+			case 'TRY':
+				$addCurrency = array(
+					array('CURRENCY' => 'TRY', 'NUMCODE' => '949', 'AMOUNT' => 1, 'AMOUNT_CNT' => 1, 'SORT' => 100, 'BASE' => 'Y', 'CURRENT_BASE_RATE' => 1),
+					array('CURRENCY' => 'USD', 'NUMCODE' => '840', 'AMOUNT' => 3.51, 'AMOUNT_CNT' => 1, 'SORT' => 200, 'BASE' => 'N', 'CURRENT_BASE_RATE' => 3.51),
+					array('CURRENCY' => 'EUR', 'NUMCODE' => '978', 'AMOUNT' => 3.92, 'AMOUNT_CNT' => 1, 'SORT' => 300, 'BASE' => 'N', 'CURRENT_BASE_RATE' => 3.92),
 				);
 				break;
 			case 'USD':

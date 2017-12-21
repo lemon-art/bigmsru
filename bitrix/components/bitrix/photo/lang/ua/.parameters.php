@@ -55,4 +55,5 @@ $MESS["T_IBLOCK_FILTER"] = "Фільтр";
 $MESS["T_IBLOCK_DESC_PAGER_PHOTO"] = "Фотографії";
 $MESS["DETAIL_PAGE"] = "Фотографія детально";
 $MESS["F_PATH_TO_SMILE"] = "Шлях відносно кореня сайту до папки зі смайлами";
+$MESS["CP_BP_SET_LAST_MODIFIED"] = "У заголовках відповіді час модифікації сторінки";
 ?>

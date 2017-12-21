@@ -16,6 +16,23 @@ $request = \Bitrix\Main\Context::getCurrent()->getRequest();
 
 $link = $APPLICATION->GetCurPageParam("MID=#ID#", array("MID", "sessid", "AJAX_POST", "ENTITY_XML_ID", "ENTITY_TYPE", "ENTITY_ID", "REVIEW_ACTION", "MODE", "FILTER", "result"));
 
+if (isset($arParams["PUBLIC_MODE"]) && $arParams["PUBLIC_MODE"])
+{
+	$editRight = "N";
+}
+else
+{
+	$editRight = (
+		$arResult["PANELS"]["EDIT"] == "N"
+			? (
+				$arParams["ALLOW_EDIT_OWN_MESSAGE"] === "ALL"
+					? "OWN"
+					: ($arParams["ALLOW_EDIT_OWN_MESSAGE"] === "LAST" ? "OWNLAST" : "N")
+			)
+			: "Y"
+	);
+}
+
 $arResult["OUTPUT_LIST"] = $APPLICATION->IncludeComponent(
 	"bitrix:main.post.list",
 	"",
@@ -30,10 +47,8 @@ $arResult["OUTPUT_LIST"] = $APPLICATION->IncludeComponent(
 		"PREORDER" => $arParams["PREORDER"],
 		"RIGHTS" => array(
 			"MODERATE" =>  $arResult["PANELS"]["MODERATE"],
-			"EDIT" => ($arResult["PANELS"]["EDIT"] == "N" ? ($arParams["ALLOW_EDIT_OWN_MESSAGE"] === "ALL" ? "OWN" : (
-				$arParams["ALLOW_EDIT_OWN_MESSAGE"] === "LAST" ? "OWNLAST" : "N") ) : "Y"),
-			"DELETE" => ($arResult["PANELS"]["EDIT"] == "N" ? ($arParams["ALLOW_EDIT_OWN_MESSAGE"] === "ALL" ? "OWN" : (
-				$arParams["ALLOW_EDIT_OWN_MESSAGE"] === "LAST" ? "OWNLAST" : "N") ) : "Y")
+			"EDIT" => $editRight,
+			"DELETE" => $editRight
 		),
 		"VISIBLE_RECORDS_COUNT" => 3,
 
@@ -41,7 +56,7 @@ $arResult["OUTPUT_LIST"] = $APPLICATION->IncludeComponent(
 		"OK_MESSAGE" => $arResult["OK_MESSAGE"],
 		"RESULT" => ($arResult["RESULT"] ?: $request->getQuery("MID")),
 		"PUSH&PULL" => $arResult["PUSH&PULL"],
-		"VIEW_URL" => ($arParams["SHOW_LINK_TO_MESSAGE"] == "Y" ? $link : ""),
+		"VIEW_URL" => ($arParams["SHOW_LINK_TO_MESSAGE"] == "Y" && !(isset($arParams["PUBLIC_MODE"]) && $arParams["PUBLIC_MODE"]) ? $link : ""),
 		"EDIT_URL" => ForumAddPageParams($link, array("REVIEW_ACTION" => "GET"), false, false),
 		"MODERATE_URL" => ForumAddPageParams($link, array("REVIEW_ACTION" => "#ACTION#"), false, false),
 		"DELETE_URL" => ForumAddPageParams($link, array("REVIEW_ACTION" => "DEL"), false, false),

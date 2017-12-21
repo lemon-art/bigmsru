@@ -45,7 +45,7 @@ abstract class Tree extends Entity\DataManager
 	*/
 	public static function addExtended(array $data, array $additional = array())
 	{
-		$rebalance = isset($additional['REBALANCE']) && $additional['REBALANCE'] == false;
+		$rebalance = !isset($additional['REBALANCE']) || $additional['REBALANCE'] !== false;
 
 		// determine LEFT_MARGIN, RIGHT_MARGIN and DEPTH_LEVEL
 		if($data['PARENT_ID'] = intval($data['PARENT_ID']))
@@ -152,7 +152,7 @@ abstract class Tree extends Entity\DataManager
 	*/
 	public static function updateExtended($primary, array $data, array $additional = array())
 	{
-		$rebalance = isset($additional['REBALANCE']) && $additional['REBALANCE'] == false;
+		$rebalance = !isset($additional['REBALANCE']) || $additional['REBALANCE'] !== false;
 		$node = self::getNodeInfo($primary);
 
 		if(isset($data['PARENT_ID']) && !strlen($data['PARENT_ID']))
@@ -186,8 +186,8 @@ abstract class Tree extends Entity\DataManager
 	 */
 	public static function deleteExtended($primary, array $additional = array()) // here also could be an implementation of CHILDREN_REATTACH
 	{
-		$rebalance = isset($additional['REBALANCE']) && $additional['REBALANCE'] == false;
-		$deleteSubtree = isset($additional['DELETE_SUBTREE']) && $additional['DELETE_SUBTREE'] == false;
+		$rebalance = !isset($additional['REBALANCE']) || $additional['REBALANCE'] !== false;
+		$deleteSubtree = !isset($additional['DELETE_SUBTREE']) || $additional['DELETE_SUBTREE'] !== false;
 
 		if($deleteSubtree)
 		{

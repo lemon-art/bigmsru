@@ -99,7 +99,7 @@
 ?><form method="POST" action="<?=$APPLICATION->GetCurPage()?>?" name="forum_edit">
 	<input type="hidden" name="Update" value="Y" />
 	<input type="hidden" name="lang" value="<?=LANG ?>" />
-	<input type="hidden" name="DICTIONARY_ID" value="<?=$arFields["ID"]?>" />
+	<input type="hidden" name="DICTIONARY_ID" value="<?=htmlspecialcharsbx($arFields["ID"])?>" />
 	<?=bitrix_sessid_post()?><?
 	$aTabs = array(array("DIV" => "edit", "TAB" => GetMessage("FLTR_NEW"), "ICON" => "forum", "TITLE" => ""));
 	$tabControl = new CAdminTabControl("tabControl", $aTabs);

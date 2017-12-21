@@ -17,7 +17,7 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admi
 require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/prolog.php");
 require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/classes/general/csv_user_import.php");
 
-if(!$USER->IsAdmin())
+if(!$USER->CanDoOperation('edit_php'))
 	$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
 
 //Download sample
@@ -169,8 +169,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $tabStep > 2 && check_bitrix_sessid(
 				"USER_FILTER" => $arLdap['USER_FILTER'],
 				"GROUP_NAME_ATTR" => $arLdap['GROUP_NAME_ATTR'],
 				"CONVERT_UTF8" => $arLdap['CONVERT_UTF8'],
-				"MAX_PAGE_SIZE" => $arLdap['MAX_PAGE_SIZE'],
+				"MAX_PAGE_SIZE" => $arLdap['MAX_PAGE_SIZE']
 			);
+
+			if(isset($arLdap['CONNECTION_TYPE']))
+				$ldap->arFields["CONNECTION_TYPE"] = $arLdap['CONNECTION_TYPE'];
+				
 			if($ldap->Connect())
 			{
 				$ldp = $ldap;
@@ -262,7 +266,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $tabStep > 2 && check_bitrix_sessid(
 			while ($csvImport->ImportUser())
 			{
 				if(($mess = $csvImport->GetErrorMessage()) <> '')
-					echo "<script type=\"text/javascript\">parent.window.ShowError('".CUtil::JSEscape($mess)."');</script>";
+					echo "<script type=\"text/javascript\">parent.window.ShowError('".CUtil::JSEscape(_ShowHtmlspec($mess))."');</script>";
 
 				if (USER_IMPORT_EXECUTION_TIME > 0 && (getmicrotime()-START_EXEC_TIME) > USER_IMPORT_EXECUTION_TIME)
 					die("<script type=\"text/javascript\">parent.window.Start('".$csvFile->GetPos()."',".$cntUsersImport.");</script>");
@@ -273,156 +277,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $tabStep > 2 && check_bitrix_sessid(
 		elseif ($ldp)
 		{
 			//Ldap Ajax
-			$cntUsersImport = 0;
-			$dbLdapServers = CLdapServer::GetById($ldapServer);
-			if(!($ldp = $dbLdapServers->GetNextServer()))
+			function OnLdapBeforeSyncMainImport($arParams)
 			{
-				return false;
+				if(empty($arParams['oLdapServer']))
+					return;
+
+				if(!($arParams['oLdapServer'] instanceof CLDAP))
+					return;
+
+				$arParams['oLdapServer']->arFields["SYNC_USER_ADD"] = 'Y';
+
+				if(is_array($_REQUEST['LDAPMAP']))
+				{
+					$arParams['oLdapServer']->arFields["FIELD_MAP"] = array_merge(
+						$arParams['oLdapServer']->arFields["FIELD_MAP"],
+						$_REQUEST['LDAPMAP']
+					);
+				}
 			}
+			
+			AddEventHandler("ldap", "OnLdapBeforeSync", "OnLdapBeforeSyncMainImport");
+			$cntUsersImport = \CLdapServer::Sync($ldapServer);
 
-			if(!$ldp->Connect())
-			{
-				return false;
-			}
-
-			if(!$ldp->BindAdmin())
-			{
-				$ldp->Disconnect();
-				return false;
-			}
-
-			// selecting all users from LDAP
-			$arLdapUsers = array();
-			$ldapLoginAttr = strtolower($ldp->arFields["~USER_ID_ATTR"]);
-
-			$APPLICATION->ResetException();
-			$dbLdapUsers = $ldp->GetUserList();
-			$ldpEx = $APPLICATION->GetException();
-
-			while($arLdapUser = $dbLdapUsers->Fetch())
-				$arLdapUsers[strtolower($arLdapUser[$ldapLoginAttr])] = $arLdapUser;
-			unset($dbLdapUsers);
-
-			// selecting all users from Bitrix CMS for this LDAP
-			CTimeZone::Disable();
-			$dbUsers = CUser::GetList(($o=""), ($b=""), array("EXTERNAL_AUTH_ID"=>"LDAP#".$ldapServer));
-			CTimeZone::Enable();
-
-			$arUsers = array();
-			while($arUser = $dbUsers->Fetch())
-				$arUsers[strtolower($arUser["LOGIN"])] = $arUser;
-			unset($dbUsers);
-
-			if(!$ldpEx || $ldpEx->msg != 'LDAP_SEARCH_ERROR')
-				$arDelLdapUsers = array_diff(array_keys($arUsers), array_keys($arLdapUsers));
-
-			if(strlen($ldp->arFields["SYNC_LAST"])>0)
-				$syncTime = MakeTimeStamp($ldp->arFields["SYNC_LAST"]);
+			//avoid module dependencies
+			if(property_exists('CLdapServer', 'syncErrors'))
+				$strUserImportError = implode("\n", CLdapServer::$syncErrors);
 			else
-				$syncTime = 0;
+				$strUserImportError = "";
 
-			if(is_array($_REQUEST['LDAPMAP']))
-				$ldp->arFields["FIELD_MAP"] = array_merge($ldp->arFields["FIELD_MAP"], $_REQUEST['LDAPMAP']);
-
-			// selecting a list of groups, from which users will not be imported
-			$noImportGroups = array();
-			$dbGroups = CLdapServer::GetGroupBan($ldapServer);
-			while($arGroup = $dbGroups->Fetch())
-				$noImportGroups[md5($arGroup['LDAP_GROUP_ID'])] = $arGroup['LDAP_GROUP_ID'];
-
-			// department ids are cached here, thus each user never queried more than once
-			// if no intranet installed it is simply not used
-			$departmentCache = array();
-			$strUserImportError = '';
-
-			foreach($arLdapUsers as $userLogin=>$arLdapUserFields)
-			{
-				if(!is_array($arUsers[$userLogin]))
-				{
-					// if user is not found among already existing ones, then import him
-
-					// в $arLdapUserFields - поля текущего user'а, взятые из ldap
-					$userActive = $ldp->getLdapValueByBitrixFieldName("ACTIVE", $arLdapUserFields);
-
-					if($userActive != "Y")
-						continue;
-
-					$arUserFields = $ldp->GetUserFields($arLdapUserFields, $departmentCache);
-
-					// $arUserFields here contains LDAP user fields for a LDAP user
-					// make a check, whether this user belongs to those groups only, from which import will not be made...
-					$allUserGroups = $arUserFields['LDAP_GROUPS'];
-					$userImportIsBanned = false;
-
-					foreach ($allUserGroups as $groupId)
-					{
-						$groupId = trim($groupId);
-						if (!empty($groupId) && array_key_exists(md5($groupId), $noImportGroups))
-						{
-							$userImportIsBanned = true;
-							break;
-						}
-					}
-
-					// ...if he does not, then import him
-					if (!$userImportIsBanned || empty($allUserGroups))
-					{
-						$ID = $ldp->SetUser($arUserFields);
-						if($ID > 0)
-							$cntUsersImport++;
-					}
-				}
-				else
-				{
-					// if date of update is set - then compare it
-					$ldapTime = time();
-					if($syncTime>0
-						&& strlen($ldp->arFields["SYNC_ATTR"])>0
-						&& preg_match("'([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})([0-9]{2})([0-9]{2})\\.0Z'", $arLdapUserFields[strtolower($ldp->arFields["SYNC_ATTR"])], $arTimeMatch)
-						)
-					{
-						$ldapTime = gmmktime($arTimeMatch[4], $arTimeMatch[5], $arTimeMatch[6], $arTimeMatch[2], $arTimeMatch[3], $arTimeMatch[1]);
-						$userTime = MakeTimeStamp($arUsers[$userLogin]["TIMESTAMP_X"]);
-					}
-
-					// if user data needs to be updated - do an update
-					if($syncTime<$ldapTime || $syncTime<$userTime)
-					{
-						// update
-						$arUserFields = $ldp->GetUserFields($arLdapUserFields, $departmentCache);
-						$arUserFields["ID"] = $arUsers[$userLogin]["ID"];
-
-						//echo $arUserFields["LOGIN"]." - updated<br>";
-						$ID = $ldp->SetUser($arUserFields);
-						if($ID > 0)
-							$cntUsersImport++;
-					}
-				}
-				if($USER->LAST_ERROR!='')
-					$strUserImportError .= $arUserFields["LOGIN"].': '.$USER->LAST_ERROR;
-			}
-
-			foreach ($arDelLdapUsers as $userLogin)
-			{
-				$USER = new CUser();
-				if (isset($arUsers[$userLogin]) && $arUsers[$userLogin]['ACTIVE'] == 'Y')
-				{
-					$ID = intval($arUsers[$userLogin]["ID"]);
-					$USER->Update($ID, array('ACTIVE' => 'N'));
-				}
-			}
-
-			$ldp->Disconnect();
-			CLdapServer::Update($ldapServer, array("~SYNC_LAST"=>$DB->CurrentTimeFunction()));
 			if (!empty($strUserImportError))
 			{
-				echo "<script type=\"text/javascript\">parent.window.ShowError('".CUtil::JSEscape($strUserImportError)."');</script>";
+				echo "<script type=\"text/javascript\">parent.window.ShowError('".CUtil::JSEscape(_ShowHtmlspec($strUserImportError))."');</script>";
 			}
+
 			die("<script type=\"text/javascript\">parent.window.End($cntUsersImport);</script>");
 		}
 	}
 }
-
 
 $APPLICATION->SetTitle(GetMessage("USER_IMPORT_TITLE"));
 require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/include/prolog_admin_after.php");
@@ -631,7 +522,7 @@ if(CModule::IncludeModule("iblock")):
 			<select name="ldapServer" onChange="OnLdapSelect(this.selectedIndex - 1);">
 				<option value="0"><?=GetMessage("USER_IMPORT_SELECT_FROM_LIST")?></option>
 			<?
-			$arAllFields = CLDAPUtil::GetSynFields(); // all user fields that are currently set up in the system
+			$arAllFields = CLdapUtil::GetSynFields(); // all user fields that are currently set up in the system
 
 			$arFieldMaps = array();
 			$indSelected = -1;

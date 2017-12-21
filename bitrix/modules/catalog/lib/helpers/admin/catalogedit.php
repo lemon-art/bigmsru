@@ -126,6 +126,7 @@ class CatalogEdit
 	{
 		if (!$this->isSuccess())
 			return;
+		/** @noinspection PhpMethodOrClassCallIsNotCaseSensitiveInspection */
 		$this->iblockCatalogData = \CCatalogSku::getInfoByIBlock($this->iblockId);
 		if ($this->iblockCatalogData === false)
 			$this->iblockCatalogData = array();

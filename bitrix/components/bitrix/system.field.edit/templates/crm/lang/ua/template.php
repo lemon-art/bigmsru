@@ -12,4 +12,9 @@ $MESS["CRM_FF_NO_RESULT"] = "На жаль, на ваш пошуковий за�
 $MESS["CRM_FF_CHOISE"] = "Вибрати";
 $MESS["CRM_FF_CHANGE"] = "Змінити";
 $MESS["CRM_FF_LAST"] = "Останні";
+$MESS["CRM_CES_CREATE"] = "Створити";
+$MESS["CRM_CES_CREATE_LEAD"] = "Лід";
+$MESS["CRM_CES_CREATE_CONTACT"] = "Контакт";
+$MESS["CRM_CES_CREATE_COMPANY"] = "Компанію";
+$MESS["CRM_CES_CREATE_DEAL"] = "Угоду";
 ?>

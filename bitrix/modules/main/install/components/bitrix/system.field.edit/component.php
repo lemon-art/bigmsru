@@ -47,9 +47,13 @@ if($arUserField["USER_TYPE"])
 	else
 	{
 		if($arUserField["USER_TYPE"]["BASE_TYPE"]=="file")
+		{
 			$arResult["VALUE"] = $GLOBALS[$arUserField["FIELD_NAME"]."_old_id"];
+		}
 		else
+		{
 			$arResult["VALUE"] = $_REQUEST[$arUserField["FIELD_NAME"]];
+		}
 	}
 
 	if (!is_array($arResult["VALUE"]))
@@ -135,7 +139,17 @@ if($arUserField["USER_TYPE"])
 
 	$arResult["RANDOM"] = ($arParams["RANDOM"] <> ''? $arParams["RANDOM"] : $this->randString());
 
-	$APPLICATION->AddHeadScript($this->getPath()."/script.js");
+	if($this->initComponentTemplate() || $arParams['skip_manager'])
+	{
+		$APPLICATION->AddHeadScript($this->getPath()."/script.js");
 
-	$this->IncludeComponentTemplate();
+		$this->IncludeComponentTemplate();
+	}
+	else
+	{
+		$arParams['skip_manager'] = true;
+
+		global $USER_FIELD_MANAGER;
+		echo $USER_FIELD_MANAGER->GetPublicEdit($arUserField, $arParams);
+	}
 }

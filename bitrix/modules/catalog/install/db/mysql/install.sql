@@ -19,7 +19,7 @@ create table if not exists b_catalog_price
 	CATALOG_GROUP_ID int not null,
 	PRICE decimal(18,2) not null,
 	CURRENCY char(3) not null,
-	TIMESTAMP_X timestamp not null,
+	TIMESTAMP_X timestamp not null default NOW() on update NOW(),
 	QUANTITY_FROM int null,
 	QUANTITY_TO int null,
 	TMP_ID varchar(40) null,
@@ -36,7 +36,7 @@ create table if not exists b_catalog_product
 	QUANTITY double not null,
 	QUANTITY_TRACE char(1) not null default 'N',
 	WEIGHT double not null default '0',
-	TIMESTAMP_X timestamp not null,
+	TIMESTAMP_X timestamp not null default NOW() on update NOW(),
 	PRICE_TYPE char(1) not null default 'S',
 	RECUR_SCHEME_LENGTH int null,
 	RECUR_SCHEME_TYPE char(1) not null default 'D',
@@ -134,7 +134,7 @@ create table if not exists b_catalog_export
 	IN_MENU char(1) not null default 'N',
 	IN_AGENT char(1) not null default 'N',
 	IN_CRON char(1) not null default 'N',
-	SETUP_VARS text null,
+	SETUP_VARS mediumtext null,
 	LAST_USE datetime null,
 	IS_EXPORT char(1) not null default 'Y',
 	NEED_EDIT char(1) not null default 'N',
@@ -167,7 +167,7 @@ create table if not exists b_catalog_discount
 	VALUE decimal(18,4) not null default '0.0',
 	CURRENCY char(3) not null,
 	MIN_ORDER_SUM decimal(18,4) null default '0.0',
-	TIMESTAMP_X timestamp not null,
+	TIMESTAMP_X timestamp not null default NOW() on update NOW(),
 	COUNT_PERIOD char(1) not null default 'U',
 	COUNT_SIZE int not null default '0',
 	COUNT_TYPE char(1) not null default 'Y',
@@ -184,6 +184,7 @@ create table if not exists b_catalog_discount
 	NOTES varchar(255) null,
 	CONDITIONS text null,
 	UNPACK text null,
+	SALE_ID int null,
 	primary key (ID),
 	index IX_C_D_COUPON(COUPON),
 	index IX_C_D_ACT(ACTIVE, ACTIVE_FROM, ACTIVE_TO),
@@ -277,9 +278,10 @@ create table if not exists b_catalog_discount_coupon
 	index ix_cat_dc_index2(COUPON, ACTIVE)
 );
 
-create table if not exists b_catalog_vat (
+create table if not exists b_catalog_vat
+(
 	ID int(11) NOT NULL auto_increment,
-	TIMESTAMP_X timestamp NOT NULL,
+	TIMESTAMP_X timestamp not null default NOW() on update NOW(),
 	ACTIVE char(1) NOT NULL default 'Y',
 	C_SORT int(18) NOT NULL default 100,
 	NAME varchar(50) NOT NULL default '',
@@ -288,7 +290,8 @@ create table if not exists b_catalog_vat (
 	index IX_CAT_VAT_ACTIVE (ACTIVE)
 );
 
-create table if not exists b_catalog_disc_save_range (
+create table if not exists b_catalog_disc_save_range
+(
 	ID int NOT NULL auto_increment,
 	DISCOUNT_ID int not null,
 	RANGE_FROM double not null,
@@ -299,7 +302,8 @@ create table if not exists b_catalog_disc_save_range (
 	index IX_CAT_DSR_DISCOUNT2(DISCOUNT_ID, RANGE_FROM)
 );
 
-create table if not exists b_catalog_disc_save_group (
+create table if not exists b_catalog_disc_save_group
+(
 	ID int NOT NULL auto_increment,
 	DISCOUNT_ID int not null,
 	GROUP_ID int not null,
@@ -308,7 +312,8 @@ create table if not exists b_catalog_disc_save_group (
 	index IX_CAT_DSG_GROUP(GROUP_ID)
 );
 
-create table if not exists b_catalog_disc_save_user (
+create table if not exists b_catalog_disc_save_user
+(
 	ID int NOT NULL auto_increment,
 	DISCOUNT_ID int not null,
 	USER_ID int not null,
@@ -320,8 +325,8 @@ create table if not exists b_catalog_disc_save_user (
 	index IX_CAT_DSU_USER(DISCOUNT_ID,USER_ID)
 );
 
-
-create table if not exists b_catalog_store (
+create table if not exists b_catalog_store
+(
 	ID INT NOT NULL AUTO_INCREMENT,
 	TITLE VARCHAR(75) NULL,
 	ACTIVE CHAR(1) NOT NULL DEFAULT 'Y',
@@ -343,10 +348,12 @@ create table if not exists b_catalog_store (
 	ISSUING_CENTER CHAR(1) NOT NULL DEFAULT 'Y',
 	SHIPPING_CENTER CHAR(1) NOT NULL DEFAULT 'Y',
 	SITE_ID CHAR(2) NULL,
+	CODE VARCHAR(255) NULL,
 	PRIMARY KEY (ID)
 );
 
-create table if not exists b_catalog_store_product (
+create table if not exists b_catalog_store_product
+(
 	ID INT NOT NULL AUTO_INCREMENT,
 	PRODUCT_ID INT NOT NULL,
 	AMOUNT DOUBLE NOT NULL DEFAULT 0,
@@ -356,7 +363,8 @@ create table if not exists b_catalog_store_product (
 	UNIQUE INDEX IX_CATALOG_STORE_PRODUCT2 (PRODUCT_ID ASC, STORE_ID ASC)
 );
 
-create table if not exists b_catalog_store_barcode (
+create table if not exists b_catalog_store_barcode
+(
 	ID INT NOT NULL AUTO_INCREMENT,
 	PRODUCT_ID INT NOT NULL,
 	BARCODE VARCHAR(100) NULL,
@@ -370,7 +378,8 @@ create table if not exists b_catalog_store_barcode (
 	UNIQUE INDEX IX_B_CATALOG_STORE_BARCODE1(BARCODE)
 );
 
-create table if not exists b_catalog_contractor (
+create table if not exists b_catalog_contractor
+(
 	ID INT NOT NULL AUTO_INCREMENT,
 	PERSON_TYPE CHAR(1) NOT NULL,
 	PERSON_NAME VARCHAR(100) NULL,
@@ -392,7 +401,8 @@ create table if not exists b_catalog_contractor (
 	PRIMARY KEY (ID)
 );
 
-create table if not exists b_catalog_store_docs (
+create table if not exists b_catalog_store_docs
+(
 	ID INT NOT NULL AUTO_INCREMENT,
 	DOC_TYPE CHAR(1) NOT NULL,
 	SITE_ID CHAR(2) NULL,
@@ -411,7 +421,8 @@ create table if not exists b_catalog_store_docs (
 	PRIMARY KEY (ID)
 );
 
-create table if not exists b_catalog_docs_element (
+create table if not exists b_catalog_docs_element
+(
 	ID INT NOT NULL AUTO_INCREMENT,
 	DOC_ID INT NOT NULL,
 	STORE_FROM INT NULL,
@@ -423,7 +434,8 @@ create table if not exists b_catalog_docs_element (
 	INDEX IX_B_CATALOG_DOCS_ELEMENT1 (DOC_ID ASC)
 );
 
-create table if not exists b_catalog_docs_barcode (
+create table if not exists b_catalog_docs_barcode
+(
 	ID INT NOT NULL AUTO_INCREMENT,
 	DOC_ELEMENT_ID INT NOT NULL,
 	BARCODE VARCHAR(100) NOT NULL,
@@ -431,7 +443,8 @@ create table if not exists b_catalog_docs_barcode (
 	INDEX IX_B_CATALOG_DOCS_BARCODE1 (DOC_ELEMENT_ID ASC)
 );
 
-create table if not exists b_catalog_measure (
+create table if not exists b_catalog_measure
+(
 	ID INT NOT NULL AUTO_INCREMENT,
 	CODE INT NOT NULL,
 	MEASURE_TITLE VARCHAR(500) NULL,
@@ -443,15 +456,18 @@ create table if not exists b_catalog_measure (
 	UNIQUE INDEX IX_B_CATALOG_MEASURE1(CODE)
 );
 
-create table if not exists b_catalog_measure_ratio (
+create table if not exists b_catalog_measure_ratio
+(
 	ID INT NOT NULL AUTO_INCREMENT,
 	PRODUCT_ID INT NOT NULL,
 	RATIO DOUBLE NOT NULL DEFAULT '1',
+	IS_DEFAULT CHAR(1) NOT NULL DEFAULT 'N',
 	PRIMARY KEY (ID),
 	UNIQUE INDEX IX_B_CATALOG_MEASURE_RATIO(PRODUCT_ID, RATIO)
 );
 
-create table if not exists b_catalog_product_sets (
+create table if not exists b_catalog_product_sets
+(
 	ID INT NOT NULL AUTO_INCREMENT,
 	TYPE INT NOT NULL,
 	SET_ID INT NOT NULL,
@@ -474,7 +490,8 @@ create table if not exists b_catalog_product_sets (
 	INDEX IX_CAT_PR_SET_ITEM_ID(ITEM_ID)
 );
 
-create table if not exists b_catalog_viewed_product (
+create table if not exists b_catalog_viewed_product
+(
 	ID INT NOT NULL AUTO_INCREMENT,
 	FUSER_ID INT NOT NULL,
 	DATE_VISIT DATETIME NOT NULL,
@@ -485,4 +502,44 @@ create table if not exists b_catalog_viewed_product (
 	RECOMMENDATION VARCHAR(40) NULL,
 	PRIMARY KEY (ID),
 	INDEX IX_CAT_V_PR_FUSER_ID (FUSER_ID)
+);
+
+create table if not exists b_catalog_subscribe (
+	ID int unsigned not null auto_increment,
+	DATE_FROM datetime not null,
+	DATE_TO datetime null,
+	USER_CONTACT varchar(255) not null,
+	CONTACT_TYPE smallint unsigned not null,
+	USER_ID int unsigned,
+	ITEM_ID int unsigned not null,
+	NEED_SENDING char(1) not null default 'N',
+	SITE_ID char(2) not null,
+	primary key (ID),
+	INDEX IX_CAT_SUB_USER_CONTACT (USER_CONTACT),
+	INDEX IX_CAT_SUB_USER_ID (USER_ID),
+	INDEX IX_CAT_SUB_ITEM_ID (ITEM_ID)
+);
+
+create table if not exists b_catalog_subscribe_access (
+	ID int unsigned not null auto_increment,
+	DATE_FROM datetime not null,
+	USER_CONTACT varchar(255) not null,
+	TOKEN char(6) not null,
+	primary key (ID),
+	INDEX IX_CAT_SUB_ACS_USER_CONTACT (USER_CONTACT)
+);
+
+create table if not exists b_catalog_rounding
+(
+	ID int not null auto_increment,
+	CATALOG_GROUP_ID int not null,
+	PRICE decimal(18, 4) not null,
+	ROUND_TYPE int not null,
+	ROUND_PRECISION decimal(18, 4) not null,
+	CREATED_BY int(18) null,
+	DATE_CREATE datetime null,
+	MODIFIED_BY int(18) null,
+	DATE_MODIFY datetime null,
+	primary key (ID),
+	index IX_CAT_RND_CATALOG_GROUP(CATALOG_GROUP_ID)
 );

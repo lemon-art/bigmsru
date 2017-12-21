@@ -64,6 +64,7 @@ class CCatalogViewedProductsMailComponent extends CCatalogViewedProductsComponen
 
 		$params['PROPERTY_VALUE'] = array();
 		$params['OFFER_TREE_PROPS'] = array();
+		$params['NEED_VALUES'] = array();
 
 		if(!Loader::includeModule('catalog') || !Loader::includeModule('iblock'))
 		{
@@ -141,6 +142,8 @@ class CCatalogViewedProductsMailComponent extends CCatalogViewedProductsComponen
 	{
 		$offersTreeProps = array();
 		$propertyValue = array();
+		if (!array_key_exists($itemId, $params['NEED_VALUES']))
+			$params['NEED_VALUES'][$itemId] = array();
 		$codeList = $this->getPropertyCodeList($sku);
 		$offersList = CCatalogSKU::getOffersList($itemId, 0,
 			array('ACTIVE' => 'Y'), array(), array('CODE' => $codeList));
@@ -160,7 +163,15 @@ class CCatalogViewedProductsMailComponent extends CCatalogViewedProductsComponen
 						$propertyValue[$propertiesCode] = array();
 
 					if(!in_array($properties['VALUE'],$propertyValue[$propertiesCode]))
+					{
+						if (!array_key_exists($properties['ID'], $params['NEED_VALUES'][$itemId]))
+							$params['NEED_VALUES'][$itemId][$properties['ID']] = array();
+						$valueId = ($properties['PROPERTY_TYPE'] == \Bitrix\Iblock\PropertyTable::TYPE_LIST
+							? $properties['VALUE_ENUM_ID'] : $properties['VALUE']
+						);
+						$params['NEED_VALUES'][$itemId][$properties['ID']][$valueId] = $valueId;
 						$propertyValue[$propertiesCode][] = $properties['VALUE'];
+					}
 
 					$offersTreeProps[] = $propertiesCode;
 				}

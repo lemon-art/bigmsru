@@ -53,7 +53,7 @@ $MESS["SECURITY_SITE_CHECKER_BITRIX_TMP_DIR_RECOMMENDATION"] = <<<'html'
 <pre>
 mkdir -p -m 700 /полный/путь/к/директории
 </pre>
-3. В файле "bitrix/php_interface/dbconn.php" определите соответствующую константу, что бы система начала использовать эту директорию:
+3. В файле "bitrix/php_interface/dbconn.php" определите соответствующую константу, чтобы система начала использовать эту директорию:
 <pre>
 define("BX_TEMPORARY_FILES_DIRECTORY", "/полный/путь/к/директории");
 </pre>

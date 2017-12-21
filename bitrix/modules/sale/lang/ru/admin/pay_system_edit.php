@@ -70,6 +70,7 @@ $MESS["SPS_AUTO_CHANGE_1C"] = "Разрешить автоматическое �
 $MESS["SPS_ACT_USER"] = "Пользовательские";
 $MESS["SPS_ACT_SYSTEM"] = "Системные";
 $MESS["SPS_NEW_WINDOW"] = "Открывать в новом окне";
+$MESS["SPS_CAN_PRINT_CHECK"] = "Разрешить печать чеков";
 $MESS["SPS_CANCEL"] = "Сбросить";
 $MESS["SPSN_2FLIST"] = "Список платежных систем";
 $MESS["SPSN_NEW_PAYSYS"] = "Добавить систему";
@@ -104,4 +105,9 @@ $MESS["SALE_PSE_ERROR_SET_BIZVAL_MAP"] = "Ошибка при сохранени
 $MESS["SALE_PSE_ERROR_RSRT_CURRENCY_SAVE"] = "Ошибка при сохранении ограничения по валютам";
 $MESS["SALE_PSE_ERROR_NO_ACTION_FILE"] = "Не выбран обработчик ПС";
 $MESS["SALE_PS_TARIFF"] = "Тарифы";
+$MESS["SALE_PSE_RETURN"] = "Настройка возвратов";
+$MESS["SALE_PS_RETURN_SETTINGS_YANDEX"] = "Настроить механизм возвратов можно <a href='/bitrix/admin/sale_ps_handler_refund.php?lang=ru' target='_blank'>тут</a>";
+$MESS["SALE_PSE_YANDEX_INVOICE_SETTINGS_TITLE"] = "Настройки безопасности";
+$MESS["SALE_PSE_YANDEX_INVOICE_SETTINGS"] = "Для выставления счетов через Яндекс, необходимо дополнительно <a href='/bitrix/admin/sale_yandexinvoice_settings.php?lang=ru&pay_system_id=#ID#' target='_blank'>настроить</a> обработчик";
+$MESS["SALE_PSE_YANDEX_INVOICE_SETTINGS_OK"] = "Обработчик успешно настроен. Изменить настройки можно <a href='/bitrix/admin/sale_yandexinvoice_settings.php?lang=ru&pay_system_id=#ID#' target='_blank'>тут</a>";
 ?>

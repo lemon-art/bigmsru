@@ -36,6 +36,10 @@ function bx_app_pass_show_create_window(form)
 				BX.removeClass(BX('bx_app_pass_close_button'), 'wait');
 				if(result.success === true)
 				{
+					var elem = BX('bx_app_pass_lottery');
+					BX.removeClass(elem, 'bx-otp-popup-lottery-black');
+					BX.addClass(elem, 'bx-otp-popup-lottery-white');
+
 					BX('bx_app_pass_password').innerHTML = result.password;
 
 					var cells = [
@@ -89,11 +93,12 @@ function bx_app_pass_show_create_window(form)
 	});
 
 	BX('bx_app_pass_password').innerHTML = '';
-	var lottery = BX('bx_app_pass_lottery');
-	lottery.style.backgroundImage = 'url('+bx_app_pass_mess.templatePath+'/images/otp_trans_speed.gif?'+Math.random()+')';
-	lottery.style.display = '';
+
+	var elem = BX('bx_app_pass_lottery');
+	BX.removeClass(elem, 'bx-otp-popup-lottery-white');
+	BX.addClass(elem, 'bx-otp-popup-lottery-black');
+
 	BX.addClass(BX('bx_app_pass_close_button'), 'wait');
-	window.setTimeout(function(){BX('bx_app_pass_lottery').style.display = 'none';}, 1600);
 
 	popup.show();
 

@@ -71,7 +71,13 @@ if (CModule::IncludeModule("form"))
 	{
 		// append arParams to cache ID;
 		$arCacheParams = array();
-		foreach ($arParams as $key => $value) if (substr($key, 0, 1) != "~") $arCacheParams[$key] = $value;
+		foreach ($arParams as $key => $value)
+		{
+			if($key !== "NEW_URL" && substr($key, 0, 1) != "~")
+			{
+				$arCacheParams[$key] = $value;
+			}
+		}
 		// create CPHPCache class instance
 		$obFormCache = new CPHPCache;
 		// create cache ID and path

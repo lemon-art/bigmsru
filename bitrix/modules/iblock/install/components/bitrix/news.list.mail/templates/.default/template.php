@@ -59,8 +59,7 @@ if(empty($arResult['ITEMS']))
 
 	<tr>
 		<td>
-
-			<?if($item['PREVIEW_PICTURE'] && $item['PREVIEW_PICTURE']['src']):
+			<?if($item['PREVIEW_PICTURE'] && $item['PREVIEW_PICTURE']['SRC']):
 				$textBlockWidth = 'width="400"';
 				?>
 			<table cellpadding="0" cellspacing="0" valign="top" style="display: inline-block">
@@ -74,7 +73,7 @@ if(empty($arResult['ITEMS']))
 									<?if($showLink):?>
 										<a href="<?=$item['DETAIL_PAGE_URL']?>">
 									<?endif;?>
-									<img src="<?=$item['PREVIEW_PICTURE']['src']?>" style="display: block; margin: auto;">
+									<img src="<?=$item['PREVIEW_PICTURE']['SRC']?>" style="display: block; margin: auto;">
 									<?if($showLink):?>
 										</a>
 									<?endif;?>
@@ -115,7 +114,28 @@ if(empty($arResult['ITEMS']))
 						<td>
 							<p style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #2f2f2f; font-size: 12px; margin:0 0 5px;">
 							<?foreach($item["FIELDS"] as $code=>$value):?>
-								<?=GetMessage("IBLOCK_FIELD_".$code)?>:&nbsp;<?=$value;?><br />
+								<?if($code == 'PREVIEW_PICTURE' || $code == 'DETAIL_PICTURE'):?>
+									<table height="170" border="1" bordercolor="#ebebeb" cellpadding="0" cellspacing="0">
+										<tbody>
+										<tr>
+											<td width="168" height="168">
+												<?if($showLink):?>
+													<a href="<?=$item['DETAIL_PAGE_URL']?>">
+												<?endif;?>
+
+												<img src="<?=$value['SRC']?>" style="display: block; margin: auto;">
+
+												<?if($showLink):?>
+													</a>
+												<?endif;?>
+											</td>
+										</tr>
+										</tbody>
+									</table>
+								<?else:?>
+									<?=GetMessage("IBLOCK_FIELD_".$code)?>:&nbsp;<?=$value;?>
+								<?endif;?>
+								<br />
 							<? endforeach ?>
 							</p>
 						</td>

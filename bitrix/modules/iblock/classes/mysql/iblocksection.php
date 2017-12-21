@@ -1,23 +1,38 @@
 <?
 class CIBlockSection extends CAllIBlockSection
 {
-	///////////////////////////////////////////////////////////////////
-	// List of sections
-	///////////////////////////////////////////////////////////////////
-	public static function GetList($arOrder=Array("SORT"=>"ASC"), $arFilter=Array(), $bIncCnt = false, $arSelect = array(), $arNavStartParams=false)
+	public static function GetList($arOrder=array("SORT"=>"ASC"), $arFilter=array(), $bIncCnt = false, $arSelect = array(), $arNavStartParams=false)
 	{
 		global $DB, $USER, $USER_FIELD_MANAGER;
 
 		if (!is_array($arOrder))
 			$arOrder = array();
 
-		if(isset($arFilter["IBLOCK_ID"]) && $arFilter["IBLOCK_ID"] > 0)
+		$iblockFilterExist = (isset($arFilter['IBLOCK_ID']) && $arFilter['IBLOCK_ID'] > 0);
+
+		if($iblockFilterExist)
 		{
+			$userFieldsSelect = $arSelect;
+			if (is_array($userFieldsSelect) && !in_array("UF_*", $userFieldsSelect))
+			{
+				if (!empty($arOrder) && is_array($arOrder))
+				{
+					foreach (array_keys($arOrder) as $userFieldName)
+					{
+						if (!in_array($userFieldName, $userFieldsSelect))
+							$userFieldsSelect[] = $userFieldName;
+					}
+					unset($userFieldName);
+				}
+			}
+
 			$obUserFieldsSql = new CUserTypeSQL;
 			$obUserFieldsSql->SetEntity("IBLOCK_".$arFilter["IBLOCK_ID"]."_SECTION", "BS.ID");
-			$obUserFieldsSql->SetSelect($arSelect);
+			$obUserFieldsSql->SetSelect($userFieldsSelect);
 			$obUserFieldsSql->SetFilter($arFilter);
 			$obUserFieldsSql->SetOrder($arOrder);
+
+			unset($userFieldsSelect);
 		}
 		else
 		{
@@ -39,8 +54,16 @@ class CIBlockSection extends CAllIBlockSection
 
 		$bCheckPermissions = !array_key_exists("CHECK_PERMISSIONS", $arFilter) || $arFilter["CHECK_PERMISSIONS"]!=="N";
 		$bIsAdmin = is_object($USER) && $USER->IsAdmin();
-		if($bCheckPermissions && !$bIsAdmin)
-			$arSqlSearch[] = CIBlockSection::_check_rights_sql($arFilter["MIN_PERMISSION"]);
+		$permissionsBy = null;
+		if ($bCheckPermissions && isset($arFilter['PERMISSIONS_BY']))
+		{
+			$permissionsBy = (int)$arFilter['PERMISSIONS_BY'];
+			if ($permissionsBy < 0)
+				$permissionsBy = null;
+		}
+		if($bCheckPermissions && ($permissionsBy !== null || !$bIsAdmin))
+			$arSqlSearch[] = self::_check_rights_sql($arFilter["MIN_PERMISSION"], $permissionsBy);
+		unset($permissionsBy);
 
 		if(array_key_exists("PROPERTY", $arFilter))
 		{
@@ -136,8 +159,8 @@ class CIBlockSection extends CAllIBlockSection
 			"EXTERNAL_ID" => "BS.XML_ID",
 			"IBLOCK_ID" => "BS.IBLOCK_ID",
 			"IBLOCK_SECTION_ID" => "BS.IBLOCK_SECTION_ID",
-			"TIMESTAMP_X" =>  $DB->DateToCharFunction("BS.TIMESTAMP_X"),
-			"TIMESTAMP_X_UNIX"=>'UNIX_TIMESTAMP(BS.TIMESTAMP_X)',
+			"TIMESTAMP_X" => $DB->DateToCharFunction("BS.TIMESTAMP_X"),
+			"TIMESTAMP_X_UNIX" => 'UNIX_TIMESTAMP(BS.TIMESTAMP_X)',
 			"SORT" => "BS.SORT",
 			"NAME" => "BS.NAME",
 			"ACTIVE" => "BS.ACTIVE",
@@ -150,8 +173,8 @@ class CIBlockSection extends CAllIBlockSection
 			"DEPTH_LEVEL" => "BS.DEPTH_LEVEL",
 			"SEARCHABLE_CONTENT" => "BS.SEARCHABLE_CONTENT",
 			"MODIFIED_BY" => "BS.MODIFIED_BY",
-			"DATE_CREATE" =>  $DB->DateToCharFunction("BS.DATE_CREATE"),
-			"DATE_CREATE_UNIX"=>'UNIX_TIMESTAMP(BS.DATE_CREATE)',
+			"DATE_CREATE" => $DB->DateToCharFunction("BS.DATE_CREATE"),
+			"DATE_CREATE_UNIX" => 'UNIX_TIMESTAMP(BS.DATE_CREATE)',
 			"CREATED_BY" => "BS.CREATED_BY",
 			"DETAIL_PICTURE" => "BS.DETAIL_PICTURE",
 			"TMP_ID" => "BS.TMP_ID",
@@ -168,14 +191,14 @@ class CIBlockSection extends CAllIBlockSection
 		foreach($arSelect as $field)
 		{
 			$field = strtoupper($field);
-			if(array_key_exists($field, $arFields))
+			if(isset($arFields[$field]))
 				$arSqlSelect[$field] = $arFields[$field]." AS ".$field;
 		}
 
-		if(array_key_exists("DESCRIPTION", $arSqlSelect))
+		if(isset($arSqlSelect['DESCRIPTION']))
 			$arSqlSelect["DESCRIPTION_TYPE"] = $arFields["DESCRIPTION_TYPE"]." AS DESCRIPTION_TYPE";
 
-		if(array_key_exists("LIST_PAGE_URL", $arSqlSelect) || array_key_exists("SECTION_PAGE_URL", $arSqlSelect))
+		if(isset($arSqlSelect['LIST_PAGE_URL']) || isset($arSqlSelect['SECTION_PAGE_URL']))
 		{
 			$arSqlSelect["ID"] = $arFields["ID"]." AS ID";
 			$arSqlSelect["CODE"] = $arFields["CODE"]." AS CODE";
@@ -216,6 +239,11 @@ class CIBlockSection extends CAllIBlockSection
 				case "code":
 					$arSqlOrder[$by] = " BS.CODE ".$order." ";
 					$additionalSelect["CODE"] = $arFields["CODE"]." AS CODE";
+					break;
+				case "external_id":
+				case "xml_id":
+					$arSqlOrder[$by] = " BS.XML_ID ".$order." ";
+					$additionalSelect["XML_ID"] = $arFields["XML_ID"]." AS XML_ID";
 					break;
 				case "active":
 					$arSqlOrder[$by] = " BS.ACTIVE ".$order." ";
@@ -258,7 +286,7 @@ class CIBlockSection extends CAllIBlockSection
 					{
 						$by = "timestamp_x";
 						$arSqlOrder[$by] = " BS.TIMESTAMP_X ".$order." ";
-						$additionalSelect["TIMESTAMP_X"] = $arFields["TIMESTAMP_X"]." AS TIMESTAMP_X";
+						$additionalSelect["TIMESTAMP_X_SORT"] = "BS.TIMESTAMP_X AS TSX_TMP";
 					}
 			}
 		}
@@ -268,7 +296,7 @@ class CIBlockSection extends CAllIBlockSection
 				$arSqlSelect[$key] = $value;
 		}
 
-		if(count($arSqlSelect))
+		if(!empty($arSqlSelect))
 			$sSelect = implode(",\n", $arSqlSelect);
 		else
 			$sSelect = "
@@ -353,38 +381,49 @@ class CIBlockSection extends CAllIBlockSection
 			$strGroupBy = "GROUP BY BS.ID, B.ID";
 		}
 
-		if(count($arSqlOrder) > 0)
+		if(!empty($arSqlOrder))
 			$strSqlOrder = "\n\t\t\t\tORDER BY ".implode(", ", $arSqlOrder);
 		else
 			$strSqlOrder = "";
 
 		if(is_array($arNavStartParams))
 		{
-			$nTopCount = intval($arNavStartParams["nTopCount"]);
+			$nTopCount = (isset($arNavStartParams['nTopCount']) ? (int)$arNavStartParams['nTopCount'] : 0);
 			if($nTopCount > 0)
 			{
 				$res = $DB->Query($DB->TopSql(
 					"SELECT DISTINCT ".$strSelect.$strSql.$strGroupBy.$strSqlOrder,
 					$nTopCount
 				));
+				if($iblockFilterExist)
+				{
+					$res->SetUserFields($USER_FIELD_MANAGER->GetUserFields("IBLOCK_".$arFilter["IBLOCK_ID"]."_SECTION"));
+				}
 			}
 			else
 			{
 				$res_cnt = $DB->Query("SELECT COUNT(DISTINCT BS.ID) as C ".$strSql);
 				$res_cnt = $res_cnt->Fetch();
 				$res = new CDBResult();
+				if($iblockFilterExist)
+				{
+					$res->SetUserFields($USER_FIELD_MANAGER->GetUserFields("IBLOCK_".$arFilter["IBLOCK_ID"]."_SECTION"));
+				}
 				$res->NavQuery("SELECT DISTINCT ".$strSelect.$strSql.$strGroupBy.$strSqlOrder, $res_cnt["C"], $arNavStartParams);
 			}
 		}
 		else
 		{
 			$res = $DB->Query("SELECT DISTINCT ".$strSelect.$strSql.$strGroupBy.$strSqlOrder, false, "FILE: ".__FILE__."<br> LINE: ".__LINE__);
+			if($iblockFilterExist)
+			{
+				$res->SetUserFields($USER_FIELD_MANAGER->GetUserFields("IBLOCK_".$arFilter["IBLOCK_ID"]."_SECTION"));
+			}
 		}
 
 		$res = new CIBlockResult($res);
-		if(isset($arFilter["IBLOCK_ID"]) && $arFilter["IBLOCK_ID"] > 0)
+		if($iblockFilterExist)
 		{
-			$res->SetUserFields($USER_FIELD_MANAGER->GetUserFields("IBLOCK_".$arFilter["IBLOCK_ID"]."_SECTION"));
 			$res->SetIBlockTag($arFilter["IBLOCK_ID"]);
 		}
 
@@ -427,8 +466,16 @@ class CIBlockSection extends CAllIBlockSection
 
 		$bCheckPermissions = !array_key_exists("CHECK_PERMISSIONS", $arFilter) || $arFilter["CHECK_PERMISSIONS"]!=="N";
 		$bIsAdmin = is_object($USER) && $USER->IsAdmin();
-		if($bCheckPermissions && !$bIsAdmin)
-			$arSqlSearch[] = CIBlockSection::_check_rights_sql($arFilter["MIN_PERMISSION"]);
+		$permissionsBy = null;
+		if ($bCheckPermissions && isset($arFilter['PERMISSIONS_BY']))
+		{
+			$permissionsBy = (int)$arFilter['PERMISSIONS_BY'];
+			if ($permissionsBy < 0)
+				$permissionsBy = null;
+		}
+		if($bCheckPermissions && ($permissionsBy !== null || !$bIsAdmin))
+			$arSqlSearch[] = self::_check_rights_sql($arFilter["MIN_PERMISSION"], $permissionsBy);
+		unset($permissionsBy);
 
 		if(array_key_exists("PROPERTY", $arFilter))
 		{

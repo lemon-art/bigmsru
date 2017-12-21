@@ -273,7 +273,7 @@ class QiwiHandler extends PaySystem\ServiceHandler implements PaySystem\ICheckab
 
 	/**
 	 * @param Payment $payment
-	 * @return int
+	 * @return PaySystem\ServiceResult
 	 */
 	public function check(Payment $payment)
 	{

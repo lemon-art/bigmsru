@@ -2,7 +2,9 @@
 
 $bWasSelect = false;
 
-?><select name="<?=$arParams["arUserField"]["FIELD_NAME"]?>"<?
+?>
+<span class="fields crm_status field-wrap">
+<select name="<?=$arParams["arUserField"]["FIELD_NAME"]?>"<?
 if ($arParams["arUserField"]["MULTIPLE"]=="Y"):
 ?> multiple="multiple"<?
 endif;
@@ -18,4 +20,5 @@ foreach ($arParams["arUserField"]["USER_TYPE"]["FIELDS"] as $key => $val)
 
 	?><option value="<?echo $key?>"<?echo ($bSelected? " selected" : "")?>><?echo $val?></option><?
 }
-?></select><?
+?></select>
+</span><?

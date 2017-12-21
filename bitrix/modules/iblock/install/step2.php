@@ -211,9 +211,14 @@ if($obModule->errors===false)
 }
 
 if(is_array($obModule->errors) && count($obModule->errors)):
-	echo CAdminMessage::ShowMessage(Array("TYPE"=>"ERROR", "MESSAGE" =>GetMessage("MOD_INST_ERR"), "DETAILS"=>implode("<br>", $obModule->errors), "HTML"=>true));
+	CAdminMessage::ShowMessage(array(
+		"TYPE"=>"ERROR",
+		"MESSAGE" =>GetMessage("MOD_INST_ERR"),
+		"DETAILS"=>implode("<br>", $obModule->errors),
+		"HTML"=>true
+	));
 else:
-	echo CAdminMessage::ShowNote(GetMessage("MOD_INST_OK"));
+	CAdminMessage::ShowNote(GetMessage("MOD_INST_OK"));
 endif;
 
 if($obModule->errors===false && $news == "Y" && strlen($news_dir) > 0):
@@ -230,7 +235,7 @@ if($obModule->errors===false && $news == "Y" && strlen($news_dir) > 0):
 	{
 		?>
 		<tr>
-			<td width="0%"><p>[<?=$site["ID"]?>] <?=$site["NAME"]?></p></td>
+			<td width="0%"><p>[<?=$site["ID"]?>] <?=htmlspecialcharsbx($site["NAME"]); ?></p></td>
 			<td width="0%"><p><a href="<?if(strlen($site["SERVER_NAME"])>0) echo "http://".$site["SERVER_NAME"];?><?=$site["DIR"].$news_dir?>/"><?=$site["DIR"].$news_dir?>/</a></p></td>
 		</tr>
 		<?

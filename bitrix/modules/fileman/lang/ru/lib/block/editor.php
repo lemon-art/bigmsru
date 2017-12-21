@@ -7,9 +7,9 @@ $MESS["BLOCK_EDITOR_PREVIEW_MODE_PHONE"] = "Смартфон";
 $MESS["BLOCK_EDITOR_PREVIEW_MODE_TABLET"] = "Планшет";
 $MESS["BLOCK_EDITOR_PREVIEW_MODE_DESKTOP"] = "Десктоп";
 
-$MESS["BLOCK_EDITOR_TABS_EDIT"] = "редактировать";
-$MESS["BLOCK_EDITOR_TABS_PREVIEW"] = "предпросмотр";
-$MESS["BLOCK_EDITOR_TABS_HTML"] = "получить html";
+$MESS["BLOCK_EDITOR_TABS_EDIT"] = "Редактировать";
+$MESS["BLOCK_EDITOR_TABS_PREVIEW"] = "Предпросмотр";
+$MESS["BLOCK_EDITOR_TABS_HTML"] = "Получить html";
 
 $MESS["BLOCK_EDITOR_UI_BTN_MAX"] = "развернуть";
 $MESS["BLOCK_EDITOR_UI_BTN_MIN"] = "свернуть";

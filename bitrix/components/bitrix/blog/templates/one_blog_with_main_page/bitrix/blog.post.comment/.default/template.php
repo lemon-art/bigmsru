@@ -117,6 +117,32 @@ else
 					}
 					?>
 					<tr>
+						<td></td>
+						<td><?
+							//							userconsent only for unregistered users
+							if (empty($arResult["User"]) && $arParams['USER_CONSENT'] == 'Y')
+							{
+								$APPLICATION->IncludeComponent(
+									"bitrix:main.userconsent.request",
+									"",
+									array(
+										"ID" => $arParams["USER_CONSENT_ID"],
+										"IS_CHECKED" => $arParams["USER_CONSENT_IS_CHECKED"],
+										"AUTO_SAVE" => "Y",
+										"IS_LOADED" => $arParams["USER_CONSENT_IS_LOADED"],
+										"ORIGIN_ID" => "sender/sub",
+										"ORIGINATOR_ID" => "",
+										"REPLACE" => array(
+											'button_caption' => GetMessage("B_B_MS_SEND"),
+											'fields' => array(GetMessage("B_B_MS_NAME"), 'E-mail')
+										),
+									)
+								);
+							}
+							?>
+						</td>
+					</tr>
+					<tr>
 						<td>&nbsp;</td>
 						<td align="left"><input type="hidden" name="post" value="Y"><input type="submit" name="post" value="<?=GetMessage("B_B_MS_SEND")?>"><input type="submit" name="preview" value="<?=GetMessage("B_B_MS_PREVIEW")?>"></td>
 					</tr>
@@ -360,9 +386,9 @@ else
 							?><div style="border:1px solid red"><?
 								$commentPreview = Array(
 										"ID" => "preview",
-										"TitleFormated" => htmlspecialcharsEx($_POST["subject"]),
-										"TextFormated" => $_POST["commentFormated"],
-										"AuthorName" => $User["NAME"],
+										"TitleFormated" => htmlspecialcharsbx($_POST["subject"]),
+										"TextFormated" => htmlspecialcharsbx($_POST["commentFormated"]),
+										"AuthorName" => htmlspecialcharsbx($User["NAME"]),
 										"DATE_CREATE" => GetMessage("B_B_MS_PREVIEW_TITLE"),
 									);
 								ShowComment($commentPreview, ($level+1), 30, $canModerate, $User, $use_captcha, $bCanUserComment, $errorComment, $arParams);
@@ -458,9 +484,9 @@ else
 			?><div style="border:1px solid red"><?
 				$commentPreview = Array(
 						"ID" => "preview",
-						"TitleFormated" => htmlspecialcharsEx($_POST["subject"]),
-						"TextFormated" => $_POST["commentFormated"],
-						"AuthorName" => $arResult["User"]["NAME"],
+						"TitleFormated" => htmlspecialcharsbx($_POST["subject"]),
+						"TextFormated" => htmlspecialcharsbx($_POST["commentFormated"]),
+						"AuthorName" => htmlspecialcharsbx($arResult["User"]["NAME"]),
 						"DATE_CREATE" => GetMessage("B_B_MS_PREVIEW_TITLE"),
 					);
 				ShowComment($commentPreview, 0, 30, false, $arResult["User"], $arResult["use_captcha"], $arResult["CanUserComment"], false, $arParams);
@@ -521,9 +547,9 @@ else
 			?><div style="border:1px solid red"><?
 				$commentPreview = Array(
 						"ID" => "preview",
-						"TitleFormated" => htmlspecialcharsEx($_POST["subject"]),
-						"TextFormated" => $_POST["commentFormated"],
-						"AuthorName" => $arResult["User"]["NAME"],
+						"TitleFormated" => htmlspecialcharsbx($_POST["subject"]),
+						"TextFormated" => htmlspecialcharsbx($_POST["commentFormated"]),
+						"AuthorName" => htmlspecialcharsbx($arResult["User"]["NAME"]),
 						"DATE_CREATE" => GetMessage("B_B_MS_PREVIEW_TITLE"),
 					);
 				ShowComment($commentPreview, 0, 30, false, $arResult["User"], $arResult["use_captcha"], $arResult["CanUserComment"], $arResult["COMMENT_ERROR"], $arParams);

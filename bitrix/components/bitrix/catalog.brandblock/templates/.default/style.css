@@ -34,17 +34,16 @@
 	margin-bottom: 20px;
 	text-align: right;
 }
-@media (max-width:768px){.bx_item_detail_inc_two{ display:none;}}
-.bx_item_vidget{
+@media (max-width:767px){.bx_item_detail_inc_two{ display:none;}}
+.brandblock-block{
+	position: relative;
 	text-decoration: none;
 	display: inline-block;
 	border-radius: 4px;
 	text-align: left;
 	color: #585858;
-	font-size: 10px;
+	font-size: 13px;
 	line-height: normal;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	background-size: contain;
 	background-repeat: no-repeat;
@@ -55,10 +54,10 @@
 	margin:0 auto 5px;
 	border: 1px solid #c3c3c3;
 }
+.bx-retina .brandblock-block{ border-width: .5px;}
 
-
-.bx_item_vidget.icon {
-	background: no-repeat 5px center;
+.brandblock-block.icon {
+	background: no-repeat 8px center;
 	padding: 7px 7px 7px 35px;
 	height: 54px;
 }
@@ -68,7 +67,7 @@
 }
 
 .bx_item_detail_inc_one_container.hover .bx_popup,
-.bx_item_vidget.hover .bx_popup {
+.brandblock-block.hover .bx_popup {
 	position: absolute;
 	display: block;
 	border: 1px solid #c3c3c3;
@@ -79,8 +78,6 @@
 	top: 0;
 	padding: 10px;
 	font-size: 12px;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	z-index: 1010;
 	min-width: 90%;
@@ -99,27 +96,42 @@
 	overflow: hidden;
 }
 
-.bx_item_detail_inc_one_container{
+.brandblock-container{
 	width: 100%;
 	position: relative;
 	border-radius: 3px;
 	margin-right: 2px;
-	display: table;
+	padding: 5px 0;
 }
 
-.bx_item_detail_inc_one_container a{
+.brandblock-container a{
 	display: block;
 	background-size: contain;
 }
 
-.bx_item_detail_inc_one_container img {
+.brandblock-container img {
 	margin: 0 auto;
 	display: block;
 }
 
-.bx_item_detail_inc_one_container .wrapper{
-	display: table-cell;
+.brandblock-wrap{
 	vertical-align: middle;
 	text-align: center;
 	height: 54px;
+}
+.brandblock-text{
+	display: block;
+	position: absolute;
+	top: 50%;
+	left:5px;
+	right:5px;
+	-webkit-transform: translateY(-50%);
+	   -moz-transform: translateY(-50%);
+		-ms-transform: translateY(-50%);
+		 -o-transform: translateY(-50%);
+			transform: translateY(-50%);
+	word-wrap: break-word;
+}
+.brandblock-block.icon .brandblock-text{
+	left: 35px;
 }

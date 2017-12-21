@@ -557,7 +557,7 @@
 
 				if (this.editor.GetViewMode() == 'wysiwyg') // BB Codes
 				{
-					res = res.replace(/\n/g, '<br/>');
+					res = res.replace(/</gi, '&lt;').replace(/>/gi, '&gt;').replace(/\n/g, '<br/>');
 					if (author)
 					{
 						if (author.id > 0)

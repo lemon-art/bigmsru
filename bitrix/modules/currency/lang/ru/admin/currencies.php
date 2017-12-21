@@ -12,6 +12,8 @@ $MESS["currency_rate"] = "Курс по умолчанию";
 $MESS["CURRENCY_A_EDIT"] = "редактировать параметры валюты";
 $MESS["CURRENCY_A_EDIT_TITLE"] = "Редактировать параметры валюты";
 $MESS["currency_add"] = "Добавить валюту";
+$MESS["currency_add_from_classifier"] = "Добавить из классификатора";
+$MESS["currency_add_from_classifier_title"] = "Добавить валюту из классификатора";
 $MESS["currency_list"] = "Курсы валют";
 $MESS["CURRENCY_CODES_ISO_STANDART"] = "Перечень возможных кодов валют приведен в международном стандарте <a target=\"_blank\" href=\"#ISO_LINK#\">ISO 4217</a>";
 $MESS["BT_MOD_CURRENCY_LIST_ADM_TITLE_BASE"] = "Базовая";

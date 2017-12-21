@@ -35,9 +35,12 @@ CJSCore::Init(Array('popup'));
 $checklist = new CCheckList();
 $arPoints = $checklist->GetPoints();
 
-if($_REQUEST["TEST_ID"] && $arPoints[$_REQUEST["TEST_ID"]]){?>
-	<?
+if($_REQUEST["TEST_ID"] && $arPoints[$_REQUEST["TEST_ID"]])
+{
 	$arTestID = $_REQUEST["TEST_ID"];
+	$htmlTestID = htmlspecialcharsbx($arTestID);
+	$jsTestID = CUtil::JSEscape($arTestID);
+
 	$arPosition = 0;
 	foreach($arPoints as $k=>$v)
 	{
@@ -57,7 +60,7 @@ if($_REQUEST["TEST_ID"] && $arPoints[$_REQUEST["TEST_ID"]]){?>
 <?
 
 $aTabs = array(
-		array("DIV" => "edit1", "TAB" => GetMessage("CL_TAB_TEST"), "ICON" => "checklist_detail", "TITLE" => GetMessage("CL_TEST_NAME").': '.$arPoints[$arTestID]["NAME"].'&nbsp;('.$arTestID.')'),
+		array("DIV" => "edit1", "TAB" => GetMessage("CL_TAB_TEST"), "ICON" => "checklist_detail", "TITLE" => GetMessage("CL_TEST_NAME").': '.$arPoints[$arTestID]["NAME"].'&nbsp;('.$htmlTestID.')'),
 		array("DIV" => "edit2", "TAB" => GetMessage("CL_TAB_DESC"), "ICON" => "checklist_detail", "TITLE" => GetMessage('CL_TAB_DESC')),
 	);
 	$tabControl = new CAdminTabControl("tabControl", $aTabs);
@@ -73,7 +76,7 @@ $tabControl->BeginNextTab();
 				<div>
 					<span id="system_comment"><?=($arPoints[$arTestID]["STATE"]["COMMENTS"]["SYSTEM"]["PREVIEW"])?$arPoints[$arTestID]["STATE"]["COMMENTS"]["SYSTEM"]["PREVIEW"]:"&mdash;";?></span>
 					<div><span class="checklist-popup-test-link" onclick="ShowDetailComment()" id="show_detail_link"><?=GetMessage("CL_MORE_DETAILS");?></span></div>
-					<div style="display:none" id="detail_system_comment_<?=$arTestID;?>">
+					<div style="display:none" id="detail_system_comment_<?=$htmlTestID;?>">
 						<div class="checklist-system-textarea"><?=preg_replace("/\r\n|\r|\n/",'<br>',$arPoints[$arTestID]["STATE"]["COMMENTS"]["SYSTEM"]["DETAIL"]);?></div>
 					</div>
 				</div>
@@ -158,7 +161,7 @@ $tabControl->BeginNextTab();
 	</div>
 	<script>
 	var test_is_run = false;
-	var testID = "<?=$arTestID;?>";
+	var testID = "<?=$jsTestID;?>";
 	var step = 0;
 	var currentStatus ="<?=$arPoints[$arTestID]["STATE"]["STATUS"]?>";
 	BX("<?=$arPoints[$arTestID]["STATE"]["STATUS"]?>_status").checked = true;
@@ -313,7 +316,7 @@ $tabControl->BeginNextTab();
 					if (json_data.STATUS)
 					{
 						BX("show_detail_link").style.display = "none";
-						BX("detail_system_comment_<?=$arTestID;?>").innerHTML = "";
+						BX("detail_system_comment_<?=$jsTestID;?>").innerHTML = "";
 						currentStatus = json_data.STATUS;
 						RefreshCheckList(json_data);
 						for(var i=0; i<buttons.length; i++)
@@ -330,7 +333,7 @@ $tabControl->BeginNextTab();
 
 							BX("show_detail_link").style.display = "inline-block";
 							ShowPopupDetail(BX("show_detail_link"));
-							BX("detail_system_comment_<?=$arTestID;?>").innerHTML = "<div class=\"checklist-system-textarea\">"+json_data.SYSTEM_MESSAGE.DETAIL.replace(/\r\n|\r|\n/g,'<br>')+"</div>";
+							BX("detail_system_comment_<?=$jsTestID;?>").innerHTML = "<div class=\"checklist-system-textarea\">"+json_data.SYSTEM_MESSAGE.DETAIL.replace(/\r\n|\r|\n/g,'<br>')+"</div>";
 							show_result = true;
 						}
 						if (show_result == true)
@@ -432,8 +435,8 @@ $tabControl->BeginNextTab();
 	}
 	</script>
 	<?
-$tabControl->End();
+	$tabControl->End();
+}
 ?>
-<?}?>
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin_after.php");?>
 

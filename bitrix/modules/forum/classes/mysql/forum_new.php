@@ -51,7 +51,7 @@ class CForumNew extends CAllForumNew
 		return $ID;
 	}
 
-	public static function OnReindex($NS = array(), $oCallback = NULL, $callback_method = "")
+	public static function reindex(&$NS, $oCallback = NULL, $callback_method = "")
 	{
 		global $DB;
 
@@ -72,6 +72,13 @@ class CForumNew extends CAllForumNew
 			$join[] = " INNER JOIN b_forum2site FS ON (FS.FORUM_ID=F.ID) ";
 			$filter[] = "FS.SITE_ID='".$DB->ForSQL($NS["SITE_ID"])."' ";
 		}
+		if (array_key_exists("FILTER", $NS))
+			foreach ($NS["FILTER"] as $f)
+				$filter[] = $f;
+		if (array_key_exists("JOIN", $NS))
+			foreach ($NS["JOIN"] as $j)
+				$join[] = $j;
+		$NS["SKIPPED"] = array();
 
 		$strSql =
 			"SELECT STRAIGHT_JOIN FT.ID as TID, FM.ID as MID,
@@ -134,9 +141,9 @@ class CForumNew extends CAllForumNew
 					"ENTITY_TYPE_ID"  => ($res["NEW_TOPIC"] == "Y" ? "FORUM_TOPIC" : "FORUM_POST"),
 					"ENTITY_ID" => ($res["NEW_TOPIC"] == "Y" ? $res["TOPIC_ID"] : $res["ID"]),
 					"PERMISSIONS" => $permissions[$res["FORUM_ID"]],
-					"TITLE" => $res["TITLE"].($res["NEW_TOPIC"] == "Y" && !empty($res["DESCRIPTION"]) ?
-							", ".$res["DESCRIPTION"] : ""),
-					"TAGS" => ($res["NEW_TOPIC"] == "Y" ? $res["TAGS"] : ""),
+					"TITLE" => $res["FT_TITLE"].($res["NEW_TOPIC"] == "Y" && !empty($res["FT_DESCRIPTION"]) ?
+							", ".$res["FT_DESCRIPTION"] : ""),
+					"TAGS" => ($res["NEW_TOPIC"] == "Y" ? $res["FT_TAGS"] : ""),
 					"BODY" => GetMessage("AVTOR_PREF")." ".$res["AUTHOR_NAME"].". ".
 						forumTextParser::clearAllTags(
 							COption::GetOptionString("forum", "FILTER", "Y") != "Y" ? $res["POST_MESSAGE"] : $res["POST_MESSAGE_FILTER"]),
@@ -151,10 +158,10 @@ class CForumNew extends CAllForumNew
 						array(
 							"FORUM_ID"=>$res["FORUM_ID"],
 							"TOPIC_ID"=>$res["TOPIC_ID"],
-							"TITLE_SEO"=>$res["TITLE_SEO"],
+							"TITLE_SEO"=>$res["FT_TITLE_SEO"],
 							"MESSAGE_ID"=>$res["ID"],
-							"SOCNET_GROUP_ID" =>$res["SOCNET_GROUP_ID"],
-							"OWNER_ID" => $res["OWNER_ID"],
+							"SOCNET_GROUP_ID" =>$res["FT_SOCNET_GROUP_ID"],
+							"OWNER_ID" => $res["FT_OWNER_ID"],
 							"PARAM1" => $res["PARAM1"],
 							"PARAM2" => $res["PARAM2"]));
 					if (empty($result["URL"]) && !empty($result["LID"][$key]))
@@ -182,10 +189,10 @@ class CForumNew extends CAllForumNew
 						array(
 							"FORUM_ID"=>$res["FORUM_ID"],
 							"TOPIC_ID"=>$res["TOPIC_ID"],
-							"TITLE_SEO"=>$res["TITLE_SEO"],
+							"TITLE_SEO"=>$res["FT_TITLE_SEO"],
 							"MESSAGE_ID"=>$res["ID"],
-							"SOCNET_GROUP_ID" =>$res["SOCNET_GROUP_ID"],
-							"OWNER_ID" => $res["OWNER_ID"],
+							"SOCNET_GROUP_ID" =>$res["FT_SOCNET_GROUP_ID"],
+							"OWNER_ID" => $res["FT_OWNER_ID"],
 							"PARAM1" => $res["PARAM1"],
 							"PARAM2" => $res["PARAM2"]
 						)
@@ -209,6 +216,10 @@ class CForumNew extends CAllForumNew
 						return $result["ID"];
 					}
 					$return[] = $result;
+				}
+				else
+				{
+					$NS["SKIPPED"][] = $res["ID"];
 				}
 			} while ($res = $db_res->Fetch());
 		}

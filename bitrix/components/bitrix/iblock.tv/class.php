@@ -2,7 +2,7 @@
 
 class __CIBlockTV
 {
-	function Prepare($Value)
+	public static function Prepare($Value)
 	{
 		return str_replace(array("\r\n", "\r", "\n"), array("<br>", "<br>", "<br>"), CUtil::addslashes(htmlspecialcharsbx($Value)));
 	}

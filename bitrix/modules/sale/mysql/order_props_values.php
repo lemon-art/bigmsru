@@ -193,7 +193,7 @@ class CSaleOrderPropsValue extends CAllSaleOrderPropsValue
 		if (isset($arFilter["PAYSYSTEM_ID"]) && intval($arFilter["PAYSYSTEM_ID"]) > 0)
 		{
 			$strJoin = "	LEFT JOIN b_sale_order_props_relation SOP ON P.ID = SOP.PROPERTY_ID ";
-			$strWhere = " (SOP.ENTITY_TYPE = 'P' AND SOP.ENTITY_ID = ".$DB->ForSql($arFilter["PAYSYSTEM_ID"]).")";
+			$strWhere = " (SOP.ENTITY_TYPE = 'P' AND SOP.ENTITY_ID = ".(int)($arFilter["PAYSYSTEM_ID"]).")";
 		}
 
 		if (isset($arFilter["DELIVERY_ID"]) && strlen($arFilter["DELIVERY_ID"]) > 0)

@@ -7,13 +7,13 @@
  */
 
 /**
- * usertype.php, Пользовательские свойства
+ * usertype.php, РџРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёРµ СЃРІРѕР№СЃС‚РІР°
  *
- * Содержит классы для поддержки пользовательских свойств.
+ * РЎРѕРґРµСЂР¶РёС‚ РєР»Р°СЃСЃС‹ РґР»СЏ РїРѕРґРґРµСЂР¶РєРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёС… СЃРІРѕР№СЃС‚РІ.
  * @author Bitrix <support@bitrixsoft.com>
  * @version 1.0
  * @package usertype
- * @todo Добавить подсказку
+ * @todo Р”РѕР±Р°РІРёС‚СЊ РїРѕРґСЃРєР°Р·РєСѓ
  */
 
 use Bitrix\Main\Entity;
@@ -33,41 +33,42 @@ CModule::AddAutoloadClasses(
 		"CUserTypeIBlockSection" => "classes/general/usertypesection.php",
 		"CUserTypeIBlockElement" => "classes/general/usertypeelement.php",
 		"CUserTypeStringFormatted" => "classes/general/usertypestrfmt.php",
+		"CUserTypeUrl" => "classes/general/usertypeurl.php",
 	)
 );
 
 IncludeModuleLangFile(__FILE__);
 
 /**
- * Данный класс используется для управления метаданными пользовательских свойств.
+ * Р”Р°РЅРЅС‹Р№ РєР»Р°СЃСЃ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ СѓРїСЂР°РІР»РµРЅРёСЏ РјРµС‚Р°РґР°РЅРЅС‹РјРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёС… СЃРІРѕР№СЃС‚РІ.
  *
- * <p>Выборки, Удаление Добавление и обновление метаданных таблицы b_user_field.</p>
-create table b_user_field (
-	ID		int(11) not null auto_increment,
-	ENTITY_ID 	varchar(20),
-	FIELD_NAME	varchar(20),
-	USER_TYPE_ID	varchar(50),
-	XML_ID		varchar(255),
-	SORT		int,
-	MULTIPLE	char(1) not null default 'N',
-	MANDATORY	char(1) not null default 'N',
-	SHOW_FILTER	char(1) not null default 'N',
-	SHOW_IN_LIST	char(1) not null default 'Y',
-	EDIT_IN_LIST	char(1) not null default 'Y',
-	IS_SEARCHABLE	char(1) not null default 'N',
-	SETTINGS	text,
-	PRIMARY KEY (ID),
-	UNIQUE ux_user_type_entity(ENTITY_ID, FIELD_NAME)
-)
-------------------
-ID
-ENTITY_ID (example: IBLOCK_SECTION, USER ....)
-FIELD_NAME (example: UF_EMAIL, UF_SOME_COUNTER ....)
-SORT -- used to do check in the specified order
-BASE_TYPE - String, Number, Integer, Enumeration, File, DateTime
-USER_TYPE_ID
-SETTINGS (blob) -- to store some settings which may be useful for an field instance
-[some base settings comon to all types: mandatory or no, etc.]
+ * <p>Р’С‹Р±РѕСЂРєРё, РЈРґР°Р»РµРЅРёРµ Р”РѕР±Р°РІР»РµРЅРёРµ Рё РѕР±РЅРѕРІР»РµРЅРёРµ РјРµС‚Р°РґР°РЅРЅС‹С… С‚Р°Р±Р»РёС†С‹ b_user_field.</p>
+* create table b_user_field (
+	* ID		int(11) not null auto_increment,
+	* ENTITY_ID 	varchar(20),
+	* FIELD_NAME	varchar(20),
+	* USER_TYPE_ID	varchar(50),
+	* XML_ID		varchar(255),
+	* SORT		int,
+	* MULTIPLE	char(1) not null default 'N',
+	* MANDATORY	char(1) not null default 'N',
+	* SHOW_FILTER	char(1) not null default 'N',
+	* SHOW_IN_LIST	char(1) not null default 'Y',
+	* EDIT_IN_LIST	char(1) not null default 'Y',
+	* IS_SEARCHABLE	char(1) not null default 'N',
+	* SETTINGS	text,
+	* PRIMARY KEY (ID),
+	* UNIQUE ux_user_type_entity(ENTITY_ID, FIELD_NAME)
+* )
+* ------------------
+* ID
+* ENTITY_ID (example: IBLOCK_SECTION, USER ....)
+* FIELD_NAME (example: UF_EMAIL, UF_SOME_COUNTER ....)
+* SORT -- used to do check in the specified order
+* BASE_TYPE - String, Number, Integer, Enumeration, File, DateTime
+* USER_TYPE_ID
+* SETTINGS (blob) -- to store some settings which may be useful for an field instance
+* [some base settings comon to all types: mandatory or no, etc.]
  * <p>b_user_field</p>
  * <ul>
  * <li><b>ID</b> int(11) not null auto_increment
@@ -86,16 +87,16 @@ SETTINGS (blob) -- to store some settings which may be useful for an field insta
  * <li>PRIMARY KEY (ID),
  * <li>UNIQUE ux_user_type_entity(ENTITY_ID, FIELD_NAME)
  * </ul>
-create table b_user_field_lang (
-	USER_FIELD_ID int(11) REFERENCES b_user_field(ID),
-	LANGUAGE_ID char(2),
-	EDIT_FORM_LABEL varchar(255),
-	LIST_COLUMN_LABEL varchar(255),
-	LIST_FILTER_LABEL varchar(255),
-	ERROR_MESSAGE varchar(255),
-	HELP_MESSAGE varchar(255),
-	PRIMARY KEY (USER_FIELD_ID, LANGUAGE_ID)
-)
+* create table b_user_field_lang (
+	* USER_FIELD_ID int(11) REFERENCES b_user_field(ID),
+	* LANGUAGE_ID char(2),
+	* EDIT_FORM_LABEL varchar(255),
+	* LIST_COLUMN_LABEL varchar(255),
+	* LIST_FILTER_LABEL varchar(255),
+	* ERROR_MESSAGE varchar(255),
+	* HELP_MESSAGE varchar(255),
+	* PRIMARY KEY (USER_FIELD_ID, LANGUAGE_ID)
+* )
  * <p>b_user_field_lang</p>
  * <ul>
  * <li><b>USER_FIELD_ID</b> int(11) REFERENCES b_user_field(ID)
@@ -124,11 +125,11 @@ class CAllUserTypeEntity extends CDBResult
 	}
 
 	/**
-	 * Функция для выборки метаданных пользовательского свойства.
+	 * Р¤СѓРЅРєС†РёСЏ РґР»СЏ РІС‹Р±РѕСЂРєРё РјРµС‚Р°РґР°РЅРЅС‹С… РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРѕРіРѕ СЃРІРѕР№СЃС‚РІР°.
 	 *
-	 * <p>Возвращает ассоциативный массив метаданных который можно передать в Update.</p>
-	 * @param integer $ID идентификатор свойства
-	 * @return array Если свойство не найдено, то возвращается false
+	 * <p>Р’РѕР·РІСЂР°С‰Р°РµС‚ Р°СЃСЃРѕС†РёР°С‚РёРІРЅС‹Р№ РјР°СЃСЃРёРІ РјРµС‚Р°РґР°РЅРЅС‹С… РєРѕС‚РѕСЂС‹Р№ РјРѕР¶РЅРѕ РїРµСЂРµРґР°С‚СЊ РІ Update.</p>
+	 * @param integer $ID РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЃРІРѕР№СЃС‚РІР°
+	 * @return array Р•СЃР»Рё СЃРІРѕР№СЃС‚РІРѕ РЅРµ РЅР°Р№РґРµРЅРѕ, С‚Рѕ РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ false
 	 * @static
 	 */
 	public static function GetByID($ID)
@@ -157,13 +158,13 @@ class CAllUserTypeEntity extends CDBResult
 	}
 
 	/**
-	 * Функция для выборки метаданных пользовательских свойств.
+	 * Р¤СѓРЅРєС†РёСЏ РґР»СЏ РІС‹Р±РѕСЂРєРё РјРµС‚Р°РґР°РЅРЅС‹С… РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёС… СЃРІРѕР№СЃС‚РІ.
 	 *
-	 * <p>Возвращает CDBResult - выборку в зависимости от фильтра и сортировки.</p>
-	 * <p>Параметр aSort по умолчанию имеет вид array("SORT"=>"ASC", "ID"=>"ASC").</p>
-	 * <p>Если в aFilter передается LANG, то дополнительно выбираются языковые сообщения.</p>
-	 * @param array $aSort ассоциативный массив сортировки (ID, ENTITY_ID, FIELD_NAME, SORT, USER_TYPE_ID)
-	 * @param array $aFilter ассоциативный массив фильтра со строгим сообветствием (<b>равно</b>) (ID, ENTITY_ID, FIELD_NAME, USER_TYPE_ID, SORT, MULTIPLE, MANDATORY, SHOW_FILTER)
+	 * <p>Р’РѕР·РІСЂР°С‰Р°РµС‚ CDBResult - РІС‹Р±РѕСЂРєСѓ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С„РёР»СЊС‚СЂР° Рё СЃРѕСЂС‚РёСЂРѕРІРєРё.</p>
+	 * <p>РџР°СЂР°РјРµС‚СЂ aSort РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РёРјРµРµС‚ РІРёРґ array("SORT"=>"ASC", "ID"=>"ASC").</p>
+	 * <p>Р•СЃР»Рё РІ aFilter РїРµСЂРµРґР°РµС‚СЃСЏ LANG, С‚Рѕ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕ РІС‹Р±РёСЂР°СЋС‚СЃСЏ СЏР·С‹РєРѕРІС‹Рµ СЃРѕРѕР±С‰РµРЅРёСЏ.</p>
+	 * @param array $aSort Р°СЃСЃРѕС†РёР°С‚РёРІРЅС‹Р№ РјР°СЃСЃРёРІ СЃРѕСЂС‚РёСЂРѕРІРєРё (ID, ENTITY_ID, FIELD_NAME, SORT, USER_TYPE_ID)
+	 * @param array $aFilter Р°СЃСЃРѕС†РёР°С‚РёРІРЅС‹Р№ РјР°СЃСЃРёРІ С„РёР»СЊС‚СЂР° СЃРѕ СЃС‚СЂРѕРіРёРј СЃРѕРѕР±РІРµС‚СЃС‚РІРёРµРј (<b>СЂР°РІРЅРѕ</b>) (ID, ENTITY_ID, FIELD_NAME, USER_TYPE_ID, SORT, MULTIPLE, MANDATORY, SHOW_FILTER)
 	 * @return CDBResult
 	 * @static
 	 */
@@ -295,27 +296,27 @@ class CAllUserTypeEntity extends CDBResult
 	}
 
 	/**
-	 * Функция проверки корректности значений метаданных пользовательских свойств.
+	 * Р¤СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂРєРё РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚Рё Р·РЅР°С‡РµРЅРёР№ РјРµС‚Р°РґР°РЅРЅС‹С… РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёС… СЃРІРѕР№СЃС‚РІ.
 	 *
-	 * <p>Вызывается в методах Add и Update для проверки правильности введенных значений.</p>
-	 * <p>Проверки:</p>
+	 * <p>Р’С‹Р·С‹РІР°РµС‚СЃСЏ РІ РјРµС‚РѕРґР°С… Add Рё Update РґР»СЏ РїСЂРѕРІРµСЂРєРё РїСЂР°РІРёР»СЊРЅРѕСЃС‚Рё РІРІРµРґРµРЅРЅС‹С… Р·РЅР°С‡РµРЅРёР№.</p>
+	 * <p>РџСЂРѕРІРµСЂРєРё:</p>
 	 * <ul>
-	 * <li>ENTITY_ID - обязательное
-	 * <li>ENTITY_ID - не более 20-ти символов
-	 * <li>ENTITY_ID - не должно содержать никаких символов кроме 0-9 A-Z и _
-	 * <li>FIELD_NAME - обязательное
-	 * <li>FIELD_NAME - не менее 4-х символов
-	 * <li>FIELD_NAME - не более 20-ти символов
-	 * <li>FIELD_NAME - не должно содержать никаких символов кроме 0-9 A-Z и _
-	 * <li>FIELD_NAME - должно начинаться на UF_
-	 * <li>USER_TYPE_ID - обязательное
-	 * <li>USER_TYPE_ID - должен быть зарегистрирован
+	 * <li>ENTITY_ID - РѕР±СЏР·Р°С‚РµР»СЊРЅРѕРµ
+	 * <li>ENTITY_ID - РЅРµ Р±РѕР»РµРµ 20-С‚Рё СЃРёРјРІРѕР»РѕРІ
+	 * <li>ENTITY_ID - РЅРµ РґРѕР»Р¶РЅРѕ СЃРѕРґРµСЂР¶Р°С‚СЊ РЅРёРєР°РєРёС… СЃРёРјРІРѕР»РѕРІ РєСЂРѕРјРµ 0-9 A-Z Рё _
+	 * <li>FIELD_NAME - РѕР±СЏР·Р°С‚РµР»СЊРЅРѕРµ
+	 * <li>FIELD_NAME - РЅРµ РјРµРЅРµРµ 4-С… СЃРёРјРІРѕР»РѕРІ
+	 * <li>FIELD_NAME - РЅРµ Р±РѕР»РµРµ 20-С‚Рё СЃРёРјРІРѕР»РѕРІ
+	 * <li>FIELD_NAME - РЅРµ РґРѕР»Р¶РЅРѕ СЃРѕРґРµСЂР¶Р°С‚СЊ РЅРёРєР°РєРёС… СЃРёРјРІРѕР»РѕРІ РєСЂРѕРјРµ 0-9 A-Z Рё _
+	 * <li>FIELD_NAME - РґРѕР»Р¶РЅРѕ РЅР°С‡РёРЅР°С‚СЊСЃСЏ РЅР° UF_
+	 * <li>USER_TYPE_ID - РѕР±СЏР·Р°С‚РµР»СЊРЅРѕРµ
+	 * <li>USER_TYPE_ID - РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅ
 	 * </ul>
-	 * <p>В случае ошибки ловите исключение приложения!</p>
-	 * @param integer $ID - идентификатор свойства. 0 - для нового.
-	 * @param array $arFields метаданные свойства
+	 * <p>Р’ СЃР»СѓС‡Р°Рµ РѕС€РёР±РєРё Р»РѕРІРёС‚Рµ РёСЃРєР»СЋС‡РµРЅРёРµ РїСЂРёР»РѕР¶РµРЅРёСЏ!</p>
+	 * @param integer $ID - РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЃРІРѕР№СЃС‚РІР°. 0 - РґР»СЏ РЅРѕРІРѕРіРѕ.
+	 * @param array $arFields РјРµС‚Р°РґР°РЅРЅС‹Рµ СЃРІРѕР№СЃС‚РІР°
 	 * @param bool $bCheckUserType
-	 * @return boolean false - если хоть одна проверка не прошла.
+	 * @return boolean false - РµСЃР»Рё С…РѕС‚СЊ РѕРґРЅР° РїСЂРѕРІРµСЂРєР° РЅРµ РїСЂРѕС€Р»Р°.
 	 */
 	function CheckFields($ID, $arFields, $bCheckUserType = true)
 	{
@@ -367,44 +368,44 @@ class CAllUserTypeEntity extends CDBResult
 	}
 
 	/**
-	 * Функция добавляет пользовательское свойство.
+	 * Р¤СѓРЅРєС†РёСЏ РґРѕР±Р°РІР»СЏРµС‚ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРѕРµ СЃРІРѕР№СЃС‚РІРѕ.
 	 *
-	 * <p>Сначала вызывается метод экземпляра объекта CheckFields (т.е. $this->CheckFields($arFields) ).</p>
-	 * <p>Если проверка прошла успешно, выполняется проверка на существование такого поля для данной сущности.</p>
-	 * <p>Далее при необходимости создаются таблички вида <b>b_uts_[ENTITY_ID]</b> и <b>b_utm_[ENTITY_ID]</b>.</p>
-	 * <p>После чего метаданные сохраняются в БД.</p>
-	 * <p>И только после этого <b>изменяется стуктура таблицы b_uts_[ENTITY_ID]</b>.</p>
-	 * <p>Массив arFields:</p>
+	* <p>РЎРЅР°С‡Р°Р»Р° РІС‹Р·С‹РІР°РµС‚СЃСЏ РјРµС‚РѕРґ СЌРєР·РµРјРїР»СЏСЂР° РѕР±СЉРµРєС‚Р° CheckFields (С‚.Рµ. $this->CheckFields($arFields) ).</p>
+	* <p>Р•СЃР»Рё РїСЂРѕРІРµСЂРєР° РїСЂРѕС€Р»Р° СѓСЃРїРµС€РЅРѕ, РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ РїСЂРѕРІРµСЂРєР° РЅР° СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёРµ С‚Р°РєРѕРіРѕ РїРѕР»СЏ РґР»СЏ РґР°РЅРЅРѕР№ СЃСѓС‰РЅРѕСЃС‚Рё.</p>
+	* <p>Р”Р°Р»РµРµ РїСЂРё РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё СЃРѕР·РґР°СЋС‚СЃСЏ С‚Р°Р±Р»РёС‡РєРё РІРёРґР° <b>b_uts_[ENTITY_ID]</b> Рё <b>b_utm_[ENTITY_ID]</b>.</p>
+	* <p>РџРѕСЃР»Рµ С‡РµРіРѕ РјРµС‚Р°РґР°РЅРЅС‹Рµ СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РІ Р‘Р”.</p>
+	* <p>Р С‚РѕР»СЊРєРѕ РїРѕСЃР»Рµ СЌС‚РѕРіРѕ <b>РёР·РјРµРЅСЏРµС‚СЃСЏ СЃС‚СѓРєС‚СѓСЂР° С‚Р°Р±Р»РёС†С‹ b_uts_[ENTITY_ID]</b>.</p>
+	* <p>РњР°СЃСЃРёРІ arFields:</p>
 	 * <ul>
-	 * <li>ENTITY_ID - сущность
-	 * <li>FIELD_NAME - фактически имя столбца в БД в котором будут храниться значения свойства.
-	 * <li>USER_TYPE_ID - тип свойства
-	 * <li>XML_ID - идентификатор для использования при импорте/экспорте
-	 * <li>SORT - порядок сортировки (по умолчанию 100)
-	 * <li>MULTIPLE - признак множественности Y/N (по умолчанию N)
-	 * <li>MANDATORY - признак обязательности ввода значения Y/N (по умолчанию N)
-	 * <li>SHOW_FILTER - показывать или нет в фильтре админ листа и какой тип использовать. см. ниже.
-	 * <li>SHOW_IN_LIST - показывать или нет в админ листе (по умолчанию Y)
-	 * <li>EDIT_IN_LIST - разрешать редактирование в формах, но не в API! (по умолчанию Y)
-	 * <li>IS_SEARCHABLE - поле участвует в поиске (по умолчанию N)
-	 * <li>SETTINGS - массив с настройками свойства зависимыми от типа свойства. Проходят "очистку" через обработчик типа PrepareSettings.
-	 * <li>EDIT_FORM_LABEL - массив языковых сообщений вида array("ru"=>"привет", "en"=>"hello")
+	 * <li>ENTITY_ID - СЃСѓС‰РЅРѕСЃС‚СЊ
+	 * <li>FIELD_NAME - С„Р°РєС‚РёС‡РµСЃРєРё РёРјСЏ СЃС‚РѕР»Р±С†Р° РІ Р‘Р” РІ РєРѕС‚РѕСЂРѕРј Р±СѓРґСѓС‚ С…СЂР°РЅРёС‚СЊСЃСЏ Р·РЅР°С‡РµРЅРёСЏ СЃРІРѕР№СЃС‚РІР°.
+	 * <li>USER_TYPE_ID - С‚РёРї СЃРІРѕР№СЃС‚РІР°
+	 * <li>XML_ID - РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РґР»СЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ РїСЂРё РёРјРїРѕСЂС‚Рµ/СЌРєСЃРїРѕСЂС‚Рµ
+	 * <li>SORT - РїРѕСЂСЏРґРѕРє СЃРѕСЂС‚РёСЂРѕРІРєРё (РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ 100)
+	 * <li>MULTIPLE - РїСЂРёР·РЅР°Рє РјРЅРѕР¶РµСЃС‚РІРµРЅРЅРѕСЃС‚Рё Y/N (РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ N)
+	 * <li>MANDATORY - РїСЂРёР·РЅР°Рє РѕР±СЏР·Р°С‚РµР»СЊРЅРѕСЃС‚Рё РІРІРѕРґР° Р·РЅР°С‡РµРЅРёСЏ Y/N (РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ N)
+	 * <li>SHOW_FILTER - РїРѕРєР°Р·С‹РІР°С‚СЊ РёР»Рё РЅРµС‚ РІ С„РёР»СЊС‚СЂРµ Р°РґРјРёРЅ Р»РёСЃС‚Р° Рё РєР°РєРѕР№ С‚РёРї РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ. СЃРј. РЅРёР¶Рµ.
+	 * <li>SHOW_IN_LIST - РїРѕРєР°Р·С‹РІР°С‚СЊ РёР»Рё РЅРµС‚ РІ Р°РґРјРёРЅ Р»РёСЃС‚Рµ (РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ Y)
+	 * <li>EDIT_IN_LIST - СЂР°Р·СЂРµС€Р°С‚СЊ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ РІ С„РѕСЂРјР°С…, РЅРѕ РЅРµ РІ API! (РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ Y)
+	 * <li>IS_SEARCHABLE - РїРѕР»Рµ СѓС‡Р°СЃС‚РІСѓРµС‚ РІ РїРѕРёСЃРєРµ (РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ N)
+	 * <li>SETTINGS - РјР°СЃСЃРёРІ СЃ РЅР°СЃС‚СЂРѕР№РєР°РјРё СЃРІРѕР№СЃС‚РІР° Р·Р°РІРёСЃРёРјС‹РјРё РѕС‚ С‚РёРїР° СЃРІРѕР№СЃС‚РІР°. РџСЂРѕС…РѕРґСЏС‚ "РѕС‡РёСЃС‚РєСѓ" С‡РµСЂРµР· РѕР±СЂР°Р±РѕС‚С‡РёРє С‚РёРїР° PrepareSettings.
+	 * <li>EDIT_FORM_LABEL - РјР°СЃСЃРёРІ СЏР·С‹РєРѕРІС‹С… СЃРѕРѕР±С‰РµРЅРёР№ РІРёРґР° array("ru"=>"РїСЂРёРІРµС‚", "en"=>"hello")
 	 * <li>LIST_COLUMN_LABEL
 	 * <li>LIST_FILTER_LABEL
 	 * <li>ERROR_MESSAGE
 	 * <li>HELP_MESSAGE
 	 * </ul>
-	 * <p>В случае ошибки ловите исключение приложения!</p>
-	 * <p>Значения для SHOW_FILTER:</p>
+	 * <p>Р’ СЃР»СѓС‡Р°Рµ РѕС€РёР±РєРё Р»РѕРІРёС‚Рµ РёСЃРєР»СЋС‡РµРЅРёРµ РїСЂРёР»РѕР¶РµРЅРёСЏ!</p>
+	 * <p>Р—РЅР°С‡РµРЅРёСЏ РґР»СЏ SHOW_FILTER:</p>
 	 * <ul>
-	 * <li>N - не показывать
-	 * <li>I - точное совпадение
-	 * <li>E - маска
-	 * <li>S - подстрока
+	 * <li>N - РЅРµ РїРѕРєР°Р·С‹РІР°С‚СЊ
+	 * <li>I - С‚РѕС‡РЅРѕРµ СЃРѕРІРїР°РґРµРЅРёРµ
+	 * <li>E - РјР°СЃРєР°
+	 * <li>S - РїРѕРґСЃС‚СЂРѕРєР°
 	 * </ul>
-	 * @param array $arFields метаданные нового свойства
+	 * @param array $arFields РјРµС‚Р°РґР°РЅРЅС‹Рµ РЅРѕРІРѕРіРѕ СЃРІРѕР№СЃС‚РІР°
 	 * @param bool $bCheckUserType
-	 * @return integer - иднтификатор добавленного свойства, false - если свойство не было добавлено.
+	 * @return integer - РёРґРЅС‚РёС„РёРєР°С‚РѕСЂ РґРѕР±Р°РІР»РµРЅРЅРѕРіРѕ СЃРІРѕР№СЃС‚РІР°, false - РµСЃР»Рё СЃРІРѕР№СЃС‚РІРѕ РЅРµ Р±С‹Р»Рѕ РґРѕР±Р°РІР»РµРЅРѕ.
 	 */
 	function Add($arFields, $bCheckUserType = true)
 	{
@@ -560,31 +561,31 @@ class CAllUserTypeEntity extends CDBResult
 	}
 
 	/**
-	 * Функция изменяет метаданные пользовательского свойства.
+	 * Р¤СѓРЅРєС†РёСЏ РёР·РјРµРЅСЏРµС‚ РјРµС‚Р°РґР°РЅРЅС‹Рµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРѕРіРѕ СЃРІРѕР№СЃС‚РІР°.
 	 *
-	 * <p>Надо сказать, что для скорейшего завершения разработки было решено пока не реализовывать
-	 * такую же гибкость как в инфоблоках (обойдемся пока без alter'ов и прочего).</p>
-	 * <p>Сначала вызывается метод экземпляра объекта CheckFields (т.е. $this->CheckFields($arFields) ).</p>
-	 * <p>После чего метаданные сохраняются в БД.</p>
-	 * <p>Массив arFields (только то что можно изменять):</p>
+	 * <p>РќР°РґРѕ СЃРєР°Р·Р°С‚СЊ, С‡С‚Рѕ РґР»СЏ СЃРєРѕСЂРµР№С€РµРіРѕ Р·Р°РІРµСЂС€РµРЅРёСЏ СЂР°Р·СЂР°Р±РѕС‚РєРё Р±С‹Р»Рѕ СЂРµС€РµРЅРѕ РїРѕРєР° РЅРµ СЂРµР°Р»РёР·РѕРІС‹РІР°С‚СЊ
+	 * С‚Р°РєСѓСЋ Р¶Рµ РіРёР±РєРѕСЃС‚СЊ РєР°Рє РІ РёРЅС„РѕР±Р»РѕРєР°С… (РѕР±РѕР№РґРµРјСЃСЏ РїРѕРєР° Р±РµР· alter'РѕРІ Рё РїСЂРѕС‡РµРіРѕ).</p>
+	 * <p>РЎРЅР°С‡Р°Р»Р° РІС‹Р·С‹РІР°РµС‚СЃСЏ РјРµС‚РѕРґ СЌРєР·РµРјРїР»СЏСЂР° РѕР±СЉРµРєС‚Р° CheckFields (С‚.Рµ. $this->CheckFields($arFields) ).</p>
+	 * <p>РџРѕСЃР»Рµ С‡РµРіРѕ РјРµС‚Р°РґР°РЅРЅС‹Рµ СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РІ Р‘Р”.</p>
+	 * <p>РњР°СЃСЃРёРІ arFields (С‚РѕР»СЊРєРѕ С‚Рѕ С‡С‚Рѕ РјРѕР¶РЅРѕ РёР·РјРµРЅСЏС‚СЊ):</p>
 	 * <ul>
-	 * <li>SORT - порядок сортировки
-	 * <li>MANDATORY - признак обязательности ввода значения Y/N
-	 * <li>SHOW_FILTER - признак показа в фильтре списка Y/N
-	 * <li>SHOW_IN_LIST - признак показа в списке Y/N
-	 * <li>EDIT_IN_LIST - разрешать редактирование поля в формах админки или нет Y/N
-	 * <li>IS_SEARCHABLE - признак поиска Y/N
-	 * <li>SETTINGS - массив с настройками свойства зависимыми от типа свойства. Проходят "очистку" через обработчик типа PrepareSettings.
-	 * <li>EDIT_FORM_LABEL - массив языковых сообщений вида array("ru"=>"привет", "en"=>"hello")
+	 * <li>SORT - РїРѕСЂСЏРґРѕРє СЃРѕСЂС‚РёСЂРѕРІРєРё
+	 * <li>MANDATORY - РїСЂРёР·РЅР°Рє РѕР±СЏР·Р°С‚РµР»СЊРЅРѕСЃС‚Рё РІРІРѕРґР° Р·РЅР°С‡РµРЅРёСЏ Y/N
+	 * <li>SHOW_FILTER - РїСЂРёР·РЅР°Рє РїРѕРєР°Р·Р° РІ С„РёР»СЊС‚СЂРµ СЃРїРёСЃРєР° Y/N
+	 * <li>SHOW_IN_LIST - РїСЂРёР·РЅР°Рє РїРѕРєР°Р·Р° РІ СЃРїРёСЃРєРµ Y/N
+	 * <li>EDIT_IN_LIST - СЂР°Р·СЂРµС€Р°С‚СЊ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ РїРѕР»СЏ РІ С„РѕСЂРјР°С… Р°РґРјРёРЅРєРё РёР»Рё РЅРµС‚ Y/N
+	 * <li>IS_SEARCHABLE - РїСЂРёР·РЅР°Рє РїРѕРёСЃРєР° Y/N
+	 * <li>SETTINGS - РјР°СЃСЃРёРІ СЃ РЅР°СЃС‚СЂРѕР№РєР°РјРё СЃРІРѕР№СЃС‚РІР° Р·Р°РІРёСЃРёРјС‹РјРё РѕС‚ С‚РёРїР° СЃРІРѕР№СЃС‚РІР°. РџСЂРѕС…РѕРґСЏС‚ "РѕС‡РёСЃС‚РєСѓ" С‡РµСЂРµР· РѕР±СЂР°Р±РѕС‚С‡РёРє С‚РёРїР° PrepareSettings.
+	 * <li>EDIT_FORM_LABEL - РјР°СЃСЃРёРІ СЏР·С‹РєРѕРІС‹С… СЃРѕРѕР±С‰РµРЅРёР№ РІРёРґР° array("ru"=>"РїСЂРёРІРµС‚", "en"=>"hello")
 	 * <li>LIST_COLUMN_LABEL
 	 * <li>LIST_FILTER_LABEL
 	 * <li>ERROR_MESSAGE
 	 * <li>HELP_MESSAGE
 	 * </ul>
-	 * <p>В случае ошибки ловите исключение приложения!</p>
-	 * @param array $ID идентификатор свойства
-	 * @param array $arFields новые метаданные свойства
-	 * @return boolean - true в случае успешного обновления, false - в противном случае.
+	 * <p>Р’ СЃР»СѓС‡Р°Рµ РѕС€РёР±РєРё Р»РѕРІРёС‚Рµ РёСЃРєР»СЋС‡РµРЅРёРµ РїСЂРёР»РѕР¶РµРЅРёСЏ!</p>
+	 * @param array $ID РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЃРІРѕР№СЃС‚РІР°
+	 * @param array $arFields РЅРѕРІС‹Рµ РјРµС‚Р°РґР°РЅРЅС‹Рµ СЃРІРѕР№СЃС‚РІР°
+	 * @return boolean - true РІ СЃР»СѓС‡Р°Рµ СѓСЃРїРµС€РЅРѕРіРѕ РѕР±РЅРѕРІР»РµРЅРёСЏ, false - РІ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ.
 	 */
 	function Update($ID, $arFields)
 	{
@@ -699,14 +700,14 @@ class CAllUserTypeEntity extends CDBResult
 	}
 
 	/**
-	 * Функция удаляет пользовательское свойство и все его значения.
+	 * Р¤СѓРЅРєС†РёСЏ СѓРґР°Р»СЏРµС‚ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРѕРµ СЃРІРѕР№СЃС‚РІРѕ Рё РІСЃРµ РµРіРѕ Р·РЅР°С‡РµРЅРёСЏ.
 	 *
-	 * <p>Сначала удаляются метаданные свойства.</p>
-	 * <p>Затем из таблички вида <b>b_utm_[ENTITY_ID]</b> удаляются все значения множественных свойств.</p>
-	 * <p>После чего у таблички вида <b>b_uts_[ENTITY_ID]</b> дропается колонка.</p>
-	 * <p>И если это было "последнее" свойство для сущности, то дропаются сами таблички хранившие значения.</p>
-	 * @param array $ID идентификатор свойства
-	 * @return CDBResult - результат выполнения последнего запроса функции.
+	 * <p>РЎРЅР°С‡Р°Р»Р° СѓРґР°Р»СЏСЋС‚СЃСЏ РјРµС‚Р°РґР°РЅРЅС‹Рµ СЃРІРѕР№СЃС‚РІР°.</p>
+	 * <p>Р—Р°С‚РµРј РёР· С‚Р°Р±Р»РёС‡РєРё РІРёРґР° <b>b_utm_[ENTITY_ID]</b> СѓРґР°Р»СЏСЋС‚СЃСЏ РІСЃРµ Р·РЅР°С‡РµРЅРёСЏ РјРЅРѕР¶РµСЃС‚РІРµРЅРЅС‹С… СЃРІРѕР№СЃС‚РІ.</p>
+	 * <p>РџРѕСЃР»Рµ С‡РµРіРѕ Сѓ С‚Р°Р±Р»РёС‡РєРё РІРёРґР° <b>b_uts_[ENTITY_ID]</b> РґСЂРѕРїР°РµС‚СЃСЏ РєРѕР»РѕРЅРєР°.</p>
+	 * <p>Р РµСЃР»Рё СЌС‚Рѕ Р±С‹Р»Рѕ "РїРѕСЃР»РµРґРЅРµРµ" СЃРІРѕР№СЃС‚РІРѕ РґР»СЏ СЃСѓС‰РЅРѕСЃС‚Рё, С‚Рѕ РґСЂРѕРїР°СЋС‚СЃСЏ СЃР°РјРё С‚Р°Р±Р»РёС‡РєРё С…СЂР°РЅРёРІС€РёРµ Р·РЅР°С‡РµРЅРёСЏ.</p>
+	 * @param array $ID РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЃРІРѕР№СЃС‚РІР°
+	 * @return CDBResult - СЂРµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ РїРѕСЃР»РµРґРЅРµРіРѕ Р·Р°РїСЂРѕСЃР° С„СѓРЅРєС†РёРё.
 	 */
 	function Delete($ID)
 	{
@@ -812,13 +813,13 @@ class CAllUserTypeEntity extends CDBResult
 	}
 
 	/**
-	 * Функция удаляет ВСЕ пользовательские свойства сущности.
+	 * Р¤СѓРЅРєС†РёСЏ СѓРґР°Р»СЏРµС‚ Р’РЎР• РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёРµ СЃРІРѕР№СЃС‚РІР° СЃСѓС‰РЅРѕСЃС‚Рё.
 	 *
-	 * <p>Сначала удаляются метаданные свойств.</p>
-	 * <p>Можно вызвать при удалении инфоблока например.</p>
-	 * <p>Затем таблички вида <b>b_utm_[ENTITY_ID]</b> и <b>b_uts_[ENTITY_ID]</b> дропаются.</p>
-	 * @param string $entity_id идентификатор сущности
-	 * @return CDBResult - результат выполнения последнего запроса функции.
+	 * <p>РЎРЅР°С‡Р°Р»Р° СѓРґР°Р»СЏСЋС‚СЃСЏ РјРµС‚Р°РґР°РЅРЅС‹Рµ СЃРІРѕР№СЃС‚РІ.</p>
+	 * <p>РњРѕР¶РЅРѕ РІС‹Р·РІР°С‚СЊ РїСЂРё СѓРґР°Р»РµРЅРёРё РёРЅС„РѕР±Р»РѕРєР° РЅР°РїСЂРёРјРµСЂ.</p>
+	 * <p>Р—Р°С‚РµРј С‚Р°Р±Р»РёС‡РєРё РІРёРґР° <b>b_utm_[ENTITY_ID]</b> Рё <b>b_uts_[ENTITY_ID]</b> РґСЂРѕРїР°СЋС‚СЃСЏ.</p>
+	 * @param string $entity_id РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЃСѓС‰РЅРѕСЃС‚Рё
+	 * @return CDBResult - СЂРµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ РїРѕСЃР»РµРґРЅРµРіРѕ Р·Р°РїСЂРѕСЃР° С„СѓРЅРєС†РёРё.
 	 */
 	function DropEntity($entity_id)
 	{
@@ -863,10 +864,10 @@ class CAllUserTypeEntity extends CDBResult
 	}
 
 	/**
-	 * Функция Fetch.
+	 * Р¤СѓРЅРєС†РёСЏ Fetch.
 	 *
-	 * <p>Десериализует поле SETTINGS.</p>
-	 * @return array возвращает false в случае последней записи выборки.
+	 * <p>Р”РµСЃРµСЂРёР°Р»РёР·СѓРµС‚ РїРѕР»Рµ SETTINGS.</p>
+	 * @return array РІРѕР·РІСЂР°С‰Р°РµС‚ false РІ СЃР»СѓС‡Р°Рµ РїРѕСЃР»РµРґРЅРµР№ Р·Р°РїРёСЃРё РІС‹Р±РѕСЂРєРё.
 	 */
 	function Fetch()
 	{
@@ -880,23 +881,24 @@ class CAllUserTypeEntity extends CDBResult
 }
 
 /**
- * Данный класс фактически является интерфейсной прослойкой между значениями
- * пользовательских свойств и сущностью к которой они привязаны.
+ * Р”Р°РЅРЅС‹Р№ РєР»Р°СЃСЃ С„Р°РєС‚РёС‡РµСЃРєРё СЏРІР»СЏРµС‚СЃСЏ РёРЅС‚РµСЂС„РµР№СЃРЅРѕР№ РїСЂРѕСЃР»РѕР№РєРѕР№ РјРµР¶РґСѓ Р·РЅР°С‡РµРЅРёСЏРјРё
+ * РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёС… СЃРІРѕР№СЃС‚РІ Рё СЃСѓС‰РЅРѕСЃС‚СЊСЋ Рє РєРѕС‚РѕСЂРѕР№ РѕРЅРё РїСЂРёРІСЏР·Р°РЅС‹.
  * @package usertype
  * @subpackage classes
  */
-class CAllUserTypeManager
+class CUserTypeManager
 {
-	//must be extended
-	function DateTimeToChar($FIELD_NAME)
-	{
-		return "";
-	}
+	const BASE_TYPE_INT = "int";
+	const BASE_TYPE_FILE = "file";
+	const BASE_TYPE_ENUM = "enum";
+	const BASE_TYPE_DOUBLE = "double";
+	const BASE_TYPE_DATETIME = "datetime";
+	const BASE_TYPE_STRING = "string";
 
 	/**
-	 * Хранит все типы пользовательских свойств.
+	 * РҐСЂР°РЅРёС‚ РІСЃРµ С‚РёРїС‹ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёС… СЃРІРѕР№СЃС‚РІ.
 	 *
-	 * <p>Инициализируется при первом вызове метода GetUserType.</p>
+	 * <p>РРЅРёС†РёР°Р»РёР·РёСЂСѓРµС‚СЃСЏ РїСЂРё РїРµСЂРІРѕРј РІС‹Р·РѕРІРµ РјРµС‚РѕРґР° GetUserType.</p>
 	 * @var array
 	 */
 	var $arUserTypes = false;
@@ -906,16 +908,17 @@ class CAllUserTypeManager
 	function CleanCache()
 	{
 		$this->arFieldsCache = array();
+		$this->arUserTypes = false;
 	}
 	/**
-	 * Функция возвращает метаданные типа.
+	 * Р¤СѓРЅРєС†РёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚ РјРµС‚Р°РґР°РЅРЅС‹Рµ С‚РёРїР°.
 	 *
-	 * <p>Если это первый вызов функции, то выполняется системное событие OnUserTypeBuildList (main).
-	 * Зарегистрированные обработчики должны вернуть даные описания типа. В данном случае действует правило -
-	 * кто последний тот и папа. (на случай если один тип зарегились обрабатывать "несколько" классов)</p>
-	 * <p>Без параметров функция возвращает полный список типов.<p>
-	 * <p>При заданном user_type_id - возвращает массив если такой тип зарегистрирован и false если нет.<p>
-	 * @param string|bool $user_type_id необязательный. идентификатор типа свойства.
+	 * <p>Р•СЃР»Рё СЌС‚Рѕ РїРµСЂРІС‹Р№ РІС‹Р·РѕРІ С„СѓРЅРєС†РёРё, С‚Рѕ РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ СЃРёСЃС‚РµРјРЅРѕРµ СЃРѕР±С‹С‚РёРµ OnUserTypeBuildList (main).
+	 * Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРЅС‹Рµ РѕР±СЂР°Р±РѕС‚С‡РёРєРё РґРѕР»Р¶РЅС‹ РІРµСЂРЅСѓС‚СЊ РґР°РЅС‹Рµ РѕРїРёСЃР°РЅРёСЏ С‚РёРїР°. Р’ РґР°РЅРЅРѕРј СЃР»СѓС‡Р°Рµ РґРµР№СЃС‚РІСѓРµС‚ РїСЂР°РІРёР»Рѕ -
+	 * РєС‚Рѕ РїРѕСЃР»РµРґРЅРёР№ С‚РѕС‚ Рё РїР°РїР°. (РЅР° СЃР»СѓС‡Р°Р№ РµСЃР»Рё РѕРґРёРЅ С‚РёРї Р·Р°СЂРµРіРёР»РёСЃСЊ РѕР±СЂР°Р±Р°С‚С‹РІР°С‚СЊ "РЅРµСЃРєРѕР»СЊРєРѕ" РєР»Р°СЃСЃРѕРІ)</p>
+	 * <p>Р‘РµР· РїР°СЂР°РјРµС‚СЂРѕРІ С„СѓРЅРєС†РёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚ РїРѕР»РЅС‹Р№ СЃРїРёСЃРѕРє С‚РёРїРѕРІ.<p>
+	 * <p>РџСЂРё Р·Р°РґР°РЅРЅРѕРј user_type_id - РІРѕР·РІСЂР°С‰Р°РµС‚ РјР°СЃСЃРёРІ РµСЃР»Рё С‚Р°РєРѕР№ С‚РёРї Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅ Рё false РµСЃР»Рё РЅРµС‚.<p>
+	 * @param string|bool $user_type_id РЅРµРѕР±СЏР·Р°С‚РµР»СЊРЅС‹Р№. РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ С‚РёРїР° СЃРІРѕР№СЃС‚РІР°.
 	 * @return array|boolean
 	 */
 	function GetUserType($user_type_id = false)
@@ -1012,10 +1015,10 @@ class CAllUserTypeManager
 	}
 
 	/**
-	 * Функция возвращает метаданные полей определлых для сущности.
+	 * Р¤СѓРЅРєС†РёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚ РјРµС‚Р°РґР°РЅРЅС‹Рµ РїРѕР»РµР№ РѕРїСЂРµРґРµР»РµРЅС‹С… РґР»СЏ СЃСѓС‰РЅРѕСЃС‚Рё.
 	 *
-	 * <p>Важно! В $arUserField добалено поле ENTITY_VALUE_ID - это идентификатор экземпляра сущности
-	 * позволяющий отделить новые записи от старых и соответсвенно использовать значения по умолчанию.</p>
+	 * <p>Р’Р°Р¶РЅРѕ! Р’ $arUserField РґРѕР±Р°Р»РµРЅРѕ РїРѕР»Рµ ENTITY_VALUE_ID - СЌС‚Рѕ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СЌРєР·РµРјРїР»СЏСЂР° СЃСѓС‰РЅРѕСЃС‚Рё
+	 * РїРѕР·РІРѕР»СЏСЋС‰РёР№ РѕС‚РґРµР»РёС‚СЊ РЅРѕРІС‹Рµ Р·Р°РїРёСЃРё РѕС‚ СЃС‚Р°СЂС‹С… Рё СЃРѕРѕС‚РІРµС‚СЃРІРµРЅРЅРѕ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ Р·РЅР°С‡РµРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ.</p>
 	*/
 	function GetUserFields($entity_id, $value_id = 0, $LANG = false, $user_id = false)
 	{
@@ -1054,17 +1057,31 @@ class CAllUserTypeManager
 			$this->arFieldsCache[$cacheId] = $result;
 		}
 		else
+		{
 			$result = $this->arFieldsCache[$cacheId];
+		}
 
 		if(count($result)>0 && $value_id>0)
 		{
 			$select = "VALUE_ID";
 			foreach($result as $FIELD_NAME=>$arUserField)
 			{
-				if($arUserField["USER_TYPE"]["BASE_TYPE"] == "datetime" && $arUserField["MULTIPLE"] == "N")
-					$select .= ", ".$this->DateTimeToChar($FIELD_NAME)." ".$FIELD_NAME;
-				else
+				$simpleFormat = true;
+				if($arUserField["MULTIPLE"] == "N")
+				{
+					if($arType = $arUserField["USER_TYPE"])
+					{
+						if(is_callable(array($arType["CLASS_NAME"], "FormatField")))
+						{
+							$select .= ", ".call_user_func_array(array($arType["CLASS_NAME"], "FormatField"), array($arUserField, $FIELD_NAME))." ".$FIELD_NAME;
+							$simpleFormat = false;
+						}
+					}
+				}
+				if($simpleFormat)
+				{
 					$select .= ", ".$FIELD_NAME;
+				}
 			}
 
 			$rs = $DB->Query("SELECT ".$select." FROM b_uts_".strtolower($entity_id)." WHERE VALUE_ID = ".$value_id, false, "FILE: ".__FILE__."<br>LINE: ".__LINE__);
@@ -1194,10 +1211,23 @@ class CAllUserTypeManager
 			$arTableFields = $DB->GetTableFields($strTableName);
 			if(array_key_exists($field_id, $arTableFields))
 			{
-				if($arUserField["USER_TYPE"]["BASE_TYPE"] == "datetime" && $arUserField["MULTIPLE"] == "N")
-					$select = $this->DateTimeToChar($field_id);
-				else
+				$simpleFormat = true;
+				$select = "";
+				if($arUserField["MULTIPLE"] == "N")
+				{
+					if($arType = $arUserField["USER_TYPE"])
+					{
+						if(is_callable(array($arType["CLASS_NAME"], "FormatField")))
+						{
+							$select = call_user_func_array(array($arType["CLASS_NAME"], "FormatField"), array($arUserField, $field_id));
+							$simpleFormat = false;
+						}
+					}
+				}
+				if($simpleFormat)
+				{
 					$select = $field_id;
+				}
 
 				$rs = $DB->Query("SELECT ".$select." VALUE FROM ".$strTableName." WHERE VALUE_ID = ".$value_id, false, "FILE: ".__FILE__."<br>LINE: ".__LINE__);
 				if($ar = $rs->Fetch())
@@ -1441,12 +1471,51 @@ class CAllUserTypeManager
 		}
 	}
 
-	function AdminListAddFilterFields($entity_id, &$arFilterFields)
+	/**
+	 * Add field for filter.
+	 * @param int $entityId Entity id.
+	 * @param array $arFilterFields Array for fill.
+	 */
+	function AdminListAddFilterFields($entityId, &$arFilterFields)
 	{
-		$arUserFields = $this->GetUserFields($entity_id);
-		foreach($arUserFields as $FIELD_NAME=>$arUserField)
-			if($arUserField["SHOW_FILTER"]!="N" && $arUserField["USER_TYPE"]["BASE_TYPE"]!="file")
-				$arFilterFields[]="find_".$FIELD_NAME;
+		$arUserFields = $this->GetUserFields($entityId);
+		foreach ($arUserFields as $fieldName => $arUserField)
+		{
+			if ($arUserField['SHOW_FILTER']!='N' && $arUserField['USER_TYPE']['BASE_TYPE']!='file')
+			{
+				$arFilterFields[] = 'find_'.$fieldName;
+				if ($arUserField['USER_TYPE']['BASE_TYPE'] == 'datetime')
+				{
+					$arFilterFields[] = 'find_'.$fieldName.'_from';
+					$arFilterFields[] = 'find_'.$fieldName.'_to';
+				}
+			}
+		}
+	}
+
+	function AdminListAddFilterFieldsV2($entityId, &$arFilterFields)
+	{
+		$arUserFields = $this->GetUserFields($entityId, 0, $GLOBALS["lang"]);
+		foreach ($arUserFields as $fieldName => $arUserField)
+		{
+			if ($arUserField['SHOW_FILTER']!='N' && $arUserField['USER_TYPE']['BASE_TYPE']!='file')
+			{
+				if(is_callable(array($arUserField['USER_TYPE']['CLASS_NAME'], 'GetFilterData')))
+				{
+					$arFilterFields[] = call_user_func_array(
+						array($arUserField['USER_TYPE']['CLASS_NAME'], 'GetFilterData'),
+						array(
+							$arUserField,
+							array(
+								'ID' => $fieldName,
+								'NAME' => $arUserField['LIST_FILTER_LABEL'] ?
+									$arUserField['LIST_FILTER_LABEL'] : $arUserField['FIELD_NAME'],
+							),
+						)
+					);
+				}
+			}
+		}
 	}
 
 	function IsNotEmpty($value)
@@ -1470,24 +1539,117 @@ class CAllUserTypeManager
 		}
 	}
 
-	function AdminListAddFilter($entity_id, &$arFilter)
+	/**
+	 * Add value for filter.
+	 * @param int $entityId Entity id.
+	 * @param array $arFilter Array for fill.
+	 */
+	function AdminListAddFilter($entityId, &$arFilter)
 	{
-		$arUserFields = $this->GetUserFields($entity_id);
-		foreach($arUserFields as $FIELD_NAME=>$arUserField)
+		$arUserFields = $this->GetUserFields($entityId);
+		foreach ($arUserFields as $fieldName => $arUserField)
 		{
-			$value = $GLOBALS["find_".$FIELD_NAME];
-			if(
-				$arUserField["SHOW_FILTER"] != "N"
-				&& $arUserField["USER_TYPE"]["BASE_TYPE"] != "file"
+			if (
+				$arUserField['SHOW_FILTER'] != 'N' &&
+				$arUserField['USER_TYPE']['BASE_TYPE'] == 'datetime'
+			)
+			{
+				$value1 = $GLOBALS['find_'.$fieldName.'_from'];
+				$value2 = $GLOBALS['find_'.$fieldName.'_to'];
+				if ($this->IsNotEmpty($value1) && \Bitrix\Main\Type\Date::isCorrect($value1))
+				{
+					$date = new \Bitrix\Main\Type\Date($value1);
+					$arFilter['>='.$fieldName] = $date;
+				}
+				if ($this->IsNotEmpty($value2) && \Bitrix\Main\Type\Date::isCorrect($value2))
+				{
+					$date = new \Bitrix\Main\Type\Date($value2);
+					if ($arUserField['USER_TYPE_ID'] != 'date')
+					{
+						$date->add('+1 day');
+					}
+					$arFilter['<='.$fieldName] = $date;
+				}
+				continue;
+			}
+			else
+			{
+				$value = $GLOBALS['find_'.$fieldName];
+			}
+			if (
+				$arUserField['SHOW_FILTER'] != 'N'
+				&& $arUserField['USER_TYPE']['BASE_TYPE'] != 'file'
 				&& $this->IsNotEmpty($value)
 			)
 			{
-				if($arUserField["SHOW_FILTER"]=="I")
-					$arFilter["=".$FIELD_NAME]=$value;
-				elseif($arUserField["SHOW_FILTER"]=="S")
-					$arFilter["%".$FIELD_NAME]=$value;
+				if ($arUserField['SHOW_FILTER'] == 'I')
+				{
+					$arFilter['='.$fieldName] = $value;
+				}
+				elseif($arUserField['SHOW_FILTER']=='S')
+				{
+					$arFilter['%'.$fieldName] = $value;
+				}
 				else
-					$arFilter[$FIELD_NAME]=$value;
+				{
+					$arFilter[$fieldName] = $value;
+				}
+			}
+		}
+	}
+
+	function AdminListAddFilterV2($entityId, &$arFilter, $filterId, $filterFields)
+	{
+		$filterOption = new Bitrix\Main\UI\Filter\Options($filterId);
+		$filterData = $filterOption->getFilter($filterFields);
+
+		$arUserFields = $this->GetUserFields($entityId);
+		foreach ($arUserFields as $fieldName => $arUserField)
+		{
+			if ($arUserField['SHOW_FILTER'] != 'N' && $arUserField['USER_TYPE']['BASE_TYPE'] == 'datetime')
+			{
+				$value1 = $filterData[$fieldName.'_from'];
+				$value2 = $filterData[$fieldName.'_to'];
+				if ($this->IsNotEmpty($value1) && \Bitrix\Main\Type\Date::isCorrect($value1))
+				{
+					$date = new \Bitrix\Main\Type\Date($value1);
+					$arFilter['>='.$fieldName] = $date;
+				}
+				if ($this->IsNotEmpty($value2) && \Bitrix\Main\Type\Date::isCorrect($value2))
+				{
+					$date = new \Bitrix\Main\Type\Date($value2);
+					if ($arUserField['USER_TYPE_ID'] != 'date')
+					{
+						$date->add('+1 day');
+					}
+					$arFilter['<='.$fieldName] = $date;
+				}
+				continue;
+			}
+			else
+			{
+				$value = $filterData[$fieldName];
+			}
+			if (
+				$arUserField['SHOW_FILTER'] != 'N'
+				&& $arUserField['USER_TYPE']['BASE_TYPE'] != 'file'
+				&& $this->IsNotEmpty($value)
+			)
+			{
+				if ($arUserField['SHOW_FILTER'] == 'I')
+				{
+					unset($arFilter[$fieldName]);
+					$arFilter['='.$fieldName] = $value;
+				}
+				elseif($arUserField['SHOW_FILTER']=='S')
+				{
+					unset($arFilter[$fieldName]);
+					$arFilter['%'.$fieldName] = $value;
+				}
+				else
+				{
+					$arFilter[$fieldName] = $value;
+				}
 			}
 		}
 	}
@@ -1606,7 +1768,7 @@ class CAllUserTypeManager
 							$arUserField,
 							array(
 								"NAME" => $arUserField["FIELD_NAME"],
-								"VALUE" => is_array($form_value)? $form_value: htmlspecialcharsbx($form_value),
+								"VALUE" => (is_array($form_value)? $form_value : htmlspecialcharsbx($form_value)),
 								"VALIGN" => &$valign,
 								"ROWCLASS" => &$rowClass
 							),
@@ -1617,10 +1779,15 @@ class CAllUserTypeManager
 				elseif(is_callable(array($arUserField["USER_TYPE"]["CLASS_NAME"], "geteditformhtmlmulty")))
 				{
 					if(!is_array($form_value))
-						$form_value = array();
-					foreach($form_value as $key=>$value)
 					{
-						$form_value[$key] = htmlspecialcharsbx($value);
+						$form_value = array();
+					}
+					foreach($form_value as $key => $value)
+					{
+						if(!is_array($value))
+						{
+							$form_value[$key] = htmlspecialcharsbx($value);
+						}
 					}
 
 					$rowClass = "";
@@ -1640,10 +1807,12 @@ class CAllUserTypeManager
 				else
 				{
 					if(!is_array($form_value))
+					{
 						$form_value = array();
+					}
 					$html = "";
 					$i = -1;
-					foreach($form_value as $i=>$value)
+					foreach($form_value as $i => $value)
 					{
 
 						if(
@@ -1657,7 +1826,7 @@ class CAllUserTypeManager
 									$arUserField,
 									array(
 										"NAME" => $arUserField["FIELD_NAME"]."[".$i."]",
-										"VALUE" => htmlspecialcharsbx($value),
+										"VALUE" => (is_array($value)? $value : htmlspecialcharsbx($value)),
 									),
 								)
 							).'</td></tr>';
@@ -1962,6 +2131,164 @@ class CAllUserTypeManager
 		return strlen($html) ? $html : '&nbsp;';
 	}
 
+	function CallUserTypeComponent($componentName, $componentTemplate, $arUserField, $arAdditionalParameters = array())
+	{
+		global $APPLICATION;
+		$arParams = $arAdditionalParameters;
+		$arParams['arUserField'] = $arUserField;
+		ob_start();
+		$APPLICATION->IncludeComponent(
+			$componentName,
+			$componentTemplate,
+			$arParams,
+			null,
+			array("HIDE_ICONS" => "Y")
+		);
+		return ob_get_clean();
+	}
+
+	function GetPublicView($arUserField, $arAdditionalParameters = array())
+	{
+		$event = new \Bitrix\Main\Event("main", "onBeforeGetPublicView", array(&$arUserField, &$arAdditionalParameters));
+		$event->send();
+
+		$arType = $this->GetUserType($arUserField["USER_TYPE_ID"]);
+
+		$html = null;
+		$event = new \Bitrix\Main\Event("main", "onGetPublicView", array($arUserField, $arAdditionalParameters));
+		$event->send();
+		foreach ($event->getResults() as $evenResult)
+		{
+			if ($evenResult->getType() == \Bitrix\Main\EventResult::SUCCESS)
+			{
+				$html = $evenResult->getParameters();
+				break;
+			}
+		}
+
+		if ($html !== null)
+		{
+			//All done
+		}
+		elseif($arUserField["VIEW_CALLBACK"] && is_callable($arUserField['VIEW_CALLBACK']))
+		{
+			$html = call_user_func_array($arUserField["VIEW_CALLBACK"], array(
+				$arUserField,
+				$arAdditionalParameters
+			));
+		}
+		elseif($arType && $arType["VIEW_CALLBACK"] && is_callable($arType['VIEW_CALLBACK']))
+		{
+			$html = call_user_func_array($arType["VIEW_CALLBACK"], array(
+				$arUserField,
+				$arAdditionalParameters
+			));
+		}
+		elseif ($arUserField["VIEW_COMPONENT_NAME"])
+		{
+			$html = $this->CallUserTypeComponent(
+				$arUserField["VIEW_COMPONENT_NAME"],
+				$arUserField["VIEW_COMPONENT_TEMPLATE"],
+				$arUserField,
+				$arAdditionalParameters
+			);
+		}
+		elseif ($arType && $arType["VIEW_COMPONENT_NAME"])
+		{
+			$html = $this->CallUserTypeComponent(
+				$arType["VIEW_COMPONENT_NAME"],
+				$arType["VIEW_COMPONENT_TEMPLATE"],
+				$arUserField,
+				$arAdditionalParameters
+			);
+		}
+		else
+		{
+			$html = $this->CallUserTypeComponent(
+				"bitrix:system.field.view",
+				$arUserField["USER_TYPE_ID"],
+				$arUserField,
+				$arAdditionalParameters
+			);
+		}
+
+		$event = new \Bitrix\Main\Event("main", "onAfterGetPublicView", array($arUserField, $arAdditionalParameters, &$html));
+		$event->send();
+
+		return $html;
+	}
+
+	function GetPublicEdit($arUserField, $arAdditionalParameters = array())
+	{
+		$event = new \Bitrix\Main\Event("main", "onBeforeGetPublicEdit", array(&$arUserField, &$arAdditionalParameters));
+		$event->send();
+
+		$arType = $this->GetUserType($arUserField["USER_TYPE_ID"]);
+
+		$html = null;
+		$event = new \Bitrix\Main\Event("main", "onGetPublicEdit", array($arUserField, $arAdditionalParameters));
+		$event->send();
+		foreach ($event->getResults() as $evenResult)
+		{
+			if ($evenResult->getType() == \Bitrix\Main\EventResult::SUCCESS)
+			{
+				$html = $evenResult->getParameters();
+				break;
+			}
+		}
+
+		if ($html !== null)
+		{
+			//All done
+		}
+		elseif ($arUserField["EDIT_CALLBACK"] && is_callable($arUserField['EDIT_CALLBACK']))
+		{
+			$html = call_user_func_array($arUserField["EDIT_CALLBACK"], array(
+				$arUserField,
+				$arAdditionalParameters
+			));
+		}
+		elseif ($arType && $arType["EDIT_CALLBACK"] && is_callable($arType['EDIT_CALLBACK']))
+		{
+			$html = call_user_func_array($arType["EDIT_CALLBACK"], array(
+				$arUserField,
+				$arAdditionalParameters
+			));
+		}
+		elseif ($arUserField["EDIT_COMPONENT_NAME"])
+		{
+			$html = $this->CallUserTypeComponent(
+				$arUserField["EDIT_COMPONENT_NAME"],
+				$arUserField["EDIT_COMPONENT_TEMPLATE"],
+				$arUserField,
+				$arAdditionalParameters
+			);
+		}
+		elseif ($arType && $arType["EDIT_COMPONENT_NAME"])
+		{
+			$html = $this->CallUserTypeComponent(
+				$arType["EDIT_COMPONENT_NAME"],
+				$arType["EDIT_COMPONENT_TEMPLATE"],
+				$arUserField,
+				$arAdditionalParameters
+			);
+		}
+		else
+		{
+			$html = $this->CallUserTypeComponent(
+				"bitrix:system.field.edit",
+				$arUserField["USER_TYPE_ID"],
+				$arUserField,
+				$arAdditionalParameters
+			);
+		}
+
+		$event = new \Bitrix\Main\Event("main", "onAfterGetPublicEdit", array($arUserField, $arAdditionalParameters, &$html));
+		$event->send();
+
+		return $html;
+	}
+
 	function GetSettingsHTML($arUserField, $bVarsFromForm = false)
 	{
 		if(!is_array($arUserField)) // New field
@@ -2027,6 +2354,10 @@ class CAllUserTypeManager
 							elseif(array_key_exists("size", $value) && $value["size"] > 0)
 								$bWasInput = true;
 						}
+						elseif($value > 0)
+						{
+							$bWasInput = true;
+						}
 					}
 					else
 					{
@@ -2040,6 +2371,10 @@ class CAllUserTypeManager
 										unset($arDBFiles[$value["old_id"]]);
 									elseif(array_key_exists("size", $value) && $value["size"] > 0)
 										$bWasInput = true;
+								}
+								elseif($value > 0)
+								{
+									$bWasInput = true;
 								}
 							}
 						}
@@ -2340,13 +2675,6 @@ class CAllUserTypeManager
 											$value = 0;
 										}
 										break;
-									case "datetime":
-										//TODO: convert to valid site date/time
-										//$value = $DB->CharToDateFunction($value);
-										break;
-									default:
-										// For SQL will follow
-										$value = substr($value, 0, 2000);
 								}
 								$arInsert[$arUserField["ID"]][] = $value;
 							}
@@ -2734,14 +3062,25 @@ class CUserTypeSQL
 
 	function GetSelect()
 	{
-		global $USER_FIELD_MANAGER;
 		$result = "";
 		foreach($this->select as $key=>$value)
 		{
-			if($this->user_fields[$key]["USER_TYPE"]["BASE_TYPE"] == "datetime" && $this->user_fields[$key]["MULTIPLE"] == "N")
-				$result .= ", ".$USER_FIELD_MANAGER->DateTimeToChar($this->table_alias.".".$key)." ".$key;
-			else
+			$simpleFormat = true;
+			if($this->user_fields[$key]["MULTIPLE"] == "N")
+			{
+				if($arType = $this->user_fields[$key]["USER_TYPE"])
+				{
+					if(is_callable(array($arType["CLASS_NAME"], "FormatField")))
+					{
+						$result .= ", ".call_user_func_array(array($arType["CLASS_NAME"], "FormatField"), array($this->user_fields[$key], $this->table_alias.".".$key))." ".$key;
+						$simpleFormat = false;
+					}
+				}
+			}
+			if($simpleFormat)
+			{
 				$result .= ", ".$this->table_alias.".".$key;
+			}
 		}
 		return $result;
 	}
@@ -2792,6 +3131,8 @@ class CUserTypeSQL
 
 class CAllSQLWhere
 {
+	const FT_MIN_TOKEN_SIZE = 3;
+
 	var $fields = array(
 	/*
 		"ID" => array(
@@ -2915,9 +3256,22 @@ class CAllSQLWhere
 		return $values;
 	}
 
-	protected function match($field, $fieldValue, $wildcard)
+	public static function GetMinTokenSize()
+	{
+		static $ftMinTokenSize = null;
+		if($ftMinTokenSize === null)
+		{
+			$config = \Bitrix\Main\Application::getConnection()->getConfiguration();
+			$ftMinTokenSize = (isset($config["ft_min_token_size"])? $config["ft_min_token_size"] : self::FT_MIN_TOKEN_SIZE);
+		}
+		return $ftMinTokenSize;
+	}
+
+	public function match($field, $fieldValue, $wildcard)
 	{
 		global $DB;
+
+		$ftMinTokenSize = static::GetMinTokenSize();
 
 		if(!is_array($fieldValue))
 		{
@@ -2932,7 +3286,16 @@ class CAllSQLWhere
 			$andValues = static::splitWords($value);
 			if(!empty($andValues))
 			{
-				$orValues[] = "+".implode($wildcard." +", $andValues).$wildcard;
+				$andValues = array_filter($andValues,
+					function($val) use ($ftMinTokenSize)
+					{
+						return (strlen($val) >= $ftMinTokenSize);
+					}
+				);
+				if(!empty($andValues))
+				{
+					$orValues[] = "+".implode($wildcard." +", $andValues).$wildcard;
+				}
 			}
 		}
 		if(!empty($orValues))
@@ -2941,13 +3304,11 @@ class CAllSQLWhere
 			return "MATCH (".$field.") AGAINST ('".$DB->ForSQL($value)."' IN BOOLEAN MODE)";
 		}
 
-		return $this->_Empty($field);
+		return '';
 	}
 
-	protected function matchLike($field, $fieldValue)
+	public function matchLike($field, $fieldValue)
 	{
-		global $DB;
-
 		if(!is_array($fieldValue))
 		{
 			$fieldValue = array($fieldValue);
@@ -2976,7 +3337,7 @@ class CAllSQLWhere
 			return "(".implode("\n OR ", $orValues).")";
 		}
 
-		return $this->_Empty($field);
+		return '';
 	}
 
 	function AddFields($arFields)
@@ -3565,13 +3926,13 @@ class CAllSQLWhere
 			break;
 		case "N":
 			if (is_array($FIELD_VALUE))
-				$result[] = "(".$this->_Upper($FIELD_NAME)." not like '".implode("' AND ".$this->_Upper($FIELD_NAME)." not like '", $FIELD_VALUE)."')";
+				$result[] = "(".$this->_Upper($FIELD_NAME)." not like upper('".implode("') AND ".$this->_Upper($FIELD_NAME)." not like upper('", $FIELD_VALUE)."'))";
 			elseif (is_object($FIELD_VALUE))
 				$result[] = $this->_Upper($FIELD_NAME)." not like ".$FIELD_VALUE->compile();
 			elseif (strlen($FIELD_VALUE) <= 0)
 				$result[] = $this->_NotEmpty($FIELD_NAME);
 			else
-				$result[] = $this->_Upper($FIELD_NAME)." not like '".$FIELD_VALUE."'";
+				$result[] = $this->_Upper($FIELD_NAME)." not like upper('".$FIELD_VALUE."')";
 
 			if ($isMultiple)
 				$this->bDistinctReqired = true;
@@ -3687,16 +4048,24 @@ class CAllSQLWhere
 			break;
 		case "FT":
 		case "FTI":
-			$result[] = $this->match($FIELD_NAME, $value, ($operation == "FT"));
+			$part = $this->match($FIELD_NAME, $value, ($operation == "FT"));
+			if($part <> '')
+			{
+				$result[] = $part;
 
-			if ($isMultiple)
-				$this->bDistinctReqired = true;
+				if ($isMultiple)
+					$this->bDistinctReqired = true;
+			}
 			break;
 		case "FTL":
-			$result[] = $this->matchLike($FIELD_NAME, $value);
+			$part = $this->matchLike($FIELD_NAME, $value);
+			if($part <> '')
+			{
+				$result[] = $part;
 
-			if ($isMultiple)
-				$this->bDistinctReqired = true;
+				if ($isMultiple)
+					$this->bDistinctReqired = true;
+			}
 			break;
 		}
 	}

@@ -6,4 +6,3 @@ $translate_default_option = array(
 	"BUTTON_LANG_FILES"	=> "N",
 	"BACKUP_FILES"	=> "N"
 );
-?>

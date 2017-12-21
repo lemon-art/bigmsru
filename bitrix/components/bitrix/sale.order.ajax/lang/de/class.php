@@ -54,3 +54,5 @@ $MESS["P2D_CALCULATE_ERROR"] = "Fehler bei Berechnung der Bestellung";
 $MESS["DELIVERY_CHANGE_WARNING"] = "Ausgewählt wurde der erste verfügbare Lieferservice";
 $MESS["PAY_SYSTEM_CHANGE_WARNING"] = "Ausgewählt wurde das erste verfügbare Zahlungssystem";
 $MESS["SESSID_ERROR"] = "Ihre Sitzung ist abgelaufen. Bitte laden Sie die Seite neu.";
+$MESS["ORDER_CONSISTENCY_CHANGED"] = "Die Bestellung hat sich beim Speichern geändert.";
+?>

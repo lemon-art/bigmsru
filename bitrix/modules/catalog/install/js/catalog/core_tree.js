@@ -245,9 +245,8 @@ BX.TreeCondCtrlAtom.prototype.ViewFormat = function(value, label)
 BX.TreeCondCtrlInput = function(parentContainer, state, arParams)
 {
 	if (BX.TreeCondCtrlInput.superclass.constructor.apply(this, arguments))
-	{
 		this.Init();
-	}
+
 	return this.boolResult;
 };
 BX.extend(BX.TreeCondCtrlInput, BX.TreeCondCtrlAtom);
@@ -343,186 +342,87 @@ BX.TreeCondCtrlInput.prototype.CreateLink = function()
 	return this.boolResult;
 };
 
-BX.TreeCondCtrlSelect = function(parentContainer, state, arParams)
+BX.TreeCondCtrlBaseSelect = function(parentContainer, state, params)
 {
-	var i;
-	if (BX.TreeCondCtrlSelect.superclass.constructor.apply(this, arguments))
+	this.values = [];
+	this.labels = [];
+
+	this.multiple = false;
+	this.size = 3;
+	this.first_option = '...';
+
+	this.boolVisual = false;
+	this.visual = null;
+
+	if (BX.TreeCondCtrlBaseSelect.superclass.constructor.apply(this, arguments))
 	{
-		this.values = [];
-		this.labels = [];
-		if (!BX.type.isPlainObject(arParams.values))
+		if (BX.type.isNotEmptyString(params.multiple))
+			this.multiple = params.multiple === 'Y';
+		if (BX.type.isString(params.size) || BX.type.isNumber(params.size))
 		{
-			return this.boolResult;
+			params.size = parseInt(params.size, 10);
+			if (!isNaN(params.size) && params.size > 0)
+				this.size = params.size;
 		}
-		for (i in arParams.values)
-		{
-			if (arParams.values.hasOwnProperty(i))
-			{
-				this.values[this.values.length] = i;
-				this.labels[this.labels.length] = arParams.values[i];
-			}
-		}
-		if (this.values.length === 0)
-		{
-			return this.boolResult;
-		}
-		if (this.defaultValue.length > 0)
-		{
-			i = BX.util.array_search(this.defaultValue, this.values);
-			this.defaultText = (i > -1 ? this.labels[i] : '');
-		}
+		if (BX.type.isNotEmptyString(params.first_option))
+			this.first_option = params.first_option;
 
-		if (!arParams.multiple || arParams.multiple !== 'Y')
-		{
-			arParams.multiple = 'N';
-		}
-		this.multiple = (arParams.multiple === 'Y');
-		this.size = 3;
-		if (arParams.size)
-		{
-			arParams.size = parseInt(arParams.size, 10);
-			if (!isNaN(arParams.size) && arParams.size > 0)
-			{
-				this.size = arParams.size;
-			}
-		}
-
-		this.first_option = '...';
-		if (!!arParams.first_option)
-		{
-			this.first_option = arParams.first_option;
-		}
-
-		this.boolVisual = false;
-		this.visual = null;
-		if (!!arParams.events && typeof(arParams.events) === 'object')
-		{
-			if (!!arParams.events.visual && BX.type.isFunction(arParams.events.visual))
-			{
-				this.boolVisual = true;
-				this.visual = arParams.events.visual;
-			}
-		}
-		this.Init();
+		this.dontShowFirstOption = !!params.dontShowFirstOption;
 	}
+
 	return this.boolResult;
 };
-BX.extend(BX.TreeCondCtrlSelect, BX.TreeCondCtrlAtom);
+BX.extend(BX.TreeCondCtrlBaseSelect, BX.TreeCondCtrlAtom);
 
-BX.TreeCondCtrlSelect.prototype.Init = function()
+BX.TreeCondCtrlBaseSelect.prototype.Init = function()
 {
-	var arProps,
-		i;
-
-	if (this.boolResult && BX.TreeCondCtrlSelect.superclass.Init.apply(this, arguments))
-	{
-		arProps = {
-			id: this.parentContainer.id+'_'+this.id,
-			name: this.name,
-			className: '',
-			selectedIndex: -1
-		};
-		if (this.multiple)
-		{
-			arProps.name = this.name+'[]';
-			arProps.multiple = true;
-			arProps.size = this.size;
-		}
-		this.select = this.parentContainer.appendChild(BX.create(
-			'SELECT',
-			{
-				props: arProps,
-				style: { display: 'none' },
-				events: {
-					change: BX.proxy(this.onChange, this),
-					blur: BX.proxy(this.onBlur, this),
-					keypress: BX.proxy(this.onKeypress, this)
-				}
-			}
-		));
-		if (this.select)
-		{
-			if (!this.multiple)
-			{
-				this.select.appendChild(BX.create(
-					'OPTION',
-					{
-						props: { value: '' },
-						html: this.first_option
-					}
-				));
-			}
-			for (i in this.values)
-			{
-				if (this.values.hasOwnProperty(i))
-				{
-					this.select.appendChild(BX.create(
-						'OPTION',
-						{
-							props: { value: this.values[i] },
-							html: this.ViewFormat(this.values[i] ,this.labels[i])
-						}
-					));
-				}
-			}
-			this.InitValue();
-		}
-		this.boolResult = !!this.select;
-	}
+	BX.TreeCondCtrlInput.superclass.Init.apply(this, arguments);
 	return this.boolResult;
 };
 
-BX.TreeCondCtrlSelect.prototype.InitValue = function()
+BX.TreeCondCtrlBaseSelect.prototype.setValueText = function()
 {
-	var arText = [],
+	var titles,
 		i,
 		j;
-	if (BX.TreeCondCtrlSelect.superclass.InitValue.apply(this, arguments))
-	{
-		if (BX.type.isString(this.valuesContainer[this.id]))
-		{
-			this.valuesContainer[this.id] = this.valuesContainer[this.id].split(',');
-		}
 
-		this.select.selectedIndex = -1;
-		for (i = 0; i < this.select.options.length; i++)
+	if (BX.type.isString(this.valuesContainer[this.id]))
+		this.valuesContainer[this.id] = this.valuesContainer[this.id].split(',');
+
+	titles = [];
+	this.select.selectedIndex = -1;
+	for (i = 0; i < this.select.options.length; i++)
+	{
+		if (BX.util.in_array(this.select.options[i].value, this.valuesContainer[this.id]))
 		{
-			if (BX.util.in_array(this.select.options[i].value, this.valuesContainer[this.id]))
+			j = BX.util.array_search(this.select.options[i].value, this.values);
+			if (j > -1)
 			{
-				j = BX.util.array_search(this.select.options[i].value, this.values);
-				if (j > -1)
+				this.select.options[i].selected = true;
+				if (this.select.selectedIndex === -1)
 				{
-					this.select.options[i].selected = true;
-					if (this.select.selectedIndex === -1)
-					{
-						this.select.selectedIndex = i;
-					}
-					arText[arText.length] = this.ViewFormat(this.values[j], this.labels[j]);
+					this.select.selectedIndex = i;
 				}
-				else
-				{
-					this.select.options[i].selected = false;
-				}
+				titles[titles.length] = this.ViewFormat(this.values[j], this.labels[j]);
 			}
 			else
 			{
 				this.select.options[i].selected = false;
 			}
 		}
-		if (arText.length === 0)
+		else
 		{
-			arText[0] = this.defaultText;
+			this.select.options[i].selected = false;
 		}
+	}
+	if (titles.length === 0)
+		titles[0] = this.defaultText;
 
-		BX.adjust(this.link, { html: BX.util.htmlspecialchars(arText.join(', ')) });
-	}
-	else
-	{
-		this.select.selectedIndex = -1;
-	}
+	BX.adjust(this.link, { html: BX.util.htmlspecialchars(titles.join(', ')) });
+	titles = null;
 };
 
-BX.TreeCondCtrlSelect.prototype.SetValue = function()
+BX.TreeCondCtrlBaseSelect.prototype.SetValue = function()
 {
 	var arText = [],
 		arSelVal = [],
@@ -558,19 +458,15 @@ BX.TreeCondCtrlSelect.prototype.SetValue = function()
 			arText[0] = (i > -1 ? this.ViewFormat(this.values[i],this.labels[i]) : this.defaultText);
 		}
 	}
-	if (BX.TreeCondCtrlSelect.superclass.SetValue.apply(this, arguments))
-	{
+	if (BX.TreeCondCtrlBaseSelect.superclass.SetValue.apply(this, arguments))
 		BX.adjust(this.link, {html : BX.util.htmlspecialchars(arText.join(', ')) });
-	}
 	else
-	{
 		BX.adjust(this.link, {html : this.defaultText });
-	}
 };
 
-BX.TreeCondCtrlSelect.prototype.View = function(boolShow)
+BX.TreeCondCtrlBaseSelect.prototype.View = function(boolShow)
 {
-	BX.TreeCondCtrlSelect.superclass.View.apply(this, arguments);
+	BX.TreeCondCtrlBaseSelect.superclass.View.apply(this, arguments);
 	if (boolShow)
 	{
 		BX.style(this.link, 'display', 'none');
@@ -585,66 +481,331 @@ BX.TreeCondCtrlSelect.prototype.View = function(boolShow)
 	}
 };
 
-BX.TreeCondCtrlSelect.prototype.onChange = function()
+BX.TreeCondCtrlBaseSelect.prototype.onChange = function()
 {
 	this.SetValue();
 	if (!this.multiple)
-	{
 		this.View(false);
-	}
 	if (this.boolVisual)
-	{
 		this.visual();
-	}
 };
 
-BX.TreeCondCtrlSelect.prototype.onBlur = function()
+BX.TreeCondCtrlBaseSelect.prototype.onBlur = function()
 {
 	this.View(false);
 };
 
-BX.TreeCondCtrlSelect.prototype.onKeypress = function(e)
+BX.TreeCondCtrlBaseSelect.prototype.onKeypress = function(e)
 {
 	if (!e)
-	{
 		e = window.event;
-	}
+
 	if (e.keyCode && (e.keyCode === 13 || e.keyCode === 27))
 	{
 		this.View(false);
 		if (e.keyCode === 13)
-		{
 			return BX.PreventDefault(e);
-		}
 	}
 };
 
-BX.TreeCondCtrlSelect.prototype.onClick = function()
+BX.TreeCondCtrlBaseSelect.prototype.onClick = function()
 {
 	this.View(true);
 };
 
-BX.TreeCondCtrlSelect.prototype.Delete = function()
+BX.TreeCondCtrlBaseSelect.prototype.Delete = function()
 {
-	BX.TreeCondCtrlSelect.superclass.Delete.apply(this, arguments);
+	BX.TreeCondCtrlBaseSelect.superclass.Delete.apply(this, arguments);
 	if (this.select)
 	{
 		BX.unbindAll(this.select);
 		this.select = BX.remove(this.select);
 	}
 	if (this.boolVisual)
-	{
 		this.visual = null;
+};
+
+BX.TreeCondCtrlBaseSelect.prototype.CreateLink = function()
+{
+	if (BX.TreeCondCtrlBaseSelect.superclass.CreateLink.apply(this, arguments))
+		BX.bind(this.link, 'click', BX.proxy(this.onClick, this));
+
+	return this.boolResult;
+};
+
+BX.TreeCondCtrlBaseSelect.prototype.CreateSelect = function()
+{
+	var props;
+
+	props = {
+		id: this.parentContainer.id + '_' + this.id,
+		name: this.name,
+		className: '',
+		selectedIndex: -1
+	};
+	if (this.multiple)
+	{
+		props.name = this.name + '[]';
+		props.multiple = true;
+		props.size = this.size;
 	}
+	this.select = this.parentContainer.appendChild(BX.create(
+		'select',
+		{
+			props: props,
+			style: {display: 'none'},
+			events: {
+				change: BX.proxy(this.onChange, this),
+				blur: BX.proxy(this.onBlur, this),
+				keypress: BX.proxy(this.onKeypress, this)
+			}
+		}
+	));
+	if (BX.type.isElementNode(this.select))
+	{
+		if (!this.multiple && !this.dontShowFirstOption)
+		{
+			this.select.appendChild(BX.create(
+				'option',
+				{
+					props: {value: ''},
+					html: this.first_option
+				}
+			));
+		}
+	}
+	props = null;
+};
+
+BX.TreeCondCtrlSelect = function(parentContainer, state, arParams)
+{
+	var i;
+	if (BX.TreeCondCtrlSelect.superclass.constructor.apply(this, arguments))
+	{
+		if (!BX.type.isPlainObject(arParams.values))
+		{
+			return this.boolResult;
+		}
+		for (i in arParams.values)
+		{
+			if (arParams.values.hasOwnProperty(i))
+			{
+				this.values[this.values.length] = i;
+				this.labels[this.labels.length] = arParams.values[i];
+			}
+		}
+		if (this.values.length === 0)
+		{
+			return this.boolResult;
+		}
+		if (this.defaultValue.length > 0)
+		{
+			i = BX.util.array_search(this.defaultValue, this.values);
+			this.defaultText = (i > -1 ? this.labels[i] : '');
+		}
+
+		if (BX.type.isPlainObject(arParams.events) && BX.type.isFunction(arParams.events.visual))
+		{
+			this.boolVisual = true;
+			this.visual = arParams.events.visual;
+		}
+		this.Init();
+	}
+	return this.boolResult;
+};
+BX.extend(BX.TreeCondCtrlSelect, BX.TreeCondCtrlBaseSelect);
+
+BX.TreeCondCtrlSelect.prototype.Init = function()
+{
+	var i;
+
+	if (this.boolResult && BX.TreeCondCtrlSelect.superclass.Init.apply(this, arguments))
+	{
+		this.CreateSelect();
+		if (BX.type.isElementNode(this.select))
+		{
+			for (i in this.values)
+			{
+				if (this.values.hasOwnProperty(i))
+				{
+					this.select.appendChild(BX.create(
+						'option',
+						{
+							props: { value: this.values[i] },
+							html: BX.util.htmlspecialchars(this.ViewFormat(this.values[i] ,this.labels[i]))
+						}
+					));
+				}
+			}
+			this.InitValue();
+		}
+		this.boolResult = !!this.select;
+	}
+	return this.boolResult;
+};
+
+BX.TreeCondCtrlSelect.prototype.InitValue = function()
+{
+	if (BX.TreeCondCtrlSelect.superclass.InitValue.apply(this, arguments))
+		this.setValueText();
+	else
+		this.select.selectedIndex = -1;
 };
 
 BX.TreeCondCtrlSelect.prototype.CreateLink = function()
 {
 	if (BX.TreeCondCtrlSelect.superclass.CreateLink.apply(this, arguments))
-	{
 		BX.bind(this.link, 'click', BX.proxy(this.onClick, this));
+
+	return this.boolResult;
+};
+
+BX.TreeCondCtrlLazySelect = function(parentContainer, state, params)
+{
+	var i;
+
+	this.loaded = false;
+	this.loadProgress = false;
+
+	this.loadUrl = '';
+	this.loadUrlParams = {};
+
+	if (BX.TreeCondCtrlLazySelect.superclass.constructor.apply(this, arguments))
+	{
+		if (BX.type.isNotEmptyString(params.load_url))
+			this.loadUrl = params.load_url;
+		if (BX.type.isPlainObject(params.load_params))
+		{
+			for (i in params.load_params)
+			{
+				if (params.load_params.hasOwnProperty(i))
+					this.loadUrlParams[i] = params.load_params[i];
+			}
+		}
+		this.Init();
 	}
 	return this.boolResult;
+};
+BX.extend(BX.TreeCondCtrlLazySelect, BX.TreeCondCtrlBaseSelect);
+
+BX.TreeCondCtrlLazySelect.prototype.Init = function()
+{
+	if (this.boolResult && BX.TreeCondCtrlLazySelect.superclass.Init.apply(this, arguments))
+	{
+		this.CreateSelect();
+		this.InitValue();
+	}
+
+	return this.boolResult;
+};
+
+BX.TreeCondCtrlLazySelect.prototype.InitValue = function()
+{
+	if (BX.TreeCondCtrlLazySelect.superclass.InitValue.apply(this, arguments))
+	{
+		if (!this.loaded)
+			this.ajaxLoad('InitValue');
+		else
+			this.setValueText();
+	}
+	else
+	{
+		this.select.selectedIndex = -1;
+	}
+};
+
+BX.TreeCondCtrlLazySelect.prototype.ajaxLoad = function(source)
+{
+	var ajaxParams = {},
+		i,
+		successFunc;
+
+	if (this.loaded || this.loadProgress)
+		return;
+
+	for (i in this.loadUrlParams)
+	{
+		if (this.loadUrlParams.hasOwnProperty(i))
+			ajaxParams[i] = this.loadUrlParams[i];
+	}
+	ajaxParams.sessid = BX.bitrix_sessid();
+	ajaxParams.lang = BX.message('LANGUAGE_ID');
+
+	switch (source)
+	{
+		default:
+		case 'InitValue':
+			successFunc = BX.proxy(this.ajaxLoadResultFromInit, this);
+			break;
+		case 'onClick':
+			successFunc = BX.proxy(this.ajaxLoadResultFromClick, this);
+			break;
+	}
+
+	this.loadProgress = true;
+	BX.showWait(this.parentContainer);
+	BX.ajax({
+		'method': 'POST',
+		'dataType': 'json',
+		'url': this.loadUrl,
+		'data': ajaxParams,
+		'onsuccess': successFunc
+	});
+	successFunc = null;
+	ajaxParams = null;
+};
+
+BX.TreeCondCtrlLazySelect.prototype.ajaxLoadResult = function(result)
+{
+	var i;
+
+	this.loadProgress = false;
+	BX.closeWait(this.parentContainer);
+	if (BX.type.isArray(result))
+	{
+		for (i = 0; i < result.length; i++)
+		{
+			this.values[this.values.length] = result[i].value;
+			this.labels[this.labels.length] = result[i].label;
+
+			this.select.appendChild(BX.create(
+				'option',
+				{
+					props: { value: result[i].value },
+					html: BX.util.htmlspecialchars(this.ViewFormat(result[i].value, result[i].label))
+				}
+			));
+		}
+		this.loaded = true;
+	}
+};
+
+BX.TreeCondCtrlLazySelect.prototype.ajaxLoadResultFromInit = function(result)
+{
+	if (BX.type.isArray(result))
+	{
+		this.ajaxLoadResult(result);
+		if (this.loaded)
+			this.setValueText();
+	}
+};
+
+BX.TreeCondCtrlLazySelect.prototype.ajaxLoadResultFromClick = function(result)
+{
+	if (BX.type.isArray(result))
+	{
+		this.ajaxLoadResult(result);
+		if (this.loaded)
+			this.onClick();
+	}
+};
+
+BX.TreeCondCtrlLazySelect.prototype.onClick = function()
+{
+	if (this.loaded)
+		this.View(true);
+	else
+		this.ajaxLoad('onClick');
 };
 
 BX.TreeCondCtrlPopup = function(parentContainer, state, arParams)
@@ -754,7 +915,9 @@ BX.TreeCondCtrlPopup.prototype.PopupShow = function()
 	{
 		url += (url.indexOf('?') !== -1 ? "&" : "?") + data;
 	}
-	window.open(url,'', 'scrollbars=yes,resizable=yes,width=900,height=600,top='+parseInt((screen.height - 500)/2-14, 10)+',left='+parseInt((screen.width - 600)/2-5, 10));
+
+	var wnd = window.open(url,'', 'scrollbars=yes,resizable=yes,width=900,height=600,top='+parseInt((screen.height - 500)/2-14, 10)+',left='+parseInt((screen.width - 600)/2-5, 10));
+	wnd.onbeforeunload = function(){BX.onCustomEvent('onTreeCondPopupClose')};
 };
 
 BX.TreeCondCtrlPopup.prototype.onChange = function()
@@ -769,6 +932,291 @@ BX.TreeCondCtrlPopup.prototype.Delete = function()
 	{
 		BX.unbindAll(this.input);
 		this.input = BX.remove(this.input);
+	}
+};
+
+BX.TreeUserCondCtrlPopup = function(parentContainer, state, arParams)
+{
+	var i;
+
+	if (BX.TreeUserCondCtrlPopup.superclass.constructor.apply(this, arguments))
+	{
+		if (!arParams.popup_url)
+		{
+			return this.boolResult;
+		}
+		this.user_load_url = arParams.user_load_url;
+
+		this.popup_url = arParams.popup_url;
+
+		if (arParams.popup_params)
+		{
+			for (i in arParams.popup_params)
+			{
+				if (arParams.popup_params.hasOwnProperty(i))
+				{
+					this.popup_params[i] = arParams.popup_params[i];
+				}
+			}
+		}
+
+		this.popup_param_id = null;
+		if (BX.type.isNotEmptyString(arParams.param_id))
+		{
+			this.popup_param_id = arParams.param_id;
+		}
+
+		this.label = '';
+		if (!!state.labels && !!state.labels[this.id])
+		{
+			this.label = state.labels[this.id];
+		}
+		if (this.label.length === 0)
+		{
+			this.label = (this.valuesContainer[this.id].length > 0 ? this.valuesContainer[this.id] : this.defaultText);
+		}
+	}
+	return this.boolResult;
+};
+BX.extend(BX.TreeUserCondCtrlPopup, BX.TreeCondCtrlPopup);
+
+BX.TreeUserCondCtrlPopup.prototype.Init = function()
+{
+	var i;
+
+	this.inputs = [];
+	if(this.valuesContainer[this.id] === "")
+	{
+		this.valuesContainer[this.id] = [];
+		this.label = [];
+	}
+	if (!BX.type.isArray(this.valuesContainer[this.id]))
+	{
+		this.valuesContainer[this.id] = [this.valuesContainer[this.id]];
+		this.label = [this.label];
+	}
+	if (this.boolResult && BX.TreeUserCondCtrlPopup.superclass.Init.apply(this, arguments))
+	{
+		if (this.input)
+		{
+			BX.unbindAll(this.input);
+			this.input = BX.remove(this.input);
+		}
+
+		if (this.popup_param_id)
+		{
+			this.popup_params[this.popup_param_id] = this.parentContainer.id+'_'+this.id;
+		}
+		if (!this.IsValue())
+		{
+			this.AppendInputNode(this.parentContainer.id+'_'+this.id, this.name+'[]', '');
+		}
+		else
+		{
+			for (i in this.valuesContainer[this.id])
+			{
+				if(!this.valuesContainer[this.id].hasOwnProperty(i))
+					continue;
+
+				this.AppendInputNode(this.parentContainer.id+'_'+this.id, this.name+'[]', this.valuesContainer[this.id][i]);
+			}
+		}
+		this.AppendFakeInputNode(this.parentContainer.id+'_'+this.id, this.name);
+
+		this.boolResult = !!this.inputs;
+	}
+	return this.boolResult;
+};
+
+BX.TreeUserCondCtrlPopup.prototype.CreateLink = function()
+{
+	this.popup_params['FN'] = 'sale_discount_form';
+	this.popup_params['FC'] = 'fake_' + this.name;
+
+	var i;
+	if (this.boolResult)
+	{
+		this.defaultLabel = BX.create('SPAN', {
+			text: this.defaultText,
+			style: {cursor: 'pointer'},
+			props: {
+				className: 'condition-dots'
+			}
+		});
+		this.link = this.parentContainer.appendChild(BX.create(
+			'SPAN',
+			{
+				props: {
+					id: this.parentContainer.id+'_'+this.id+'_link',
+					className: 'condition-list-wrap'
+				},
+				style: { display: '' },
+				events: {
+					click: BX.proxy(this.PopupShow, this)
+				},
+				children: [
+					this.defaultLabel
+				]
+			}
+		));
+
+		for (i in this.valuesContainer[this.id])
+		{
+			if (!this.valuesContainer[this.id].hasOwnProperty(i))
+				continue;
+
+			this.AppendItemNode(this.valuesContainer[this.id][i], this.label[i]);
+		}
+
+		this.boolResult = !!this.link;
+	}
+	return this.boolResult;
+};
+BX.TreeUserCondCtrlPopup.prototype.AppendItemNode = function(value, label)
+{
+	this.link.insertBefore(BX.create(
+			'SPAN',
+			{
+				props: {
+					className: 'condition-item'
+				},
+				style: {display: ''},
+				children: [
+					BX.create('SPAN', {
+						props: {
+							className: 'condition-item-text'
+						},
+						html: BX.util.htmlspecialchars(this.ViewFormat(value, label))
+					}),
+					BX.create('SPAN', {
+						props: {
+							className: 'condition-item-del'
+						},
+						attrs: {
+							'bx-data-value': value
+						},
+						events: {
+							click: BX.proxy(this.DeleteItem, this)
+						}
+					})
+				]
+			}
+	), this.defaultLabel);
+};
+BX.TreeUserCondCtrlPopup.prototype.AppendInputNode = function(id, name, value)
+{
+	this.inputs.push(this.parentContainer.appendChild(BX.create(
+		'INPUT',
+		{
+			props: {
+				type: 'hidden',
+				id: id,
+				name: name,
+				value: value
+			},
+			style: {display: 'none'},
+			events: {
+				change: BX.proxy(this.onChange, this)
+			}
+		}
+	)));
+};
+BX.TreeUserCondCtrlPopup.prototype.AppendFakeInputNode = function(id, name)
+{
+	this.inputs.push(this.parentContainer.appendChild(BX.create(
+		'INPUT',
+		{
+			props: {
+				type: 'hidden',
+				id: 'fake_' + id,
+				name: 'fake_' + name
+			},
+			style: {display: 'none'},
+			events: {
+				change: BX.proxy(this.onChangeFake, this)
+			}
+		}
+	)));
+};
+BX.TreeUserCondCtrlPopup.prototype.onChangeFake = function(params)
+{
+	var userId = params.target.value;
+
+	BX.ajax({
+		'method': 'POST',
+		'dataType': 'json',
+		'url': this.user_load_url,
+		'data': {
+			sessid: BX.bitrix_sessid(),
+			AJAX_ACTION: 'getUserName',
+			USER_ID: userId
+		},
+		'onsuccess': BX.delegate(function (data)
+		{
+			var name = data.name;
+			this.AppendInputNode(this.parentContainer.id+'_'+this.id, this.name+'[]', userId);
+			this.AppendItemNode(userId, name);
+
+			this.valuesContainer[this.id].push(userId);
+		}, this)
+	});
+
+};
+BX.TreeUserCondCtrlPopup.prototype.onSave = function(params)
+{
+	if (BX.type.isPlainObject(params))
+	{
+		this.AppendInputNode(this.parentContainer.id+'_'+this.id, this.name+'[]', params.id);
+		this.AppendItemNode(params.id, params.name);
+
+		this.valuesContainer[this.id].push(params.id);
+	}
+};
+BX.TreeUserCondCtrlPopup.prototype.DeleteItem = function(e)
+{
+	var srcElement = e.target || e.srcElement;
+	if(!srcElement)
+	{
+		BX.PreventDefault(e);
+		return;
+	}
+
+	var itemContainer = BX.findParent(srcElement, {className: 'condition-item', tagName: 'span'}, 3);
+	if(!itemContainer)
+	{
+		BX.PreventDefault(e);
+		return;
+	}
+
+	BX.remove(BX.findParent(srcElement, {className: 'condition-item', tagName: 'span'}, 3));
+	BX.remove(BX.findChild(this.parentContainer, {tagName: 'input', attribute: {name: this.name+'[]', value: srcElement.getAttribute('bx-data-value')}}, 3));
+
+	BX.PreventDefault(e);
+};
+BX.TreeUserCondCtrlPopup.prototype.Delete = function()
+{
+	BX.TreeMultiCondCtrlDialog.superclass.Delete.apply(this, arguments);
+	if (this.input)
+	{
+		BX.unbindAll(this.input);
+		this.input = BX.remove(this.input);
+	}
+	if (this.inputs)
+	{
+		for(var i in this.inputs)
+		{
+			if(!this.inputs.hasOwnProperty(i))
+				continue;
+			BX.unbindAll(this.inputs[i]);
+			BX.remove((this.inputs[i]));
+			delete (this.inputs[i]);
+		}
+		this.inputs = [];
+	}
+
+	if (!!this.dialog)
+	{
+		this.dialog = null;
 	}
 };
 
@@ -845,7 +1293,7 @@ BX.TreeCondCtrlDialog.prototype.onSave = function(params)
 	if (BX.type.isPlainObject(params))
 	{
 		this.input.value = params.id;
-		this.link.innerHTML = this.ViewFormat(params.id, params.name);
+		this.link.innerHTML = BX.util.htmlspecialchars(this.ViewFormat(params.id, params.name));
 		this.onChange();
 	}
 	this.dialog.Close();
@@ -901,7 +1349,7 @@ BX.TreeMultiCondCtrlDialog.prototype.AppendItemNode = function(value, label)
 						props: {
 							className: 'condition-item-text'
 						},
-						html: this.ViewFormat(value, label)
+						html: BX.util.htmlspecialchars(this.ViewFormat(value, label))
 					}),
 					BX.create('SPAN', {
 						props: {
@@ -939,10 +1387,18 @@ BX.TreeMultiCondCtrlDialog.prototype.AppendInputNode = function(id, name, value)
 
 BX.TreeMultiCondCtrlDialog.prototype.Init = function()
 {
+	var i;
+
 	this.inputs = [];
 	if(this.valuesContainer[this.id] === "")
 	{
 		this.valuesContainer[this.id] = [];
+		this.label = [];
+	}
+	if (!BX.type.isArray(this.valuesContainer[this.id]))
+	{
+		this.valuesContainer[this.id] = [this.valuesContainer[this.id]];
+		this.label = [this.label];
 	}
 	if (this.boolResult && BX.TreeMultiCondCtrlDialog.superclass.Init.apply(this, arguments))
 	{
@@ -956,19 +1412,18 @@ BX.TreeMultiCondCtrlDialog.prototype.Init = function()
 		{
 			this.popup_params[this.popup_param_id] = this.parentContainer.id+'_'+this.id;
 		}
-		if(!this.IsValue())
+		if (!this.IsValue())
 		{
 			this.AppendInputNode(this.parentContainer.id+'_'+this.id, this.name+'[]', '');
 		}
 		else
 		{
-			for(var i in this.valuesContainer[this.id])
+			for (i in this.valuesContainer[this.id])
 			{
 				if(!this.valuesContainer[this.id].hasOwnProperty(i))
 					continue;
 
-				var value = this.valuesContainer[this.id][i];
-				this.AppendInputNode(this.parentContainer.id+'_'+this.id, this.name+'[]', value);
+				this.AppendInputNode(this.parentContainer.id+'_'+this.id, this.name+'[]', this.valuesContainer[this.id][i]);
 			}
 		}
 		this.boolResult = !!this.inputs;
@@ -978,6 +1433,8 @@ BX.TreeMultiCondCtrlDialog.prototype.Init = function()
 
 BX.TreeMultiCondCtrlDialog.prototype.CreateLink = function()
 {
+	var i;
+
 	if (this.boolResult)
 	{
 		this.defaultLabel = BX.create('SPAN', {
@@ -1004,13 +1461,12 @@ BX.TreeMultiCondCtrlDialog.prototype.CreateLink = function()
 			}
 		));
 
-		for(var i in this.valuesContainer[this.id])
+		for (i in this.valuesContainer[this.id])
 		{
-			if(!this.valuesContainer[this.id].hasOwnProperty(i))
+			if (!this.valuesContainer[this.id].hasOwnProperty(i))
 				continue;
 
-			var value = this.valuesContainer[this.id][i];
-			this.AppendItemNode(value, this.label[i]);
+			this.AppendItemNode(this.valuesContainer[this.id][i], this.label[i]);
 		}
 
 		this.boolResult = !!this.link;
@@ -1280,6 +1736,8 @@ BX.TreeConditions = function(arParams, obTree, obControls)
 {
 	var i;
 
+	BX.onCustomEvent('onTreeConditionsInit', [arParams, obTree, obControls]);
+
 	this.boolResult = false;
 	if (!arParams || typeof arParams !== 'object' || !arParams.parentContainer)
 	{
@@ -1328,7 +1786,9 @@ BX.TreeConditions = function(arParams, obTree, obControls)
 		'prefix': BX.TreeCondCtrlAtom,
 		'input': BX.TreeCondCtrlInput,
 		'select': BX.TreeCondCtrlSelect,
+		'lazySelect': BX.TreeCondCtrlLazySelect,
 		'popup': BX.TreeCondCtrlPopup,
+		'userPopup': BX.TreeUserCondCtrlPopup,
 		'datetime': BX.TreeCondCtrlDateTime,
 		'dialog': BX.TreeCondCtrlDialog,
 		'multiDialog': BX.TreeMultiCondCtrlDialog
@@ -1989,7 +2449,7 @@ BX.TreeConditions.prototype.RenderCreateBtn = function(obTreeLevel, CurControl)
 												'OPTION',
 												{
 													props: {value: this.controls[i].children[j].controlId},
-													html: this.controls[i].children[j].label
+													html: BX.util.htmlspecialchars(this.controls[i].children[j].label)
 												}
 											));
 										}
@@ -2004,7 +2464,7 @@ BX.TreeConditions.prototype.RenderCreateBtn = function(obTreeLevel, CurControl)
 									'OPTION',
 									{
 										props: { value: this.controls[i].controlId },
-										html: this.controls[i].label
+										html: BX.util.htmlspecialchars(this.controls[i].label)
 									}
 								));
 							}
@@ -2357,6 +2817,8 @@ BX.TreeConditions.prototype.NextVisual = function(obTreeLevel)
 					this.UpdateLogic(obTreeLevel.children[i], obParams);
 			}
 		}
+
+		BX.onCustomEvent('onNextVisualChange', [obTreeLevel]);
 	}
 };
 })(window);

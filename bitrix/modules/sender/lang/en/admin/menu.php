@@ -31,4 +31,6 @@ $MESS["mnu_sender_site_mailing_trig_chain"] = "Messages";
 $MESS["mnu_sender_site_mailing_trig_chain_alt"] = "Edit and test messages";
 $MESS["mnu_sender_site_mailing_trig_stat"] = "Statistics";
 $MESS["mnu_sender_site_mailing_trig_stat_alt"] = "Statistics";
+$MESS["mnu_sender_stat"] = "Start";
+$MESS["mnu_sender_stat_alt"] = "Statistics for all newsletters ";
 ?>

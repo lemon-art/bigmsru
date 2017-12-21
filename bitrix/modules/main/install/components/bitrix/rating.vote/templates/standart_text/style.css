@@ -20,7 +20,6 @@
 .bx-rating .bx-rating-load .bx-rating-yes-count, .bx-rating .bx-rating-load .bx-rating-no-count,
 .bx-rating .bx-rating-load .bx-rating-yes-text, .bx-rating .bx-rating-load .bx-rating-no-text { color: #fff!important; }
 .bx-rating .bx-rating-load { background-color:#d0d0d0!important; border-radius: 3px }
-.bx-rating-popup .bx-ilike-bottom_scroll {background:url("images/i-like-sprite.png") repeat-x 0 -148px; display:block; height:13px; position:absolute; left:5px; bottom:8px; width:170px}
 .rating_vote_graphic { display: none!important; }
 .rating_vote_text { display: inline-block!important; }
 

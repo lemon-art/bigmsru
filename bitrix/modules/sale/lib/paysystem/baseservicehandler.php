@@ -8,7 +8,6 @@ use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Request;
 use Bitrix\Sale\BusinessValue;
 use Bitrix\Sale\Payment;
-use Bitrix\Sale\Result;
 
 Loc::loadMessages(__FILE__);
 
@@ -16,6 +15,9 @@ abstract class BaseServiceHandler
 {
 	const STREAM = 1;
 	const STRING = 2;
+
+	const TEST_URL = 'test';
+	const ACTIVE_URL = 'active';
 
 	protected $handlerType = '';
 	
@@ -35,6 +37,7 @@ abstract class BaseServiceHandler
 	abstract public function initiatePay(Payment $payment, Request $request = null);
 
 	/**
+	 * BaseServiceHandler constructor.
 	 * @param $type
 	 * @param Service $service
 	 */
@@ -80,7 +83,13 @@ abstract class BaseServiceHandler
 		}
 		else
 		{
-			$result->addError(new Error('SALE_PS_BASE_SERVICE_TEMPLATE_ERROR'));
+			$result->addError(new Error(Loc::getMessage('SALE_PS_BASE_SERVICE_TEMPLATE_ERROR')));
+		}
+
+		if ($this->service->getField('ENCODING') != '')
+		{
+			define("BX_SALE_ENCODING", $this->service->getField('ENCODING'));
+			AddEventHandler('main', 'OnEndBufferContent', array($this, 'OnEndBufferContent'));
 		}
 
 		return $result;
@@ -195,7 +204,7 @@ abstract class BaseServiceHandler
 	/**
 	 * @return array
 	 */
-	private function getExtraParams()
+	protected function getExtraParams()
 	{
 		return $this->extraParams;
 	}
@@ -255,11 +264,56 @@ abstract class BaseServiceHandler
 		$this->initiateMode = $mode;
 	}
 
+	/**
+	 * @param Payment $payment
+	 * @param string $action
+	 * @return string
+	 */
+	protected function getUrl(Payment $payment = null, $action)
+	{
+		$urlList = $this->getUrlList();
+		if (isset($urlList[$action]))
+		{
+			$url = $urlList[$action];
+
+			if (is_array($url))
+			{
+				if ($this->isTestMode($payment) && isset($url[self::TEST_URL]))
+					return $url[self::TEST_URL];
+				else
+					return $url[self::ACTIVE_URL];
+			}
+			else
+			{
+				return $url;
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * @param Payment $payment
+	 * @return bool
+	 */
+	protected function isTestMode(Payment $payment = null)
+	{
+		return false;
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function getUrlList()
+	{
+		return array();
+	}
+
 
 	/**
 	 * @param \SplObjectStorage $cloneEntity
 	 *
-	 * @return Service
+	 * @return BaseServiceHandler
 	 */
 	public function createClone(\SplObjectStorage $cloneEntity)
 	{
@@ -301,5 +355,32 @@ abstract class BaseServiceHandler
 	public function getHandlerType()
 	{
 		return $this->handlerType;
+	}
+
+	/**
+	 * @param $content
+	 */
+	public function OnEndBufferContent(&$content)
+	{
+		global $APPLICATION;
+		header("Content-Type: text/html; charset=".BX_SALE_ENCODING);
+		$content = $APPLICATION->ConvertCharset($content, SITE_CHARSET, BX_SALE_ENCODING);
+		$content = str_replace("charset=".SITE_CHARSET, "charset=".BX_SALE_ENCODING, $content);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getDemoParams()
+	{
+		return array();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isTuned()
+	{
+		return true;
 	}
 }

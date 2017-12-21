@@ -1,18 +1,22 @@
 <?
 /** @global CMain $APPLICATION */
-define('NO_AGENT_CHECK', true);
+define('STOP_STATISTICS', true);
+define('PUBLIC_AJAX_MODE', true);
 
-use Bitrix\Main;
-use Bitrix\Catalog;
+use Bitrix\Main,
+	Bitrix\Catalog;
 
 require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_before.php');
 if (isset($_POST['AJAX']) && $_POST['AJAX'] == 'Y')
 {
-	if (Main\Loader::includeModule('statictic') && isset($_SESSION['SESS_SEARCHER_ID']) && (int)$_SESSION['SESS_SEARCHER_ID'] > 0)
+	if (Main\Loader::includeModule('catalog') && !Catalog\Product\Basket::isNotCrawler())
 	{
-		echo CUtil::PhpToJSObject(array("STATUS" => "ERROR", "TEXT" => "SEARCHER"));
+		$APPLICATION->RestartBuffer();
+		header('Content-Type: application/json');
+		echo Main\Web\Json::encode(array("STATUS" => "ERROR", "TEXT" => "SEARCHER"));
 		die();
 	}
+
 	if (isset($_POST['PRODUCT_ID']) && isset($_POST['SITE_ID']))
 	{
 		$productID = (int)$_POST['PRODUCT_ID'];
@@ -42,11 +46,15 @@ if (isset($_POST['AJAX']) && $_POST['AJAX'] == 'Y')
 				$parentID,
 				$recommendationId
 			);
-			echo CUtil::PhpToJSObject(array("STATUS" => "SUCCESS"));
+			$APPLICATION->RestartBuffer();
+			header('Content-Type: application/json');
+			echo Main\Web\Json::encode(array("STATUS" => "SUCCESS"));
 		}
 		else
 		{
-			echo CUtil::PhpToJSObject(array("STATUS" => "ERROR", "TEXT" => "UNDEFINED PRODUCT"));
+			$APPLICATION->RestartBuffer();
+			header('Content-Type: application/json');
+			echo Main\Web\Json::encode(array("STATUS" => "ERROR", "TEXT" => "UNDEFINED PRODUCT"));
 		}
 	}
 	die();

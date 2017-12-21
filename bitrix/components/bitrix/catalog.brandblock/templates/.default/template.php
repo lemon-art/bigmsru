@@ -32,67 +32,52 @@ foreach ($arResult["BRAND_BLOCKS"] as $blockId => $arBB)
 	$brandID = 'brand_'.$arResult['ID'].'_'.$blockId.'_'.$strRand;
 	$popupID = $brandID.'_popup';
 
-	$usePopup = $arBB['FULL_DESCRIPTION'] !== false;
+	$popupContext = '';
+	$shortDescr = '';
 	$useLink = $arBB['LINK'] !== false;
-	if ($useLink)
-		$arBB['LINK'] = htmlspecialcharsbx($arBB['LINK']);
+	$usePopup = $arBB['FULL_DESCRIPTION'] !== false;
+	if ($usePopup)
+	{
+		if (preg_match('/<a[^>]+>[^<]+<\/a>/', $arBB['FULL_DESCRIPTION']) == 1)
+			$useLink = false;
+		$popupContext = '<span class="bx_popup" id="'.$popupID.'">'.
+			'<span class="arrow"></span>'.
+			'<span class="text">'.$arBB['FULL_DESCRIPTION'].'</span>'.
+			'</span>';
+	}
 
 	switch ($arBB['TYPE'])
 	{
 		case 'ONLY_PIC':
-			?><div id="<?=$brandID;?>" class="bx_item_detail_inc_one_container"<? echo ($usePopup ? ' data-popup="'.$popupID.'"' : ''); ?>><div class="wrapper">
-			<?
-			if ($useLink)
-				echo '<a href="'.$arBB['LINK'].'">';
-			?>
-			<span class="bx_item_vidget"  style="background-image: url(<?=$arBB['PICT']['SRC'];?>)">
-			<?
-			if ($useLink)
-				echo '</a>';
-
-			if ($usePopup)
-				echo '<span class="bx_popup" id="'.$popupID.'"><span class="arrow"></span><span class="text">'.$arBB['FULL_DESCRIPTION'].'</span></span>';
-			?>
-			</span></div></div><?
+			$tagAttrs = 'id="'.$brandID.'_vidget" class="brandblock-block"'.
+				' style="background-image:url(\''.$arBB['PICT']['SRC'].'\');"';
 			break;
 		default:
-			?>
-			<div id="<?=$brandID;?>" class="bx_item_detail_inc_one_container"<? echo ($usePopup ? ' data-popup="'.$popupID.'"' : ''); ?>>
-				<div class="wrapper">
-					<? $tagAttrs = 'id="'.$brandID.'_vidget"'.(
-						empty($arBB['PICT'])
-						? ' class="bx_item_vidget"'
-						: ' class="bx_item_vidget icon" style="background-image:url('.$arBB['PICT']['SRC'].');"'
-					);
-					if ($usePopup)
-						$tagAttrs .= ' data-popup="'.$popupID.'"';
-
-					if ($useLink)
-						echo '<a '.$tagAttrs.'href="'.$arBB['LINK'].'">';
-					else
-						echo '<span '.$tagAttrs.' >';
-
-					if ($usePopup) :
-					?>
-						<span class="bx_popup" id="<?=$popupID;?>">
-							<span class="arrow"></span>
-							<span class="text"><?=$arBB['FULL_DESCRIPTION'];?></span>
-						</span>
-					<?
-					endif;
-
-					if ($arBB['DESCRIPTION'] !== false)
-						echo htmlspecialcharsex($arBB['DESCRIPTION']);
-
-					if ($useLink)
-						echo '</a>';
-					else
-						echo '</span>';
-					?>
-				</div>
-			</div>
-			<?
+			$tagAttrs = 'id="'.$brandID.'_vidget"'.(
+				empty($arBB['PICT'])
+				? ' class="brandblock-block"'
+				: ' class="brandblock-block icon" style="background-image:url(\''.$arBB['PICT']['SRC'].'\');"'
+			);
+			if ($arBB['DESCRIPTION'] !== false)
+				$shortDescr = '<span class="brandblock-text">'.htmlspecialcharsbx($arBB['DESCRIPTION']).'</span>';
+			break;
 	}
+	if ($usePopup)
+		$tagAttrs .= ' data-popup="'.$popupID.'"';
+
+	?><div id="<?=$brandID;?>" class="brandblock-container"<? echo ($usePopup ? ' data-popup="'.$popupID.'"' : ''); ?>>
+		<div class="brandblock-wrap"><?
+		if ($useLink)
+		{
+			?><a href="<?=htmlspecialcharsbx($arBB['LINK']); ?>" <?=$tagAttrs; ?> target="_blank"><?=$popupContext.$shortDescr; ?></a><?
+		}
+		else
+		{
+			?><span <?=$tagAttrs; ?>><?=$popupContext.$shortDescr; ?></span><?
+		}
+		?></div>
+	</div><?
+
 	if ($usePopup)
 		$handlerIDS[] = $brandID;
 }
@@ -109,4 +94,5 @@ if (!empty($handlerIDS))
 	<script type="text/javascript">
 		var <? echo $strObName; ?> = new JCIblockBrands(<? echo CUtil::PhpToJSObject($jsParams); ?>);
 	</script>
-<?}
+<?
+}

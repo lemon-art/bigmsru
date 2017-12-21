@@ -417,11 +417,18 @@ while($arRes = $rsData->NavNext(true, "f_")):
 			"ACTION"=>$lAdmin->ActionRedirect("posting_edit.php?ID=".$f_ID."&amp;action=copy")
 	);
 	if(($f_STATUS!="P") && $POST_RIGHT=="W")
+	{
 		$arActions[] = array(
 			"ICON"=>"delete",
 			"TEXT"=>GetMessage("post_act_del"),
 			"ACTION"=>"if(confirm('".GetMessage("post_act_del_conf")."')) ".$lAdmin->ActionDoGroup($f_ID, "delete")
 		);
+	}
+	$arActions[] = array(
+		"ICON"=>"",
+		"TEXT"=>GetMessage("post_report"),
+		"ACTION"=>"jsUtils.OpenWindow('posting_bcc.php?ID=".$f_ID."&lang=".LANG."', 600, 500);"
+	);
 
 	$arActions[] = array("SEPARATOR"=>true);
 

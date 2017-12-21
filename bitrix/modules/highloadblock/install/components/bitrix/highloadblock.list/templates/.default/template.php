@@ -118,7 +118,19 @@ $GLOBALS['APPLICATION']->SetAdditionalCSS('/bitrix/js/highloadblock/css/highload
 
 </table>
 
-<?php echo $arResult["NAV_STRING"]?>
+<?php
+if ($arParams['ROWS_PER_PAGE'] > 0):
+	$APPLICATION->IncludeComponent(
+		'bitrix:main.pagenavigation',
+		'',
+		array(
+			'NAV_OBJECT' => $arResult['nav_object'],
+			'SEF_MODE' => 'N',
+		),
+		false
+	);
+endif;
+?>
 
 
 <form id="hlblock-table-form" action="" method="get">

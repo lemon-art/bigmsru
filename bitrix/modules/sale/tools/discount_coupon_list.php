@@ -401,7 +401,7 @@ while ($coupon = $couponIterator->Fetch())
 	if ($selectFieldsMap['TYPE'])
 		$row->AddViewField('TYPE', $couponTypeList[$coupon['TYPE']]);
 	if ($selectFieldsMap['DESCRIPTION'])
-		$row->AddViewField('DESCRIPTION', $coupon['DESCRIPTION']);
+		$row->AddViewField('DESCRIPTION', htmlspecialcharsbx($coupon['DESCRIPTION']));
 	if (!$couponsReadOnly)
 	{
 		if ($selectFieldsMap['COUPON'])

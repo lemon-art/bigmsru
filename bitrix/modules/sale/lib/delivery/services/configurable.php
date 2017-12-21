@@ -76,7 +76,7 @@ class Configurable extends Base
 				$result .= " ".Loc::getMessage("SALE_DLVR_HANDL_CONF_PERIOD_FROM")." ".IntVal($this->config["MAIN"]["PERIOD"]["FROM"]);
 
 			if(IntVal($this->config["MAIN"]["PERIOD"]["TO"]) > 0)
-				$result .= " ".Loc::getMessage("SOA_TO")." ".IntVal($this->config["MAIN"]["PERIOD"]["TO"]);
+				$result .= " ".Loc::getMessage("SALE_DLVR_HANDL_CONF_PERIOD_TO")." ".IntVal($this->config["MAIN"]["PERIOD"]["TO"]);
 
 			if($this->config["MAIN"]["PERIOD"]["TYPE"] == "MIN")
 				$result .= " ".Loc::getMessage("SALE_DLVR_HANDL_CONF_PERIOD_MIN")." ";
@@ -112,6 +112,10 @@ class Configurable extends Base
 		);
 
 		$result->setPeriodDescription($this->getPeriodText());
+		$result->setPeriodFrom($this->config["MAIN"]["PERIOD"]["FROM"]);
+		$result->setPeriodTo($this->config["MAIN"]["PERIOD"]["TO"]);
+		$result->setPeriodType($this->config["MAIN"]["PERIOD"]["TYPE"]);
+
 		return $result;
 	}
 
@@ -142,7 +146,7 @@ class Configurable extends Base
 						"TYPE" => "DELIVERY_READ_ONLY",
 						"NAME" => Loc::getMessage("SALE_DLVR_HANDL_CONF_CURRENCY"),
 						"VALUE" => $this->currency,
-						"VALUE_VIEW" => $currency
+						"VALUE_VIEW" => htmlspecialcharsbx($currency)
 					),
 
 					"PRICE" => array(

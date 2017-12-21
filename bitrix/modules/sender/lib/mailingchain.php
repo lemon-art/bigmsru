@@ -665,6 +665,43 @@ class MailingChainTable extends Entity\DataManager
 
 		return $resultList;
 	}
+
+	/**
+	 * Get message of mailing chain by ID
+	 *
+	 * @param string $id ID of mailing chain
+	 * @return null|string
+	 */
+	public static function getMessageById($id)
+	{
+		$mailingChainDb = MailingChainTable::getList(array(
+			'select' => array('*', 'SITE_ID' => 'MAILING.SITE_ID'),
+			'filter' => array('=ID' => $id)
+		));
+		if(!($mailingChain = $mailingChainDb->fetch()))
+		{
+			return null;
+		}
+
+		if($mailingChain['TEMPLATE_TYPE'] && $mailingChain['TEMPLATE_ID'])
+		{
+			$chainTemplate = Preset\Template::getById($mailingChain['TEMPLATE_TYPE'], $mailingChain['TEMPLATE_ID']);
+			if($chainTemplate && $chainTemplate['HTML'])
+			{
+				$document = new \Bitrix\Main\Web\DOM\Document;
+				$document->loadHTML($chainTemplate['HTML']);
+				\Bitrix\Main\Loader::includeModule('fileman');
+				if(\Bitrix\Fileman\Block\Editor::fillDocumentBySliceContent($document, $mailingChain['MESSAGE']))
+				{
+					\Bitrix\Main\Web\DOM\StyleInliner::inlineDocument($document);
+					$mailingChain['MESSAGE'] = $document->saveHTML();
+				}
+				unset($document);
+			}
+		}
+
+		return $mailingChain['MESSAGE'];
+	}
 }
 
 class MailingAttachmentTable extends Entity\DataManager

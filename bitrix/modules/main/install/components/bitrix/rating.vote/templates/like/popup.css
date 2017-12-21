@@ -12,7 +12,7 @@
 .bx-ilike-popup-img-mail:link span,
 .bx-ilike-popup-img-mail:visited span{color:#ca7b00!important; text-decoration:none;}
 .bx-ilike-popup-img-mail:hover span{color:#ca7b00!important; text-decoration:underline;}
-.bx-ilike-bottom_scroll {background:url("images/i-like-sprite.png") repeat-x 0 -148px; display:block; height:13px; position:absolute; left:0; bottom:0; width:170px}
+.bx-ilike-bottom_scroll {background:url("images/i-like-sprite.png") repeat-x 0 -148px; display:block; height:13px; position:absolute; left:0; bottom:-1px; width:170px}
 * html .bx-ilike-bottom_scroll {display:none;}
 .bx-ilike-popup-avatar {background:url("images/avatar.gif") no-repeat center; border-radius: 50%;  display:block; margin:1px; float:left; width:21px; height:21px; }
 .bx-ilike-popup-avatar-new {display: inline-block; vertical-align: middle; margin-right: 2px; background: #fff; position: relative; width: 20px; height: 20px; }

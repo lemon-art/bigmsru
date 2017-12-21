@@ -24,6 +24,8 @@ CREATE TABLE b_sender_contact_list
 	LIST_ID	int(11) NOT NULL,
 	UNIQUE UK_SENDER_CONTACT_LIST (CONTACT_ID,LIST_ID)
 );
+CREATE INDEX IX_SENDER_CONTACT_LIST_LST_ID on b_sender_contact_list(LIST_ID);
+
 CREATE TABLE b_sender_group
 (
   ID		int(11)		NOT NULL auto_increment,
@@ -168,6 +170,7 @@ CREATE TABLE b_sender_posting_click
   PRIMARY KEY (ID)
 );
 CREATE INDEX IX_SENDER_POSTING_CLICK on b_sender_posting_click(POSTING_ID, RECIPIENT_ID);
+CREATE INDEX IX_SENDER_POSTING_CLICK_RCPID on b_sender_posting_click(RECIPIENT_ID);
 
 CREATE TABLE b_sender_posting_unsub
 (

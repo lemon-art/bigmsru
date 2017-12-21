@@ -33,4 +33,7 @@ $MESS["SEARCH_OPTIONS_FULL_TEXT_ENGINE_SPHINX"] = "Sphinx";
 $MESS["SEARCH_OPTIONS_SPHINX_CONNECTION"] = "Connection string for index control (MySql protocol):";
 $MESS["SEARCH_OPTIONS_SPHINX_INDEX_NAME"] = "Index ID:";
 $MESS["SEARCH_OPTIONS_SPHINX_ERROR"] = "Error connecting Sphinx server:";
+$MESS["SEARCH_OPTIONS_FULL_TEXT_ENGINE_MYSQL"] = "MySql full-text search";
+$MESS["SEARCH_OPTIONS_MYSQL_ERROR"] = "Error enabling full-text search:";
+$MESS["SEARCH_OPTIONS_MYSQL_NOTE"] = "If you get error 1214 when you're trying to enable full-text search, you have to update your MySQL to version 5.6.4 or newer.";
 ?>

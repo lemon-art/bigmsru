@@ -40,6 +40,8 @@ Loc::loadMessages(__FILE__);
  * <li> AVAILABLE string(1) optional
  * <li> BUNDLE string(1) optional
  * <li> IBLOCK_ELEMENT reference to {@link \Bitrix\Iblock\ElementTable}
+ * <li> TRIAL_IBLOCK_ELEMENT reference to {@link \Bitrix\Iblock\ElementTable}
+ * <li> TRIAL_PRODUCT reference to {@link \Bitrix\Catalog\ProductTable}
  * </ul>
  *
  * @package Bitrix\Catalog
@@ -57,6 +59,26 @@ class ProductTable extends Main\Entity\DataManager
 	const TYPE_OFFER = 4;
 	const TYPE_FREE_OFFER = 5;
 	const TYPE_EMPTY_SKU = 6;
+
+	const PAYMENT_TYPE_SINGLE = 'S';
+	const PAYMENT_TYPE_REGULAR = 'R';
+	const PAYMENT_TYPE_TRIAL = 'T';
+
+	const PAYMENT_PERIOD_HOUR = 'H';
+	const PAYMENT_PERIOD_DAY = 'D';
+	const PAYMENT_PERIOD_WEEK = 'W';
+	const PAYMENT_PERIOD_MONTH = 'M';
+	const PAYMENT_PERIOD_QUART = 'Q';
+	const PAYMENT_PERIOD_SEMIYEAR = 'S';
+	const PAYMENT_PERIOD_YEAR = 'Y';
+	const PAYMENT_PERIOD_DOUBLE_YEAR = 'T';
+
+	const PRICE_MODE_SIMPLE = 'S';
+	const PRICE_MODE_QUANTITY = 'Q';
+	const PRICE_MODE_RATIO = 'R';
+
+	const INITIAL_PRICE_BASE = 'B';
+	const INITIAL_PRICE_PURCHASING = 'P';
 
 	protected static $defaultProductSettings = array();
 
@@ -110,40 +132,39 @@ class ProductTable extends Main\Entity\DataManager
 				'default_value' => new Main\Type\DateTime(),
 				'title' => Loc::getMessage('PRODUCT_ENTITY_TIMESTAMP_X_FIELD')
 			)),
-			'PRICE_TYPE' => array(
-				'data_type' => 'string',
-				'validation' => array(__CLASS__, 'validatePriceType'),
-				'title' => Loc::getMessage('PRODUCT_ENTITY_PRICE_TYPE_FIELD'),
-			),
-			'RECUR_SCHEME_LENGTH' => array(
-				'data_type' => 'integer',
-				'title' => Loc::getMessage('PRODUCT_ENTITY_RECUR_SCHEME_LENGTH_FIELD'),
-			),
-			'RECUR_SCHEME_TYPE' => array(
-				'data_type' => 'string',
-				'validation' => array(__CLASS__, 'validateRecurSchemeType'),
-				'title' => Loc::getMessage('PRODUCT_ENTITY_RECUR_SCHEME_TYPE_FIELD'),
-			),
-			'TRIAL_PRICE_ID' => array(
-				'data_type' => 'integer',
-				'title' => Loc::getMessage('PRODUCT_ENTITY_TRIAL_PRICE_ID_FIELD'),
-			),
-			'WITHOUT_ORDER' => array(
-				'data_type' => 'boolean',
-				'values' => array('N', 'Y'),
+			'PRICE_TYPE' => new Main\Entity\EnumField('PRICE_TYPE', array(
+				'values' => self::getPaymentTypes(false),
+				'default_value' => self::PAYMENT_TYPE_SINGLE,
+				'title' => Loc::getMessage('PRODUCT_ENTITY_PRICE_TYPE_FIELD')
+			)),
+			'RECUR_SCHEME_LENGTH' => new Main\Entity\IntegerField('RECUR_SCHEME_LENGTH', array(
+				'default_value' => 0,
+				'title' => Loc::getMessage('PRODUCT_ENTITY_RECUR_SCHEME_LENGTH_FIELD')
+			)),
+			'RECUR_SCHEME_TYPE' => new Main\Entity\EnumField('RECUR_SCHEME_TYPE', array(
+				'values' => self::getPaymentPeriods(false),
+				'default_value' => self::PAYMENT_PERIOD_DAY,
+				'title' => Loc::getMessage('PRODUCT_ENTITY_RECUR_SCHEME_TYPE_FIELD')
+			)),
+			'TRIAL_PRICE_ID' => new Main\Entity\IntegerField('TRIAL_PRICE_ID', array(
+				'title' => Loc::getMessage('PRODUCT_ENTITY_TRIAL_PRICE_ID_FIELD')
+			)),
+			'WITHOUT_ORDER' => new Main\Entity\BooleanField('WITHOUT_ORDER', array(
+				'values' => array(self::STATUS_NO, self::STATUS_YES),
+				'default_value' => self::STATUS_NO,
 				'title' => Loc::getMessage('PRODUCT_ENTITY_WITHOUT_ORDER_FIELD'),
-			),
-			'SELECT_BEST_PRICE' => array(
-				'data_type' => 'boolean',
-				'values' => array('N', 'Y')
-			),
+			)),
+			'SELECT_BEST_PRICE' => new Main\Entity\BooleanField('SELECT_BEST_PRICE', array(
+				'values' => array(self::STATUS_NO, self::STATUS_YES),
+				'default_value' => self::STATUS_YES
+			)),
 			'VAT_ID' => new Main\Entity\IntegerField('VAT_ID', array(
 				'default_value' => 0,
 				'title' => Loc::getMessage('PRODUCT_ENTITY_VAT_ID_FIELD')
 			)),
 			'VAT_INCLUDED' => new Main\Entity\BooleanField('VAT_INCLUDED', array(
-				'values' => array('N', 'Y'),
-				'default_value' => 'N',
+				'values' => array(self::STATUS_NO, self::STATUS_YES),
+				'default_value' => self::STATUS_NO,
 				'title' => Loc::getMessage('PRODUCT_ENTITY_VAT_INCLUDED_FIELD')
 			)),
 			'CAN_BUY_ZERO' => new Main\Entity\EnumField('CAN_BUY_ZERO', array(
@@ -186,8 +207,8 @@ class ProductTable extends Main\Entity\DataManager
 				'title' => Loc::getMessage('PRODUCT_ENTITY_PURCHASING_CURRENCY_FIELD')
 			)),
 			'BARCODE_MULTI' => new Main\Entity\BooleanField('BARCODE_MULTI', array(
-				'values' => array('N', 'Y'),
-				'default_value' => 'N',
+				'values' => array(self::STATUS_NO, self::STATUS_YES),
+				'default_value' => self::STATUS_NO,
 				'title' => Loc::getMessage('PRODUCT_ENTITY_BARCODE_MULTI_FIELD')
 			)),
 			'QUANTITY_RESERVED' => new Main\Entity\FloatField('QUANTITY_RESERVED', array(
@@ -234,8 +255,20 @@ class ProductTable extends Main\Entity\DataManager
 			)),
 			'IBLOCK_ELEMENT' => new Main\Entity\ReferenceField(
 				'IBLOCK_ELEMENT',
-				'Bitrix\Iblock\Element',
+				'\Bitrix\Iblock\Element',
 				array('=this.ID' => 'ref.ID'),
+				array('join_type' => 'LEFT')
+			),
+			'TRIAL_IBLOCK_ELEMENT' => new Main\Entity\ReferenceField(
+				'TRIAL_IBLOCK_ELEMENT',
+				'\Bitrix\Iblock\Element',
+				array('=this.TRIAL_PRICE_ID' => 'ref.ID'),
+				array('join_type' => 'LEFT')
+			),
+			'TRIAL_PRODUCT' => new Main\Entity\ReferenceField(
+				'TRIAL_PRODUCT',
+				'\Bitrix\Catalog\Product',
+				array('=this.TRIAL_PRICE_ID' => 'ref.ID'),
 				array('join_type' => 'LEFT')
 			)
 		);
@@ -244,27 +277,25 @@ class ProductTable extends Main\Entity\DataManager
 	/**
 	 * Returns validators for PRICE_TYPE field.
 	 *
+	 * @deprecated deprecated since catalog 16.5.0 - no longer needed.
 	 * @internal
 	 * @return array
 	 */
 	public static function validatePriceType()
 	{
-		return array(
-			new Main\Entity\Validator\Length(null, 1),
-		);
+		return array();
 	}
 
 	/**
 	 * Returns validators for RECUR_SCHEME_TYPE field.
 	 *
+	 * @deprecated deprecated since catalog 16.5.0 - no longer needed.
 	 * @internal
 	 * @return array
 	 */
 	public static function validateRecurSchemeType()
 	{
-		return array(
-			new Main\Entity\Validator\Length(null, 1),
-		);
+		return array();
 	}
 
 	/**
@@ -605,13 +636,12 @@ class ProductTable extends Main\Entity\DataManager
 	/**
 	 * Return product type list.
 	 *
-	 * @param bool $withDescr			With description.
+	 * @param bool $descr			With description.
 	 * @return array
 	 */
-	public static function getProductTypes($withDescr = false)
+	public static function getProductTypes($descr = false)
 	{
-		$withDescr = ($withDescr === true);
-		if ($withDescr)
+		if ($descr)
 		{
 			return array(
 				self::TYPE_PRODUCT => Loc::getMessage('PRODUCT_ENTITY_TYPE_PRODUCT'),
@@ -627,6 +657,60 @@ class ProductTable extends Main\Entity\DataManager
 			self::TYPE_SKU,
 			self::TYPE_OFFER,
 			self::TYPE_FREE_OFFER
+		);
+	}
+
+	/**
+	 * Return payment type list.
+	 *
+	 * @param bool $descr			With description.
+	 * @return array
+	 */
+	public static function getPaymentTypes($descr = false)
+	{
+		if ($descr)
+		{
+			return array(
+				self::PAYMENT_TYPE_SINGLE => Loc::getMessage('PRODUCT_ENTITY_PAYMENT_TYPE_SINGLE'),
+				self::PAYMENT_TYPE_REGULAR => Loc::getMessage('PRODUCT_ENTITY_PAYMENT_TYPE_REGULAR'),
+				self::PAYMENT_TYPE_TRIAL => Loc::getMessage('PRODUCT_ENTITY_PAYMENT_TYPE_TRIAL')
+			);
+		}
+		return array(
+			self::PAYMENT_TYPE_SINGLE,
+			self::PAYMENT_TYPE_REGULAR,
+			self::PAYMENT_TYPE_TRIAL
+		);
+	}
+
+	/**
+	 * Return payment period list.
+	 *
+	 * @param bool $descr			With description.
+	 * @return array
+	 */
+	public static function getPaymentPeriods($descr = false)
+	{
+		if ($descr)
+		{
+			return array(
+				self::PAYMENT_PERIOD_HOUR => Loc::getMessage('PRODUCT_ENTITY_PAYMENT_PERIOD_HOUR'),
+				self::PAYMENT_PERIOD_DAY => Loc::getMessage('PRODUCT_ENTITY_PAYMENT_PERIOD_DAY'),
+				self::PAYMENT_PERIOD_WEEK => Loc::getMessage('PRODUCT_ENTITY_PAYMENT_PERIOD_WEEK'),
+				self::PAYMENT_PERIOD_MONTH => Loc::getMessage('PRODUCT_ENTITY_PAYMENT_PERIOD_MONTH'),
+				self::PAYMENT_PERIOD_QUART => Loc::getMessage('PRODUCT_ENTITY_PAYMENT_PERIOD_QUART'),
+				self::PAYMENT_PERIOD_SEMIYEAR => Loc::getMessage('PRODUCT_ENTITY_PAYMENT_PERIOD_SEMIYEAR'),
+				self::PAYMENT_PERIOD_YEAR => Loc::getMessage('PRODUCT_ENTITY_PAYMENT_PERIOD_YEAR')
+			);
+		}
+		return array(
+			self::PAYMENT_PERIOD_HOUR,
+			self::PAYMENT_PERIOD_DAY,
+			self::PAYMENT_PERIOD_WEEK,
+			self::PAYMENT_PERIOD_MONTH,
+			self::PAYMENT_PERIOD_QUART,
+			self::PAYMENT_PERIOD_SEMIYEAR,
+			self::PAYMENT_PERIOD_YEAR
 		);
 	}
 

@@ -228,6 +228,8 @@ BX.fx.hide = function(el, type, opts)
 		type = opts.type
 	}
 
+	if (!opts) opts = {};
+
 	if (!BX.type.isNotEmptyString(type))
 	{
 		el.style.display = 'none';

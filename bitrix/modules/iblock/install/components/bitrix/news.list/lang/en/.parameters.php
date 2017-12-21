@@ -33,4 +33,5 @@ $MESS["CP_BNL_SET_META_KEYWORDS"] = "Set page keywords";
 $MESS["CP_BNL_SET_META_DESCRIPTION"] = "Set page description";
 $MESS["CP_BNL_SET_BROWSER_TITLE"] = "Set browser window title";
 $MESS["CP_BNL_SET_LAST_MODIFIED"] = "Set page last modified date to response header";
+$MESS["CP_BNL_STRICT_SECTION_CHECK"] = "Check parent section when showing list";
 ?>

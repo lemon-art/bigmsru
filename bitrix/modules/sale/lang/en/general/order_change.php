@@ -146,4 +146,9 @@ $MESS["SOC_SHIPMENT_ITEM_STORE_UPDATE_ERROR_TITLE"] = "Error updating shipment i
 $MESS["SOC_SHIPMENT_ITEM_STORE_UPDATE_ERROR_INFO"] = "Error updating shipment item: \"#ERROR#\"";
 $MESS["SOC_SHIPMENT_ITEM_BASKET_ITEM_EMPTY_ERROR_TITLE"] = "Error updating shipment item";
 $MESS["SOC_SHIPMENT_ITEM_BASKET_ITEM_EMPTY_ERROR_INFO"] = "Error updating shipment item: \"#ERROR#\"";
+$MESS["SOC_MARKER_SHIPMENT_INFO"] = "shipment";
+$MESS["SOC_MARKER_ORDER_INFO"] = "order";
+$MESS["SOC_MARKER_PAYMENT_INFO"] = "payment";
+$MESS["SOC_MARKER_SUCCESS"] = "Fix issue";
+$MESS["SOC_MARKER_SUCCESS_INFO"] = "Issue \"#MESSAGE#\" found in #ENTITY_NAME# (##ENTITY_ID#) has been fixed.";
 ?>

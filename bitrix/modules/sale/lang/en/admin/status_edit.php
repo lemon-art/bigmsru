@@ -52,4 +52,7 @@ $MESS["SSEN_TASKS_LINK"] = "Access permissions";
 $MESS["SSEN_GROUPS_LINK"] = "User groups";
 $MESS["SSEN_INVALID_TASK_ID_FOR"] = "Incorrect access permission for";
 $MESS["SALE_STATUS_WRONG_TYPE"] = "Status \"#STATUS_ID#\" cannot be set to \"#STATUS_TYPE#\" type.";
+$MESS["SALE_STATUS_TYPE_ORDER_EXISTS"] = "The \"#STATUS_ID#\" status cannot be changed to \"#STATUS_TYPE#\" type because there are <a href=\"/bitrix/admin/sale_order.php?set_filter=Y&filter_status[]=#CURRENT_STATUS_ID#\" target=\"_blank\">orders</a> in this status.";
+$MESS["SALE_STATUS_TYPE_SHIPMENT_EXISTS"] = "The \"#STATUS_ID#\" status cannot be changed to \"#STATUS_TYPE#\" type because there are <a href=\"/bitrix/admin/sale_order_shipment.php?&set_filter=Y&&filter_status[]=#CURRENT_STATUS_ID#\" target=\"_blank\">shipments</a> in this status.";
+$MESS["SSEN_COLOR"] = "Status color";
 ?>

@@ -1,9 +1,30 @@
 <?
-IncludeModuleLangFile(__FILE__);
+use Bitrix\Main\Localization\Loc,
+	Bitrix\Iblock;
+
+Loc::loadMessages(__FILE__);
 
 class CIBlockPropertySequence
 {
-	function AddFilterFields($arProperty, $strHTMLControlName, &$arFilter, &$filtered)
+	const USER_TYPE = 'Sequence';
+
+	public static function GetUserTypeDescription()
+	{
+		return array(
+			"PROPERTY_TYPE" => Iblock\PropertyTable::TYPE_NUMBER,
+			"USER_TYPE" => self::USER_TYPE,
+			"DESCRIPTION" => Loc::getMessage("IBLOCK_PROP_SEQUENCE_DESC"),
+			"GetPropertyFieldHtml" => array(__CLASS__, "GetPropertyFieldHtml"),
+			"GetPublicEditHTML" => array(__CLASS__, "GetPropertyFieldHtml"),
+			"PrepareSettings" =>array(__CLASS__, "PrepareSettings"),
+			"GetSettingsHTML" =>array(__CLASS__, "GetSettingsHTML"),
+			"GetAdminFilterHTML" => array(__CLASS__, "GetPublicFilterHTML"),
+			"GetPublicFilterHTML" => array(__CLASS__, "GetPublicFilterHTML"),
+			"AddFilterFields" => array(__CLASS__, "AddFilterFields"),
+		);
+	}
+
+	public static function AddFilterFields($arProperty, $strHTMLControlName, &$arFilter, &$filtered)
 	{
 		$from_name = $strHTMLControlName["VALUE"].'_from';
 		$from = isset($_REQUEST[$from_name])? $_REQUEST[$from_name]: "";
@@ -22,7 +43,7 @@ class CIBlockPropertySequence
 		}
 	}
 
-	function GetPublicFilterHTML($arProperty, $strHTMLControlName)
+	public static function GetPublicFilterHTML($arProperty, $strHTMLControlName)
 	{
 		$from_name = $strHTMLControlName["VALUE"].'_from';
 		$to_name = $strHTMLControlName["VALUE"].'_to';
@@ -35,7 +56,7 @@ class CIBlockPropertySequence
 		';
 	}
 
-	function GetPropertyFieldHtml($arProperty, $value, $strHTMLControlName)
+	public static function GetPropertyFieldHtml($arProperty, $value, $strHTMLControlName)
 	{
 		if($value["VALUE"] > 0 && !$strHTMLControlName["COPY"])
 		{
@@ -54,7 +75,7 @@ class CIBlockPropertySequence
 				'<input type="hidden" size="5" name="'.$strHTMLControlName["VALUE"].'" value="'.$current_value.'">';
 	}
 
-	function PrepareSettings($arProperty)
+	public static function PrepareSettings($arProperty)
 	{
 		//This method not for storing sequence value in the database
 		//but it just sets starting value for it
@@ -79,7 +100,7 @@ class CIBlockPropertySequence
 		return $arProperty;
 	}
 
-	function GetSettingsHTML($arProperty, $strHTMLControlName, &$arPropertyFields)
+	public static function GetSettingsHTML($arProperty, $strHTMLControlName, &$arPropertyFields)
 	{
 		$arPropertyFields = array(
 			"HIDE" => array("SEARCHABLE", "WITH_DESCRIPTION", "ROW_COUNT", "COL_COUNT", "DEFAULT_VALUE")
@@ -92,7 +113,7 @@ class CIBlockPropertySequence
 
 		$html = '
 			<tr valign="top">
-				<td>'.GetMessage("IBLOCK_PROP_SEQ_SETTING_WRITABLE").':</td>
+				<td>'.Loc::getMessage("IBLOCK_PROP_SEQ_SETTING_WRITABLE").':</td>
 				<td><input type="checkbox" name="'.$strHTMLControlName["NAME"].'[write]" value="Y" '.($bWritable? 'checked="checked"': '').'></td>
 			</tr>
 		';
@@ -103,7 +124,7 @@ class CIBlockPropertySequence
 			$current_value = $seq->GetCurrent();
 			return $html.'
 			<tr valign="top">
-				<td>'.GetMessage("IBLOCK_PROP_SEQ_SETTING_CURRENT_VALUE").':</td>
+				<td>'.Loc::getMessage("IBLOCK_PROP_SEQ_SETTING_CURRENT_VALUE").':</td>
 				<td><input type="text" size="5" name="'.$strHTMLControlName["NAME"].'[current_value]" value="'.$current_value.'"></td>
 			</tr>
 			';
@@ -113,12 +134,10 @@ class CIBlockPropertySequence
 			$current_value = 1;
 			return $html.'
 			<tr valign="top">
-				<td>'.GetMessage("IBLOCK_PROP_SEQ_SETTING_CURRENT_VALUE").':</td>
+				<td>'.Loc::getMessage("IBLOCK_PROP_SEQ_SETTING_CURRENT_VALUE").':</td>
 				<td><input disabled type="text" size="5" name="'.$strHTMLControlName["NAME"].'[current_value]" value="'.$current_value.'"></td>
 			</tr>
 			';
 		}
 	}
-
 }
-?>

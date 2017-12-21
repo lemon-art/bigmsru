@@ -117,6 +117,10 @@ class Table extends Entity\DataManager
 				'values' => array('N', 'Y'),
 				'default' => 'Y',
 				'title' => Loc::getMessage('DELIVERY_SERVICE_ENTITY_ALLOW_EDIT_SHIPMENT_FIELD')
+			),
+			'VAT_ID' => array(
+				'data_type' => 'integer',
+				'title' => Loc::getMessage('DELIVERY_SERVICE_ENTITY_VAT_ID_FIELD')
 			)
 		);
 	}

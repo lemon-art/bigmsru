@@ -3,7 +3,7 @@
 IncludeModuleLangFile(__FILE__);
 $aMenu = array();
 
-if (true)
+if ($APPLICATION->getGroupRight('abtest') >= 'R')
 {
 	$aMenu[] = array(
 		'parent_menu' => 'global_menu_marketing',

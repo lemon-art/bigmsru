@@ -18,7 +18,7 @@ Class conversion extends CModule
 	var $MODULE_NAME;
 	var $MODULE_DESCRIPTION;
 	var $MODULE_CSS;
-	var $MODULE_GROUP_RIGHTS = 'N';
+	var $MODULE_GROUP_RIGHTS = 'Y';
 
 	function conversion()
 	{

@@ -212,7 +212,7 @@ function TableExists($tableName)
 $rsData = new CAdminResult($rsData, $sTableID);
 $rsData->NavStart();
 $lAdmin->NavText($rsData->GetNavPrint(GetMessage("PERFMON_TABLE_PAGE")));
-
+$precision = ini_get('precision') >= 0? ini_get('precision'): 2;
 $max_display_url = COption::GetOptionInt("perfmon", "max_display_url");
 while ($arRes = $rsData->Fetch()):
 
@@ -229,7 +229,7 @@ while ($arRes = $rsData->Fetch()):
 			}
 			elseif ($FIELD_TYPE == "double")
 			{
-				$val = perfmon_NumberFormat($arRes[$FIELD_NAME], 2);
+				$val = htmlspecialcharsEx($arRes[$FIELD_NAME]);
 			}
 			elseif ($FIELD_TYPE == "datetime")
 			{
@@ -425,10 +425,10 @@ CJSCore::Init(array("ajax", "popup"));
 		}
 	}
 </script>
-<form name="find_form" method="get" action="<? echo $APPLICATION->GetCurPage(); ?>">
+<form name="find_form" id="find_form" method="get" action="<? echo $APPLICATION->GetCurPage(); ?>">
 	<input type="hidden" value="<? echo htmlspecialcharsbx($table_name) ?>" name="table_name">
 	<? $oFilter->Begin(); ?>
-	<tr onmouseover="BX.hint(this,
+	<tr onmouseover="BX.hint(BX('find_form'),
 			'<ul>' +
 			'<li>= Identical' + '</li>' +
 			'<li>&amp;gt; Greater' + '</li>' +

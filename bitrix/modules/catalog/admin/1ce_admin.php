@@ -1,9 +1,13 @@
 <?
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+/** @global CUser $USER */
+/** @global CMain $APPLICATION */
+use Bitrix\Main\Loader,
+	Bitrix\Catalog;
 
 $module_id = "catalog";
 
-if ($USER->CanDoOperation('catalog_read')) :
+if ($USER->CanDoOperation('catalog_read')):
 
 	if ($ex = $APPLICATION->GetException())
 	{
@@ -18,20 +22,19 @@ if ($USER->CanDoOperation('catalog_read')) :
 
 	IncludeModuleLangFile(__FILE__);
 
-	if (CModule::IncludeModule("catalog")):
+	if (Loader::includeModule('catalog')):
 
-		$arIBlock = array();
-		$rsCatalog = CCatalog::GetList(
-			array("sort" => "asc"),
-			array('PRODUCT_IBLOCK_ID' => 0),
-			false,
-			false,
-			array('IBLOCK_ID', 'PRODUCT_IBLOCK_ID')
+		$arIBlock = array(
+			'' => GetMessage('CAT_1CE_IBLOCK_ID_EMPTY')
 		);
-		while($arr = $rsCatalog->Fetch())
-		{
-			$arIBlock[$arr["IBLOCK_ID"]] = "[".$arr["IBLOCK_ID"]."] ".CIBlock::GetArrayByID($arr["IBLOCK_ID"], "NAME");
-		}
+		$iterator = Catalog\CatalogIblockTable::getList(array(
+			'select' => array('IBLOCK_ID', 'NAME' => 'IBLOCK.NAME'),
+			'filter' => array('=PRODUCT_IBLOCK_ID' => 0),
+			'order' => array('IBLOCK_ID' => 'ASC')
+		));
+		while($row = $iterator->fetch())
+			$arIBlock[$row["IBLOCK_ID"]] = "[".$row["IBLOCK_ID"]."] ".$row["NAME"];
+		unset($row, $iterator);
 
 		$arUGroupsEx = Array();
 		$dbUGroups = CGroup::GetList($by = "c_sort", $order = "asc");
@@ -96,9 +99,14 @@ if ($USER->CanDoOperation('catalog_read')) :
 			</td>
 		</tr>
 		<?endforeach;
+		if (!$USER->CanDoOperation('edit_php')):
+			?><tr><td colspan="2"><?
+				echo BeginNote();
+				echo GetMessage('CAT_1CE_SETTINGS_SAVE_DENIED');
+				echo EndNote();
+			?></td></tr><?
+		endif;
 	else:
 		CAdminMessage::ShowMessage(GetMessage("CAT_NO_IBLOCK_MOD"));
 	endif;
-
 endif;
-?>

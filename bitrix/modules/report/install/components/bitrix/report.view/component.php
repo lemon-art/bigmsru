@@ -192,8 +192,11 @@ try
 			break;
 
 		case 'month_ago':
-			$date_from = strtotime(date("Y-m-01", strtotime("-1 month")));
-			$date_to = strtotime(date("Y-m-t", strtotime("-1 month"))) + (3600*24-1);
+			$curTime = time();
+			$curTimeInfo = getdate($curTime);
+			$date_from = strtotime(date("Y-m-01", strtotime('-'.$curTimeInfo['mday'].'day', $curTime)));
+			$date_to = strtotime(date("Y-m-t", strtotime('-'.$curTimeInfo['mday'].'day', $curTime))) + (3600*24-1);
+			unset($curTime, $curTimeInfo);
 			break;
 
 		case 'week':
@@ -474,6 +477,11 @@ try
 			// collect grc_fields pointers
 			$need_concat_rows = true;
 			$grcSettingsNum[] = $num;
+		}
+
+		if (CReport::checkSelectViewElementCyclicDependency($settings['select'], $num))
+		{
+			throw new BXUserException(GetMessage('REPORT_COLUMNS_HAS_CYCLIC_DEPENDENCY'));
 		}
 
 		list($alias, $selElem) = CReport::prepareSelectViewElement($elem, $settings['select'], $is_init_entity_aggregated, $fList, $fChainList, $arParams['REPORT_HELPER_CLASS'], $entity);

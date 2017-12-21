@@ -585,7 +585,6 @@ class CAllVote
 		}
 		catch (\Exception $e)
 		{
-			throw $e;
 			$errorCollection->add(array(new \Bitrix\Main\Error($e->getMessage(), $e->getCode())));
 		}
 
@@ -594,8 +593,14 @@ class CAllVote
 			$GLOBALS["VOTING_OK"] = "Y";
 			return true;
 		}
-		$GLOBALS["VOTING_OK"] = "N";
-
+		global $APPLICATION, $VOTING_OK;
+		$VOTING_OK = "N";
+		$e = $errorCollection->rewind();
+		$m = array();
+		do {
+			$m[] = $e->getMessage();
+		} while ($e = $errorCollection->next());
+		$APPLICATION->ThrowException(implode("", $m), "CVote::KeepVoting");
 
 		return false;
 	}

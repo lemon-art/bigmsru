@@ -320,11 +320,11 @@ while ($arResult = $dbResult->GetNext())
 	}
 	$row->AddViewField("ALLOW_DELIVERY", $arResult["ALLOW_DELIVERY"]);
 	$row->AddViewField("DELAY", $arResult["DELAY"]);
-	foreach($arCurUsed as $k)
+	foreach($arCurUsed as $currency)
 	{
 		foreach($arPrices as $price)
 		{
-			$row->AddViewField($price."_".$k, number_format(roundEx($arResult[$price][$k], SALE_VALUE_PRECISION), SALE_VALUE_PRECISION, '.', ''));
+			$row->AddViewField($price."_".$currency, \Bitrix\Sale\PriceMaths::roundByFormatCurrency($arResult[$price][$currency], $currency));
 		}
 	}
 }

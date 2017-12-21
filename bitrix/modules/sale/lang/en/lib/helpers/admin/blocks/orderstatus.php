@@ -17,4 +17,8 @@ $MESS["SALE_ORDER_STATUS_TOGGLE"] = "hide";
 $MESS["SALE_ORDER_STATUS_SITE"] = "Site";
 $MESS["SALE_ORDER_STATUS_SOURCE"] = "Order source";
 $MESS["SALE_ORDER_STATUS_AFFILIATE"] = "Affiliate";
+$MESS["SALE_ORDER_STATUS_ARCHIVED"] = "Moved to archive";
+$MESS["SALE_ORDER_WRONG_GUEST_PATH"] = "Invalid order page path template. Check the path <a target=\"_blank\" href=\"/bitrix/admin/settings.php?lang=#LANGUAGE_ID#&mid=sale#guest_order_view_block\">on the module setting page";
+$MESS["SALE_ORDER_GUEST_PATH"] = "Order ID(#ID#) | ##ACCOUNT_NUMBER#";
+$MESS["SALE_ORDER_GUEST_VIEW"] = "Public link";
 ?>

@@ -292,22 +292,15 @@ JCIBlockGenerator.prototype.loadAllProperties = function()
 
 JCIBlockGenerator.prototype.checkboxManage = function(e, id)
 {
-	var checkboxGroup = document.getElementsByClassName('property_value_checkbox'+id);
-	var checked = !!((e.checked == true));
-	if(checked)
-	{
-		this.AR_ALL_PROPERTIES[id]['USE'] = 'Y';
-	}
-	else
-	{
-		this.AR_ALL_PROPERTIES[id]['USE'] = 'N';
-	}
+	var checkboxGroup = document.getElementsByClassName('property_value_checkbox'+id),
+		i;
 
-	if(checkboxGroup)
+	this.AR_ALL_PROPERTIES[id]['USE'] = (e.checked ? 'Y' : 'N');
+	if (checkboxGroup)
 	{
-		for(var i = 0; i < checkboxGroup.length; i++)
+		for(i = 0; i < checkboxGroup.length; i++)
 		{
-			checkboxGroup[i].checked = checked;
+			checkboxGroup[i].checked = e.checked;
 			this.checkboxMapManage(checkboxGroup[i]);
 		}
 	}
@@ -443,15 +436,16 @@ JCIBlockGenerator.prototype.addImageTableHead = function()
 
 JCIBlockGenerator.prototype.addImageTableRow = function(objResult)
 {
-	for(var key in objResult)
-	{
-		if(objResult.hasOwnProperty(key))
-			var objResultMap = objResult[key];
-	}
-
 	var table = BX(this.IMAGE_TABLE_ID),
 		tbody,
-		showedProperty = [];
+		showedProperty = [],
+		key,
+		objResultMap;
+	for(key in objResult)
+	{
+		if(objResult.hasOwnProperty(key))
+			objResultMap = objResult[key];
+	}
 
 	this.intIMAGE_ROW_ID = 0;
 	if(BX('ib_seg_max_image_row_id'))
@@ -522,49 +516,52 @@ JCIBlockGenerator.prototype.addImageTableRow = function(objResult)
 		)
 	);
 
-	for(key in objResultMap)
+	for(var i = 0; i < this.AR_ALL_PROPERTIES.length; i++)
 	{
-
-		if(objResultMap.hasOwnProperty(key))
+		if(this.AR_ALL_PROPERTIES[i].hasOwnProperty('VALUE') && (typeof this.AR_ALL_PROPERTIES[i] == "object") && (this.AR_ALL_PROPERTIES[i] !== null) && (this.AR_ALL_PROPERTIES[i]['USE'] !== 'N'))
 		{
-			var options = [BX.create('OPTION', {
+			key = this.AR_ALL_PROPERTIES[i].ID;
+			if (typeof (objResultMap[key]) !== 'undefined')
+			{
+				var options = [BX.create('OPTION', {
 					'props': {'value':-1},
 					'text': BX.message('IB_SEG_FOR_ALL')}
-			)];
-			for(var key2 in objResultMap[key])
-			{
-				if(objResultMap[key].hasOwnProperty(key2))
+				)];
+				for(var key2 in objResultMap[key])
 				{
-					options[options.length] = BX.create('OPTION', {
+					if(objResultMap[key].hasOwnProperty(key2))
+					{
+						options[options.length] = BX.create('OPTION', {
 							'props': {'value':key2},
 							'text': objResultMap[key][key2]}
-					);
+						);
+					}
 				}
+				row.appendChild(
+					BX.create('td', {
+						children:[
+							BX.create('span', {
+								props: {
+									className:'adm-select-wrap'
+								},
+								children:[
+									BX.create('select', {
+										props: {
+											className : 'adm-select',
+											name:"PROP["+key+"]["+this.intIMAGE_ROW_ID+"]",
+											id:"PROP["+key+"]["+this.intIMAGE_ROW_ID+"]"
+										},
+										style : {
+											width:'130px'
+										},
+										children:options
+									})
+								]
+							})
+						]
+					})
+				);
 			}
-			row.appendChild(
-				BX.create('td', {
-					children:[
-						BX.create('span', {
-							props: {
-								className:'adm-select-wrap'
-							},
-							children:[
-								BX.create('select', {
-									props: {
-										className : 'adm-select',
-										name:"PROP["+key+"]["+this.intIMAGE_ROW_ID+"]",
-										id:"PROP["+key+"]["+this.intIMAGE_ROW_ID+"]"
-									},
-									style : {
-										width:'130px'
-									},
-									children:options
-								})
-							]
-						})
-					]
-				})
-			);
 		}
 	}
 

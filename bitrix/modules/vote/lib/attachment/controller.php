@@ -39,7 +39,8 @@ class Controller extends \Bitrix\Vote\Base\Controller
 				'method' => array('POST', 'GET')
 			),
 			'getmobilevoted' => array(
-				'method' => array('POST', 'GET')
+				'method' => array('POST', 'GET'),
+				'check_sessid' => false
 			),
 			'exportXls' => array(
 				'method' => array('POST', 'GET')

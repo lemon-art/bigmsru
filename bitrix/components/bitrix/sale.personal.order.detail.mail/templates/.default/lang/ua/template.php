@@ -45,4 +45,7 @@ $MESS["SPOD_CUR_ORDERS"] = "У список замовлень";
 $MESS["SPOD_NONE"] = "Не встановлена";
 $MESS["SPOD_TAKE_FROM_STORE"] = "Вивезти зі складу";
 $MESS["SPOD_NUM_SIGN"] = "№";
+$MESS["SPOD_PRICE_FORMATED"] = "Ціна";
+$MESS["SPOD_WEIGHT_FORMATTED"] = "Вага";
+$MESS["SPOD_DISCOUNT_PRICE_PERCENT_FORMATED"] = "Знижка";
 ?>

@@ -74,7 +74,7 @@ class CGooglePlusOAuthInterface extends CGoogleOAuthInterface
 
 	const FRIENDS_FIELDS = 'items(displayName,emails,gender,id,image,name,nickname),nextPageToken,title,totalItems';
 
-	protected $scope = array(
+	protected $standardScope = array(
 		'https://www.googleapis.com/auth/plus.login',
 		'https://www.googleapis.com/auth/plus.me',
 	);

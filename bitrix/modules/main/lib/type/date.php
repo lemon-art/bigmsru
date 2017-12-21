@@ -98,6 +98,24 @@ class Date
 	 */
 	public function add($interval)
 	{
+		$i = $this->tryToCreateIntervalByDesignators($interval);
+		if ($i == null)
+		{
+			$i = \DateInterval::createFromDateString($interval);
+		}
+
+		$this->value->add($i);
+
+		return $this;
+	}
+
+	private function tryToCreateIntervalByDesignators($interval)
+	{
+		if (!is_string($interval) || strpos($interval, ' ') !== false)
+		{
+			return null;
+		}
+
 		$i = null;
 		try
 		{
@@ -125,14 +143,7 @@ class Date
 		{
 		}
 
-		if ($i == null)
-		{
-			$i = \DateInterval::createFromDateString($interval);
-		}
-
-		$this->value->add($i);
-
-		return $this;
+		return $i;
 	}
 
 	/**
@@ -314,5 +325,23 @@ class Date
 		$d->value->setTimestamp($timestamp);
 		$d->value->setTime(0, 0, 0);
 		return $d;
+	}
+
+	/**
+	 * Creates Date object from Text (return array of result object)
+	 * Examples: "end of next week", "tomorrow morning", "friday 25.10"
+	 *
+	 * @param string $text
+	 * @return \Bitrix\Main\Text\DateConverterResult[]
+	 */
+	public static function createFromText($text)
+	{
+		$result = \Bitrix\Main\Text\DateConverter::decode($text);
+		if (empty($result))
+		{
+			return null;
+		}
+		
+		return $result[0]->getDate();
 	}
 }

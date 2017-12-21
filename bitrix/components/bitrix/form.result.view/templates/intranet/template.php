@@ -42,7 +42,7 @@ if ($arParams["SHOW_STATUS"] == "Y")
 {
 ?>
 <p>
-<b><?=GetMessage("FORM_CURRENT_STATUS")?></b>&nbsp;[<span class='<?=$arResult["RESULT_STATUS_CSS"]?>'><?=$arResult["RESULT_STATUS_TITLE"]?></span>]
+<b><?=GetMessage("FORM_CURRENT_STATUS")?></b>&nbsp;[<span class="<?=htmlspecialcharsbx($arResult["RESULT_STATUS_CSS"])?>"><?=htmlspecialcharsbx($arResult["RESULT_STATUS_TITLE"])?></span>]
 </p>
 <?
 }

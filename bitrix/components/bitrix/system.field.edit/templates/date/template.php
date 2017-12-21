@@ -39,13 +39,14 @@ foreach ($arResult["VALUE"] as $res):
 
 ?><div class="fields datetime">
 <input type="text" name="<?=$name?>" value="<?=$res?>"<?
-	if (intVal($arParams["arUserField"]["SETTINGS"]["SIZE"]) > 0):
+	if (intval($arParams["arUserField"]["SETTINGS"]["SIZE"]) > 0):
 		?> size="<?=$arParams["arUserField"]["SETTINGS"]["SIZE"]?>"<?
 	endif;
 	if ($arParams["arUserField"]["EDIT_IN_LIST"]!="Y"):
 		?> readonly="readonly"<?
 	endif;
 ?> class="fields datetime"><?
+if ($arParams["arUserField"]["EDIT_IN_LIST"]=="Y"):?><?
 	$APPLICATION->IncludeComponent(
 		"bitrix:main.calendar",
 		"",
@@ -57,7 +58,7 @@ foreach ($arResult["VALUE"] as $res):
 		),
 		$component,
 		array("HIDE_ICONS" => "Y"));
-?></div><?
+?><?endif;?></div><?
 $index++;
 endforeach;
 ?></div>

@@ -548,7 +548,7 @@ if (strlen($strLastTables) > 0)
 	function filter_rows()
 	{
 		var i;
-		var input = BX('instant-search').value;
+		var input = BX('instant-search').value.replace(/[^a-z_0-9]+/, '');
 		if (input != prev)
 		{
 			prev = input;

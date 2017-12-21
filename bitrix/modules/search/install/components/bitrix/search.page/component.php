@@ -171,6 +171,9 @@ if($obCache->StartDataCache($arParams["CACHE_TIME"], $this->GetCacheID(), "/".SI
 					case "crm":
 						$arrDropdown[$code] = GetMessage("SEARCH_CRM");
 						break;
+					case "disk":
+						$arrDropdown[$code] = GetMessage("SEARCH_DISK");
+						break;
 				}
 			}
 			else

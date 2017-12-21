@@ -18,13 +18,17 @@ if(typeof BX.Sale.component.location.selector.steps == 'undefined' && typeof BX.
 				disableKeyboardInput: 	false,
 				dontShowNextChoice: 	false,
 				pseudoValues: 			[], // values that can be only displayed as selected, but not actually selected
-				provideLinkBy: 			'id'
+				provideLinkBy: 			'id',
+				requestParamsInject:	false
 			},
 			vars: {
 				cache: {nodesByCode: {}}
 			},
 			sys: {
 				code: 'slst'
+			},
+			flags: {
+				skipAfterSelectItemEventOnce: false
 			}
 		});
 		
@@ -70,6 +74,28 @@ if(typeof BX.Sale.component.location.selector.steps == 'undefined' && typeof BX.
 
 		setValueByLocationId: function(id){
 			BX.Sale.component.location.selector.steps.superclass.setValue.apply(this, [id]);
+		},
+
+		setValueByLocationIds: function(locationsData){
+
+			if(!locationsData.PARENT_ID)
+				return;
+
+			this.flags.skipAfterSelectItemEventOnce = true;
+			this.setValueByLocationId(locationsData.PARENT_ID);
+
+			this.bindEvent('after-control-placed', function(adapter){
+
+				var control = adapter.getControl();
+
+				if(control.vars.value != false)
+					return;
+
+				if(locationsData.IDS)
+					this.opts.requestParamsInject = {'filter': {'=ID': locationsData.IDS}};
+
+				control.tryDisplayPage('toggle');
+			});
 		},
 
 		setValueByLocationCode: function(code){
@@ -124,7 +150,11 @@ if(typeof BX.Sale.component.location.selector.steps == 'undefined' && typeof BX.
 
 		setTargetValue: function(value){
 			this.setTargetInputValue(this.opts.provideLinkBy == 'code' ? (value ? this.vars.cache.nodes[value].CODE : ''): value);
-			this.fireEvent('after-select-item', [value]);
+
+			if(!this.flags.skipAfterSelectItemEventOnce)
+				this.fireEvent('after-select-item', [value]);
+			else
+				this.flags.skipAfterSelectItemEventOnce = false;
 		},
 
 		getValue: function(){
@@ -340,12 +370,47 @@ if(typeof BX.Sale.component.location.selector.steps == 'undefined' && typeof BX.
 					filter['=SITE_ID'] = this.opts.query.FILTER.SITE_ID;
 			}
 
-			return {
+			var result =  {
 				'select': select,
 				'filter': filter,
 				'additionals': additionals,
 				'version': '2'
 			};
+
+			if(this.opts.requestParamsInject)
+			{
+				for(var type in this.opts.requestParamsInject)
+				{
+					if(this.opts.requestParamsInject.hasOwnProperty(type))
+					{
+						if(result[type] == undefined)
+							result[type] = {};
+
+						for(var param in this.opts.requestParamsInject[type])
+						{
+							if(this.opts.requestParamsInject[type].hasOwnProperty(param))
+							{
+								if(result[type][param] != undefined)
+								{
+									var tmp = result[type][param];
+									result[type][param] = [];
+									result[type][param].push(tmp);
+								}
+								else
+								{
+									result[type][param] = [];
+								}
+
+								for(var val in this.opts.requestParamsInject[type][param])
+									if(this.opts.requestParamsInject[type][param].hasOwnProperty(val))
+										result[type][param].push(this.opts.requestParamsInject[type][param][val]);
+							}
+						}
+					}
+				}
+			}
+
+			return result;
 		},
 
 		// adapter to ajax page responce

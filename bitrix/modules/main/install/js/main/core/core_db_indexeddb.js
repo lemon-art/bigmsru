@@ -6,59 +6,150 @@
 	var BX = window.BX;
 
 	/**
-	 * Parameters description:
-	 * name - name of the database*
-	 * version - version of the database
-	 * createCallback - version of the database
+	 * IndexedDB driver
+	 * 
+	 * === Param 'Params' should be contains ===
+	 * name - name of the database
+	 * scheme - scheme of the database
+	 * version - version of the database, default: 1
+	 * success - callback function if method successful (you can use BX.promise for alternative)
+	 * error - callback function if method errorful (you can use BX.promise for alternative)
+	 * 
+	 * 
+	 * === Usage example ===
+	 * BX.indexedDB({
+	 *		name: 'BX.Messenger',
+	 *		scheme: this.dbGetStores(),
+	 *		version: 2
+	 *	}).then(function (db) {
+	 *		console.log('Open DB', db);
+	 *	}).catch(function(error){
+	 *		console.log(error);
+	 *	});
+	 * 
+	 *
+	 * === Error example ===
+	 * JS Object = {
+	 * 		errorCode: 0, 
+	 * 		errorName: "VersionError", 
+	 * 		errorMessage: "The requested version (2) is less than the existing version (3)."
+	 * }
+	 * 
 	 * @param params
+	 * @return BX.promise
 	 */
-
+	
 	BX.indexedDB = function (params)
 	{
 		var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 		window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
 		window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
 
+		params.version = parseInt(params.version);
+		params.version = !params.version? 1: params.version;
+		
+		var result = new BX.Promise();
+		var error = {};
+		
 		if(
 			typeof indexedDB == 'undefined'
 			|| typeof window.IDBTransaction == 'undefined'
 			|| typeof window.IDBKeyRange == 'undefined'
 		)
 		{
-			return;
+			error = {
+				errorCode: 'bxNotSupported', 
+				errorName: 'bxNotSupported', 
+				errorMessage: 'IndexedDB is not supported in current browser.'
+			};
+			
+			if (typeof params.error == 'function')
+			{
+				params.error(error);
+			}
+			
+			result.reject(error);
+			return result;
 		}
-
-		var request = indexedDB.open(params.name, parseInt(params.version));
-
-		if (request == null)
+		
+		if (
+			typeof(params) != 'object'
+			|| !params.name
+			|| !params.scheme
+		)
 		{
-			return;
+			error = {
+				errorCode: 'bxParamsError', 
+				errorName: 'bxParamsError', 
+				errorMessage: 'Required parameters not specified.'
+			};
+			
+			if (typeof params.error == 'function')
+			{
+				params.error(error);
+			}
+			
+			result.reject(error);
+			return result;
 		}
 
+		
+		var request = indexedDB.open(params.name, params.version);
+		if (!request)
+		{
+			error = {
+				errorCode: 'bxOpenError', 
+				errorName: 'bxOpenError', 
+				errorMessage: 'An error occurred while opening the database.'
+			};
+			
+			if (typeof params.error == 'function')
+			{
+				params.error(error);
+			}
+			
+			result.reject(error);
+			return result;
+		}
+		
 		request.onsuccess = function(event)
 		{
-			if (typeof params.callback == 'function')
+			if (typeof params.success == 'function')
 			{
-				params.callback(this.result);
+				params.success(event.target.result);
 			}
+			result.fulfill(event.target.result);
+		};
+		
+		request.onerror = function(event)
+		{
+			var error = {
+				errorCode: event.target.error.code, 
+				errorName: event.target.error.name, 
+				errorMessage: event.target.error.message
+			};
+			if (typeof params.error == 'function')
+			{
+				params.error(error);
+			}
+			result.reject(error);
 		};
 
 		request.onupgradeneeded = function (event)
 		{
 			/* syncronize database structure */
 
-			if (typeof params.oScheme != 'undefined')
+			if (typeof params.scheme != 'undefined')
 			{
 				var hDBHandle = event.target.result;
 				var ob = null;
 				var oStore = null;
-				var tx = null;
-				var schemeLength = params.oScheme.length;
+				var schemeLength = params.scheme.length;
 				var i, j = null;
 
 				for (i = 0; i < schemeLength; i++)
 				{
-					ob = params.oScheme[i];
+					ob = params.scheme[i];
 
 					if (
 						typeof ob == 'object'
@@ -84,15 +175,18 @@
 				}
 
 				var bFound = null;
-				length = hDBHandle.objectStoreNames.length;
+				var length = hDBHandle.objectStoreNames.length;
 
 				for (i = 0; i < length; i++)
 				{
+					if (!hDBHandle.objectStoreNames[i])
+						continue;
+					
 					bFound = false;
 
 					for (j = 0; j < schemeLength; j++)
 					{
-						ob = params.oScheme[j];
+						ob = params.scheme[j];
 						if (ob.name == hDBHandle.objectStoreNames[i])
 						{
 							bFound = true;
@@ -106,300 +200,731 @@
 					}
 				}
 			}
-		}
+		};
+		
+		return result;
 	};
 
-	BX.indexedDB.checkDbObject = function (dbObject)
+	BX.indexedDB.checkDatabaseObject = function (dataBase)
 	{
-		return (typeof dbObject == 'object');
-	};
-
-	BX.indexedDB.getObjectStore = function (dbObject, storeName, mode)
-	{
-		if (!BX.indexedDB.checkDbObject(dbObject))
+		var result = {error: null, result: false};
+		
+		if (
+			!dataBase
+			|| typeof dataBase != 'object'
+			|| !(dataBase instanceof IDBDatabase)
+		)
 		{
-			return;
+			result.error = {
+				errorCode: 'bxDataBaseInvalidFormat', 
+				errorName: 'bxDataBaseInvalidFormat', 
+				errorMessage: 'The given "dataBase" object is invalid format for IndexedDB.'
+			};
+		}
+		else 
+		{
+			result.result = true;
+		}
+		
+		return result;
+	};
+
+	BX.indexedDB.getObjectStore = function (dataBase, storeName, openMode)
+	{
+		openMode = openMode || 'readonly';
+		
+		var result = {error: null, transaction: null};
+		
+		var checkResult = BX.indexedDB.checkDatabaseObject(dataBase);
+		if (checkResult.error)
+		{
+			return result;
 		}
 
 		try
 		{
-			var tx = dbObject.transaction(storeName, mode);
-			tx.onsuccess = function(){};
-			tx.onerror = function(){};
-			return tx.objectStore(storeName);
+			var transaction = dataBase.transaction(storeName, openMode);
+			transaction.onsuccess = function(event){};
+			transaction.onerror = function(event){
+				console.log('IndexedDB Transaction error', event);
+			};
+			
+			result.transaction = transaction.objectStore(storeName);
+			return result;
 		}
 		catch(err)
 		{
-			return false;
+			result.error = {
+				errorCode: err.code, 
+				errorName: err.name, 
+				errorMessage: err.message
+			};
+			
+			return result;
 		}
 	};
-
-	BX.indexedDB.clearObjectStore = function (dbObject, storeName)
+	
+	BX.indexedDB.addValue = function (dataBase, storeName, value, callback)
 	{
-		var request = null;
-		var store = BX.indexedDB.getObjectStore(dbObject, storeName, 'readwrite');
-		request = BX.indexedDB.getObjectStore(dbObject, storeName, 'readwrite').clear();
-	};
+		callback = callback || {};
+		var result = new BX.Promise();
+		
+		var store = BX.indexedDB.getObjectStore(dataBase, storeName, 'readwrite');
+		if (store.error)
+		{
+			store.error.params = {dataBase: dataBase, storeName: storeName, value: value};
+			if (typeof callback.error == 'function')
+			{
+				callback.error(store.error);
+			}
+			result.reject(store.error);
+			return result;
+		}
 
-	BX.indexedDB.addValue = function (dbObject, storeName, value, key, obCallback)
-	{
 		var request = null;
-
 		try
 		{
-			request = BX.indexedDB.getObjectStore(dbObject, storeName, 'readwrite').add(value, key);
-		}
-		catch(e)
-		{
-		}
-
-		request.onerror = function(event)
-		{
-			if (typeof obCallback.error == 'function')
-			{
-				obCallback.error(event);
-			}
-		};
-
-		request.onsuccess = function(event)
-		{
-			if (typeof obCallback.callback == 'function')
-			{
-				obCallback.callback(event);
-			}
-		};
-	};
-
-	BX.indexedDB.updateValue = function (dbObject, storeName, value, key, obCallback)
-	{
-		var store = BX.indexedDB.getObjectStore(dbObject, storeName, 'readwrite');
-		var request = null;
-
-		try
-		{
-			request = store.put(value);
+			request = store.transaction.add(value);
 		}
 		catch (e)
 		{
+			var error = {
+				errorCode: e.code? e.code: e.name, 
+				errorName: e.name, 
+				errorMessage: e.message,
+				params: {dataBase: dataBase, storeName: storeName, value: value}
+			};
+			result.reject(error);
+			return result;
 		}
 
 		request.onerror = function(event)
 		{
-			if (
-				typeof obCallback != 'undefined'
-				&& typeof obCallback.error == 'function'
-			)
+			var error = {
+				errorCode: event.target.error.code, 
+				errorName: event.target.error.name, 
+				errorMessage: event.target.error.message,
+				params: {dataBase: dataBase, storeName: storeName, value: value}
+			};
+			if (typeof callback.error == 'function')
 			{
-				obCallback.error(event, key);
+				callback.error(error);
 			}
+			result.reject(error);
 		};
 
 		request.onsuccess = function(event)
 		{
-			if (
-				typeof obCallback != 'undefined'
-				&& typeof obCallback.callback == 'function'
-			)
+			if (typeof callback.success == 'function')
 			{
-				obCallback.callback(event);
+				callback.success(event.target.result);
 			}
+			
+			result.fulfill(event.target.result);
 		};
+		
+		return result;
 	};
-
-	BX.indexedDB.deleteValue = function (dbObject, storeName, key, obCallback)
+	
+	BX.indexedDB.updateValue = function (dataBase, storeName, value, callback)
 	{
-		var request = BX.indexedDB.getObjectStore(dbObject, storeName, 'readwrite')['delete'](key);
-
-		request.onerror = function(event)
+		callback = callback || {};
+		var result = new BX.Promise();
+		
+		var store = BX.indexedDB.getObjectStore(dataBase, storeName, 'readwrite');
+		if (store.error)
 		{
-			if (
-				typeof obCallback != 'undefined'
-				&& typeof obCallback.error == 'function'
-			)
+			store.error.params = {dataBase: dataBase, storeName: storeName, value: value};
+			if (typeof callback.error == 'function')
 			{
-				obCallback.error(event);
+				callback.error(store.error);
 			}
-		};
+			result.reject(store.error);
+			return result;
+		}
 
-		request.onsuccess = function(event)
-		{
-			if (
-				typeof obCallback != 'undefined'
-				&& typeof obCallback.callback == 'function'
-			)
-			{
-				obCallback.callback(event);
-			}
-		};
-   };
-
-	BX.indexedDB.deleteValueByIndex = function (dbObject, storeName, indexName, key, obCallback)
-	{
-		var getKeyRequest = null;
-
+		var request = null;
 		try
 		{
-			getKeyRequest = BX.indexedDB.getObjectStore(dbObject, storeName, 'readwrite').index(indexName).getKey(key);
+			request = store.transaction.put(value);
 		}
-		catch(e)
+		catch (e)
 		{
+			var error = {
+				errorCode: e.code? e.code: e.name, 
+				errorName: e.name, 
+				errorMessage: e.message,
+				params: {dataBase: dataBase, storeName: storeName, value: value}
+			};
+			result.reject(error);
+			return result;
 		}
-
-		getKeyRequest.onsuccess = function(event)
-		{
-			var deleteRequest = null;
-
-			try
-			{
-				deleteRequest = BX.indexedDB.getObjectStore(dbObject, storeName, 'readwrite')['delete'](event.target.result);
-
-				deleteRequest.onsuccess = function(event)
-				{
-					if (
-						typeof obCallback != 'undefined'
-						&& typeof obCallback.callback == 'function'
-					)
-					{
-						obCallback.callback(event);
-					}
-				};
-
-				deleteRequest.onerror = function(event)
-				{
-					if (
-						typeof obCallback != 'undefined'
-						&& typeof obCallback.error == 'function'
-					)
-					{
-						obCallback.error(event);
-					}
-				};
-			}
-			catch(e)
-			{
-			}
-		};
-
-		getKeyRequest.onerror = function(event)
-		{
-			if (typeof obCallback.error == 'function')
-			{
-				obCallback.error(event);
-			}
-		};
-   };
-
-	BX.indexedDB.getValue = function (dbObject, storeName, key, obCallback)
-	{
-		var request = BX.indexedDB.getObjectStore(dbObject, storeName, 'readonly').get(key);
 
 		request.onerror = function(event)
 		{
-			if (typeof obCallback.error == 'function')
+			var error = {
+				errorCode: event.target.error.code, 
+				errorName: event.target.error.name, 
+				errorMessage: event.target.error.message,
+				params: {dataBase: dataBase, storeName: storeName, value: value}
+			};
+			if (typeof callback.error == 'function')
 			{
-				obCallback.error(event);
+				callback.error(error);
 			}
+			result.reject(error);
 		};
 
 		request.onsuccess = function(event)
 		{
-			if (typeof obCallback.callback == 'function')
+			if (typeof callback.success == 'function')
 			{
-				obCallback.callback(event.target.result);
+				callback.success(event.target.result);
 			}
+			
+			result.fulfill(event.target.result);
 		};
+		
+		return result;
 	};
 
-	BX.indexedDB.getValueByIndex = function (dbObject, storeName, indexName, key, obCallback)
+	BX.indexedDB.deleteValue = function (dataBase, storeName, primaryId, callback)
 	{
-		var request = BX.indexedDB.getObjectStore(dbObject, storeName, 'readonly').index(indexName).get(key);
-
-		request.onerror = function(event)
+		callback = callback || {};
+		var result = new BX.Promise();
+		
+		var store = BX.indexedDB.getObjectStore(dataBase, storeName, 'readwrite');
+		if (store.error)
 		{
-			if (typeof obCallback.error == 'function')
+			store.error.params = {dataBase: dataBase, storeName: storeName, primaryId: primaryId};
+			if (typeof callback.error == 'function')
 			{
-				obCallback.error(event);
+				callback.error(store.error);
 			}
-		};
-
-		request.onsuccess = function(event)
-		{
-			if (typeof obCallback.callback == 'function')
-			{
-				obCallback.callback(event.target.result);
-			}
-		};
-	};
-
-	BX.indexedDB.openCursor = function (dbObject, storeName, obKeyRange, obCallback)
-	{
-		var keyRange = null;
-
-		if (typeof obKeyRange.lower != 'undefined')
-		{
-			if (typeof obKeyRange.upper != 'undefined')
-			{
-				keyRange = window.IDBKeyRange.bound(obKeyRange.lower, obKeyRange.upper, !!obKeyRange.lowerOpen, !!obKeyRange.upperOpen);
-			}
-			else
-			{
-				keyRange = window.IDBKeyRange.lowerBound(obKeyRange.lower, !!obKeyRange.lowerOpen);
-			}
-		}
-		else if (typeof obKeyRange.upper != 'undefined')
-		{
-			keyRange = window.IDBKeyRange.upperBound(obKeyRange.upper, !!obKeyRange.upperOpen);
+			result.reject(store.error);
+			return result;
 		}
 
-		var request = BX.indexedDB.getObjectStore(dbObject, storeName, 'readonly').openCursor(keyRange);
+		var request = null;
+		try
+		{
+			request = store.transaction.delete(primaryId);
+		}
+		catch (e)
+		{
+			var error = {
+				errorCode: e.code? e.code: e.name, 
+				errorName: e.name, 
+				errorMessage: e.message,
+				params: {dataBase: dataBase, storeName: storeName, primaryId: primaryId}
+			};
+			result.reject(error);
+			return result;
+		}
 
 		request.onerror = function(event)
 		{
-			if (typeof obCallback.error == 'function')
+			var error = {
+				errorCode: event.target.error.code, 
+				errorName: event.target.error.name, 
+				errorMessage: event.target.error.message,
+				params: {dataBase: dataBase, storeName: storeName, primaryId: primaryId}
+			};
+			if (typeof callback.error == 'function')
 			{
-				obCallback.error(event);
+				callback.error(error);
 			}
-		};
-
-		request.onsuccess = function(event)
-		{
-			if (typeof obCallback.callback == 'function')
-			{
-				var cursor = event.target.result;
-				if (cursor)
-				{
-					obCallback.callback(cursor.value);
-					cursor['continue']();
-                }
-			}
-		};
-	};
-
-	BX.indexedDB.count = function (dbObject, storeName, obCallback)
-	{
-		var request = BX.indexedDB.getObjectStore(dbObject, storeName, 'readonly').count();
-
-		request.onerror = function(event)
-		{
-			if (typeof obCallback.error == 'function')
-			{
-				obCallback.error(event);
-			}
+			result.reject(error);
 		};
 
 		request.onsuccess = function()
 		{
-			if (typeof obCallback.callback == 'function')
+			if (typeof callback.success == 'function')
 			{
-				obCallback.callback(request.result);
+				callback.success(true);
 			}
+			
+			result.fulfill(true);
 		};
+		
+		return result;
+   };
+
+	BX.indexedDB.deleteValueByIndex = function (dataBase, storeName, indexName, indexValue, callback)
+	{
+		callback = callback || {};
+		var result = new BX.Promise();
+		
+		BX.indexedDB.getValueByIndex(dataBase, storeName, indexName, indexValue).then(function(element){
+			BX.indexedDB.deleteValue(dataBase, storeName, element.id).then(function(){
+				if (typeof callback.success == 'function')
+				{
+					callback.success(true);
+				}
+				result.fulfill(true);
+			}).catch(function(error){
+				error.params = {dataBase: dataBase, storeName: storeName, indexName: indexName, indexValue: indexValue};
+				if (typeof callback.error == 'function')
+				{
+					callback.error(error);
+				}
+				result.reject(error);
+			});
+		}).catch(function(error){
+			error.params = {dataBase: dataBase, storeName: storeName, indexName: indexName, indexValue: indexValue};
+			if (typeof callback.error == 'function')
+			{
+				callback.error(error);
+			}
+			result.reject(error);
+		});
+		
+		return result;
 	};
 
-	BX.indexedDB.deleteDatabase = function (databaseName, obCallback)
+	BX.indexedDB.getValue = function (dataBase, storeName, primaryId, callback)
 	{
+		callback = callback || {};
+		var result = new BX.Promise();
+		
+		var store = BX.indexedDB.getObjectStore(dataBase, storeName, 'readwrite');
+		if (store.error)
+		{
+			store.error.params = {dataBase: dataBase, storeName: storeName, primaryId: primaryId};
+			if (typeof callback.error == 'function')
+			{
+				callback.error(store.error);
+			}
+			result.reject(store.error);
+			return result;
+		}
+
+		var request = null;
+		try
+		{
+			request = store.transaction.get(primaryId);
+		}
+		catch (e)
+		{
+			var error = {
+				errorCode: e.code? e.code: e.name, 
+				errorName: e.name, 
+				errorMessage: e.message,
+				params: {dataBase: dataBase, storeName: storeName, primaryId: primaryId}
+			};
+			result.reject(error);
+			return result;
+		}
+
+		request.onerror = function(event)
+		{
+			var error = {
+				errorCode: event.target.error.code, 
+				errorName: event.target.error.name, 
+				errorMessage: event.target.error.message,
+				params: {dataBase: dataBase, storeName: storeName, primaryId: primaryId}
+			};
+			if (typeof callback.error == 'function')
+			{
+				callback.error(error);
+			}
+			result.reject(error);
+		};
+
+		request.onsuccess = function(event)
+		{
+			if (!event.target.result)
+			{
+				var error = {
+					errorCode: 'bxElementNotFound', 
+					errorName: 'bxElementNotFound', 
+					errorMessage: "Element with id '"+primaryId+"' not found",
+					params: {dataBase: dataBase, storeName: storeName, primaryId: primaryId}
+				};
+				if (typeof callback.error == 'function')
+				{
+					callback.error(error);
+				}
+				result.reject(error);
+				return result;
+			}
+			
+			if (typeof callback.success == 'function')
+			{
+				callback.success(event.target.result);
+			}
+			
+			result.fulfill(event.target.result);
+		};
+		
+		return result;
+	};
+
+	BX.indexedDB.getValueByIndex = function (dataBase, storeName, indexName, indexValue, callback)
+	{
+		callback = callback || {};
+		var result = new BX.Promise();
+		
+		var store = BX.indexedDB.getObjectStore(dataBase, storeName, 'readwrite');
+		if (store.error)
+		{
+			store.error.params = {dataBase: dataBase, storeName: storeName, indexName: indexName, indexValue: indexValue};
+			if (typeof callback.error == 'function')
+			{
+				callback.error(store.error);
+			}
+			result.reject(store.error);
+			return result;
+		}
+
+		var request = null;
+		try
+		{
+			request = store.transaction.index(indexName).get(indexValue);
+		}
+		catch (e)
+		{
+			var error = {
+				errorCode: e.code? e.code: e.name, 
+				errorName: e.name, 
+				errorMessage: e.message,
+				params: {dataBase: dataBase, storeName: storeName, indexName: indexName, indexValue: indexValue}
+			};
+			result.reject(error);
+			return result;
+		}
+
+		request.onerror = function(event)
+		{
+			var error = {
+				errorCode: event.target.error.code, 
+				errorName: event.target.error.name, 
+				errorMessage: event.target.error.message,
+				params: {dataBase: dataBase, storeName: storeName, indexName: indexName, indexValue: indexValue}
+			};
+			if (typeof callback.error == 'function')
+			{
+				callback.error(error);
+			}
+			result.reject(error);
+		};
+
+		request.onsuccess = function(event)
+		{
+			if (!event.target.result)
+			{
+				var error = {
+					errorCode: 'bxElementNotFound', 
+					errorName: 'bxElementNotFound', 
+					errorMessage: "Element with indexName '"+indexName+"' and indexValue '"+indexValue+"' not found",
+					params: {dataBase: dataBase, storeName: storeName, indexName: indexName, indexValue: indexValue}
+				};
+				if (typeof callback.error == 'function')
+				{
+					callback.error(error);
+				}
+				result.reject(error);
+				return result;
+			}
+			
+			if (typeof callback.success == 'function')
+			{
+				callback.success(event.target.result);
+			}
+			
+			result.fulfill(event.target.result);
+		};
+		
+		return result;
+	};
+	
+	BX.indexedDB.openCursor = function (dataBase, storeName, keyRange, callback)
+	{
+		keyRange = keyRange || {};
+		callback = callback || {};
+		
+		var result = new BX.Promise();
+		var keyRangeForCursor = null;
+		
+		var store = BX.indexedDB.getObjectStore(dataBase, storeName);
+		if (store.error)
+		{
+			if (typeof callback.error == 'function')
+			{
+				callback.error(store.error);
+			}
+			result.reject(store.error);
+			return result;
+		}
+		
+		if (typeof keyRange.lower != 'undefined')
+		{
+			if (typeof keyRange.upper != 'undefined')
+			{
+				keyRangeForCursor = window.IDBKeyRange.bound(keyRange.lower, keyRange.upper, !!keyRange.lowerOpen, !!keyRange.upperOpen);
+			}
+			else
+			{
+				keyRangeForCursor = window.IDBKeyRange.lowerBound(keyRange.lower, !!keyRange.lowerOpen);
+			}
+		}
+		else if (typeof keyRange.upper != 'undefined')
+		{
+			keyRangeForCursor = window.IDBKeyRange.upperBound(keyRange.upper, !!keyRange.upperOpen);
+		}
+		
+		/*
+		* Filter (iterator) should be return follow text: 
+		* continue - store item and go to next
+		* stop - store item and return collection
+		* skip - skip item and go to next
+		* break - return collection without store last item
+		*/
+		if (typeof callback.filter != 'function')
+		{
+			callback.filter = function(key, value){
+				return 'continue';	
+			};
+		}
+
+		var request = store.transaction.openCursor(keyRangeForCursor);
+		request.onerror = function(event)
+		{
+			var error = {
+				errorCode: event.target.error.code, 
+				errorName: event.target.error.name, 
+				errorMessage: event.target.error.message
+			};
+			if (typeof callback.error == 'function')
+			{
+				callback.error(error);
+			}
+			result.reject(error);
+			return result;
+		};
+		
+		var rows = [];
+		request.onsuccess = function(event)
+		{
+			var cursor = event.target.result;
+			if (cursor)
+			{
+				var filterResult = 'continue';
+				if (typeof callback.filter == 'function')
+				{
+					filterResult = callback.filter(cursor.key, cursor.value);
+				}
+				
+				if (filterResult == 'break')
+				{
+					if (typeof callback.success == 'function')
+					{
+						callback.callback(rows);
+					}
+					
+					result.fulfill(rows);
+					return result;
+				}
+				
+				if (filterResult != 'skip')
+				{
+					rows.push({key: cursor.key, value: cursor.value});
+				}
+				
+				if (filterResult == 'stop')
+				{
+					if (typeof callback.success == 'function')
+					{
+						callback.callback(rows);
+					}
+					
+					result.fulfill(rows);
+					return result;
+				}
+				else 
+				{
+					cursor['continue']();
+				}
+			}
+			else 
+			{
+				if (typeof callback.success == 'function')
+				{
+					callback.callback(rows);
+				}
+				
+				result.fulfill(rows);
+				return result;
+			}
+		};
+		
+		return result;
+	};
+	
+	BX.indexedDB.count = function (dataBase, storeName, callback)
+	{
+		callback = callback || {};
+		var result = new BX.Promise();
+	
+		var store = BX.indexedDB.getObjectStore(dataBase, storeName);
+		if (store.error)
+		{
+			if (typeof callback.error == 'function')
+			{
+				callback.error(store.error);
+			}
+			result.reject(store.error);
+			return result;
+		}
+		
+		var request = store.transaction.count();
+		request.onerror = function(event)
+		{
+			var error = {
+				errorCode: event.target.error.code, 
+				errorName: event.target.error.name, 
+				errorMessage: event.target.error.message
+			};
+			if (typeof callback.error == 'function')
+			{
+				callback.error(error);
+			}
+			result.reject(error);
+		};
+
+		request.onsuccess = function(event)
+		{
+			if (typeof callback.success == 'function')
+			{
+				callback.success(event.target.result);
+			}
+			
+			result.fulfill(event.target.result);
+		};
+		
+		return result;
+	};
+	
+	BX.indexedDB.clearObjectStore = function (dataBase, storeName, callback)
+	{
+		callback = callback || {};
+		var result = new BX.Promise();
+		
+		var store = BX.indexedDB.getObjectStore(dataBase, storeName, 'readwrite');
+		if (store.error)
+		{
+			if (typeof callback.error == 'function')
+			{
+				callback.error(store.error);
+			}
+			result.reject(store.error);
+			return result;
+		}
+		
+		try
+		{
+			var request = store.transaction.clear();
+		}
+		catch(err)
+		{
+			var error = {
+				errorCode: err.code, 
+				errorName: err.name, 
+				errorMessage: err.message
+			};
+			if (typeof callback.error == 'function')
+			{
+				callback.error(error);
+			}
+			result.reject(error);
+			return result;
+		}
+		
+		request.onerror = function(event)
+		{
+			var error = {
+				errorCode: event.target.error.code, 
+				errorName: event.target.error.name, 
+				errorMessage: event.target.error.message
+			};
+			if (typeof callback.error == 'function')
+			{
+				callback.error(error);
+			}
+			result.reject(error);
+		};
+
+		request.onsuccess = function()
+		{
+			if (typeof callback.success == 'function')
+			{
+				callback.success(true);
+			}
+			
+			result.fulfill(true);
+		};
+		
+		return result;
+	};
+	
+	BX.indexedDB.deleteDatabase = function (dataBase, openedDataBase, callback)
+	{
+		callback = callback || {};
+		var result = new BX.Promise();
+		
 		var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-		indexedDB.deleteDatabase(databaseName);
+		
+		if (openedDataBase !== null)
+		{
+			var checkResult = BX.indexedDB.checkDatabaseObject(openedDataBase);
+			if (checkResult.result)
+			{
+				openedDataBase.close();
+				openedDataBase = null;
+			}
+			else 
+			{
+				var error = {
+					errorCode: 'bxDataBaseInvalidFormat', 
+					errorName: 'bxDataBaseInvalidFormat', 
+					errorMessage: 'The given "openedDataBase" object is invalid format for IndexedDB. You need specify link to opened DB for correct delete.'
+				};
+				if (typeof callback.error == 'function')
+				{
+					callback.error(error);
+				}
+				result.reject(error);
+				return result;
+			}
+		}
+		
+		var request = indexedDB.deleteDatabase(dataBase);
+		
+		request.onerror = function(event)
+		{
+			var error = {
+				errorCode: event.target.error.code, 
+				errorName: event.target.error.name, 
+				errorMessage: event.target.error.message
+			};
+			if (typeof callback.error == 'function')
+			{
+				callback.error(error);
+			}
+			result.reject(error);
+		};
+
+		request.onsuccess = function()
+		{
+			if (typeof callback.success == 'function')
+			{
+				callback.success(true);
+			}
+			
+			result.fulfill(true);
+		};
+		
+		return result;
 	}
 
 })(window);

@@ -868,7 +868,7 @@ while($Elem = $db_DirContent->NavNext(true, "f_"))
 			$arActions[] = array(
 				"ICON" => "rename",
 				"TEXT" => GetMessage("FILEMAN_RENAME_SAVE"),
-				"ACTION" => 'setCheckbox(\''.addslashes($f_NAME).'\'); if('.$lAdmin->table_id.'.IsActionEnabled(\'edit\')){document.forms[\'form_'.$lAdmin->table_id.'\'].elements[\'action_button\'].value=\'edit\'; '.$lAdmin->ActionPost().'}else{document.location.href=\'fileman_rename.php?'.$addUrl.'&path='.urlencode($path).'&site='.$site.'&files[]='.CFileman::GetFileName($arPath[1]).'\'}'
+				"ACTION" => 'setCheckbox(\''.CUtil::JSEscape($f_NAME).'\'); if('.$lAdmin->table_id.'.IsActionEnabled(\'edit\')){document.forms[\'form_'.$lAdmin->table_id.'\'].elements[\'action_button\'].value=\'edit\'; '.$lAdmin->ActionPost().'}else{document.location.href=\'fileman_rename.php?'.$addUrl.'&path='.urlencode($path).'&site='.$site.'&files[]='.CFileman::GetFileName($arPath[1]).'\'}'
 			);
 		}
 
@@ -1159,7 +1159,7 @@ ob_start();
 <table cellspacing="0">
 <tr>
 	<td style="padding-left:5px;"><?= GetMessage("FILEMAN_FAST_PATH")?></td>
-	<td style="padding-left:5px;"><input class="bx-quick-path" type="text" name="quick_path" id="quick_path" size="50" value="<?= $path?>" /></td>
+	<td style="padding-left:5px;"><input class="bx-quick-path" type="text" name="quick_path" id="quick_path" size="50" value="<?= htmlspecialcharsbx($path)?>" /></td>
 	<td style="padding-left:3px; padding-right:3px;"><input class="form-button" type="button" value="OK" title="<?= GetMessage("FILEMAN_FAST_PATH_BUTTON")?>" OnClick="<?= $sTableID ?>.GetAdminList('fileman_admin.php?<?=$addUrl?>&site=<?= urlencode($site) ?>&path='+jsUtils.urlencode(BX('quick_path').value)+'&show_perms_for=<?= IntVal($show_perms_for) ?>&check_for_file=Y', GALCallBack)"></td>
 </tr>
 </table>

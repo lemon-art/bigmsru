@@ -32,14 +32,11 @@ class CBackup
 		{
 			$arBucket = array();
 			$rsData = CCloudStorageBucket::GetList(
-				array("SORT"=>"DESC", "ID"=>"ASC")
-	//			array('ACTIVE'=>'Y','READ_ONLY'=>'N')
+				array("SORT"=>"DESC", "ID"=>"ASC"),
+				array_merge(array('ACTIVE'=>'Y','READ_ONLY'=>'N'), $arFilter)
 			);
 			while($f = $rsData->Fetch())
 			{
-				if ($f['ACTIVE'] != 'Y' || ($f['READ_ONLY'] == 'Y' && $arFilter['READ_ONLY'] == 'N'))
-					continue; // sql filter currently is not supported TODO: remove in future
-
 				$arBucket[] = $f;
 			}
 			return count($arBucket) ? $arBucket : false;
@@ -375,8 +372,8 @@ class CBackup
 						LIMIT ".($arTable["LAST_ID"] ? $arTable["LAST_ID"].", ": "").$LIMIT;
 				}
 
-				$rsSource = $DB->Query($strSelect, false, '', array("fixed_connection"=>true));
-				$cnt = $rsSource->SelectedRowsCount();
+				if (!$rsSource = self::QueryUnbuffered($strSelect))
+					RaiseErrorAndDie('SQL Query Error');
 				while($arSource = $rsSource->Fetch())
 				{
 					if(!$strInsert)
@@ -415,8 +412,13 @@ class CBackup
 					}
 
 					if (!haveTime())
+					{
+						self::FreeResult();
 						return $strInsert ? $B->file_put_contents_ex($strDumpFile, $strInsert.";\n") : true;
+					}
 				}
+				$cnt = $rsSource->SelectedRowsCount();
+				self::FreeResult();
 			}
 
 			if($strInsert && !$B->file_put_contents_ex($strDumpFile, $strInsert.";\n"))
@@ -431,6 +433,27 @@ class CBackup
 
 		$arState['end'] = true;
 		return true;
+	}
+
+	public function QueryUnbuffered($q)
+	{
+		global $DB;
+		if (defined('BX_USE_MYSQLI') && BX_USE_MYSQLI === true)
+			$DB->result = mysqli_query($DB->db_Conn, $q, MYSQLI_USE_RESULT);
+		else
+			$DB->result = mysql_unbuffered_query($q, $DB->db_Conn);
+		$rsSource = new CDBResult($DB->result);
+		$rsSource->DB = $DB;
+		return $rsSource;
+	}
+
+	public function FreeResult()
+	{
+		global $DB;
+		if (defined('BX_USE_MYSQLI') && BX_USE_MYSQLI === true)
+			mysqli_free_result($DB->result);
+		else
+			mysql_free_result($DB->result);
 	}
 
 	public function file_put_contents_ex($strDumpFile, $str)
@@ -734,14 +757,14 @@ class CPasswordStorage
 
 	function Init()
 	{
-		if (!function_exists('mcrypt_encrypt'))
+		if (!function_exists('mcrypt_encrypt') && !function_exists('openssl_encrypt'))
 			return false;
 		return true;
 	}
 
 	function getEncryptKey()
 	{
-		static $LICENSE_KEY;
+		static $key;
 
 		if (!$LICENSE_KEY)
 		{
@@ -750,7 +773,13 @@ class CPasswordStorage
 			if (!$LICENSE_KEY)
 				$LICENSE_KEY = 'DEMO';
 		}
-		return $LICENSE_KEY;
+		$key = $LICENSE_KEY;
+		$l = CTar::strlen($key);
+		if ($l > 56)
+			$key = CTar::substr($key, 0, 56);
+		elseif (CTar::strlen($key) < 16)
+			$key = str_repeat($key, ceil(16/$l));
+		return $key;
 	}
 
 	static function Set($strName, $strVal)
@@ -758,7 +787,9 @@ class CPasswordStorage
 		if (!self::Init())
 			return false;
 
-		$temporary_cache = $strVal ? mcrypt_encrypt(MCRYPT_BLOWFISH, self::getEncryptKey(), self::SIGN.$strVal, MCRYPT_MODE_ECB, pack("a8",self::getEncryptKey())) : '';
+		$temporary_cache = '';
+		if ($strVal)
+			$temporary_cache = CTar::encrypt(self::SIGN.$strVal, self::getEncryptKey());
 		return COption::SetOptionString('main', $strName, base64_encode($temporary_cache));
 	}
 
@@ -768,9 +799,9 @@ class CPasswordStorage
 			return false;
 
 		$temporary_cache = base64_decode(COption::GetOptionString('main', $strName, ''));
-		$pass = mcrypt_decrypt(MCRYPT_BLOWFISH, self::getEncryptKey(), $temporary_cache, MCRYPT_MODE_ECB, pack("a8",self::getEncryptKey()));
+		$pass = CTar::decrypt($temporary_cache, self::getEncryptKey());
 		if (CTar::substr($pass, 0, 6) == self::SIGN)
-			return str_replace("\x0","",CTar::substr($pass, 6));
+			return CTar::substr(preg_replace('#\x00+$#', '', $pass), 6);
 		return false;
 	}
 }
@@ -827,13 +858,14 @@ class CTar
 					return $this->res;
 				}
 
-				if (($version = trim($data['version'])) != '1.0')
+				$version = trim($data['version']);
+				if (version_compare($version, '1.2', '>'))
 					return $this->Error('Unsupported archive version: '.$version, 'ENC_VER');
 
 				$key = $this->getEncryptKey();
 				$this->BlockHeader = $this->Block = 1;
 
-				if (!$key || self::substr($str, 0, 256) != mcrypt_decrypt(MCRYPT_BLOWFISH, $key, $data['enc'], MCRYPT_MODE_ECB, pack("a8",$key)))
+				if (!$key || self::substr($str, 0, 256) != self::decrypt($data['enc'], $key))
 					return $this->Error('Invalid encryption key', 'ENC_KEY');
 			}
 		}
@@ -848,7 +880,7 @@ class CTar
 			if ($str === '' && $this->openNext($bIgnoreOpenNextError))
 				$str = $this->gzip ? gzread($this->res, $this->BufferSize) : fread($this->res, $this->BufferSize);
 			if ($str !== '' && $key = $this->getEncryptKey())
-				$str = mcrypt_decrypt(MCRYPT_BLOWFISH, $key, $str, MCRYPT_MODE_ECB, pack("a8",$key));
+				$str = self::decrypt($str, $key);
 			$this->Buffer = $str;
 		}
 
@@ -1078,7 +1110,7 @@ class CTar
 		return false;
 	}
 
-	function getLastNum($file)
+	public static function getLastNum($file)
 	{
 		$file = self::getFirstName($file);
 
@@ -1131,8 +1163,9 @@ class CTar
 		$res = $this->open($file, 'a');
 		if ($res && $this->Block == 0 && ($key = $this->getEncryptKey())) // запишем служебный заголовок для зашифрованного архива
 		{
-			$enc = pack("a100a90a10a56",md5(uniqid(rand(), true)), self::BX_SIGNATURE, "1.0", "");
-			$enc .= mcrypt_encrypt(MCRYPT_BLOWFISH, $key, $enc, MCRYPT_MODE_ECB, pack("a8",$key));
+			$ver = function_exists('mcrypt_encrypt') ? '1.1' : '1.2';
+			$enc = pack("a100a90a10a56",md5(uniqid(rand(), true)), self::BX_SIGNATURE, $ver, "");
+			$enc .= $this->encrypt($enc, $key);
 			if (!($this->gzip ? gzwrite($this->res, $enc) : fwrite($this->res, $enc)))
 				return $this->Error('Error writing to file');
 			$this->Block = 1;
@@ -1204,7 +1237,7 @@ class CTar
 		$this->Buffer = '';
 
 		if ($key = $this->getEncryptKey())
-			$str = mcrypt_encrypt(MCRYPT_BLOWFISH, $key, $str, MCRYPT_MODE_ECB, pack("a8",$key));
+			$str = $this->encrypt($str, $key);
 
 		return $this->gzip ? gzwrite($this->res, $str) : fwrite($this->res, $str);
 	}
@@ -1296,7 +1329,7 @@ class CTar
 	##############
 
 	##############
-	# BASE 
+	# BASE
 	# {
 	function open($file, $mode='r')
 	{
@@ -1306,8 +1339,8 @@ class CTar
 		if (is_dir($file))
 			return $this->Error('File is directory: '.$file);
 
-		if ($this->EncryptKey && !function_exists('mcrypt_encrypt'))
-			return $this->Error('Function &quot;mcrypt_encrypt&quot; is not available');
+		if ($this->EncryptKey && !function_exists('mcrypt_encrypt') && !function_exists('openssl_encrypt'))
+			return $this->Error('Function mcrypt_encrypt/openssl_encrypt is not available');
 		
 		if ($mode == 'r' && !file_exists($file))
 			return $this->Error('File does not exist: '.$file);
@@ -1363,7 +1396,7 @@ class CTar
 		clearstatcache();
 	}
 
-	function getNextName($file = '')
+	public function getNextName($file = '')
 	{
 		if (!$file)
 			$file = $this->file;
@@ -1521,9 +1554,28 @@ class CTar
 		return md5('BITRIXCLOUDSERVICE'.$key);
 	}
 
-	function getFirstName($file)
+	public static function getFirstName($file)
 	{
 		return preg_replace('#\.[0-9]+$#','',$file);
+	}
+
+	public static function encrypt($data, $md5_key)
+	{
+		if ($m = self::strlen($data)%8)
+			$data .= str_repeat("\x00",  8 - $m);
+		if (function_exists('mcrypt_encrypt'))
+			return mcrypt_encrypt(MCRYPT_BLOWFISH, $md5_key, $data, MCRYPT_MODE_ECB);
+		else
+			return openssl_encrypt($data, 'BF-ECB', $md5_key, OPENSSL_RAW_DATA | OPENSSL_NO_PADDING);
+	}
+
+	public static function decrypt($data, $md5_key)
+	{
+		if (function_exists('mcrypt_encrypt'))
+			$val = mcrypt_decrypt(MCRYPT_BLOWFISH, $md5_key, $data, MCRYPT_MODE_ECB);
+		else
+			$val = openssl_decrypt($data, 'BF-ECB', $md5_key, OPENSSL_RAW_DATA | OPENSSL_NO_PADDING);
+		return $val;
 	}
 
 	# }

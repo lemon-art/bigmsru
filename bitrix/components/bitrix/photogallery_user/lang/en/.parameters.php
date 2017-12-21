@@ -141,4 +141,5 @@ $MESS["F_SHOW_LINK_TO_FORUM"] = "Show forum link (used with legacy templates onl
 $MESS["P_UPLOADER_TYPE_FORM_SIMPLE"] = "HTML5 uploader";
 $MESS["P_UPLOADER_TYPE_APPLET"] = "HTML5 or Java/ActiveX uploader";
 $MESS["P_UPLOADER_TYPE_FLASH"] = "HTML5 or Flash uploader";
+$MESS["P_SECTION_LIST_THUMBS_SIZE"] = "Preview image size in Albums list (px)";
 ?>

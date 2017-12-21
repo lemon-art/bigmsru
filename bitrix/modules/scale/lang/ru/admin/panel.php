@@ -39,7 +39,7 @@ $MESS ['SCALE_PANEL_JS_ACT_SERVER_WILL_AVAILABLE'] = "Сервер будет д
 $MESS ['SCALE_PANEL_JS_ACT_HOUR'] = "час";
 $MESS ['SCALE_PANEL_JS_ACT_MIN'] = "мин";
 $MESS ['SCALE_PANEL_JS_ACT_SEC'] = "сек";
-$MESS ['SCALE_PANEL_NOTIFY_CREATE_SRV'] = "Для того, что бы начать использовать модуль \"Управление масштабированием\" Вам необходимо добавить сервер.";
+$MESS ['SCALE_PANEL_NOTIFY_CREATE_SRV'] = "Для того, чтобы начать использовать модуль \"Управление масштабированием\" Вам необходимо добавить сервер.";
 $MESS ['SCALE_PANEL_JS_EXTRA_DB_CONFIRM'] = "Существуют базы данных не связанные с текущим сайтом.<br>Вы уверены, что хотите продолжить?";
 $MESS ['SCALE_PANEL_JS_EXTRA_DB_CONFIRM_TITLE'] = "Подтверждение";
 $MESS ['SCALE_PANEL_JS_WFA_TITLE'] = "Выполняется действие...";
@@ -61,3 +61,5 @@ $MESS ['SCALE_PANEL_JS_BX_ENV_NEED_UPDATE2'] = "необходимо обнов�
 $MESS ['SCALE_PANEL_JS_PROVIDER_CHOOSE'] = "Выбор провайдера VPS";
 $MESS ['SCALE_PANEL_JS_PROVIDER_ORDER_SUCCESS'] = "Успешно отправлен запрос № ##ORDER_ID## к провайдеру ##PROVIDER_ID##";
 $MESS ['SCALE_PANEL_JS_PROVIDER_ORDER_SUCCESS_TITLE'] = "Отправка запроса";
+$MESS ['SCALE_PANEL_BVM_TOO_OLD_DOC'] = "<a href=\"https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=37&LESSON_ID=8825&LESSON_PATH=3908.8809.8817.8825\">Документация по обновлению виртуальной машины</a>";
+$MESS ['SCALE_PANEL_JS_LOAD_FILE'] = "Загрузить";

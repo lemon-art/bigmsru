@@ -287,27 +287,6 @@ BX.admin = {
 	{
 		var to = BX.admin.__border_menu_timeout;
 		return to;
-		if (BX.admin.__borders_last_comp_pos.top)
-		{
-			var pos = {top: parseInt(opener.Get().style.top), left: parseInt(opener.Get().style.left)}
-			var bpos = BX.admin.__borders_last_comp_pos;
-
-			if (pos.top <= bpos.bottom && pos.top >= bpos.top && pos.left <= bpos.right && pos.left >= bpos.left)
-			{
-				return to;
-			}
-
-			var dist = {
-				top: Math.min(Math.abs(BX.admin.__borders_last_comp_pos.top - pos.top), Math.abs(BX.admin.__borders_last_comp_pos.bottom - pos.top)),
-				left: Math.min(Math.abs(BX.admin.__borders_last_comp_pos.top - pos.left), Math.abs(BX.admin.__borders_last_comp_pos.bottom - pos.left))
-			}
-
-			dist = Math.sqrt(dist.top*dist.top + dist.left*dist.left);
-
-			to += 2*dist;
-			return to;
-		}
-
 	}
 };
 
@@ -954,7 +933,7 @@ BX.admin.moreButton = {
 			return;
 		}
 
-		this.buttons = BX.findChildren(this.buttonContainer, { props : { tagName : "span"} });
+		this.buttons = BX.findChildren(this.buttonContainer, { tagName : "span" });
 
 		for (var i = 0, length = BX.admin.panel.buttons.length; i < length; i++)
 		{

@@ -1,5 +1,8 @@
 <?if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 /** @var array $arParams */
+/** @var array $arResult */
+/** @var array $arUrls */
+/** @var array $arHeaders */
 use Bitrix\Sale\DiscountCouponsManager;
 
 if (!empty($arResult["ERROR_MESSAGE"]))
@@ -21,9 +24,6 @@ if ($normalCount > 0):
 					<td class="margin"></td>
 					<?
 					foreach ($arResult["GRID"]["HEADERS"] as $id => $arHeader):
-						$arHeader["name"] = (isset($arHeader["name"]) ? (string)$arHeader["name"] : '');
-						if ($arHeader["name"] == '')
-							$arHeader["name"] = GetMessage("SALE_".$arHeader["id"]);
 						$arHeaders[] = $arHeader["id"];
 
 						// remember which values should be shown not in the separate columns, but inside other columns
@@ -83,16 +83,23 @@ if ($normalCount > 0):
 
 			<tbody>
 				<?
+				$skipHeaders = array('PROPS', 'DELAY', 'DELETE', 'TYPE');
+
 				foreach ($arResult["GRID"]["ROWS"] as $k => $arItem):
 
 					if ($arItem["DELAY"] == "N" && $arItem["CAN_BUY"] == "Y"):
-				?>
-					<tr id="<?=$arItem["ID"]?>">
+					?>
+					<tr id="<?=$arItem["ID"]?>"
+						 data-item-name="<?=$arItem["NAME"]?>"
+						 data-item-brand="<?=$arItem[$arParams['BRAND_PROPERTY']."_VALUE"]?>"
+						 data-item-price="<?=$arItem["PRICE"]?>"
+						 data-item-currency="<?=$arItem["CURRENCY"]?>"
+					>
 						<td class="margin"></td>
 						<?
 						foreach ($arResult["GRID"]["HEADERS"] as $id => $arHeader):
 
-							if (in_array($arHeader["id"], array("PROPS", "DELAY", "DELETE", "TYPE"))) // some values are not shown in the columns in this template
+							if (in_array($arHeader["id"], $skipHeaders)) // some values are not shown in the columns in this template
 								continue;
 
 							if ($arHeader["name"] == '')
@@ -110,9 +117,8 @@ if ($normalCount > 0):
 										else:
 											$url = $templateFolder."/images/no_photo.png";
 										endif;
-										?>
 
-										<?if (strlen($arItem["DETAIL_PAGE_URL"]) > 0):?><a href="<?=$arItem["DETAIL_PAGE_URL"] ?>"><?endif;?>
+										if (strlen($arItem["DETAIL_PAGE_URL"]) > 0):?><a href="<?=$arItem["DETAIL_PAGE_URL"] ?>"><?endif;?>
 											<div class="bx_ordercart_photo" style="background-image:url('<?=$url?>')"></div>
 										<?if (strlen($arItem["DETAIL_PAGE_URL"]) > 0):?></a><?endif;?>
 									</div>
@@ -152,69 +158,95 @@ if ($normalCount > 0):
 														continue;
 												}
 
-												echo $val["NAME"].":&nbsp;<span>".$val["VALUE"]."<span><br/>";
+												echo htmlspecialcharsbx($val["NAME"]).":&nbsp;<span>".$val["VALUE"]."</span><br/>";
 											endforeach;
 										endif;
 										?>
 									</div>
 									<?
 									if (is_array($arItem["SKU_DATA"]) && !empty($arItem["SKU_DATA"])):
-										foreach ($arItem["SKU_DATA"] as $propId => $arProp):
+										$propsMap = array();
+										foreach ($arItem["PROPS"] as $propValue)
+										{
+											if (empty($propValue) || !is_array($propValue))
+												continue;
+											$propsMap[$propValue['CODE']] = (isset($propValue['~VALUE']) ? $propValue['~VALUE'] : $propValue['VALUE']);
+										}
+										unset($propValue);
 
+										foreach ($arItem["SKU_DATA"] as $propId => $arProp):
+											$selectedIndex = 0;
 											// if property contains images or values
 											$isImgProperty = false;
 											if (!empty($arProp["VALUES"]) && is_array($arProp["VALUES"]))
 											{
+												$counter = 0;
 												foreach ($arProp["VALUES"] as $id => $arVal)
 												{
+													$counter++;
+													if (isset($propsMap[$arProp['CODE']]))
+													{
+														if ($propsMap[$arProp['CODE']] == $arVal['NAME'] || $propsMap[$arProp['CODE']] == $arVal['XML_ID'])
+															$selectedIndex = $counter;
+													}
 													if (!empty($arVal["PICT"]) && is_array($arVal["PICT"])
 														&& !empty($arVal["PICT"]['SRC']))
 													{
 														$isImgProperty = true;
-														break;
 													}
 												}
+												unset($counter);
 											}
 											$countValues = count($arProp["VALUES"]);
-											$full = ($countValues > 5) ? "full" : "";
+											if ($countValues > 5)
+											{
+												$full = "full";
+												$fullWidth = ($countValues*20).'%';
+												$itemWidth = (100/$countValues).'%';
+											}
+											else
+											{
+												$full = "";
+												$fullWidth = '100%';
+												$itemWidth = '20%';
+											}
+
+											$marginLeft = 0;
+											if ($countValues > 5 && $selectedIndex > 5)
+												$marginLeft = ((5 - $selectedIndex)*20).'%';
 
 											if ($isImgProperty): // iblock element relation property
 											?>
 												<div class="bx_item_detail_scu_small_noadaptive <?=$full?>">
-
 													<span class="bx_item_section_name_gray">
-														<?=$arProp["NAME"]?>:
+														<?=htmlspecialcharsbx($arProp["NAME"])?>:
 													</span>
-
 													<div class="bx_scu_scroller_container">
 
 														<div class="bx_scu">
 															<ul id="prop_<?=$arProp["CODE"]?>_<?=$arItem["ID"]?>"
-																style="width: 200%; margin-left:0;"
+																style="width: <?=$fullWidth; ?>; margin-left: <?=$marginLeft; ?>"
 																class="sku_prop_list"
 																>
 																<?
+																$counter = 0;
 																foreach ($arProp["VALUES"] as $valueId => $arSkuValue):
-
-																	$selected = "";
-																	foreach ($arItem["PROPS"] as $arItemProp):
-																		if ($arItemProp["CODE"] == $arItem["SKU_DATA"][$propId]["CODE"])
-																		{
-																			if ($arItemProp["VALUE"] == $arSkuValue["NAME"] || $arItemProp["VALUE"] == $arSkuValue["XML_ID"])
-																				$selected = " bx_active";
-																		}
-																	endforeach;
+																	$counter++;
+																	$selected = ($selectedIndex == $counter ? ' bx_active' : '');
 																?>
-																	<li style="width:10%;"
+																	<li style="width: <?=$itemWidth; ?>; padding-top: <?=$itemWidth; ?>;"
 																		class="sku_prop<?=$selected?>"
+																		data-sku-selector="Y"
 																		data-value-id="<?=$arSkuValue["XML_ID"]?>"
+																		data-sku-name="<?=htmlspecialcharsbx($arSkuValue["NAME"]); ?>"
 																		data-element="<?=$arItem["ID"]?>"
 																		data-property="<?=$arProp["CODE"]?>"
-																		>
+																	>
 																		<a href="javascript:void(0)" class="cnt"><span class="cnt_item" style="background-image:url(<?=$arSkuValue["PICT"]["SRC"];?>)"></span></a>
 																	</li>
 																<?
 																endforeach;
+																unset($counter);
 																?>
 															</ul>
 														</div>
@@ -228,39 +260,39 @@ if ($normalCount > 0):
 											else:
 											?>
 												<div class="bx_item_detail_size_small_noadaptive <?=$full?>">
-
 													<span class="bx_item_section_name_gray">
-														<?=$arProp["NAME"]?>:
+														<?=htmlspecialcharsbx($arProp["NAME"])?>:
 													</span>
-
 													<div class="bx_size_scroller_container">
 														<div class="bx_size">
 															<ul id="prop_<?=$arProp["CODE"]?>_<?=$arItem["ID"]?>"
-																style="width: 200%; margin-left:0;"
+																style="width: <?=$fullWidth; ?>; margin-left: <?=$marginLeft; ?>;"
 																class="sku_prop_list"
 																>
 																<?
-																foreach ($arProp["VALUES"] as $valueId => $arSkuValue):
-
-																	$selected = "";
-																	foreach ($arItem["PROPS"] as $arItemProp):
-																		if ($arItemProp["CODE"] == $arItem["SKU_DATA"][$propId]["CODE"])
-																		{
-																			if ($arItemProp["VALUE"] == $arSkuValue["NAME"])
-																				$selected = " bx_active";
-																		}
-																	endforeach;
-																?>
-																	<li style="width:10%;"
-																		class="sku_prop<?=$selected?>"
-																		data-value-id="<?=($arProp['TYPE'] == 'S' && $arProp['USER_TYPE'] == 'directory' ? $arSkuValue['XML_ID'] : $arSkuValue['NAME']); ?>"
-																		data-element="<?=$arItem["ID"]?>"
-																		data-property="<?=$arProp["CODE"]?>"
+																if (!empty($arProp["VALUES"]))
+																{
+																	$counter = 0;
+																	foreach ($arProp["VALUES"] as $valueId => $arSkuValue):
+																		$counter++;
+																		$selected = ($selectedIndex == $counter ? ' bx_active' : '');
+																		$skuValueName = htmlspecialcharsbx($arSkuValue['NAME']);
+																	?>
+																		<li style="width: <?=$itemWidth; ?>;"
+																			class="sku_prop<?=$selected?>"
+																			data-sku-selector="Y"
+																			data-value-id="<?=($arProp['TYPE'] == 'S' && $arProp['USER_TYPE'] == 'directory' ? $arSkuValue['XML_ID'] : $skuValueName); ?>"
+																			data-sku-name="<?=$skuValueName; ?>"
+																			data-element="<?=$arItem["ID"]?>"
+																			data-property="<?=$arProp["CODE"]?>"
 																		>
-																		<a href="javascript:void(0)" class="cnt"><?=$arSkuValue["NAME"]?></a>
-																	</li>
-																<?
-																endforeach;
+																			<a href="javascript:void(0)" class="cnt"><?=$skuValueName; ?></a>
+																		</li>
+																	<?
+																		unset($skuValueName);
+																	endforeach;
+																	unset($counter);
+																}
 																?>
 															</ul>
 														</div>
@@ -286,7 +318,6 @@ if ($normalCount > 0):
 												<td>
 													<?
 													$ratio = isset($arItem["MEASURE_RATIO"]) ? $arItem["MEASURE_RATIO"] : 0;
-													$max = isset($arItem["AVAILABLE_QUANTITY"]) ? "max=\"".$arItem["AVAILABLE_QUANTITY"]."\"" : "";
 													$useFloatQuantity = ($arParams["QUANTITY_FLOAT"] == "Y") ? true : false;
 													$useFloatQuantityJS = ($useFloatQuantity ? "true" : "false");
 													?>
@@ -295,11 +326,7 @@ if ($normalCount > 0):
 														size="3"
 														id="QUANTITY_INPUT_<?=$arItem["ID"]?>"
 														name="QUANTITY_INPUT_<?=$arItem["ID"]?>"
-														size="2"
 														maxlength="18"
-														min="0"
-														<?=$max?>
-														step="<?=$ratio?>"
 														style="max-width: 50px"
 														value="<?=$arItem["QUANTITY"]?>"
 														onchange="updateQuantity('QUANTITY_INPUT_<?=$arItem["ID"]?>', '<?=$arItem["ID"]?>', <?=$ratio?>, <?=$useFloatQuantityJS?>)"
@@ -326,7 +353,7 @@ if ($normalCount > 0):
 												if (isset($arItem["MEASURE_TEXT"]))
 												{
 													?>
-														<td style="text-align: left"><?=$arItem["MEASURE_TEXT"]?></td>
+														<td style="text-align: left"><?=htmlspecialcharsbx($arItem["MEASURE_TEXT"])?></td>
 													<?
 												}
 												?>
@@ -397,9 +424,13 @@ if ($normalCount > 0):
 							<td class="control">
 								<?
 								if ($bDeleteColumn):
-								?>
-									<a href="<?=str_replace("#ID#", $arItem["ID"], $arUrls["delete"])?>"><?=GetMessage("SALE_DELETE")?></a><br />
-								<?
+									?>
+									<a href="<?=str_replace("#ID#", $arItem["ID"], $arUrls["delete"])?>"
+										onclick="return deleteProductRow(this)">
+										<?=GetMessage("SALE_DELETE")?>
+									</a>
+									<br />
+									<?
 								endif;
 								if ($bDelayColumn):
 								?>
@@ -420,11 +451,10 @@ if ($normalCount > 0):
 			</tbody>
 		</table>
 	</div>
-	<input type="hidden" id="column_headers" value="<?=CUtil::JSEscape(implode($arHeaders, ","))?>" />
-	<input type="hidden" id="offers_props" value="<?=CUtil::JSEscape(implode($arParams["OFFERS_PROPS"], ","))?>" />
-	<input type="hidden" id="action_var" value="<?=CUtil::JSEscape($arParams["ACTION_VARIABLE"])?>" />
-	<input type="hidden" id="quantity_float" value="<?=$arParams["QUANTITY_FLOAT"]?>" />
-	<input type="hidden" id="count_discount_4_all_quantity" value="<?=($arParams["COUNT_DISCOUNT_4_ALL_QUANTITY"] == "Y") ? "Y" : "N"?>" />
+	<input type="hidden" id="column_headers" value="<?=htmlspecialcharsbx(implode($arHeaders, ","))?>" />
+	<input type="hidden" id="offers_props" value="<?=htmlspecialcharsbx(implode($arParams["OFFERS_PROPS"], ","))?>" />
+	<input type="hidden" id="action_var" value="<?=htmlspecialcharsbx($arParams["ACTION_VARIABLE"])?>" />
+	<input type="hidden" id="quantity_float" value="<?=($arParams["QUANTITY_FLOAT"] == "Y") ? "Y" : "N"?>" />
 	<input type="hidden" id="price_vat_show_value" value="<?=($arParams["PRICE_VAT_SHOW_VALUE"] == "Y") ? "Y" : "N"?>" />
 	<input type="hidden" id="hide_coupon" value="<?=($arParams["HIDE_COUPON"] == "Y") ? "Y" : "N"?>" />
 	<input type="hidden" id="use_prepayment" value="<?=($arParams["USE_PREPAYMENT"] == "Y") ? "Y" : "N"?>" />
@@ -485,14 +515,15 @@ if ($normalCount > 0):
 						<td><?echo GetMessage('SALE_VAT_EXCLUDED')?></td>
 						<td id="allSum_wVAT_FORMATED"><?=$arResult["allSum_wVAT_FORMATED"]?></td>
 					</tr>
-					<?if (floatval($arResult["DISCOUNT_PRICE_ALL"]) > 0):?>
-						<tr>
+					<?
+					$showTotalPrice = (float)$arResult["DISCOUNT_PRICE_ALL"] > 0;
+					?>
+						<tr style="display: <?=($showTotalPrice ? 'table-row' : 'none'); ?>;">
 							<td class="custom_t1"></td>
 							<td class="custom_t2" style="text-decoration:line-through; color:#828282;" id="PRICE_WITHOUT_DISCOUNT">
-								<?=$arResult["PRICE_WITHOUT_DISCOUNT"]?>
+								<?=($showTotalPrice ? $arResult["PRICE_WITHOUT_DISCOUNT"] : ''); ?>
 							</td>
 						</tr>
-					<?endif;?>
 					<?
 					if (floatval($arResult['allVATSum']) > 0):
 						?>
@@ -548,4 +579,3 @@ else:
 </div>
 <?
 endif;
-?>

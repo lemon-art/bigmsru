@@ -273,7 +273,7 @@ final class LocationTable extends Tree
 	{
 		$primary = Assert::expectIntegerPositive($primary, '$primary');
 		$resetLegacy = !isset($additional['RESET_LEGACY']) || $additional['RESET_LEGACY'] !== false;
-		$deleteSubtree = isset($additional['DELETE_SUBTREE']) && $additional['DELETE_SUBTREE'] == false;
+		$deleteSubtree = !isset($additional['DELETE_SUBTREE']) || $additional['DELETE_SUBTREE'] !== false;
 
 		// delete connected data of sub-nodes
 		if($deleteSubtree)

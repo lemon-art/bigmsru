@@ -680,7 +680,7 @@ $arParams = array(
 
     "RESTART" => "Y",
     "NO_WORD_LOGIC" => "Y",
-    "USE_LANGUAGE_GUESS" => "Y",
+    "USE_LANGUAGE_GUESS" => "N",
     "CHECK_DATES" => "Y",
 
     'LABEL_PROP' => $arParams['LABEL_PROP'],
@@ -737,7 +737,7 @@ Array(
 	"AJAX_MODE" => "N",
 	"RESTART" => "Y",
 	"NO_WORD_LOGIC" => "N",
-	"USE_LANGUAGE_GUESS" => "Y",
+	"USE_LANGUAGE_GUESS" => "N",
 	"CHECK_DATES" => "Y",
 	"USE_TITLE_RANK" => "Y",
 	"DEFAULT_SORT" => "rank",
@@ -789,7 +789,7 @@ Array(
 	"AJAX_MODE" => "N",
 	"RESTART" => "Y",
 	"NO_WORD_LOGIC" => "N",
-	"USE_LANGUAGE_GUESS" => "Y",
+	"USE_LANGUAGE_GUESS" => "N",
 	"CHECK_DATES" => "Y",
 	"USE_TITLE_RANK" => "Y",
 	"DEFAULT_SORT" => "rank",
@@ -833,6 +833,7 @@ array('HIDE_ICONS' => 'Y')
 		
 		//global $USER;
 		//if ($USER->IsAdmin()){
+			/*
 			if(preg_match('/[a-zA-Z]/', $_REQUEST["q"])){
 				$arResult["QUERY_USER_LANG"] = explode(" ", $_REQUEST["q"]);		
 				foreach($arResult["QUERY_USER_LANG"] as $key => $value){		
@@ -846,6 +847,7 @@ array('HIDE_ICONS' => 'Y')
 					}
 				}
 			}
+			*/
 			if(count($arResult["QUERY_USER_LANG"]) > 0){
 				$isBrand = "Y";
 			}else{
@@ -880,7 +882,7 @@ array('HIDE_ICONS' => 'Y')
 			"CONVERT_CURRENCY" => "Y",
 			"COMPONENT_TEMPLATE" => "search",
 			"ORDER" => "date",
-			"USE_LANGUAGE_GUESS" => $isBrand,
+			"USE_LANGUAGE_GUESS" => "N",
 			"PRICE_VAT_INCLUDE" => "Y",
 			"PREVIEW_TRUNCATE_LEN" => "",
 			"CURRENCY_ID" => "RUB",

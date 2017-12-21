@@ -2,7 +2,7 @@
 
 namespace Bitrix\Seo\Retargeting;
 
-class Service
+class Service implements IService
 {
 	const GROUP = 'retargeting';
 
@@ -11,6 +11,22 @@ class Service
 	const TYPE_MYCOM = 'mycom';
 	const TYPE_YANDEX = 'yandex';
 	const TYPE_GOOGLE = 'google';
+
+	/**
+	 * Get instance.
+	 *
+	 * @return static
+	 */
+	public static function getInstance()
+	{
+		static $instance = null;
+		if ($instance === null)
+		{
+			$instance = new static();
+		}
+
+		return $instance;
+	}
 
 	/**
 	 * @param string $type
@@ -27,7 +43,7 @@ class Service
 	 */
 	public static function getAudience($type)
 	{
-		return Audience::create($type);
+		return Audience::create($type)->setService(static::getInstance());
 	}
 
 	/**
@@ -36,7 +52,7 @@ class Service
 	 */
 	public static function getAccount($type)
 	{
-		return Account::create($type);
+		return Account::create($type)->setService(static::getInstance());
 	}
 
 	/**
@@ -47,6 +63,7 @@ class Service
 		return array(
 			static::TYPE_FACEBOOK,
 			static::TYPE_VKONTAKTE,
+			static::TYPE_GOOGLE,
 			static::TYPE_YANDEX
 		);
 	}
@@ -57,6 +74,6 @@ class Service
 	 */
 	public static function getAuthAdapter($type)
 	{
-		return AuthAdapter::create($type);
+		return AuthAdapter::create($type)->setService(static::getInstance());
 	}
 }

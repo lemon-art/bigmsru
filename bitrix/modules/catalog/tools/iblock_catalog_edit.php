@@ -66,7 +66,7 @@ unset($tabList);
 
 $vatList = array(0 => Loc::getMessage('BX_CAT_IBLOCK_CATALOG_MESS_NOT_SELECT'));
 $vatIterator = Catalog\VatTable::getList(array(
-	'select' => array('ID', 'NAME'),
+	'select' => array('ID', 'NAME', 'SORT'),
 	'order' => array('SORT' => 'ASC', 'ID' => 'ASC')
 ));
 while ($vat = $vatIterator->fetch())

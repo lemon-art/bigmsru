@@ -64,19 +64,33 @@ $rolesDefinitions = array(
 			"slave" => "S"
 		),
 		"ROLE_ACTIONS" => array(
-			"master" => array(),
-			"slave" => array("MYSQL_CHANGE_MASTER", "MYSQL_DEL_SLAVE"),
-			"norole" => array("MYSQL_ADD_SLAVE", "MYSQL_ADD_SLAVE_FIRST"),
+			"master" => array("MYSQL_CHANGE_PASS"),
+			"slave" => array("MYSQL_CHANGE_MASTER", "MYSQL_DEL_SLAVE", "MYSQL_CHANGE_PASS"),
+			"norole" => array("MYSQL_ADD_SLAVE", "MYSQL_ADD_SLAVE_FIRST", "MYSQL_CHANGE_PASS"),
 			"notype" => array()
+		),
+		"STATE_ACTIONS" => array(
+			"active" => array("MYSQL_STOP"),
+			"not_active" => array("MYSQL_START")
 		),
 		"GRAPH_CATEGORIES" => array("MYSQL")
 	),
 
 	"SERVER" => array(
 		"NAME" => "server",
-		"ACTIONS" => array("DEL_SERVER", "REBOOT", "UPDATE_BVM", "CHANGE_PASSWD", "CHANGE_PASSWD_BITRIX"),
+		"ACTIONS" => array("DEL_SERVER", "REBOOT", "UPDATE_BVM", "UPDATE_SYSTEM", "CHANGE_PASSWD", "CHANGE_PASSWD_BITRIX"),
 		"COLOR" => "invisible",
 		"MONITORING_CATEGORIES" => array("AVG_LOAD", "MEMORY", "HDD",  "NET", "HDDACT"),
 		"GRAPH_CATEGORIES" => array("DISC", "NETWORK", "PROCESSES", "SYSTEM")
+	),
+
+	"push" => array(
+		"NAME" => "Push",
+		"ACTIONS" => array(),
+		"COLOR" => "sky-blue",
+		"ROLE_ACTIONS" => array(
+			"norole" => array("PUSH_ADD_ROLE"),
+			"notype" => array("PUSH_DEL_ROLE")
+		)
 	)
 );

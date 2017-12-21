@@ -655,7 +655,7 @@ span.bxhtmled-top-bar-dd-active:before {
 }
 
 .bxhtmled-toolbar{ text-align: left !important;}
-.bxhtmled-area-cnt{position: absolute; top: 34px; left: -5px; z-index: 100;}
+.bxhtmled-area-cnt{position: absolute; top: 34px; left: 0; z-index: 100;}
 .bxhtmled-iframe-cnt{
 	position: absolute; top: 0; left: 0; background-color: #FFF !important;
 	overflow: auto!important;
@@ -716,7 +716,7 @@ span.bxhtmled-top-bar-dd-active:before {
 	bottom: auto;
 	box-shadow: none;
 	clear: none;
-	display: inline;
+	display: block;
 	float: none;
 	left: auto;
 	margin: 0;
@@ -728,6 +728,7 @@ span.bxhtmled-top-bar-dd-active:before {
 	top: auto;
 	vertical-align: text-bottom;
 	z-index: auto;
+	line-height: 2px!important;
 }
 
 .bx-editor-css-iframe{
@@ -1206,6 +1207,10 @@ span.bxhtmled-top-bar-dd-active:before {
 {
 	width: 90%;
 }
+
+.bxhtmled-video-error-cell{padding: 10px; text-align: center !important;}
+.bxhtmled-video-error{font-size: 110% !important;color: #790000 !important;font-weight: bold !important;}
+
 .bxhtmled-video-empty .bxhtmled-video-ext-row {display: none;}
 .bxhtmled-video-local .bxhtmled-video-ext-loc-row {display: none;}
 .bxhtmled-video-preview-cnt{

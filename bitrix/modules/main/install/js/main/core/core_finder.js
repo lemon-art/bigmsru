@@ -99,7 +99,7 @@ BX.Finder = function(container, context, panels, lang, oContext)
 		version: "2"
 	};
 
-	BX.Finder.dBVersion = 7;
+	BX.Finder.dBVersion = 8;
 
 	if (BX.util.in_array(BX.Finder.context, ['destination', 'searchtitle']))
 	{
@@ -449,60 +449,54 @@ BX.Finder.checkInitFinderDb = function(obDestination, name, version, entities, o
 
 	BX.indexedDB({
 		name: 'BX.Finder' + version + '.' + BX.message('USER_ID'),
-		oScheme: BX.Finder.dBScheme.stores,
-		version: BX.Finder.dBScheme.version,
-		callback: BX.delegate(function (dbObject)
+		scheme: BX.Finder.dBScheme.stores,
+		version: BX.Finder.dBScheme.version
+	}).then(BX.delegate(function (dbObject) {
+	
+		obDestination.obClientDb = dbObject;
+
+		BX.addCustomEvent("onFinderAjaxLoadAll", BX.Finder.onFinderAjaxLoadAll);
+
+		var entity = null;
+		var entitiesToInit = [];
+
+		for(var i=0;i<this.entities.length;i++)
 		{
-			if (typeof dbObject == 'object')
-			{
-				obDestination.obClientDb = dbObject;
+			entity = this.entities[i];
 
-				BX.addCustomEvent("onFinderAjaxLoadAll", BX.Finder.onFinderAjaxLoadAll);
-
-				var entity = null;
-				var entitiesToInit = [];
-
-				for(var i=0;i<this.entities.length;i++)
+			BX.indexedDB.count(dbObject, entity).then(BX.delegate(function(count) {
+				if (parseInt(count) > 0) // already not empty
 				{
-					entity = this.entities[i];
-
-					BX.indexedDB.count(dbObject, entity, {
-						callback: BX.delegate(function(count)
+					entitiesToInit.push(this.entity);
+				}
+				else
+				{
+					BX.Finder.loadAll({
+						ob: obDestination,
+						name: name,
+						entity: this.entity,
+						callback: BX.delegate(function()
 						{
-							if (parseInt(count) > 0) // already not empty
-							{
-								entitiesToInit.push(this.entity);
-							}
-							else
-							{
-								BX.Finder.loadAll({
-									ob: obDestination,
-									name: name,
-									entity: this.entity,
-									callback: BX.delegate(function()
-									{
-										BX.Finder.initFinderDb(obDestination, [ this.entity ], oContext, version);
+							BX.Finder.initFinderDb(obDestination, [ this.entity ], oContext, version);
 
-										if (version > 1)
-										{
-											for (var i = 1; i < version; i++)
-											{
-												BX.indexedDB.deleteDatabase('BX.Finder' + i + '.' + BX.message('USER_ID'))
-											}
-										}
-									}, { entity: this.entity })
-								});
+							if (version > 1)
+							{
+								for (var i = 1; i < version; i++)
+								{
+									BX.indexedDB.deleteDatabase('BX.Finder' + i + '.' + BX.message('USER_ID'), null);
+								}
 							}
-						}, { entity: entity })
+						}, { entity: this.entity })
 					});
 				}
+			}, { entity: entity }));
+		}
 
-				setTimeout(function() {
-					BX.Finder.initFinderDb(obDestination, entitiesToInit, oContext, version);
-				}, 1000);
-			}
-		}, { entities: entities })
-	});
+		setTimeout(function() {
+			BX.Finder.initFinderDb(obDestination, entitiesToInit, oContext, version);
+		}, 1000);
+		
+	}, { entities: entities }));
 };
 
 BX.Finder.initFinderDb = function(obDestination, entities, oContext, version)
@@ -519,35 +513,33 @@ BX.Finder.initFinderDb = function(obDestination, entities, oContext, version)
 
 	BX.indexedDB({
 		name: 'BX.Finder' + version + '.' + BX.message('USER_ID'),
-		oScheme: BX.Finder.dBScheme.stores,
-		version: BX.Finder.dBScheme.version,
-		callback: BX.delegate(function(dbObject)
+		scheme: BX.Finder.dBScheme.stores,
+		version: BX.Finder.dBScheme.version
+	}).then(BX.delegate(function(dbObject) {
+		for (var i=0;i<entities.length;i++)
 		{
-			if (typeof dbObject == 'object')
-			{
-				for (var i=0;i<entities.length;i++)
+			BX.indexedDB.openCursor(dbObject, entities[i]).then(BX.proxy(function(values) {
+				var cursorValue = '';
+				for (var j = 0; j < values.length; j++)
 				{
-					entity = entities[i];
-					BX.indexedDB.openCursor(dbObject, entity, {}, {
-						callback: BX.proxy(function(cursorValue)
-						{
-							if (typeof obDestination.obClientDbData[this.entity] == 'undefined')
-							{
-								obDestination.obClientDbData[this.entity] = {};
-								BX.addCustomEvent("findEntityByName", BX.Finder.findEntityByName);
-								BX.addCustomEvent("syncClientDb", BX.Finder.syncClientDb);
-								BX.addCustomEvent("removeClientDbObject", BX.Finder.removeClientDbObject);
-							}
+					cursorValue = values[j].value;
+					
+					if (typeof obDestination.obClientDbData[this.entity] == 'undefined')
+					{
+						obDestination.obClientDbData[this.entity] = {};
+						BX.addCustomEvent("findEntityByName", BX.Finder.findEntityByName);
+						BX.addCustomEvent("syncClientDb", BX.Finder.syncClientDb);
+						BX.addCustomEvent("removeClientDbObject", BX.Finder.removeClientDbObject);
+					}
 
-							obDestination.obClientDbData[this.entity][cursorValue.id] = cursorValue;
-							BX.Finder.addSearchIndex(obDestination, cursorValue);
-						}, { entity: entity })
-					});
+					obDestination.obClientDbData[this.entity][cursorValue.id] = cursorValue;
+					BX.Finder.addSearchIndex(obDestination, cursorValue);
 				}
-				BX.addCustomEvent(oContext, "onFinderAjaxSuccess", BX.Finder.onFinderAjaxSuccess);
-			}
-		}, { entities: entities })
-	});
+			}, { entity: entities[i] }));
+		}
+		BX.addCustomEvent(oContext, "onFinderAjaxSuccess", BX.Finder.onFinderAjaxSuccess);
+	
+	}, { entities: entities }));
 };
 
 BX.Finder.addSearchIndex = function(obDestination, ob)
@@ -621,19 +613,8 @@ BX.Finder.onFinderAjaxSuccess = function(data, obDestination, entity)
 						obDestination.obClientDbData[entity] = [];
 					}
 
-					BX.indexedDB.updateValue(obDestination.obClientDb, entity, oEntity, key, {
-						error: function(event, key) {
-							if (
-								typeof event != 'undefined'
-								&& typeof event.srcElement != 'undefined'
-								&& typeof event.srcElement.error != 'undefined'
-								&& typeof event.srcElement.error.name != 'undefined'
-								&& event.srcElement.error.name == 'ConstraintError'
-							)
-							{
-								BX.indexedDB.deleteValueByIndex(obDestination.obClientDb, entity, 'id', key, {});
-							}
-						}
+					BX.indexedDB.updateValue(obDestination.obClientDb, entity, oEntity).catch(function(error) {
+						BX.indexedDB.deleteValueByIndex(obDestination.obClientDb, entity, 'id', error.params.id);
 					});
 
 					obDestination.obClientDbData[entity][oEntity.id] = oEntity;
@@ -689,7 +670,7 @@ BX.Finder.syncClientDb = function(obDestination, name, oDbData, oAjaxData)
 				&& !BX.util.in_array(oDbData[key], oAjaxData)
 			)
 			{
-				BX.indexedDB.deleteValueByIndex(obDestination.obClientDb, 'users', 'id', oDbData[key], {});
+				BX.indexedDB.deleteValueByIndex(obDestination.obClientDb, 'users', 'id', oDbData[key]);
 				delete obDestination.obItems[name].users[oDbData[key]];
 				obDestination.deleteItem(oDbData[key], 'users', name);
 			}
@@ -704,7 +685,7 @@ BX.Finder.removeClientDbObject = function(obDestination, id, type)
 		&& type == 'users'
 	)
 	{
-		BX.indexedDB.deleteValueByIndex(obDestination.obClientDb, 'users', 'id', id, {});
+		BX.indexedDB.deleteValueByIndex(obDestination.obClientDb, 'users', 'id', id);
 	}
 };
 

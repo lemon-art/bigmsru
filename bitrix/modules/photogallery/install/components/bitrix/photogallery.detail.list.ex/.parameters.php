@@ -221,7 +221,6 @@ $arComponentParameters["PARAMETERS"]["DETAIL_SLIDE_SHOW_URL"] = array(
 	);
 
 
-
 if (IsModuleInstalled("blog") || IsModuleInstalled("forum"))
 {
 	$arComponentParameters["GROUPS"]["REVIEW_SETTINGS"] = array("NAME" => GetMessage("T_IBLOCK_DESC_REVIEW_SETTINGS"), "SORT" => 400);
@@ -449,7 +448,7 @@ if($arCurrentValues["BEHAVIOUR"] == "USER")
 
 
 $arComponentParameters["PARAMETERS"]["PATH_TO_USER"] = array(
-	"PARENT" => "ADDITIONAL_SETTINGS",
+	"PARENT" => "URL_TEMPLATES",
 	"NAME" => GetMessage("P_PATH_TO_USER"),
 	"DEFAULT" => "/company/personal/user/#USER_ID#",
 );

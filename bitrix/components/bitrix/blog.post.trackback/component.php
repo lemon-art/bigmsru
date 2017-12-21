@@ -89,7 +89,7 @@ if(COption::GetOptionString("blog","enable_trackback", "Y") == "Y")
 						{
 							if($arParams["TB_LENGTH"])
 								$arTrack["PREVIEW_TEXT"] = TruncateText($arTrack["PREVIEW_TEXT"], $arParams["TB_LENGTH"]);
-							$arTrack["urlToDelete"] = $APPLICATION->GetCurPageParam("delete_trackback_id=".$arTrack["ID"], Array("sessid", "delete_trackback_id"));
+							$arTrack["urlToDelete"] = htmlspecialcharsbx($APPLICATION->GetCurPageParam("delete_trackback_id=".$arTrack["ID"], Array("sessid", "delete_trackback_id")));
 							$arTrack["POST_DATE_FORMATED"] = FormatDate($arParams["DATE_TIME_FORMAT"], MakeTimeStamp($arTrack["POST_DATE"], CSite::GetDateFormat("FULL")));
 							$arResult["TrackBack"][] = $arTrack;
 						}
@@ -106,6 +106,7 @@ if(COption::GetOptionString("blog","enable_trackback", "Y") == "Y")
 							else
 								$serverName = COption::GetOptionString("main", "server_name", "");
 						}
+						$serverName = \Bitrix\Main\Text\HtmlFilter::encode($serverName);
 
 						$arResult["urlToTrackback"] = "http://".$serverName.CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_TRACKBACK"], array("blog" => $arBlog["URL"], "post_id"=>$arPost["ID"]));
 						if ($arParams["CACHE_TIME"] > 0)

@@ -11,4 +11,5 @@ $MESS["SEO_BANNER_ERROR_NO_HREF"] = "Ad link is not specified";
 $MESS["SEO_BANNER_ERROR_NO_PHRASES"] = "Ad keywords are not specified";
 $MESS["SEO_CAMPAIGN_ERROR_BANNER_NOT_FOUND"] = "Ad ##ID# was not found in Yandex.Direct.";
 $MESS["SEO_BANNER_ERROR_CAMPAIGN_NOT_FOUND"] = "Advertising campaign not found";
+$MESS["SEO_BANNER_ERROR_NO_GEO"] = "No geo targeting region selected";
 ?>

@@ -12,4 +12,9 @@ $MESS["CRM_FF_NO_RESULT"] = "Unfortunately your search request returned no resul
 $MESS["CRM_FF_CHOISE"] = "Select";
 $MESS["CRM_FF_CHANGE"] = "Edit";
 $MESS["CRM_FF_LAST"] = "Last Selected";
+$MESS["CRM_CES_CREATE"] = "Create";
+$MESS["CRM_CES_CREATE_LEAD"] = "Lead";
+$MESS["CRM_CES_CREATE_CONTACT"] = "Contact";
+$MESS["CRM_CES_CREATE_COMPANY"] = "Company";
+$MESS["CRM_CES_CREATE_DEAL"] = "Deal";
 ?>

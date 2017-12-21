@@ -40,7 +40,7 @@ $menuBlockId = "catalog_menu_".$this->randString();
 				<a
 					href="<?=$arResult["ALL_ITEMS"][$itemID]["LINK"]?>"
 					<?if (is_array($arColumns) && count($arColumns) > 0 && $existPictureDescColomn):?>
-						onmouseover="obj_<?=$menuBlockId?>.changeSectionPicure(this, '<?=$itemID?>');"
+						onmouseover="window.obj_<?=$menuBlockId?> && obj_<?=$menuBlockId?>.changeSectionPicure(this, '<?=$itemID?>');"
 					<?endif?>
 				>
 					<span>
@@ -58,7 +58,7 @@ $menuBlockId = "catalog_menu_".$this->randString();
 								<a
 									href="<?=$arResult["ALL_ITEMS"][$itemIdLevel_2]["LINK"]?>"
 									<?if ($existPictureDescColomn):?>
-										onmouseover="obj_<?=$menuBlockId?>.changeSectionPicure(this, '<?=$itemIdLevel_2?>');"
+										onmouseover="window.obj_<?=$menuBlockId?> && obj_<?=$menuBlockId?>.changeSectionPicure(this, '<?=$itemIdLevel_2?>');"
 									<?endif?>
 									data-picture="<?=$arResult["ALL_ITEMS"][$itemIdLevel_2]["PARAMS"]["picture_src"]?>"
 									<?if($arResult["ALL_ITEMS"][$itemIdLevel_2]["SELECTED"]):?>class="bx-active"<?endif?>
@@ -72,7 +72,7 @@ $menuBlockId = "catalog_menu_".$this->randString();
 										<a
 											href="<?=$arResult["ALL_ITEMS"][$itemIdLevel_3]["LINK"]?>"
 											<?if ($existPictureDescColomn):?>
-												onmouseover="obj_<?=$menuBlockId?>.changeSectionPicure(this, '<?=$itemIdLevel_3?>');return false;"
+												onmouseover="window.obj_<?=$menuBlockId?> && obj_<?=$menuBlockId?>.changeSectionPicure(this, '<?=$itemIdLevel_3?>');return false;"
 											<?endif?>
 											data-picture="<?=$arResult["ALL_ITEMS"][$itemIdLevel_3]["PARAMS"]["picture_src"]?>"
 											<?if($arResult["ALL_ITEMS"][$itemIdLevel_3]["SELECTED"]):?>class="bx-active"<?endif?>

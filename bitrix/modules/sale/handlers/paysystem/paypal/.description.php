@@ -6,6 +6,12 @@ use \Bitrix\Main\Localization\Loc;
 
 Loc::loadMessages(__FILE__);
 
+$description = array(
+	'RETURN' => Loc::getMessage('SALE_HPS_PAYPAL_DESC_RETURN'),
+	'RESTRICTION' => Loc::getMessage('SALE_HPS_PAYPAL_DESC_RESTRICTION'),
+	'COMMISSION' => Loc::getMessage('SALE_HPS_PAYPAL_DESC_COMMISSION')
+);
+
 $data = array(
 	'NAME' => Loc::getMessage('SALE_HPS_PAYPAL_NAME'),
 	'SORT' => 1000,
@@ -66,7 +72,7 @@ $data = array(
 			'SORT' => 800,
 			'GROUP' => 'CONNECT_SETTINGS_PAYPAL',
 			'DEFAULT' => array(
-				'PROVIDER_VALUE' => 'https://'.$_SERVER['HTTP_HOST'].'/bitrix/tools/sale_ps_paypal_result.php',
+				'PROVIDER_VALUE' => 'https://'.$_SERVER['HTTP_HOST'].'/bitrix/tools/sale_ps_result.php',
 				'PROVIDER_KEY' => 'VALUE',
 			)
 		),
@@ -82,6 +88,13 @@ $data = array(
 			'NAME' => Loc::getMessage('SALE_HPS_PAYPAL_SSL_ENABLE'),
 			'SORT' => 1000,
 			'GROUP' => 'CONNECT_SETTINGS_PAYPAL',
+			"INPUT" => array(
+				'TYPE' => 'Y/N'
+			),
+			'DEFAULT' => array(
+				"PROVIDER_VALUE" => "Y",
+				"PROVIDER_KEY" => "INPUT"
+			)
 		),
 		'PAYPAL_BUTTON_SRC'  => array(
 			'NAME' => Loc::getMessage('SALE_HPS_PAYPAL_BUTTON_SRC'),
@@ -105,9 +118,9 @@ $data = array(
 		'PAYPAL_BUSINESS' => array(
 			'NAME' => Loc::getMessage('SALE_HPS_PAYPAL_BUSINESS'),
 			'SORT' => 1500,
-			'GROUP' => 'PS_OTHER',
+			'GROUP' => 'CONNECT_SETTINGS_PAYPAL',
 			'DEFAULT' => array(
-				'PROVIDER_VALUE' => 'you@youremail.com',
+				'PROVIDER_VALUE' => '',
 				'PROVIDER_KEY' => 'VALUE'
 			)
 		),

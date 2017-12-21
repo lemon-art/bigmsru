@@ -2,8 +2,8 @@
 namespace Bitrix\Sale\Services\Base;
 
 use Bitrix\Main\NotImplementedException;
-use Bitrix\Sale\Delivery\Restrictions\Manager;
 use Bitrix\Sale\Internals\CollectableEntity;
+use Bitrix\Sale\Internals\Entity;
 use Bitrix\Sale\Internals\ServiceRestrictionTable;
 
 /**
@@ -45,12 +45,20 @@ abstract class Restriction {
 	 * @return bool
 	 * @throws NotImplementedException
 	 */
-	protected static function check($params, array $restrictionParams, $serviceId = 0)
+	public static function check($params, array $restrictionParams, $serviceId = 0)
 	{
 		throw new NotImplementedException;
 	}
 
-	public static function checkByEntity(CollectableEntity $entity, array $restrictionParams, $mode, $serviceId = 0)
+	/**
+	 * @param Entity $entity
+	 * @param array $restrictionParams
+	 * @param int $mode
+	 * @param int $serviceId
+	 * @return int
+	 * @throws NotImplementedException
+	 */
+	public static function checkByEntity(Entity $entity, array $restrictionParams, $mode, $serviceId = 0)
 	{
 		$severity = static::getSeverity($mode);
 
@@ -63,11 +71,11 @@ abstract class Restriction {
 	}
 
 	/**
-	 * @param CollectableEntity $entity
+	 * @param Entity $entity
 	 * @return mixed
 	 * @throws NotImplementedException
 	 */
-	protected static function extractParams(CollectableEntity $entity)
+	protected static function extractParams(Entity $entity)
 	{
 		throw new NotImplementedException;
 	}
@@ -81,29 +89,49 @@ abstract class Restriction {
 		return array();
 	}
 
-	/** ? */
+	/**
+	 * @param array $paramsValues
+	 * @param int $entityId
+	 * @return array
+	 */
 	public static function prepareParamsValues(array $paramsValues, $entityId = 0)
 	{
 		return $paramsValues;
 	}
 
+	/**
+	 * @param array $fields
+	 * @param int $restrictionId
+	 * @return \Bitrix\Main\Entity\AddResult|\Bitrix\Main\Entity\UpdateResult
+	 * @throws \Exception
+	 */
 	public static function save(array $fields, $restrictionId = 0)
 	{
 		$fields["CLASS_NAME"] = '\\'.get_called_class();
 
 		if($restrictionId > 0)
-			$res = \Bitrix\Sale\Internals\ServiceRestrictionTable::update($restrictionId, $fields);
+			$res = ServiceRestrictionTable::update($restrictionId, $fields);
 		else
-			$res = \Bitrix\Sale\Internals\ServiceRestrictionTable::add($fields);
+			$res = ServiceRestrictionTable::add($fields);
 
 		return $res;
 	}
 
+	/**
+	 * @param $restrictionId
+	 * @param int $entityId
+	 * @return \Bitrix\Main\Entity\DeleteResult
+	 * @throws \Exception
+	 */
 	public static function delete($restrictionId, $entityId = 0)
 	{
-		return \Bitrix\Sale\Internals\ServiceRestrictionTable::delete($restrictionId);
+		return ServiceRestrictionTable::delete($restrictionId);
 	}
 
+	/**
+	 * @param int $mode - RestrictionManager::MODE_CLIENT | RestrictionManager::MODE_MANAGER
+	 * @return int
+	 */
 	public static function getSeverity($mode)
 	{
 		$result = RestrictionManager::SEVERITY_STRICT;
@@ -114,8 +142,23 @@ abstract class Restriction {
 		return $result;
 	}
 
+	/**
+	 * @param array $servicesIds
+	 * @return bool
+	 */
 	public static function prepareData(array $servicesIds)
 	{
 		return true;
 	}
+
+	/*
+	 * Children can have also this method
+	 * for performance purposes.
+	 *
+	 * @return int[]
+	 * public static function filterServicesArray(Shipment $shipment, array $restrictionFields)
+	 * {
+	 *  ...
+	 * }
+	*/
 }

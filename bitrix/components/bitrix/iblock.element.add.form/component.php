@@ -145,7 +145,7 @@ if ($bAllowAccess)
 
 		"IBLOCK_SECTION" => array(
 			"PROPERTY_TYPE" => "L",
-			"ROW_COUNT" => "8",
+			"ROW_COUNT" => "12",
 			"MULTIPLE" => $arParams["MAX_LEVELS"] == 1 ? "N" : "Y",
 			"ENUM" => $arResult["SECTION_LIST"],
 		),
@@ -153,7 +153,7 @@ if ($bAllowAccess)
 		"PREVIEW_TEXT" => array(
 			"PROPERTY_TYPE" => ($arParams["PREVIEW_TEXT_USE_HTML_EDITOR"]? "HTML": "T"),
 			"MULTIPLE" => "N",
-			"ROW_COUNT" => "5",
+			"ROW_COUNT" => "12",
 			"COL_COUNT" => $COL_COUNT,
 		),
 		"PREVIEW_PICTURE" => array(
@@ -815,7 +815,7 @@ if ($bAllowAccess)
 					}
 					else
 					{
-						$sRedirectUrl = $APPLICATION->GetCurPageParam("", array("edit", "CODE"), $get_index_page=false);
+						$sRedirectUrl = $APPLICATION->GetCurPageParam("", array("edit", "CODE", "strIMessage"), $get_index_page=false);
 					}
 
 				}
@@ -825,7 +825,7 @@ if ($bAllowAccess)
 				if (strlen($SEF_URL) > 0)
 					$sRedirectUrl = $SEF_URL;
 				else
-					$sRedirectUrl = $APPLICATION->GetCurPageParam("edit=Y&CODE=".$arParams["ID"], array("edit", "CODE"), $get_index_page=false);
+					$sRedirectUrl = $APPLICATION->GetCurPageParam("edit=Y&CODE=".$arParams["ID"], array("edit", "CODE", "strIMessage"), $get_index_page=false);
 			}
 
 			$sAction = $sAction == "ADD" ? "ADD" : "EDIT";
@@ -1040,9 +1040,11 @@ if ($bAllowAccess)
 			$arResult["CAPTCHA_CODE"] = htmlspecialcharsbx($APPLICATION->CaptchaGetCode());
 		}
 
-		$arResult["MESSAGE"] = htmlspecialcharsex($_REQUEST["strIMessage"]);
+		$arResult["MESSAGE"] = '';
+		if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_REQUEST["strIMessage"]) && is_string($_REQUEST["strIMessage"]))
+			$arResult["MESSAGE"] = htmlspecialcharsbx($_REQUEST["strIMessage"]);
 
-		$this->IncludeComponentTemplate();
+		$this->includeComponentTemplate();
 	}
 }
 if (!$bAllowAccess && !$bHideAuth)
@@ -1050,4 +1052,3 @@ if (!$bAllowAccess && !$bHideAuth)
 	//echo ShowError(GetMessage("IBLOCK_ADD_ACCESS_DENIED"));
 	$APPLICATION->AuthForm("");
 }
-?>

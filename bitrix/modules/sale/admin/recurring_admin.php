@@ -164,7 +164,7 @@ while ($arRecurring = $dbResultList->NavNext(true, "f_"))
 	$fieldValue  = "[<a href=\"/bitrix/admin/user_edit.php?ID=".$f_USER_ID."&lang=".LANG."\">".$f_USER_ID."</a>] ";
 	$fieldValue .= htmlspecialcharsEx($arRecurring["USER_NAME"].((strlen($arRecurring["USER_NAME"])<=0 || strlen($arRecurring["USER_LAST_NAME"])<=0) ? "" : " ").$arRecurring["USER_LAST_NAME"])."<br>";
 	$fieldValue .= htmlspecialcharsEx($arRecurring["USER_LOGIN"])."&nbsp;&nbsp;&nbsp; ";
-	$fieldValue .= "<a href=\"mailto:".htmlspecialcharsEx($arRecurring["USER_EMAIL"])."\">".htmlspecialcharsEx($arRecurring["USER_EMAIL"])."</a>";
+	$fieldValue .= "<a href=\"mailto:".htmlspecialcharsbx($arRecurring["USER_EMAIL"])."\">".htmlspecialcharsEx($arRecurring["USER_EMAIL"])."</a>";
 	$row->AddField("USER_ID", $fieldValue);
 
 	$row->AddField("CANCELED", (($arRecurring["CANCELED"]=="Y") ? GetMessage("SRA_YES") : GetMessage("SRA_NO")));
@@ -253,19 +253,19 @@ $oFilter->Begin();
 	<tr>
 		<td><?echo GetMessage("SRA_USER")?></td>
 		<td>
-			<input type="text" name="filter_user" size="50" value="<?= htmlspecialcharsEx($filter_user) ?>">&nbsp;<?=ShowFilterLogicHelp()?>
+			<input type="text" name="filter_user" size="50" value="<?= htmlspecialcharsbx($filter_user) ?>">&nbsp;<?=ShowFilterLogicHelp()?>
 		</td>
 	</tr>
 	<tr>
 		<td><?echo GetMessage("SRA_USER_ID")?></td>
 		<td>
-			<input type="text" name="filter_user_id" size="5" value="<?= htmlspecialcharsEx($filter_user_id) ?>">
+			<input type="text" name="filter_user_id" size="5" value="<?= htmlspecialcharsbx($filter_user_id) ?>">
 		</td>
 	</tr>
 	<tr>
 		<td><?echo GetMessage("SRA_USER_LOGIN")?></td>
 		<td>
-			<input type="text" name="filter_login" size="50" value="<?= htmlspecialcharsEx($filter_login) ?>">
+			<input type="text" name="filter_login" size="50" value="<?= htmlspecialcharsbx($filter_login) ?>">
 		</td>
 	</tr>
 	<tr>
@@ -293,7 +293,7 @@ $oFilter->Begin();
 	<tr>
 		<td><?echo GetMessage("SRA_BASE_ORDER")?></td>
 		<td>
-			<input type="text" name="filter_order_id" size="50" value="<?= htmlspecialcharsEx($filter_order_id) ?>">
+			<input type="text" name="filter_order_id" size="50" value="<?= htmlspecialcharsbx($filter_order_id) ?>">
 		</td>
 	</tr>
 	<tr>

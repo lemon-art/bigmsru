@@ -33,6 +33,7 @@ Loc::loadMessages(__FILE__);
  * <li> ISSUING_CENTER bool optional default 'Y'
  * <li> SHIPPING_CENTER bool optional default 'Y'
  * <li> SITE_ID string(2) optional
+ * <li> CODE string(255) optional
  * </ul>
  *
  * @package Bitrix\Catalog
@@ -143,6 +144,10 @@ class StoreTable extends Main\Entity\DataManager
 			'SITE_ID' => new Main\Entity\StringField('SITE_ID', array(
 				'validation' => array(__CLASS__, 'validateSiteId'),
 				'title' => Loc::getMessage('STORE_ENTITY_SITE_ID_FIELD')
+			)),
+			'CODE' => new Main\Entity\StringField('CODE', array(
+				'validation' => array(__CLASS__, 'validateCode'),
+				'title' => Loc::getMessage('STORE_ENTITY_CODE_FIELD')
 			))
 		);
 	}
@@ -168,6 +173,7 @@ class StoreTable extends Main\Entity\DataManager
 			new Main\Entity\Validator\Length(null, 75),
 		);
 	}
+
 	/**
 	 * Returns validators for ADDRESS field.
 	 *
@@ -179,6 +185,7 @@ class StoreTable extends Main\Entity\DataManager
 			new Main\Entity\Validator\Length(null, 245),
 		);
 	}
+
 	/**
 	 * Returns validators for GPS_N field.
 	 *
@@ -190,6 +197,7 @@ class StoreTable extends Main\Entity\DataManager
 			new Main\Entity\Validator\Length(null, 15),
 		);
 	}
+
 	/**
 	 * Returns validators for GPS_S field.
 	 *
@@ -201,6 +209,7 @@ class StoreTable extends Main\Entity\DataManager
 			new Main\Entity\Validator\Length(null, 15),
 		);
 	}
+
 	/**
 	 * Returns validators for IMAGE_ID field.
 	 *
@@ -212,6 +221,7 @@ class StoreTable extends Main\Entity\DataManager
 			new Main\Entity\Validator\Length(null, 45),
 		);
 	}
+
 	/**
 	 * Returns validators for PHONE field.
 	 *
@@ -223,6 +233,7 @@ class StoreTable extends Main\Entity\DataManager
 			new Main\Entity\Validator\Length(null, 45),
 		);
 	}
+
 	/**
 	 * Returns validators for SCHEDULE field.
 	 *
@@ -234,6 +245,7 @@ class StoreTable extends Main\Entity\DataManager
 			new Main\Entity\Validator\Length(null, 255),
 		);
 	}
+
 	/**
 	 * Returns validators for XML_ID field.
 	 *
@@ -245,6 +257,7 @@ class StoreTable extends Main\Entity\DataManager
 			new Main\Entity\Validator\Length(null, 255),
 		);
 	}
+
 	/**
 	 * Returns validators for EMAIL field.
 	 *
@@ -256,6 +269,7 @@ class StoreTable extends Main\Entity\DataManager
 			new Main\Entity\Validator\Length(null, 255),
 		);
 	}
+
 	/**
 	 * Returns validators for SITE_ID field.
 	 *
@@ -265,6 +279,18 @@ class StoreTable extends Main\Entity\DataManager
 	{
 		return array(
 			new Main\Entity\Validator\Length(null, 2),
+		);
+	}
+
+	/**
+	 * Returns validators for CODE field.
+	 *
+	 * @return array
+	 */
+	public static function validateCode()
+	{
+		return array(
+			new Main\Entity\Validator\Length(null, 255),
 		);
 	}
 }

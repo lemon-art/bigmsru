@@ -889,7 +889,7 @@ class CAllIBlock
 		foreach(GetModuleEvents("iblock", "OnAfterIBlockAdd", true)  as $arEvent)
 			ExecuteModuleEventEx($arEvent, array(&$arFields));
 
-		if(defined("BX_COMP_MANAGED_CACHE"))
+		if(defined("BX_COMP_MANAGED_CACHE") && self::isEnabledClearTagCache())
 			$CACHE_MANAGER->ClearByTag("iblock_id_new");
 
 		return $Result;
@@ -1335,12 +1335,20 @@ class CAllIBlock
 		return true;
 	}
 
-	function SetPermission($IBLOCK_ID, $arGROUP_ID)
+	public static function SetPermission($IBLOCK_ID, $arGROUP_ID)
 	{
 		/** @global CDatabase $DB */
 		global $DB;
-		$IBLOCK_ID = intval($IBLOCK_ID);
-		static $letters = "RSTUWX";
+		$IBLOCK_ID = (int)$IBLOCK_ID;
+		static $letters = array(
+			'E' => true,
+			'R' => true,
+			'S' => true,
+			'T' => true,
+			'U' => true,
+			'W' => true,
+			'X' => true
+		);
 
 		$arToDelete = array();
 		$arToInsert = array();
@@ -1349,8 +1357,8 @@ class CAllIBlock
 		{
 			foreach($arGROUP_ID as $group_id => $perm)
 			{
-				$group_id = intval($group_id);
-				if($group_id > 0 && strlen($perm) == 1 && strpos($letters, $perm) !== false)
+				$group_id = (int)$group_id;
+				if ($group_id > 0 && isset($letters[$perm]))
 				{
 					$arToInsert[$group_id] = $perm;
 				}
@@ -1364,7 +1372,7 @@ class CAllIBlock
 		", false, "File: ".__FILE__."<br>Line: ".__LINE__);
 		while($ar = $rs->Fetch())
 		{
-			$group_id = intval($ar["GROUP_ID"]);
+			$group_id = (int)$ar["GROUP_ID"];
 
 			if(isset($arToInsert[$group_id]) && $arToInsert[$group_id] === $ar["PERMISSION"])
 			{
@@ -1403,7 +1411,7 @@ class CAllIBlock
 			if(CModule::IncludeModule("search"))
 			{
 				$arGroups = CIBlock::GetGroupPermissions($IBLOCK_ID);
-				if(array_key_exists(2, $arGroups))
+				if(isset($arGroups[2]))
 					CSearch::ChangePermission("iblock", array(2), false, false, $IBLOCK_ID);
 				else
 					CSearch::ChangePermission("iblock", $arGroups, false, false, $IBLOCK_ID);
@@ -2223,36 +2231,39 @@ REQ
 
 	public static function MkOperationFilter($key)
 	{
-		static $triple_char = array(
-			"!><"=>"NB", //not between
+		static $operations = array(
+			"!><" => "NB", //not between
+			"!="  => "NI", //not Identical
+			"!%"  => "NS", //not substring
+			"><"  => "B",  //between
+			">="  => "GE", //greater or equal
+			"<="  => "LE", //less or equal
+			"="   => "I", //Identical
+			"%"   => "S", //substring
+			"?"   => "?", //logical
+			">"   => "G", //greater
+			"<"   => "L", //less
+			"!"   => "N", // not field LIKE val
+			"*"   => "FT", // partial full text match
+			"*="  => "FTI", // identical full text match
+			"*%"  => "FTL", // partial full text match based on LIKE
 		);
-		static $double_char = array(
-			"!="=>"NI", //not Identical
-			"!%"=>"NS", //not substring
-			"><"=>"B",  //between
-			">="=>"GE", //greater or equal
-			"<="=>"LE", //less or equal
-		);
-		static $single_char = array(
-			"="=>"I", //Identical
-			"%"=>"S", //substring
-			"?"=>"?", //logical
-			">"=>"G", //greater
-			"<"=>"L", //less
-			"!"=>"N", // not field LIKE val
-		);
+
 		$key = (string)$key;
 		if ($key == '')
 			return array("FIELD"=>$key, "OPERATION"=>"E"); // zero key
-		$op = substr($key,0,3);
-		if($op && isset($triple_char[$op]))
-			return array("FIELD"=>substr($key,3), "OPERATION"=>$triple_char[$op]);
-		$op = substr($key,0,2);
-		if($op && isset($double_char[$op]))
-			return array("FIELD"=>substr($key,2), "OPERATION"=>$double_char[$op]);
-		$op = substr($key,0,1);
-		if($op && isset($single_char[$op]))
-			return array("FIELD"=>substr($key,1), "OPERATION"=>$single_char[$op]);
+
+		for ($i = 3; $i > 0; $i--)
+		{
+			$op = substr($key, 0, $i);
+			if ($op && isset($operations[$op]))
+			{
+				return array(
+					"FIELD" => substr($key, $i),
+					"OPERATION" => $operations[$op],
+				);
+			}
+		}
 
 		return array("FIELD"=>$key, "OPERATION"=>"E"); // field LIKE val
 	}
@@ -2270,7 +2281,7 @@ REQ
 		return str_replace("%", "\\%", str_replace("_", "\\_", $DB->ForSQL($str)));
 	}
 
-	function FilterCreateEx($fname, $vals, $type, &$bFullJoin, $cOperationType=false, $bSkipEmpty = true)
+	public static function FilterCreateEx($fname, $vals, $type, &$bFullJoin, $cOperationType=false, $bSkipEmpty = true)
 	{
 		/** @global CDatabase $DB */
 		global $DB;
@@ -2364,6 +2375,11 @@ REQ
 					}
 					elseif($cOperationType=="S" || $cOperationType=="NS")
 						$res[] = ($cOperationType=="NS"?" ".$fname." IS NULL OR NOT ":"")."(".CIBlock::_Upper($fname)." LIKE ".CIBlock::_Upper("'%".CIBlock::ForLIKE($val)."%'").")";
+					elseif($cOperationType=="FTL")
+					{
+						$sqlWhere = new CSQLWhere();
+						$res[] = $sqlWhere->matchLike($fname, $val);
+					}
 					else
 					{
 						if(strlen($val)<=0)
@@ -2421,6 +2437,43 @@ REQ
 						$res[] = ($cOperationType=="N"?"NOT":"")."(".$fname." IS NULL)";
 					else
 						$res[] = ($cOperationType=="N"?" ".$fname." IS NULL OR NOT ":"")."(".$fname." ".$strOperation." '".$DB->ForSql($val)."')";
+					break;
+				case "fulltext":
+					if($cOperationType=="FT" || $cOperationType=="FTI")
+					{
+						$sqlWhere = new CSQLWhere();
+						$res[] = $sqlWhere->match($fname, $val, $cOperationType=="FT");
+					}
+					elseif($cOperationType=="FTL")
+					{
+						$sqlWhere = new CSQLWhere();
+						$res[] = $sqlWhere->matchLike($fname, $val);
+					}
+					elseif($cOperationType=="?")
+					{
+						if(strlen($val)>0)
+						{
+							$sr = GetFilterQuery($fname, $val, "Y", array(), ($fname=="BE.SEARCHABLE_CONTENT" || $fname=="BE.DETAIL_TEXT" ? "Y" : "N"));
+							if($sr != "0")
+								$res[] = $sr;
+						}
+					}
+					elseif(($cOperationType=="B" || $cOperationType=="NB") && is_array($val) && count($val)==2)
+					{
+						$res[] = ($cOperationType=="NB"?" ".$fname." IS NULL OR NOT ":"")."(".CIBlock::_Upper($fname)." ".$strOperation[0]." '".CIBlock::_Upper($DB->ForSql($val[0]))."' ".$strOperation[1]." '".CIBlock::_Upper($DB->ForSql($val[1]))."')";
+					}
+					elseif($cOperationType=="S" || $cOperationType=="NS")
+						$res[] = ($cOperationType=="NS"?" ".$fname." IS NULL OR NOT ":"")."(".CIBlock::_Upper($fname)." LIKE ".CIBlock::_Upper("'%".CIBlock::ForLIKE($val)."%'").")";
+					else
+					{
+						if(strlen($val)<=0)
+							$res[] = ($bNegative? "NOT": "")."(".$fname." IS NULL OR ".$DB->Length($fname)."<=0)";
+						else
+							if($strOperation=="=" && $cOperationType!="I" && $cOperationType!="NI")
+								$res[] = ($cOperationType=="N"?" ".$fname." IS NULL OR NOT ":"")."(".($DB->type=="ORACLE"?CIBlock::_Upper($fname)." LIKE ".CIBlock::_Upper("'".$DB->ForSqlLike($val)."'")." ESCAPE '\\'" : $fname." LIKE '".$DB->ForSqlLike($val)."'").")";
+							else
+								$res[] = ($bNegative? " ".$fname." IS NULL OR NOT ": "")."(".($DB->type=="ORACLE"?CIBlock::_Upper($fname)." ".$strOperation." ".CIBlock::_Upper("'".$DB->ForSql($val)."'")." " : $fname." ".$strOperation." '".$DB->ForSql($val)."'").")";
+					}
 					break;
 				}
 
@@ -2551,16 +2604,20 @@ REQ
 	{
 		static $arIBlockCache = array();
 		static $arElementCache = array();
+		static $arSectionCache = array();
+		static $catalogIncluded = null;
 
 		$product_url = "";
 		$OF_ELEMENT_ID = (int)$OF_ELEMENT_ID;
 		$OF_IBLOCK_ID = (int)$OF_IBLOCK_ID;
+		if ($catalogIncluded === null)
+			$catalogIncluded = Loader::includeModule('catalog');
 
 		if(
 			$arrType === "E"
 			&& $OF_IBLOCK_ID > 0
 			&& $OF_ELEMENT_ID > 0
-			&& Loader::includeModule('catalog')
+			&& $catalogIncluded
 		)
 		{
 			if (!isset($arIBlockCache[$OF_IBLOCK_ID]))
@@ -2572,7 +2629,7 @@ REQ
 
 			if (is_array($arIBlockCache[$OF_IBLOCK_ID]))
 			{
-				if(!array_key_exists($OF_ELEMENT_ID, $arElementCache))
+				if(!isset($arElementCache[$OF_ELEMENT_ID]))
 				{
 					$OF_PROP_ID = $arIBlockCache[$OF_IBLOCK_ID]["SKU_PROPERTY_ID"];
 					$rsOffer = CIBlockElement::GetList(
@@ -2594,14 +2651,31 @@ REQ
 					if($arOffer = $rsOffer->Fetch())
 					{
 						$arOffer["PROPERTY_".$OF_PROP_ID."_IBLOCK_SECTION_CODE"] = '';
-						if (intval($arOffer["PROPERTY_".$OF_PROP_ID."_IBLOCK_SECTION_ID"]) > 0)
+						$sectionId = (int)$arOffer["PROPERTY_".$OF_PROP_ID."_IBLOCK_SECTION_ID"];
+						if ($sectionId > 0)
 						{
-							$rsSections = CIBlockSection::GetByID($arOffer["PROPERTY_".$OF_PROP_ID."_IBLOCK_SECTION_ID"]);
-							if ($arSection = $rsSections->Fetch())
+							if (!isset($arSectionCache[$sectionId]))
 							{
-								$arOffer["PROPERTY_".$OF_PROP_ID."_IBLOCK_SECTION_CODE"] = $arSection['CODE'];
+								$arSectionCache[$sectionId] = array(
+									'ID' => $sectionId,
+									'CODE' => ''
+								);
+								$rsSections = CIBlockSection::GetList(
+									array(),
+									array('ID' => $sectionId),
+									false,
+									array('ID', 'IBLOCK_ID', 'CODE')
+								);
+								if ($arSection = $rsSections->Fetch())
+								{
+									$arSectionCache[$sectionId]['CODE'] = $arSection['CODE'];
+								}
+								unset($arSection);
+								unset($rsSections);
 							}
+							$arOffer["PROPERTY_".$OF_PROP_ID."_IBLOCK_SECTION_CODE"] = $arSectionCache[$sectionId]['CODE'];
 						}
+						unset($sectionId);
 
 						$arElementCache[$OF_ELEMENT_ID] = array(
 							"LANG_DIR" => $arOffer["LANG_DIR"],
@@ -2681,18 +2755,18 @@ REQ
 		$arReplace = array(
 			$arr["LANG_DIR"],
 			intval($arr["ID"]) > 0? intval($arr["ID"]): "",
-			urlencode(isset($arr["~CODE"])? $arr["~CODE"]: $arr["CODE"]),
-			urlencode(isset($arr["~EXTERNAL_ID"])? $arr["~EXTERNAL_ID"]: $arr["EXTERNAL_ID"]),
-			urlencode(isset($arr["~IBLOCK_TYPE_ID"])? $arr["~IBLOCK_TYPE_ID"]: $arr["IBLOCK_TYPE_ID"]),
+			rawurlencode(isset($arr["~CODE"])? $arr["~CODE"]: $arr["CODE"]),
+			rawurlencode(isset($arr["~EXTERNAL_ID"])? $arr["~EXTERNAL_ID"]: $arr["EXTERNAL_ID"]),
+			rawurlencode(isset($arr["~IBLOCK_TYPE_ID"])? $arr["~IBLOCK_TYPE_ID"]: $arr["IBLOCK_TYPE_ID"]),
 			intval($arr["IBLOCK_ID"]) > 0? intval($arr["IBLOCK_ID"]): "",
-			urlencode(isset($arr["~IBLOCK_CODE"])? $arr["~IBLOCK_CODE"]: $arr["IBLOCK_CODE"]),
-			urlencode(isset($arr["~IBLOCK_EXTERNAL_ID"])? $arr["~IBLOCK_EXTERNAL_ID"]: $arr["IBLOCK_EXTERNAL_ID"]),
+			rawurlencode(isset($arr["~IBLOCK_CODE"])? $arr["~IBLOCK_CODE"]: $arr["IBLOCK_CODE"]),
+			rawurlencode(isset($arr["~IBLOCK_EXTERNAL_ID"])? $arr["~IBLOCK_EXTERNAL_ID"]: $arr["IBLOCK_EXTERNAL_ID"]),
 		);
 
 		if($arrType === "E")
 		{
 			$arReplace[] = intval($arr["ID"]) > 0? intval($arr["ID"]): "";
-			$arReplace[] = urlencode(isset($arr["~CODE"])? $arr["~CODE"]: $arr["CODE"]);
+			$arReplace[] = rawurlencode(isset($arr["~CODE"])? $arr["~CODE"]: $arr["CODE"]);
 			#Deal with symbol codes
 			$SECTION_ID = intval($arr["IBLOCK_SECTION_ID"]);
 
@@ -2732,15 +2806,15 @@ REQ
 			$arReplace[] = "";
 			$arReplace[] = "";
 			$arReplace[] = $SECTION_ID > 0? $SECTION_ID: "";
-			$arReplace[] = urlencode(isset($arr["~CODE"])? $arr["~CODE"]: $arr["CODE"]);
+			$arReplace[] = rawurlencode(isset($arr["~CODE"])? $arr["~CODE"]: $arr["CODE"]);
 			$arReplace[] = $SECTION_CODE_PATH;
 		}
 		else
 		{
 			$arReplace[] = intval($arr["ELEMENT_ID"]) > 0? intval($arr["ELEMENT_ID"]): "";
-			$arReplace[] = urlencode(isset($arr["~ELEMENT_CODE"])? $arr["~ELEMENT_CODE"]: $arr["ELEMENT_CODE"]);
+			$arReplace[] = rawurlencode(isset($arr["~ELEMENT_CODE"])? $arr["~ELEMENT_CODE"]: $arr["ELEMENT_CODE"]);
 			$arReplace[] = intval($arr["IBLOCK_SECTION_ID"]) > 0? intval($arr["IBLOCK_SECTION_ID"]): "";
-			$arReplace[] = urlencode(isset($arr["~SECTION_CODE"])? $arr["~SECTION_CODE"]: $arr["SECTION_CODE"]);
+			$arReplace[] = rawurlencode(isset($arr["~SECTION_CODE"])? $arr["~SECTION_CODE"]: $arr["SECTION_CODE"]);
 			$arReplace[] = "";
 		}
 
@@ -3348,7 +3422,7 @@ REQ
 		}
 	}
 
-	function _Order($by, $order, $default_order, $nullable = true)
+	public static function _Order($by, $order, $default_order, $nullable = true)
 	{
 		static $arOrder = array(
 			"nulls,asc"  => array(true,  "asc" ),
@@ -3551,8 +3625,7 @@ REQ
 			$DB->DDL("create index ix_iblock_section_code on b_iblock_section (IBLOCK_ID, CODE)");
 	}
 
-
-	function GetAuditTypes()
+	public static function GetAuditTypes()
 	{
 		return array(
 			"IBLOCK_SECTION_ADD" => "[IBLOCK_SECTION_ADD] ".GetMessage("IBLOCK_SECTION_ADD"),
@@ -3583,7 +3656,7 @@ REQ
 		return $result;
 	}
 
-	function _transaction_lock($IBLOCK_ID)
+	public static function _transaction_lock($IBLOCK_ID)
 	{
 		/** @global CDatabase $DB */
 		global $DB;
@@ -3602,7 +3675,7 @@ REQ
 		return array_sum($arDate) == 0;
 	}
 
-	function _Upper($str)
+	public static function _Upper($str)
 	{
 		return $str;
 	}
@@ -3612,7 +3685,7 @@ REQ
 		return false;
 	}
 
-	function _NotEmpty($column)
+	public static function _NotEmpty($column)
 	{
 		return "";
 	}
@@ -3723,9 +3796,20 @@ REQ
 			$absPath = $io->CombinePath($_SERVER["DOCUMENT_ROOT"], $normPath);
 			if ($io->ValidatePathString($absPath) && $io->FileExists($absPath))
 			{
-				$perm = $APPLICATION->GetFileAccessPermission($normPath);
-				if ($perm >= "W")
-					$result = CFile::MakeFileArray($io->GetPhysicalName($absPath));
+				$physicalName = $io->GetPhysicalName($absPath);
+				$uploadDir = $io->GetPhysicalName(preg_replace("#[\\\\\\/]+#", "/", $_SERVER['DOCUMENT_ROOT'].'/'.(COption::GetOptionString('main', 'upload_dir', 'upload')).'/'));
+				if (strpos($physicalName, $uploadDir) === 0)
+				{
+					$result = CFile::MakeFileArray($physicalName);
+				}
+				else
+				{
+					$perm = $APPLICATION->GetFileAccessPermission($normPath);
+					if ($perm >= "W")
+					{
+						$result = CFile::MakeFileArray($physicalName);
+					}
+				}
 			}
 		}
 
@@ -3756,7 +3840,7 @@ REQ
 			$io = CBXVirtualIo::GetInstance();
 			$absPath = $io->CombinePath("/", $file_array["tmp_name"]);
 			$tmpPath = CTempFile::GetAbsoluteRoot()."/";
-			if (strpos($absPath, $tmpPath) === 0)
+			if (strpos($absPath, $tmpPath) === 0 || (($absPath = ltrim($absPath, "/")) && strpos($absPath, $tmpPath) === 0))
 			{
 				$result = $file_array;
 				$result["tmp_name"] = $absPath;
@@ -3769,9 +3853,10 @@ REQ
 		{
 			$io = CBXVirtualIo::GetInstance();
 			$normPath = $io->CombinePath("/", $file_array["tmp_name"]);
-			$absPath = $io->CombinePath($_SERVER["DOCUMENT_ROOT"], $normPath);
+			$absPath = $io->CombinePath(CTempFile::GetAbsoluteRoot(), $normPath);
 			$tmpPath = CTempFile::GetAbsoluteRoot()."/";
-			if (strpos($absPath, $tmpPath) === 0)
+			if (strpos($absPath, $tmpPath) === 0 && $io->FileExists($absPath) ||
+				($absPath = $io->CombinePath($_SERVER["DOCUMENT_ROOT"], $normPath)) && strpos($absPath, $tmpPath) === 0)
 			{
 				$result = $file_array;
 				$result["tmp_name"] = $absPath;

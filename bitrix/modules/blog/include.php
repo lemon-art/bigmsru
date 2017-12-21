@@ -78,7 +78,7 @@ CModule::AddAutoloadClasses(
 		"CBlogTrackback" => $DBType."/blog_trackback.php",
 		"CBlogUserGroupPerms" => $DBType."/blog_user_group_perms.php",
 		"CBlogSitePath" => $DBType."/blog_site_path.php",
-		"CBlogSmile" => $DBType."/smile.php",
+		"CBlogSmile" => "general/smile.php",
 		"CBlogPostCategory" => $DBType."/blog_post_category.php",
 
 		"CBlogSearch" => "general/blog_search.php",

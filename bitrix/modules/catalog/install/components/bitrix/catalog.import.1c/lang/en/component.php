@@ -59,4 +59,5 @@ $MESS["CC_BSC1_DEACTIVATION_ERROR"] = "Error deactivating items.";
 $MESS["CC_BCT1_TABLE_EXIST_ERROR"] = "Temporary table does not exist.";
 $MESS["CC_BSC1_ERROR_DATABASE_SERVER_TIME"] = "The difference between the database server time and the web server time is more than 10 minutes. Time zones may be out of sync. Please configure time zones and try again.";
 $MESS["CC_BCI1_DISABLE_CHANGE_PRICE_NAME"] = "Don't change price type name if using external ID (XML_ID)";
+$MESS["CC_BSC1_IMPORT_COMPLETE"] = "Import completed";
 ?>

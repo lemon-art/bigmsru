@@ -161,7 +161,7 @@ class Sharing
 		if ($user)
 		{
 			$avatar = self::getImage($user['PERSONAL_PHOTO']);
-			$userData['name'] = \CUser::formatName(\CSite::getNameFormat(false), $user, false);
+			$userData['name'] = \CUser::formatName(\CSite::getNameFormat(false), $user, false, false);
 			$userData['avatar'] = $avatar ? $avatar['src'] : '/bitrix/js/report/css/images/default_avatar.png';
 			$userData['link'] = self::getUserUrl($userId);
 			$userData['access'] = RightsManager::ACCESS_READ;
@@ -313,6 +313,7 @@ class Sharing
 			if(defined("BX_COMP_MANAGED_CACHE"))
 			{
 				$CACHE_MANAGER->startTagCache($cacheDir);
+				$CACHE_MANAGER->registerTag("sonet_feature_all_G_files");
 				foreach($destination['SONETGROUPS'] as $val)
 				{
 					$CACHE_MANAGER->registerTag("sonet_features_G_".$val["entityId"]);

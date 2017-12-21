@@ -389,6 +389,12 @@ if ($CURRENCY_RIGHT == "W")
 $aContext = array(
 	array(
 		"ICON" => "btn_new",
+		"TEXT" => GetMessage("currency_add_from_classifier"),
+		"LINK" => "/bitrix/admin/currency_add_from_classifier.php?lang=".LANGUAGE_ID,
+		"TITLE" => GetMessage("currency_add_from_classifier_title")
+	),
+	array(
+		"ICON" => "btn_new",
 		"TEXT" => GetMessage("currency_add"),
 		"LINK" => "/bitrix/admin/currency_edit.php?lang=".LANGUAGE_ID,
 		"TITLE" => GetMessage("currency_add")

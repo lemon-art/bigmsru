@@ -4,12 +4,19 @@ namespace Bitrix\Sale\PaySystem;
 
 use Bitrix\Main\Application;
 use Bitrix\Main\Config\Option;
+use Bitrix\Main\Event;
+use Bitrix\Main\EventResult;
 use Bitrix\Main\IO\Directory;
 use Bitrix\Main\IO\File;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Request;
+use Bitrix\Sale\Basket;
+use Bitrix\Sale\Internals\EntityCollection;
 use Bitrix\Sale\Internals\PaymentTable;
 use Bitrix\Sale\Internals\PaySystemActionTable;
+use Bitrix\Sale\Internals\PaySystemRestHandlersTable;
+use Bitrix\Sale\Internals\ServiceRestrictionTable;
+use Bitrix\Sale\Order;
 use Bitrix\Sale\Payment;
 use Bitrix\Sale\Services\PaySystem\Restrictions;
 
@@ -21,6 +28,7 @@ Loc::loadMessages(__FILE__);
  */
 final class Manager
 {
+	const EVENT_ON_GET_HANDLER_DESC = 'OnSaleGetHandlerDescription';
 	const CACHE_ID = "BITRIX_SALE_INNER_PS_ID";
 	const TTL = 31536000;
 	/**
@@ -49,7 +57,7 @@ final class Manager
 	 * @return \Bitrix\Main\DB\Result
 	 * @throws \Bitrix\Main\ArgumentException
 	 */
-	public static function getList(array $params)
+	public static function getList(array $params = array())
 	{
 		return PaySystemActionTable::getList($params);
 	}
@@ -88,8 +96,28 @@ final class Manager
 	}
 
 	/**
+	 * @param $primary
+	 * @param array $data
+	 * @return \Bitrix\Main\Entity\UpdateResult
+	 * @throws \Exception
+	 */
+	public static function update($primary, array $data)
+	{
+		return PaySystemActionTable::update($primary, $data);
+	}
+
+	/**
+	 * @param array $data
+	 * @return \Bitrix\Main\Entity\AddResult
+	 */
+	public static function add(array $data)
+	{
+		return PaySystemActionTable::add($data);
+	}
+
+	/**
 	 * @param Request $request
-	 * @return array|bool|false
+	 * @return array|false
 	 */
 	public static function searchByRequest(Request $request)
 	{
@@ -103,16 +131,23 @@ final class Manager
 
 			foreach (self::getHandlerDirectories() as $type => $path)
 			{
+				$className = '';
+
 				if (File::isFileExists($documentRoot.$path.$name.'/handler.php'))
 				{
-					require_once($documentRoot.$path.$name.'/handler.php');
-
 					$className = static::getClassNameFromPath($item['ACTION_FILE']);
-					if (class_exists($className) && is_callable(array($className, 'isMyResponse')))
-					{
-						if ($className::isMyResponse($request, $item['ID']))
-							return $item;
-					}
+					if (!class_exists($className))
+						require_once($documentRoot.$path.$name.'/handler.php');
+				}
+				else if (static::isRestHandler($name))
+				{
+					$className = '\Bitrix\Sale\PaySystem\RestHandler';
+				}
+
+				if (class_exists($className) && is_callable(array($className, 'isMyResponse')))
+				{
+					if ($className::isMyResponse($request, $item['ID']))
+						return $item;
 				}
 			}
 		}
@@ -153,20 +188,25 @@ final class Manager
 	 */
 	public static function getIdsByPayment($paymentId)
 	{
-		$orderId = null;
+		if (empty($paymentId))
+			return array(0, 0);
 
 		$params = array(
 			'select' => array('ID', 'ORDER_ID'),
-			'filter' => array(
-				'LOGIC' => 'OR',
-				'ID' => $paymentId,
-				'ACCOUNT_NUMBER' => $paymentId,
-			)
 		);
+
+		if (intval($paymentId).'|' == $paymentId.'|')
+		{
+			$params['filter']['ID'] = $paymentId;
+		}
+		else
+		{
+			$params['filter']['ACCOUNT_NUMBER'] = $paymentId;
+		}
 
 		$data = PaymentTable::getRow($params);
 
-		return array($data['ORDER_ID'], $data['ID']);
+		return array((int)$data['ORDER_ID'], (int)$data['ID']);
 	}
 
 	/**
@@ -174,112 +214,21 @@ final class Manager
 	 */
 	public static function getConsumersList()
 	{
-		$documentRoot = Application::getDocumentRoot();
 		$result = array();
 
-		$items = self::getList(
-			array(
-				'select' => array('*')
-			)
-		);
+		$items = self::getList();
 
 		while ($item = $items->fetch())
 		{
-			if (strpos($item['ACTION_FILE'], '/') === false)
-			{
-				$paySystem = new Service($item);
+			$data = self::getHandlerDescription($item['ACTION_FILE']);
+			$data['NAME'] = $item['NAME'];
+			$data['GROUP'] = 'PAYSYSTEM';
+			$data['PROVIDERS'] = array('VALUE', 'COMPANY', 'ORDER', 'USER', 'PROPERTY', 'PAYMENT');
 
-				$data = $paySystem->getHandlerDescription();
-				if ($data)
-				{
-					$data['NAME'] = $item['NAME'];
-					$data['GROUP'] = 'PAYSYSTEM';
-					$data['PROVIDERS'] = array('VALUE', 'COMPANY', 'ORDER', 'USER', 'PROPERTY', 'PAYMENT');
-					$result[$paySystem->getConsumerName()] = $data;
-				}
-			}
-			else
-			{
-				$fileDescription = $documentRoot.$item['ACTION_FILE'].'/.description.php';
-				if (File::isFileExists($fileDescription))
-				{
-					require $fileDescription;
-
-					if (isset($arPSCorrespondence))
-					{
-						$result['PAYSYSTEM_'.$item['ID']] = array(
-							'NAME' => $item['NAME'],
-							'SORT' => 100,
-							'GROUP' => 'PAYSYSTEM',
-							'PROVIDERS' => array('VALUE', 'COMPANY', 'ORDER', 'USER', 'PROPERTY', 'PAYMENT')
-						);
-
-						$codes = self::convertCodesToNewFormat($arPSCorrespondence);
-						if ($codes)
-							$result['PAYSYSTEM_'.$item['ID']]['CODES'] = $codes;
-
-						unset($arPSCorrespondence);
-					}
-					elseif (isset($data))
-					{
-						$data['NAME'] = $item['NAME'];
-						$data['GROUP'] = 'PAYSYSTEM';
-						$data['PROVIDERS'] = array('VALUE', 'COMPANY', 'ORDER', 'USER', 'PROPERTY', 'PAYMENT');
-						$result['PAYSYSTEM_'.$item['ID']] = $data;
-
-						unset($data);
-					}
-				}
-			}
+			$result['PAYSYSTEM_'.$item['ID']] = $data;
 		}
 
 		return $result;
-	}
-
-	/**
-	 * @param array $arPSCorrespondence
-	 * @return array
-	 */
-	private static function convertCodesToNewFormat(array $arPSCorrespondence)
-	{
-		if ($arPSCorrespondence)
-		{
-			foreach ($arPSCorrespondence as $i => $property)
-			{
-				if ($property['TYPE'] == 'SELECT')
-				{
-					$options = array();
-					foreach ($property['VALUE'] as $code => $value)
-						$options[$code] = $value['NAME'];
-
-					$arPSCorrespondence[$i] = array(
-						'NAME' => $property['NAME'],
-						'INPUT' => array(
-							'TYPE' => 'ENUM',
-							'OPTIONS' => $options
-						)
-					);
-				}
-				else if ($property['TYPE'] == 'FILE')
-				{
-					$arPSCorrespondence[$i] = array(
-						'NAME' => $property['NAME'],
-						'INPUT' => array(
-							'TYPE' => 'FILE'
-						)
-					);
-				}
-
-				if (array_key_exists('DESCR', $property))
-					$arPSCorrespondence[$i]['DESCRIPTION'] = $property['DESCR'];
-
-				$arPSCorrespondence[$i]['GROUP'] = 'PS_OTHER';
-			}
-
-			return $arPSCorrespondence;
-		}
-
-		return array();
 	}
 
 	/**
@@ -391,9 +340,21 @@ final class Manager
 							$group = (strpos($type, 'SYSTEM') !== false) ? 'SYSTEM' : 'USER';
 
 							if (!isset($result[$group][$handlerName]))
+							{
+								if (array_key_exists('DOMAIN', $data))
+								{
+									if ((IsModuleInstalled('bitrix24') && $data['DOMAIN'] === 'BOX') ||
+										(!IsModuleInstalled('bitrix24') && $data['DOMAIN'] === 'CLOUD')
+									)
+									{
+										continue(2);
+									}
+								}
+
 								$result[$group][$handlerName] = $psTitle;
+							}
 							$isDescriptionExist = true;
-							continue(2);
+							continue;
 						}
 					}
 				}
@@ -406,6 +367,9 @@ final class Manager
 				}
 			}
 		}
+
+		$result['USER'] = array_merge(static::getRestHandlers(), $result['USER']);
+
 		return $result;
 	}
 
@@ -435,47 +399,20 @@ final class Manager
 	 */
 	public static function getHandlerDescription($handler)
 	{
-		$path = null;
-		$data = array();
-		$documentRoot = Application::getDocumentRoot();
+		$service = new Service(array('ACTION_FILE' => $handler));
+		$data = $service->getHandlerDescription();
 
-		if (strpos($handler, '/') !== false)
+		$eventParams = array('handler' => $handler);
+		$event = new Event('sale', self::EVENT_ON_GET_HANDLER_DESC, $eventParams);
+		$event->send();
+		foreach ($event->getResults() as $eventResult)
 		{
-			$psTitle = '';
-			$arPSCorrespondence = array();
-
-			$actionFile = $documentRoot.$handler.'/.description.php';
-			if (File::isFileExists($actionFile))
-			{
-				require $actionFile;
-
-				if ($arPSCorrespondence)
-				{
-					$codes = self::convertCodesToNewFormat($arPSCorrespondence);
-
-					if ($codes)
-						return array('NAME' => $psTitle, 'SORT' => 100, 'CODES' => $codes);
-				}
-				elseif ($data)
-				{
-					return $data;
-				}
-			}
+			if($eventResult->getType() !== EventResult::ERROR)
+				$data['CODES'] = array_merge($data['CODES'], $eventResult->getParameters());
 		}
-		else
-		{
-			$path = self::getPathToHandlerFolder($handler);
-			if ($path !== null)
-			{
-				$path = $documentRoot.$path.'/.description.php';
-				if (File::isFileExists($path))
-				{
-					require $path;
 
-					return $data;
-				}
-			}
-		}
+		if (isset($data['CODES']) && is_array($data['CODES']))
+			uasort($data['CODES'], function ($a, $b) { return ($a['SORT'] < $b['SORT']) ? -1 : 1;});
 
 		return $data;
 	}
@@ -539,6 +476,10 @@ final class Manager
 		return $id;
 	}
 
+	/**
+	 * @return int
+	 * @throws \Exception
+	 */
 	private static function createInnerPaySystem()
 	{
 		$paySystemSettings = array(
@@ -591,6 +532,11 @@ final class Manager
 		return null;
 	}
 
+	/**
+	 * @param $folder
+	 * @param int $paySystemId
+	 * @return array|mixed
+	 */
 	public static function getTariff($folder, $paySystemId = 0)
 	{
 		$documentRoot = Application::getDocumentRoot();
@@ -604,10 +550,11 @@ final class Manager
 				require_once $documentRoot.$path.'/handler.php';
 
 				$className = self::getClassNameFromPath($folder);
-				$interfaces = class_implements($className);
-				if (array_key_exists('Bitrix\Sale\PaySystem\IPayable', $interfaces))
+				if (class_exists($className))
 				{
-					$result = $className::getStructure($paySystemId);
+					$interfaces = class_implements($className);
+					if (array_key_exists('Bitrix\Sale\PaySystem\IPayable', $interfaces))
+						$result = $className::getStructure($paySystemId);
 				}
 			}
 		}
@@ -619,10 +566,16 @@ final class Manager
 		return $result;
 	}
 
+	/**
+	 * @return array
+	 */
 	public static function getBusValueGroups()
 	{
 		return array(
+			'CONNECT_SETTINGS_ALFABANK' => array('NAME' => Loc::getMessage('SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_ALFABANK'), 'SORT' => 100),
+			'CONNECT_SETTINGS_AUTHORIZE' => array('NAME' => Loc::getMessage('SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_AUTHORIZE'), 'SORT' => 100),
 			'CONNECT_SETTINGS_YANDEX' => array('NAME' => Loc::getMessage('SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_YANDEX'), 'SORT' => 100),
+			'CONNECT_SETTINGS_YANDEX_INVOICE' => array('NAME' => Loc::getMessage('SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_YANDEX_INVOICE'), 'SORT' => 100),
 			'CONNECT_SETTINGS_WEBMONEY' => array('NAME' => Loc::getMessage('SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_WEBMONEY'), 'SORT' => 100),
 			'CONNECT_SETTINGS_ASSIST' => array('NAME' => Loc::getMessage('SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_ASSIST'), 'SORT' => 100),
 			'CONNECT_SETTINGS_ROBOXCHANGE' => array('NAME' => Loc::getMessage('SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_ROBOXCHANGE'), 'SORT' => 100),
@@ -636,9 +589,152 @@ final class Manager
 			'CONNECT_SETTINGS_BILLUA' => array('NAME' => Loc::getMessage('SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_BILLUA'), 'SORT' => 100),
 			'CONNECT_SETTINGS_BILLLA' => array('NAME' => Loc::getMessage('SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_BILLLA'), 'SORT' => 100),
 			'GENERAL_SETTINGS' => array('NAME' => Loc::getMessage('SALE_PS_MANAGER_GROUP_GENERAL_SETTINGS'), 'SORT' => 100),
+			'COLUMN_SETTINGS' => array('NAME' => Loc::getMessage('SALE_PS_MANAGER_GROUP_COLUMN'), 'SORT' => 100),
+			'VISUAL_SETTINGS' => array('NAME' => Loc::getMessage('SALE_PS_MANAGER_GROUP_VISUAL'), 'SORT' => 100),
 			'PAYMENT' => array('NAME' => Loc::getMessage('SALE_PS_MANAGER_GROUP_PAYMENT'), 'SORT' => 200),
 			'PAYSYSTEM' => array('NAME' => Loc::getMessage('SALE_PS_MANAGER_GROUP_PAYSYSTEM'), 'SORT' => 500),
 			'PS_OTHER' => array('NAME' => Loc::getMessage('SALE_PS_MANAGER_GROUP_PS_OTHER'), 'SORT' => 10000)
 		);
+	}
+
+	/**
+	 * @param $primary
+	 * @return \Bitrix\Main\Entity\DeleteResult
+	 */
+	public static function delete($primary)
+	{
+		$paySystemInfo = array();
+		if ($primary)
+		{
+			$dbRes = PaySystemActionTable::getById($primary);
+			$paySystemInfo = $dbRes->fetch();
+		}
+
+		$result = PaySystemActionTable::delete($primary);
+		if ($result->isSuccess())
+		{
+			if ($paySystemInfo['LOGOTIP'])
+				\CFile::Delete($paySystemInfo['LOGOTIP']);
+
+			$restrictionList =  Restrictions\Manager::getRestrictionsList($primary);
+			if ($restrictionList)
+			{
+				Restrictions\Manager::getClassesList();
+
+				foreach ($restrictionList as $restriction)
+				{
+					/** @var \Bitrix\Sale\Services\Base\Restriction $className */
+					$className = $restriction["CLASS_NAME"];
+					if (is_subclass_of($className, '\Bitrix\Sale\Services\Base\Restriction'))
+					{
+						$className::delete($restriction['ID'], $primary);
+					}
+				}
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * @param $paySystemId
+	 * @return array
+	 * @throws \Bitrix\Main\ArgumentException
+	 */
+	public static function getPersonTypeIdList($paySystemId)
+	{
+		$data = array();
+
+		$dbRestriction = ServiceRestrictionTable::getList(array(
+			'filter' => array(
+				'SERVICE_ID' => $paySystemId,
+				'SERVICE_TYPE' => Restrictions\Manager::SERVICE_TYPE_PAYMENT,
+				'=CLASS_NAME' => '\Bitrix\Sale\Services\PaySystem\Restrictions\PersonType'
+			)
+		));
+
+		while ($restriction = $dbRestriction->fetch())
+			$data = array_merge($data, $restriction['PARAMS']['PERSON_TYPE_ID']);
+
+		return $data;
+	}
+
+	/**
+	 * @param array $data
+	 * @return null|EntityCollection|Payment
+	 */
+	public static function getPaymentObjectByData(array $data)
+	{
+		$context = Application::getInstance()->getContext();
+
+		/** @var Order $order */
+		$order = Order::create($context->getSite());
+		$order->setPersonTypeId($data['PERSON_TYPE_ID']);
+
+		$basket = Basket::create($context->getSite());
+		$order->setBasket($basket);
+
+		$collection = $order->getPaymentCollection();
+		if ($collection)
+			return $collection->createItem();
+
+		return null;
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function getDataRefundablePage()
+	{
+		$paySystemList = array();
+		$dbRes = static::getList();
+		while ($data = $dbRes->fetch())
+		{
+			$service = new Service($data);
+			if ($service->isRefundable())
+				$paySystemList[$data['ACTION_FILE']][] = $data;
+		}
+
+		$result = array();
+		foreach ($paySystemList as $handler => $data)
+		{
+			/* @var ServiceHandler $classHandler */
+			$classHandler = static::getClassNameFromPath($handler);
+
+			if (is_subclass_of($classHandler, '\Bitrix\Sale\PaySystem\ServiceHandler'))
+			{
+				$settings = $classHandler::findMyDataRefundablePage($data);
+				if ($settings)
+					$result = array_merge($settings, $result);
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * @return array
+	 */
+	private function getRestHandlers()
+	{
+		$result = array();
+
+		$dbRes = PaySystemRestHandlersTable::getList();
+		while ($item = $dbRes->fetch())
+		{
+			$result[$item['CODE']] = $item['NAME'].' ('.$item['CODE'].')';
+		}
+
+		return $result;
+	}
+
+	/**
+	 * @param $handler
+	 * @return bool
+	 */
+	public static function isRestHandler($handler)
+	{
+		$dbRes = PaySystemRestHandlersTable::getList(array('filter' => array('CODE' => $handler)));
+		return (bool)$dbRes->fetch();
 	}
 }

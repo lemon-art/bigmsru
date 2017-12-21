@@ -12,6 +12,7 @@ $MESS["UPLOADER_UPLOADING_ERROR1"] = "Некорректный ответ сер
 $MESS["UPLOADER_UPLOADING_ERROR2"] = "Количество файлов указанной формы превышает допустимое значение.";
 $MESS["UPLOADER_UPLOADING_ERROR4"] = "Размер файла превышает допустимый.";
 $MESS["UPLOADER_UPLOADING_ERROR5"] = "Не получен ответ от сервера.";
+$MESS["UPLOADER_UPLOADING_ERROR6"] = "Не достаточно места на сервере. ";
 $MESS["UPLOADER_UPLOADING_ERROR3"] = "Файл не склеен на сервере.";
 $MESS["UPLOADER_UPLOADING_ONBEFOREUNLOAD"] = "Загрузка файлов не завершена. Вы хотите покинуть страницу?";
 ?>

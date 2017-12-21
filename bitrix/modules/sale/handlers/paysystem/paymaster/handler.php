@@ -60,10 +60,11 @@ class PayMasterHandler extends WebMoneyHandler
 			)
 			{
 				$serviceResult->addError(new Error(Loc::getMessage('SALE_HPS_PAYMASTER_ERROR_PARAMS_VALUE')));
-				return $serviceResult;
 			}
-
-			$serviceResult->setData(array('CODE' => 'YES'));
+			else
+			{
+				$serviceResult->setData(array('CODE' => 'YES'));
+			}
 		}
 		else
 		{
@@ -132,7 +133,7 @@ class PayMasterHandler extends WebMoneyHandler
 		if (!$serviceResult->isSuccess())
 		{
 			PaySystem\ErrorLog::add(array(
-				'ACTION' => $request->get('LMI_PREREQUEST'),
+				'ACTION' => 'processRequest',
 				'MESSAGE' => join(' ', $serviceResult->getErrorMessages())
 			));
 		}

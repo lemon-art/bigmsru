@@ -93,8 +93,8 @@ class CodeTree
 			foreach ($updaterSteps as $i => $statement)
 			{
 				/**
-				 * @var Condition $condition
-				 */
+				* @var Condition $condition
+				*/
 				foreach ($statement->conditions as $condition)
 				{
 					$predicate = $condition->getPredicate();
@@ -102,6 +102,7 @@ class CodeTree
 					{
 						$byPredicates[$predicate] = array(
 							"predicate" => $predicate,
+							"dep" => $statement->dependOn,
 							"sort" => $this->getPredicateSort($predicate),
 							"count" => 1,
 						);
@@ -116,6 +117,7 @@ class CodeTree
 			if ($byPredicates)
 			{
 				sortByColumn($byPredicates, array(
+					"dep" => SORT_ASC,
 					"count" => SORT_DESC,
 					"sort" => SORT_ASC,
 				));

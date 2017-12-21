@@ -7,14 +7,24 @@ use Bitrix\B24Connector\Connection;
 
 Loc::loadMessages(__FILE__);
 
+$listParams = array(
+	'FILTER' => array(
+		'TYPE' => 'crmform'
+	),
+	'EMPTY_BUTTON' => array(
+		'TITLE' => Loc::getMessage('B24C_CRMF_GET_FORMS'),
+		'URL_METHOD' => '\Bitrix\B24Connector\Connection::getWebformConfigUrl'
+	)
+);
+
 $APPLICATION->SetTitle(Loc::getMessage('B24C_CRMF_TITLE'));
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
 if(!empty($errorMsgs))
 {
 	$admMessage = new CAdminMessage(array(
-			"TYPE" => "ERROR",
-			"MESSAGE" => implode("<br>\n", $errorMsgs),
-			"HTML" => true
+		"TYPE" => "ERROR",
+		"MESSAGE" => implode("<br>\n", $errorMsgs),
+		"HTML" => true
 	));
 
 	echo $admMessage->Show();
@@ -42,15 +52,7 @@ if(!empty($errorMsgs))
 	$APPLICATION->IncludeComponent(
 		"bitrix:b24connector.button.list",
 		".default",
-		array(
-			'FILTER' => array(
-				'TYPE' => 'crmform'
-			),
-			'EMPTY_BUTTON' => array(
-				'TITLE' => Loc::getMessage('B24C_CRMF_GET_FORMS'),
-				'URL' => 'https://'.htmlspecialcharsbx(Connection::getDomain()).'/crm/webform/'
-			)
-		),
+		$listParams,
 		false
 	);
 	?>

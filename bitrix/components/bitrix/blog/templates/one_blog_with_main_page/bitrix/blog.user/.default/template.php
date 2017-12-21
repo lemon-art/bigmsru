@@ -117,6 +117,26 @@ else
 		<?=bitrix_sessid_post()?>
 		<input type="hidden" name="mode" value="edit">
 		<br />
+		<?
+		if ($arParams['USER_CONSENT'] == 'Y')
+			$APPLICATION->IncludeComponent(
+				"bitrix:main.userconsent.request",
+				"",
+				array(
+					"ID" => $arParams["USER_CONSENT_ID"],
+					"IS_CHECKED" => $arParams["USER_CONSENT_IS_CHECKED"],
+					"AUTO_SAVE" => "Y",
+					"IS_LOADED" => $arParams["USER_CONSENT_IS_LOADED"],
+					"ORIGIN_ID" => "sender/sub",
+					"ORIGINATOR_ID" => "",
+					"REPLACE" => array(
+						'button_caption' => GetMessage("B_B_USER_SAVE"),
+						'fields' => array(GetMessage("B_B_USER_ALIAS"), GetMessage("B_B_USER_SITE"), GetMessage("B_B_USER_BIRTHDAY"), GetMessage("B_B_USER_PHOTO"))
+					),
+				)
+			);
+		?>
+		<br />
 		<input type="submit" name="save" value="<?=GetMessage("B_B_USER_SAVE")?>">
 		<input type="reset" name="cancel" value="<?=GetMessage("B_B_USER_CANCEL")?>" OnClick="window.location='<?=$arResult["urlToCancel"]?>'">
 		</form>

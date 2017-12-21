@@ -7,7 +7,7 @@ if(!CModule::IncludeModule("iblock"))
 $arIBlockType = CIBlockParameters::GetIBlockTypes();
 
 $arIBlock=array();
-$rsIBlock = CIBlock::GetList(Array("sort" => "asc"), Array("TYPE" => $arCurrentValues["IBLOCK_TYPE"], "ACTIVE"=>"Y"));
+$rsIBlock = CIBlock::GetList(Array("SORT" => "ASC"), Array("TYPE" => $arCurrentValues["IBLOCK_TYPE"], "ACTIVE"=>"Y"));
 while($arr=$rsIBlock->Fetch())
 {
 	$arIBlock[$arr["ID"]] = "[".$arr["ID"]."] ".$arr["NAME"];
@@ -349,6 +349,12 @@ $arComponentParameters = array(
 			"DEFAULT" => Array(1),
 			"MULTIPLE" => "Y",
 		),
+		"STRICT_SECTION_CHECK" => array(
+			"PARENT" => "ADDITIONAL_SETTINGS",
+			"NAME" => GetMessage("CP_BN_STRICT_SECTION_CHECK"),
+			"TYPE" => "CHECKBOX",
+			"DEFAULT" => isset($arCurrentValues["DETAIL_STRICT_SECTION_CHECK"])? $arCurrentValues["DETAIL_STRICT_SECTION_CHECK"]: "N",
+		),
 		"CACHE_TIME"  =>  Array("DEFAULT"=>36000000),
 		"CACHE_FILTER" => array(
 			"PARENT" => "CACHE_SETTINGS",
@@ -501,6 +507,7 @@ if($arCurrentValues["USE_CATEGORIES"]=="Y")
 				);
 			}
 }
+
 if(!IsModuleInstalled("forum"))
 {
 	unset($arComponentParameters["GROUPS"]["REVIEW_SETTINGS"]);

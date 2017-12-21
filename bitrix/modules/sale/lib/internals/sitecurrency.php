@@ -75,7 +75,7 @@ class SiteCurrencyTable extends Main\Entity\DataManager
 	 * Returns site currency.
 	 *
 	 * @param string $siteId				Site id.
-	 * @return bool|string
+	 * @return string
 	 */
 	public static function getSiteCurrency($siteId)
 	{

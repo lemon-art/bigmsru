@@ -1,4 +1,5 @@
 <?
+use Bitrix\Main\Text\HtmlFilter;
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
 if (!CModule::IncludeModule("blog"))
@@ -189,15 +190,6 @@ else
 	foreach($arResult["BlogUser"] as $k=>$v)
 		$arResult["User"][$k] = $v;
 		
-	if($arResult["bEdit"] == "Y")
-	{
-		$arResult["User"]["ALIAS"] = htmlspecialcharsbx($_POST["ALIAS"]);
-		$arResult["User"]["DESCRIPTION"] = htmlspecialcharsbx($_POST["DESCRIPTION"]);
-		$arResult["User"]["PERSONAL_WWW"] = htmlspecialcharsbx($_POST["PERSONAL_WWW"]);
-		$arResult["User"]["PERSONAL_GENDER"] = htmlspecialcharsbx($_POST["PERSONAL_GENDER"]);
-		$arResult["User"]["PERSONAL_BIRTHDAY"] = htmlspecialcharsbx($_POST["PERSONAL_BIRTHDAY"]);
-		$arResult["User"]["INTERESTS"] = htmlspecialcharsbx($_POST["INTERESTS"]);
-	}
 	if($arParams["SET_TITLE"]=="Y")
 	{
 		if($arResult["bEdit"] == "Y")
@@ -229,7 +221,7 @@ else
 		if(strlen($Hobby)>0)
 			$arResult["User"]["Hobby"][] = Array(
 					"link" => $arParams["PATH_TO_SEARCH"].'where=USER&q='.urlencode($Hobby),
-					"name" => htmlspecialcharsEx($Hobby),
+					"name" => HtmlFilter::encode($Hobby),
 				);
 	}
 	

@@ -184,7 +184,7 @@ class CTimeZone
 				{
 					$autoTimeZone = trim($arUser["AUTO_TIME_ZONE"]);
 					$userZone = $arUser["TIME_ZONE"];
-					$factOffset = $arUser["TIME_ZONE_OFFSET"];
+					$factOffset = intval($arUser["TIME_ZONE_OFFSET"]);
 				}
 			}
 			elseif(is_object($USER))
@@ -212,6 +212,11 @@ class CTimeZone
 					{
 						//auto time zone from cookie
 						$userOffset = -($cookie)*60;
+					}
+					elseif(is_object($USER))
+					{
+						//auto time zone from the session, set on Authorize
+						return intval($USER->GetParam("TIME_ZONE_OFFSET"));
 					}
 				}
 				else

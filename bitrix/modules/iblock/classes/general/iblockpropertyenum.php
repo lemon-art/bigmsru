@@ -139,7 +139,7 @@ class CIBlockPropertyEnum
 			$arFields["XML_ID"] = $arFields["EXTERNAL_ID"];
 
 		if(!is_set($arFields, "XML_ID"))
-			$arFields["XML_ID"] = md5(uniqid(""));
+			$arFields["XML_ID"] = md5(uniqid("", true));
 
 
 		unset($arFields["ID"]);

@@ -12,6 +12,18 @@ class CAllDiskQuota
 {
 	var $max_execution_time = 20; // 20 sec
 	var $LAST_ERROR = false;
+	private static $instance;
+
+	public static function getInstance()
+	{
+		if (!isset(self::$instance))
+		{
+			$c = __CLASS__;
+			self::$instance = new $c;
+		}
+
+		return self::$instance;
+	}
 
 	public function __construct($params = array())
 	{

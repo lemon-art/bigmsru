@@ -33,4 +33,5 @@ $MESS["CP_BNL_SET_BROWSER_TITLE"] = "Устанавливать заголово
 $MESS["CP_BNL_SET_META_KEYWORDS"] = "Устанавливать ключевые слова страницы";
 $MESS["CP_BNL_SET_META_DESCRIPTION"] = "Устанавливать описание страницы";
 $MESS["CP_BNL_SET_LAST_MODIFIED"] = "Устанавливать в заголовках ответа время модификации страницы";
+$MESS["CP_BNL_STRICT_SECTION_CHECK"] = "Строгая проверка раздела для показа списка";
 ?>

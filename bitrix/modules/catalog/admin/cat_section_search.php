@@ -18,14 +18,12 @@ $n = preg_replace("/[^a-zA-Z0-9_\\[\\]]/", "", $_GET["n"]);
 $k = preg_replace("/[^a-zA-Z0-9_:]/", "", $_GET["k"]);
 $m = $_GET["m"] === "y";
 
-$strWarning = "";
-
 $APPLICATION->SetTitle(GetMessage("BX_MOD_CATALOG_ADMIN_CSS_TITLE"));
 
 $entity_id = false;
 
 $sTableID = "tbl_iblock_section_search_".intval($arIBlock["ID"]);
-$oSort = new CAdminSorting($sTableID, "NAME", "asc");
+$oSort = new CAdminSorting($sTableID, "NAME", "ASC");
 $lAdmin = new CAdminList($sTableID, $oSort);
 
 $arFilterFields = Array(
@@ -203,9 +201,18 @@ if($entity_id)
 $lAdmin->AddHeaders($arHeaders);
 
 $arVisibleColumns = $lAdmin->GetVisibleHeaderColumns();
+if (!in_array('ID', $arVisibleColumns))
+	$arVisibleColumns[] = 'ID';
+if (!in_array('XML_ID', $arVisibleColumns))
+	$arVisibleColumns[] = 'XML_ID';
 $arVisibleColumnsMap = array();
 foreach($arVisibleColumns as $value)
 	$arVisibleColumnsMap[$value] = true;
+
+if (!isset($by))
+	$by = 'NAME';
+if (!isset($order))
+	$order = 'ASC';
 
 if(array_key_exists("ELEMENT_CNT", $arVisibleColumnsMap))
 {
@@ -353,7 +360,7 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_popup_adm
 
 $chain = new CAdminChain("main_navchain");
 $chain->AddItem(array(
-	"TEXT" => htmlspecialcharsex($arIBlock["NAME"]),
+	"TEXT" => htmlspecialcharsEx($arIBlock["NAME"]),
 	"LINK" => '/bitrix/admin/cat_section_search.php?lang='.LANGUAGE_ID.'&amp;IBLOCK_ID='.$IBLOCK_ID.'&amp;find_section_section=0'.'&amp;n='.urlencode($n).'&amp;k='.urlencode($k).($m? "&amp;m=y": ""),
 	"ONCLICK" => $lAdmin->ActionAjaxReload('/bitrix/admin/cat_section_search.php?lang='.LANGUAGE_ID.'&IBLOCK_ID='.$IBLOCK_ID.'&find_section_section=0'.'&n='.urlencode($n).'&k='.urlencode($k).($m? "&m=y": "")).';return false;',
 ));
@@ -436,7 +443,7 @@ function SelAll()
 	</tr>
 	<tr>
 		<td><b><?echo GetMessage("BX_MOD_CATALOG_ADMIN_CSS_HEAD_NAME")?>:</b></td>
-		<td><input type="text" name="find_section_name" value="<?echo htmlspecialcharsex($find_section_name)?>" size="47">&nbsp;<?=ShowFilterLogicHelp()?></td>
+		<td><input type="text" name="find_section_name" value="<?echo htmlspecialcharsEx($find_section_name)?>" size="47">&nbsp;<?=ShowFilterLogicHelp()?></td>
 	</tr>
 
 	<tr>
@@ -449,7 +456,7 @@ function SelAll()
 	</tr>
 	<tr>
 		<td><?echo GetMessage("BX_MOD_CATALOG_ADMIN_CSS_HEAD_MODIFIED_BY")?>:</td>
-		<td><input type="text" name="find_section_modified_user_id" value="<?echo htmlspecialcharsex($find_section_modified_by)?>" size="3">&nbsp;<?
+		<td><input type="text" name="find_section_modified_user_id" value="<?echo htmlspecialcharsEx($find_section_modified_by)?>" size="3">&nbsp;<?
 		$gr_res = CIBlock::GetGroupPermissions($IBLOCK_ID);
 		$res = Array(1);
 		foreach($gr_res as $gr=>$perm)
@@ -459,17 +466,17 @@ function SelAll()
 		?><select name="find_section_modified_by">
 		<option value=""><?echo GetMessage("IBLOCK_ALL")?></option><?
 		while($arr = $res->Fetch())
-			echo "<option value='".$arr["ID"]."'".($find_section_modified_by==$arr["ID"]?" selected":"").">(".htmlspecialcharsex($arr["LOGIN"].") ".$arr["NAME"]." ".$arr["LAST_NAME"])."</option>";
+			echo "<option value='".$arr["ID"]."'".($find_section_modified_by==$arr["ID"]?" selected":"").">(".htmlspecialcharsEx($arr["LOGIN"].") ".$arr["NAME"]." ".$arr["LAST_NAME"])."</option>";
 		?></select>
 		</td>
 	</tr>
 	<tr>
 		<td><?echo GetMessage("BX_MOD_CATALOG_ADMIN_CSS_HEAD_DATE_CREATE").":"?></td>
-		<td><?echo CalendarPeriod("find_section_date_create_1", htmlspecialcharsex($find_section_date_create_1), "find_section_date_create_2", htmlspecialcharsex($find_section_date_create_2), "find_section_form")?></td>
+		<td><?echo CalendarPeriod("find_section_date_create_1", htmlspecialcharsEx($find_section_date_create_1), "find_section_date_create_2", htmlspecialcharsEx($find_section_date_create_2), "find_section_form")?></td>
 	</tr>
 	<tr>
 		<td><?echo GetMessage("BX_MOD_CATALOG_ADMIN_CSS_HEAD_CREATED_BY")?>:</td>
-		<td><input type="text" name="find_section_created_user_id" value="<?echo htmlspecialcharsex($find_section_created_by)?>" size="3">&nbsp;<?
+		<td><input type="text" name="find_section_created_user_id" value="<?echo htmlspecialcharsEx($find_section_created_by)?>" size="3">&nbsp;<?
 		$gr_res = CIBlock::GetGroupPermissions($IBLOCK_ID);
 		$res = Array(1);
 		foreach($gr_res as $gr=>$perm)
@@ -479,7 +486,7 @@ function SelAll()
 		?><select name="find_section_created_by">
 		<option value=""><?echo GetMessage("IBLOCK_ALL")?></option><?
 		while($arr = $res->Fetch())
-			echo "<option value='".$arr["ID"]."'".($find_section_created_by==$arr["ID"]?" selected":"").">(".htmlspecialcharsex($arr["LOGIN"].") ".$arr["NAME"]." ".$arr["LAST_NAME"])."</option>";
+			echo "<option value='".$arr["ID"]."'".($find_section_created_by==$arr["ID"]?" selected":"").">(".htmlspecialcharsEx($arr["LOGIN"].") ".$arr["NAME"]." ".$arr["LAST_NAME"])."</option>";
 		?></select>
 		</td>
 	</tr>
@@ -495,9 +502,9 @@ function SelAll()
 		<td><?echo GetMessage("BX_MOD_CATALOG_ADMIN_CSS_HEAD_ACTIVE")?>:</td>
 		<td>
 			<select name="find_section_active" >
-				<option value=""><?=htmlspecialcharsex(GetMessage('IBLOCK_ALL'))?></option>
-				<option value="Y"<?if($find_section_active=="Y")echo " selected"?>><?=htmlspecialcharsex(GetMessage("IBLOCK_YES"))?></option>
-				<option value="N"<?if($find_section_active=="N")echo " selected"?>><?=htmlspecialcharsex(GetMessage("IBLOCK_NO"))?></option>
+				<option value=""><?=htmlspecialcharsEx(GetMessage('IBLOCK_ALL'))?></option>
+				<option value="Y"<?if($find_section_active=="Y")echo " selected"?>><?=htmlspecialcharsEx(GetMessage("IBLOCK_YES"))?></option>
+				<option value="N"<?if($find_section_active=="N")echo " selected"?>><?=htmlspecialcharsEx(GetMessage("IBLOCK_NO"))?></option>
 			</select>
 		</td>
 	</tr>
@@ -510,7 +517,5 @@ $oFilter->End();
 </form>
 <?
 $lAdmin->DisplayList();
-
-ShowError($strWarning);
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_popup_admin.php");

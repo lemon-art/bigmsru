@@ -449,6 +449,7 @@ class YandexBannerTable extends AdvEntity
 			}
 		}
 
+//		format Geolocation seletc to string
 		if($newBanner || isset($data["SETTINGS"]["Geo"]))
 		{
 			if(is_array($data["SETTINGS"]["Geo"]))
@@ -461,7 +462,14 @@ class YandexBannerTable extends AdvEntity
 
 		if($newBanner || isset($data["SETTINGS"]["Phrases"]))
 		{
-			if(!is_array($data["SETTINGS"]["Phrases"]) || count($data["SETTINGS"]["Phrases"]) <= 0)
+			if(strlen($data["SETTINGS"]["Geo"]) <= 0)
+			{
+				$result->addError(new Entity\FieldError(
+					static::getEntity()->getField('SETTINGS'),
+					Loc::getMessage('SEO_BANNER_ERROR_NO_GEO')
+				));
+			}
+			elseif(!is_array($data["SETTINGS"]["Phrases"]) || count($data["SETTINGS"]["Phrases"]) <= 0)
 			{
 				$result->addError(new Entity\FieldError(
 					static::getEntity()->getField('SETTINGS'),

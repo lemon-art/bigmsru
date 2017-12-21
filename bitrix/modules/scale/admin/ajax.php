@@ -49,6 +49,7 @@ if(strlen($arResult["ERROR"]) <= 0 && $USER->IsAdmin() && check_bitrix_sessid())
 			{
 				$result = $action->start();
 				$arResult["ACTION_RESULT"] = $action->getResult();
+				\CUserCounter::Increment($USER->GetID(),'SCALE_ACTIONS_EXECUTED', SITE_ID, false);
 			}
 			catch(\Bitrix\Scale\NeedMoreUserInfoException $e)
 			{
@@ -147,6 +148,32 @@ if(strlen($arResult["ERROR"]) <= 0 && $USER->IsAdmin() && check_bitrix_sessid())
 			{
 				$arResult["TASK_ID"] = \Bitrix\Scale\Provider::sendOrder($providerId,$configId);
 				$result = true;
+			}
+
+			break;
+
+		case "upload_files":
+			if(!empty($_FILES))
+			{
+				$tmpDir = \Bitrix\Scale\Helper::getTmpDir();
+				$uploadedFiles = array();
+
+				foreach($_FILES as $file)
+				{
+					if(!is_uploaded_file($file['tmp_name']))
+						continue;
+
+					if($file['size'] <= 0)
+						continue;
+
+					$uploadFile = $tmpDir.'/'.basename($file['name']);
+
+					if(move_uploaded_file($file['tmp_name'], $uploadFile))
+						$uploadedFiles[] = $uploadFile;
+				}
+
+				$arResult['FILES'] = $uploadedFiles;
+				$result = !empty($arResult['FILES']);
 			}
 
 			break;

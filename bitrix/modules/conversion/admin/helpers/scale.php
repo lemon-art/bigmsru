@@ -15,11 +15,11 @@ function renderFilter(array $filter)
 		<div class="adm-detail-toolbar-right">
 			<span class="adm-profit-filter"><?=Loc::getMessage('CONVERSION_FILTER_PERIOD')?>:</span>
 			<div class="adm-input-wrap adm-input-wrap-calendar">
-				<input id="bitrix-conversion-from" class="adm-input adm-input-calendar" type="text" name="from" value="<?=$filter['from']?>">
+				<input id="bitrix-conversion-from" class="adm-input adm-input-calendar" type="text" name="from" value="<?=htmlspecialcharsbx($filter['from']) ?>">
 				<span class="adm-calendar-icon" title="<?=Loc::getMessage("admin_lib_calend_title")?>" onclick="BX.calendar({node:this, field:'from', form: '', bTime: 'false', bHideTime: false});"></span>
 			</div>
 			<div class="adm-input-wrap adm-input-wrap-calendar">
-				<input id="bitrix-conversion-to" class="adm-input adm-input-calendar" type="text" name="to" value="<?=$filter['to']?>">
+				<input id="bitrix-conversion-to" class="adm-input adm-input-calendar" type="text" name="to" value="<?=htmlspecialcharsbx($filter['to']) ?>">
 				<span class="adm-calendar-icon" title="<?=Loc::getMessage("admin_lib_calend_title")?>" onclick="BX.calendar({node:this, field:'to', form: '', bTime: 'false', bHideTime: false});"></span>
 			</div>
 			<span class="adm-btn" onclick="

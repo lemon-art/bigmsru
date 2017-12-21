@@ -6,19 +6,19 @@ foreach ($arResult["VALUE"] as $res):
 		{
 			case "DROPDOWN":
 ?><select name="<?=$arParams["arUserField"]["FIELD_NAME"]?>">
-	<option value="1"<?=($res? ' selected': '')?>><?=GetMessage("MAIN_YES")?></option>
-	<option value="0"<?=(!$res? ' selected': '')?>><?=GetMessage("MAIN_NO")?></option>
+	<option value="1"<?=($res? ' selected': '')?>><?=\Bitrix\Main\Text\HtmlFilter::encode($arResult['FIELD_LABEL'][1])?></option>
+	<option value="0"<?=(!$res? ' selected': '')?>><?=\Bitrix\Main\Text\HtmlFilter::encode($arResult['FIELD_LABEL'][0])?></option>
 </select><?
 			break;
 			case "RADIO":
 ?><label><input type="radio" value="1" name="<?=$arParams["arUserField"]["FIELD_NAME"]?>"
-	<?=($res ? ' checked': '')?>><?=GetMessage("MAIN_YES")?></label><br>
+	<?=($res ? ' checked': '')?>><?=\Bitrix\Main\Text\HtmlFilter::encode($arResult['FIELD_LABEL'][1])?></label><br>
 <label><input type="radio" value="0" name="<?=$arParams["arUserField"]["FIELD_NAME"]?>"
-	<?=(!$res ? ' checked': '')?>><?=GetMessage("MAIN_NO")?></label><?
+	<?=(!$res ? ' checked': '')?>><?=\Bitrix\Main\Text\HtmlFilter::encode($arResult['FIELD_LABEL'][0])?></label><?
 			break;
 			default:
 ?><input type="hidden" value="0" name="<?=$arParams["arUserField"]["FIELD_NAME"]?>">
-<input type="checkbox" value="1" name="<?=$arParams["arUserField"]["FIELD_NAME"]?>" <?=($res ? "checked=\"checked\"": "")?>><?
+				<label><input type="checkbox" value="1" name="<?=$arParams["arUserField"]["FIELD_NAME"]?>" <?=($res ? "checked=\"checked\"": "")?>> <?=\Bitrix\Main\Text\HtmlFilter::encode($arResult['FIELD_LABEL'][1])?></label><?
 			break;
 		}
 ?></div><?

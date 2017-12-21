@@ -1,4 +1,5 @@
 <?
+/** @deprecated deprecated since sale 17.0.6 */
 use Bitrix\Iblock;
 use Bitrix\Highloadblock as HL;
 use Bitrix\Main\Loader;
@@ -21,7 +22,12 @@ if (!function_exists("getProductByProps"))
 			'filter' => array(
 				'=IBLOCK_ID' => $iblockID,
 				'=ACTIVE' => 'Y',
-				'@PROPERTY_TYPE' => array(Iblock\PropertyTable::TYPE_ELEMENT, Iblock\PropertyTable::TYPE_LIST, Iblock\PropertyTable::TYPE_STRING)
+				'=MULTIPLE' => 'N',
+				'@PROPERTY_TYPE' => array(
+					Iblock\PropertyTable::TYPE_ELEMENT,
+					Iblock\PropertyTable::TYPE_LIST,
+					Iblock\PropertyTable::TYPE_STRING
+				)
 			),
 			'order' => array('SORT' => 'ASC', 'ID' => 'ASC')
 		));

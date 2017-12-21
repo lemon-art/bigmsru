@@ -3,13 +3,17 @@ use Bitrix\Main\Entity\ReferenceField;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\SystemException;
 use Bitrix\Sale\Discount\Gift\RelatedDataTable;
-use Bitrix\Sale\Internals\DiscountGroupTable;
 use Bitrix\Sale\Internals\DiscountTable;
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 CBitrixComponent::includeComponentClass("bitrix:catalog.viewed.products");
 
+/**
+ * Class CSaleGiftSectionComponent
+ * @deprecated No longer used by internal code and not recommended.
+ * Use "sale.products.gift.section" instead.
+ */
 class CSaleGiftSectionComponent extends CCatalogViewedProductsComponent
 {
 	/** @var array */
@@ -255,6 +259,21 @@ class CSaleGiftSectionComponent extends CCatalogViewedProductsComponent
 		if($isEnabledCalculationDiscounts)
 		{
 			CIBlockPriceTools::enableCalculationDiscounts();
+		}
+	}
+
+	protected function setItemsPrices()
+	{
+		parent::setItemsPrices();
+
+		foreach ($this->items as &$item)
+		{
+			if (!empty($item['OFFERS']))
+			{
+				continue;
+			}
+
+			$this->setGiftDiscountToMinPrice($item);
 		}
 	}
 

@@ -325,32 +325,40 @@ class CacheEngineFiles
 		$this->read = @filesize($fn);
 		$this->path = $fn;
 
+		$res = true;
 		if (intval($datecreate) < (time() - $TTL))
 		{
 			if ($this->useLock)
 			{
 				if ($this->lock($fn))
 				{
-					return false;
+					$res = false;
 				}
 			}
 			else
 			{
-				return false;
+				$res = false;
 			}
 		}
 
-		if (is_array($arAllVars))
+		if($res == true)
 		{
-			$arAllVars = unserialize($ser_content);
+			if (is_array($arAllVars))
+			{
+				$arAllVars = unserialize($ser_content);
+			}
+			else
+			{
+				$arAllVars = fread($handle, $this->read);
+			}
 		}
-		else
+
+		if($handle)
 		{
-			$arAllVars = fread($handle, $this->read);
 			fclose($handle);
 		}
 
-		return true;
+		return $res;
 	}
 
 	/**

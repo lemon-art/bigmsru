@@ -142,7 +142,7 @@ function ForumCurrUserPermissions($FID, $arAddParams = array())
 			}
 			elseif (CForumUser::IsLocked($GLOBALS["USER"]->GetID()))
 			{
-				$strPerms = CForumNew::GetPermissionUserDefault($GLOBALS["USER"]->GetID());
+				$strPerms = CForumNew::GetPermissionUserDefault($FID);
 				$result = ($strPerms >= "E" ? $strPerms : "E");
 			}
 			else

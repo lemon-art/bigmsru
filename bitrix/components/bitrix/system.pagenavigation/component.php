@@ -43,14 +43,16 @@ if (is_object($arParams["NAV_RESULT"]) &&  is_subclass_of($arParams["NAV_RESULT"
 	else
 	{
 		$arResult["sUrlPath"] = GetPagePath(false, false);
-		$arResult["NavQueryString"] = htmlspecialcharsbx(DeleteParam(array(
-			"PAGEN_".$dbresult->NavNum,
-			"SIZEN_".$dbresult->NavNum,
-			"SHOWALL_".$dbresult->NavNum,
-			"PHPSESSID",
-			"clear_cache",
-			"bitrix_include_areas"
-		)));
+		$delParam = array_merge(
+			array(
+				"PAGEN_".$dbresult->NavNum,
+				"SIZEN_".$dbresult->NavNum,
+				"SHOWALL_".$dbresult->NavNum,
+				"PHPSESSID",
+			),
+			\Bitrix\Main\HttpRequest::getSystemParameters()
+		);
+		$arResult["NavQueryString"] = htmlspecialcharsbx(DeleteParam($delParam));
 	}
 	$arResult['sUrlPathParams'] = $arResult['sUrlPath'].'?'.($arResult['NavQueryString'] <> ''? $arResult['NavQueryString'].'&' : '');
 

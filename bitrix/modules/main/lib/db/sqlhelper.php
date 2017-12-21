@@ -393,12 +393,12 @@ abstract class SqlHelper
 	 * Converts values to the string according to the column type to use it in a SQL query.
 	 *
 	 * @param mixed $value Value to be converted.
-	 * @param Entity\ScalarField $field Type "source".
+	 * @param Entity\Field\IReadable $field Type "source".
 	 *
 	 * @return string Value to write to column.
 	 * @throws \Bitrix\Main\ArgumentTypeException
 	 */
-	public function convertToDb($value, Entity\ScalarField $field)
+	public function convertToDb($value, Entity\Field\IReadable $field = null)
 	{
 		if ($value === null)
 		{
@@ -410,71 +410,125 @@ abstract class SqlHelper
 			return $value->compile();
 		}
 
-		if($field instanceof Entity\DatetimeField)
+		if($field instanceof Entity\Field\IReadable)
 		{
-			if (empty($value))
-			{
-				$result = "NULL";
-			}
-			elseif($value instanceof Type\Date)
-			{
-				if($value instanceof Type\DateTime)
-				{
-					$value = clone($value);
-					$value->setDefaultTimeZone();
-				}
-				$result = $this->getCharToDateFunction($value->format("Y-m-d H:i:s"));
-			}
-			else
-			{
-				throw new Main\ArgumentTypeException('value', '\Bitrix\Main\Type\Date');
-			}
-		}
-		elseif($field instanceof Entity\DateField)
-		{
-			if (empty($value))
-			{
-				$result = "NULL";
-			}
-			elseif($value instanceof Type\Date)
-			{
-				$result = $this->getCharToDateFunction($value->format("Y-m-d"));
-			}
-			else
-			{
-				throw new Main\ArgumentTypeException('value', '\Bitrix\Main\Type\Date');
-			}
-		}
-		elseif($field instanceof Entity\IntegerField)
-		{
-			$result = "'".intval($value)."'";
-		}
-		elseif($field instanceof Entity\FloatField)
-		{
-			$value = doubleval($value);
-			if(!is_finite($value))
-			{
-				$value = 0;
-			}
-			if(($scale = $field->getScale()) !== null)
-			{
-				$result = "'".round($value, $scale)."'";
-			}
-			else
-			{
-				$result = "'".$value."'";
-			}
-		}
-		elseif($field instanceof Entity\StringField)
-		{
-			$result = "'".$this->forSql($value, $field->getSize())."'";
+			$result = $field->convertValueToDb($value);
 		}
 		else
 		{
-			$result = "'".$this->forSql($value)."'";
+			$result = $this->convertToDbString($value);
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Converts value to the string according to the data type to use it in a SQL query.
+	 *
+	 * @param mixed $value Value to be converted.
+	 *
+	 * @return string Value to write to column.
+	 */
+	public function convertToDbInteger($value)
+	{
+		return intval($value);
+	}
+
+	/**
+	 * Converts value to the string according to the data type to use it in a SQL query.
+	 *
+	 * @param mixed $value Value to be converted.
+	 * @param int|null $scale Precise to round float value.
+	 *
+	 * @return string Value to write to column.
+	 */
+	public function convertToDbFloat($value, $scale = null)
+	{
+		$value = doubleval($value);
+		if(!is_finite($value))
+		{
+			$value = 0;
+		}
+
+		return $scale !== null ? "'".round($value, $scale)."'" : "'".$value."'";
+	}
+
+	/**
+	 * Converts value to the string according to the data type to use it in a SQL query.
+	 *
+	 * @param mixed $value Value to be converted.
+	 * @param int|null $length Maximum acceptable length of the value
+	 *
+	 * @return string Value to write to column.
+	 */
+	public function convertToDbString($value, $length = null)
+	{
+		return "'".$this->forSql($value, $length)."'";
+	}
+
+	/**
+	 * Converts value to the string according to the data type to use it in a SQL query.
+	 *
+	 * @param mixed $value Value to be converted.
+	 *
+	 * @return string Value to write to column.
+	 */
+	public function convertToDbText($value)
+	{
+		return $this->convertToDbString($value);
+	}
+
+	/**
+	 * Converts value to the string according to the data type to use it in a SQL query.
+	 *
+	 * @param mixed $value Value to be converted.
+	 *
+	 * @return string Value to write to column.
+	 * @throws Main\ArgumentTypeException
+	 */
+	public function convertToDbDate($value)
+	{
+		if (empty($value))
+		{
+			return "NULL";
+		}
+		elseif($value instanceof Type\Date)
+		{
+			return $this->getCharToDateFunction($value->format("Y-m-d"));
+		}
+		else
+		{
+			throw new Main\ArgumentTypeException('value', '\Bitrix\Main\Type\Date');
+		}
+	}
+
+	/**
+	 * Converts value to the string according to the data type to use it in a SQL query.
+	 *
+	 * @param mixed $value Value to be converted.
+	 *
+	 * @return string Value to write to column.
+	 * @throws Main\ArgumentTypeException
+	 */
+	public function convertToDbDateTime($value)
+	{
+		if (empty($value))
+		{
+			return "NULL";
+		}
+		elseif($value instanceof Type\Date)
+		{
+			if($value instanceof Type\DateTime)
+			{
+				$value = clone($value);
+				$value->setDefaultTimeZone();
+			}
+			return $this->getCharToDateFunction($value->format("Y-m-d H:i:s"));
+		}
+		else
+		{
+			throw new Main\ArgumentTypeException('value', '\Bitrix\Main\Type\Date');
+		}
 	}
 
 	/**

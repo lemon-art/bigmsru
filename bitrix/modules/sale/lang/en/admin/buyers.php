@@ -52,4 +52,10 @@ $MESS["BUYER_F_TO"] = "until";
 $MESS["BUYER_ROW_LAST_ORDER_DATE"] = "Last order date";
 $MESS["BUYER_F_LAST_ORDER_DATE"] = "Last order date";
 $MESS["BUYER_ORDERS_LID"] = "Orders";
+$MESS["BUYER_ROW_COUNT_FULL_PAID_ORDER"] = "Orders paid in full";
+$MESS["BUYER_ROW_COUNT_PART_PAID_ORDER"] = "Partial payment orders";
+$MESS["BUYER_ROW_SUM_PAID"] = "Total amount received";
+$MESS["BUYER_F_PAID_ALL"] = "Amount received";
+$MESS["BUYER_F_QUANTITY_FULL"] = "Orders paid in full";
+$MESS["BUYER_F_QUANTITY_PART"] = "Partial payment orders";
 ?>

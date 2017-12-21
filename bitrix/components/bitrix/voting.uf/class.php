@@ -114,8 +114,8 @@ class CVoteUfComponent extends \CBitrixComponent
 	{
 		try
 		{
-			Diag::getInstance()->collectDebugInfo($this->componentId);
 			\Bitrix\Main\Loader::includeModule("vote");
+			Diag::getInstance()->collectDebugInfo($this->componentId);
 			$this->prepareParams();
 
 			if ($this->request->getQuery("exportVoting") > 0)

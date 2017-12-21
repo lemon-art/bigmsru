@@ -4,13 +4,14 @@ use \Bitrix\Sale\Order;
 
 $request = \Bitrix\Main\Application::getInstance()->getContext()->getRequest();
 
-$entityId = IntVal($request->get("custom"));
+$entityId = ($request->get('custom') !== null) ? $request->get("custom") : $request->get("cm");
+
 list($orderId, $paymentId) = \Bitrix\Sale\PaySystem\Manager::getIdsByPayment($entityId);
 
 if ($orderId > 0)
 {
 	/** @var \Bitrix\Sale\Order $order */
-	$order = \Bitrix\Sale\Order::load($orderId);
+	$order = Order::load($orderId);
 	if ($order)
 	{
 		/** @var \Bitrix\Sale\PaymentCollection $paymentCollection */

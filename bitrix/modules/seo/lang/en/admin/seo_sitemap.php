@@ -72,4 +72,5 @@ $MESS["SITEMAP_RUN_FORUM_EMPTY"] = "No forums found.";
 $MESS["SITEMAP_RUN_FORUM"] = "Processing forums";
 $MESS["SITEMAP_RUN_FORUM_NAME"] = "Processing forum: #FORUM_NAME#";
 $MESS["SEO_ERROR_SITEMAP_NO_VALUE"] = "The field \"#FIELD#\" is required.";
+$MESS["SITEMAP_FILENAME_ADDRESS_ATTENTION"] = "The contents of this file will be overwritten! Make sure this file is no longer needed.";
 ?>

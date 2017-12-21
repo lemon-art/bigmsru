@@ -964,7 +964,11 @@ if(((!empty($arPost) && $arPost["PUBLISH_STATUS"] == BLOG_PUBLISH_STATUS_PUBLISH
 						$resComments = Array();
 
 						$arResult["firstLevel"] = "";
-
+						
+						$blogUser = new Bitrix\Blog\BlogUser($arParams["CACHE_TIME"]);
+						$blogUser->setBlogId($arBlog["ID"]);
+						$commentsUsers = $blogUser->getUsers(\Bitrix\Blog\BlogUser::getCommentAuthorsIdsByPostId($arPost['ID']));
+						
 						if($arComment = $dbComment->GetNext())
 						{
 							$p = new blogTextParser(false, $arParams["PATH_TO_SMILE"]);
@@ -992,53 +996,34 @@ if(((!empty($arPost) && $arPost["PUBLISH_STATUS"] == BLOG_PUBLISH_STATUS_PUBLISH
 
 								if(IntVal($arComment["AUTHOR_ID"])>0)
 								{
-
+//
 									if(empty($arResult["USER_CACHE"][$arComment["AUTHOR_ID"]]))
 									{
-										$arUsrTmp = Array();
+										$arUsrTmp = array();
 										$arUsrTmp["urlToAuthor"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_USER"], array("user_id" => $arComment["AUTHOR_ID"]));
-										$arUsrTmp["BlogUser"] = CBlogUser::GetByID($arComment["AUTHOR_ID"], BLOG_BY_USER_ID);
-										$arUsrTmp["BlogUser"] = CBlogTools::htmlspecialcharsExArray($arUsrTmp["BlogUser"]);
-										$dbUser = CUser::GetByID($arComment["AUTHOR_ID"]);
-										$arUsrTmp["arUser"] = $dbUser->GetNext();
-										$arUsrTmp["AuthorName"] = CBlogUser::GetUserNameEx($arUsrTmp["arUser"], $arUsrTmp["BlogUser"], $arParams);
-
-										if(IntVal($arUsrTmp["BlogUser"]["AVATAR"]) > 0)
-										{
-											$arUsrTmp["AVATAR_file"] = CFile::ResizeImageGet(
-														$arUsrTmp["BlogUser"]["AVATAR"],
-														array("width" => 30, "height" => 30),
-														BX_RESIZE_IMAGE_EXACT,
-														false
-													);
-										}
-										elseif(IntVal($arUsrTmp["arUser"]["PERSONAL_PHOTO"]) > 0)
-										{
-											$arUsrTmp["AVATAR_file"] = CFile::ResizeImageGet(
-															$arUsrTmp["arUser"]["PERSONAL_PHOTO"],
-															array("width" => 30, "height" => 30),
-															BX_RESIZE_IMAGE_EXACT,
-															false
-														);
-										}
-										if ($arUsrTmp["AVATAR_file"] !== false)
-											$arUsrTmp["AVATAR_img"] = CFile::ShowImage($arUsrTmp["AVATAR_file"]["src"], 30, 30, "border=0 align='right'");
-
+										$arUsrTmp["AuthorName"] = Bitrix\Blog\BlogUser::GetUserNameEx(
+											$commentsUsers[$arComment["AUTHOR_ID"]]["arUser"],
+											$commentsUsers[$arComment["AUTHOR_ID"]]["BlogUser"],
+											$arParams
+										);
 										$arUsrTmp["Blog"] = CBlog::GetByOwnerID(IntVal($arComment["AUTHOR_ID"]), $arParams["GROUP_ID"]);
-
-										if($arUsrTmp["AUTHOR_ID"] == $arUsrTmp["AUTHOR_ID"])
+//										i think it was wrong O_o
+//										if($arUsrTmp["AUTHOR_ID"] == $arUsrTmp["AUTHOR_ID"])
+										if($arResult["userID"] == $arComment["AUTHOR_ID"])
 											$arUsrTmp["AuthorIsPostAuthor"] = "Y";
-
+//
 										$arResult["USER_CACHE"][$arComment["AUTHOR_ID"]] = $arUsrTmp;
 									}
-
-									$arComment["urlToAuthor"] = $arResult["USER_CACHE"][$arComment["AUTHOR_ID"]]["urlToAuthor"];
-									$arComment["BlogUser"] = $arResult["USER_CACHE"][$arComment["AUTHOR_ID"]]["BlogUser"];
-									$arComment["arUser"] = $arResult["USER_CACHE"][$arComment["AUTHOR_ID"]]["arUser"];
-									$arComment["AuthorName"] = $arResult["USER_CACHE"][$arComment["AUTHOR_ID"]]["AuthorName"];
-									$arComment["AVATAR_file"] = $arResult["USER_CACHE"][$arComment["AUTHOR_ID"]]["AVATAR_file"];
-									$arComment["AVATAR_img"] = $arResult["USER_CACHE"][$arComment["AUTHOR_ID"]]["AVATAR_img"];
+									
+									$arComment["BlogUser"] = $commentsUsers[$arComment["AUTHOR_ID"]]["BlogUser"];
+									$arComment["arUser"] = $commentsUsers[$arComment["AUTHOR_ID"]]["arUser"];
+//									$arComment["AuthorName"] = $commentsUsers[$arComment["AUTHOR_ID"]]["AUTHOR_NAME"];
+									$arComment["AVATAR_file"] = $commentsUsers[$arComment["AUTHOR_ID"]]["BlogUser"]["AVATAR_file"];
+									if ($arComment["AVATAR_file"] !== false)
+										$arComment["AVATAR_img"] = $commentsUsers[$arComment["AUTHOR_ID"]]["BlogUser"]["AVATAR_img"]['30_30'];
+//									from user cache
 									$arComment["Blog"] = $arResult["USER_CACHE"][$arComment["AUTHOR_ID"]]["Blog"];
+									$arComment["urlToAuthor"] = $arResult["USER_CACHE"][$arComment["AUTHOR_ID"]]["urlToAuthor"];
 									$arComment["AuthorIsPostAuthor"] = $arResult["USER_CACHE"][$arComment["AUTHOR_ID"]]["AuthorIsPostAuthor"];
 									
 									if(!empty($arComment["Blog"]))
@@ -1055,11 +1040,17 @@ if(((!empty($arPost) && $arPost["PUBLISH_STATUS"] == BLOG_PUBLISH_STATUS_PUBLISH
 								if($arResult["canModerate"])
 								{
 									if($arComment["PUBLISH_STATUS"] == BLOG_PUBLISH_STATUS_PUBLISH)
-										$arComment["urlToHide"] = $APPLICATION->GetCurPageParam("hide_comment_id=".$arComment["ID"], Array("sessid", "delete_comment_id", "hide_comment_id", "success", "show_comment_id", "commentId"));
+									{
+										$arComment["urlToHide"] = htmlspecialcharsbx($APPLICATION->GetCurPageParam("hide_comment_id=".$arComment["ID"], Array("sessid", "delete_comment_id", "hide_comment_id", "success", "show_comment_id", "commentId")));
+									}
 									else
-										$arComment["urlToShow"] = $APPLICATION->GetCurPageParam("show_comment_id=".$arComment["ID"], Array("sessid", "delete_comment_id", "show_comment_id", "success", "hide_comment_id", "commentId"));
+									{
+										$arComment["urlToShow"] = htmlspecialcharsbx($APPLICATION->GetCurPageParam("show_comment_id=".$arComment["ID"], Array("sessid", "delete_comment_id", "show_comment_id", "success", "hide_comment_id", "commentId")));
+									}
 									if($arResult["Perm"]>=BLOG_PERMS_FULL)
-										$arComment["urlToDelete"] = $APPLICATION->GetCurPageParam("delete_comment_id=".$arComment["ID"], Array("sessid", "delete_comment_id", "success", "hide_comment_id", "show_comment_id", "commentId"));
+									{
+										$arComment["urlToDelete"] = htmlspecialcharsbx($APPLICATION->GetCurPageParam("delete_comment_id=".$arComment["ID"], Array("sessid", "delete_comment_id", "success", "hide_comment_id", "show_comment_id", "commentId")));
+									}
 									if($arParams["SHOW_SPAM"] == "Y")
 									{
 										if(IntVal($arComment["AUTHOR_ID"]) > 0)
@@ -1399,16 +1390,16 @@ if(((!empty($arPost) && $arPost["PUBLISH_STATUS"] == BLOG_PUBLISH_STATUS_PUBLISH
 				for($i = 1; $i <= $arResult["PAGE_COUNT"]; $i++)
 				{
 					if($i == 1)
-						$arResult["NEW_PAGES"][$i] = $APPLICATION->GetCurPageParam("", Array($arParams["NAV_PAGE_VAR"], "commentID"))."#comments";
+						$arResult["NEW_PAGES"][$i] = htmlspecialcharsbx($APPLICATION->GetCurPageParam("", Array($arParams["NAV_PAGE_VAR"], "commentID"))."#comments");
 					else
-						$arResult["NEW_PAGES"][$i] = $APPLICATION->GetCurPageParam($arParams["NAV_PAGE_VAR"].'='.$i, array($arParams["NAV_PAGE_VAR"], "commentID"))."#comments";
-
+						$arResult["NEW_PAGES"][$i] = htmlspecialcharsbx($APPLICATION->GetCurPageParam($arParams["NAV_PAGE_VAR"].'='.$i, array($arParams["NAV_PAGE_VAR"], "commentID"))."#comments");
+					
 					if($i != $arResult["PAGE"])
 					{
 						if($i == 1)
 							$arResult["PAGES"][] = '<a href="'.$link.'">'.$i.'</a>&nbsp;&nbsp;';
 						else
-							$arResult["PAGES"][] = '<a href="'.$APPLICATION->GetCurPageParam($arParams["NAV_PAGE_VAR"].'='.$i, array($arParams["NAV_PAGE_VAR"], "commentID")).'#comments">'.$i.'</a>&nbsp;&nbsp;';
+							$arResult["PAGES"][] = '<a href="'.htmlspecialcharsbx($APPLICATION->GetCurPageParam($arParams["NAV_PAGE_VAR"].'='.$i, array($arParams["NAV_PAGE_VAR"], "commentID"))).'#comments">'.$i.'</a>&nbsp;&nbsp;';
 					}
 					else
 						$arResult["PAGES"][] = "<b>".$i."</b>&nbsp;&nbsp;";

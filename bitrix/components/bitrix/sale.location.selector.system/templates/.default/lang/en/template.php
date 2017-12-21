@@ -31,6 +31,6 @@ $MESS["SALE_SLSS_LOCATION_SELECTOR_GRP_TOTAL_SELECTED"] = "Groups selected";
 $MESS["SALE_SLSS_LOCATION_SELECTOR_CLEAN_SELECTION"] = "Clear selection";
 $MESS["SALE_SLSS_AJAX_LOADING"] = "Loading ...";
 $MESS["SALE_SLSS_AJAX_RETRY"] = "Try again";
-$MESS["SALE_SLSS_AJAX_LOAD_MORE"] = "View more…";
+$MESS["SALE_SLSS_AJAX_LOAD_MORE"] = "View more...";
 $MESS["SALE_SLSS_NO_LOCATIONS"] = "Location database is empty. #ANCHOR_IMPORT#Import locations now#ANCHOR_END#";
 ?>

@@ -15,10 +15,10 @@ else
 if(strlen($_REQUEST["public_dir"])>0) :
 ?>
 <p><?=GetMessage("MOD_DEMO_DIR")?></p>
-<table border="0" cellspacing="0" cellpadding="3">
-	<tr>
-		<td align="center"><p><b><?=GetMessage("MOD_DEMO_SITE")?></b></p></td>
-		<td align="center"><p><b><?=GetMessage("MOD_DEMO_LINK")?></b></p></td>
+<table border="0" cellspacing="0" cellpadding="0" class="internal">
+	<tr class="heading">
+		<td align="center"><b><?=GetMessage("MOD_DEMO_SITE")?></b></td>
+		<td align="center"><b><?=GetMessage("MOD_DEMO_LINK")?></b></td>
 	</tr>
 	<?
 	$sites = CSite::GetList($by, $order, Array("ACTIVE"=>"Y"));
@@ -26,13 +26,14 @@ if(strlen($_REQUEST["public_dir"])>0) :
 	{
 		?>
 		<tr>
-			<td width="0%"><p>[<?=$site["ID"]?>] <?=$site["NAME"]?></p></td>
-			<td width="0%"><p><a href="<?if(strlen($site["SERVER_NAME"])>0) echo "http://".$site["SERVER_NAME"];?><?=$site["DIR"].$public_dir?>/index.php"><?=$site["DIR"].$public_dir?>/index.php</a></p></td>
+			<td>[<?=htmlspecialcharsEx($site["ID"])?>] <?=htmlspecialcharsEx($site["NAME"])?></td>
+			<td><a href="<?=htmlspecialcharsBx((strlen($site["SERVER_NAME"])>0? "http://".$site["SERVER_NAME"]: "").$site["DIR"].$public_dir."/index.php")?>"><?=htmlspecialcharsEx($site["DIR"].$public_dir."/index.php")?></a></td>
 		</tr>
 		<?
 	}
 	?>
 </table>
+<br>
 <?
 endif;
 ?>

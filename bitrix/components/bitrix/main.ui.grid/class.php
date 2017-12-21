@@ -63,7 +63,12 @@ class CMainUIGrid extends CBitrixComponent
 	/** @var boolean $showMoreButton default value $this->arResult["SHOW_MORE_BUTTON"] */
 	protected $showMoreButton = false;
 
+	protected $defaultPageSize = 20;
+
 	protected $minColumnWidth = 70;
+	protected $jsFolder = "/js/";
+	protected $blocksFolder = "/blocks/";
+	protected $cssFolder = "/css/";
 
 
 	protected function validateColumn($column = array())
@@ -200,6 +205,11 @@ class CMainUIGrid extends CBitrixComponent
 			array()
 		);
 
+		$this->arParams["DEFAULT_PAGE_SIZE"] = Grid\Params::prepareInt(
+			array($this->arParams["DEFAULT_PAGE_SIZE"]),
+			$this->defaultPageSize
+		);
+
 		$this->arParams["ALLOW_INLINE_EDIT"] = Grid\Params::prepareBoolean(
 			array($this->arParams["ALLOW_INLINE_EDIT"], $this->arParams["EDITABLE"]),
 			true
@@ -228,6 +238,11 @@ class CMainUIGrid extends CBitrixComponent
 		$this->arParams["SHOW_CHECK_ALL_CHECKBOXES"] = Grid\Params::prepareBoolean(
 			array($this->arParams["SHOW_CHECK_ALL_CHECKBOXES"]),
 			true
+		);
+
+		$this->arParams["ALLOW_CONTEXT_MENU"] = Grid\Params::prepareBoolean(
+			array($this->arParams["ALLOW_CONTEXT_MENU"]),
+			false
 		);
 
 		$this->arParams["SHOW_GROUP_EDIT_BUTTON"] = Grid\Params::prepareBoolean(
@@ -315,11 +330,13 @@ class CMainUIGrid extends CBitrixComponent
 			true
 		);
 
-		$this->arParams["FORCE_INITIALIZATION"] = isset($this->arParams["FORCE_INITIALIZATION"])
-			? (bool)$this->arParams["FORCE_INITIALIZATION"] : false;
-
 		$this->arParams["PRESERVE_HISTORY"] = isset($this->arParams["PRESERVE_HISTORY"])
 			? (bool)$this->arParams["PRESERVE_HISTORY"] : false;
+
+		$this->arParams["ENABLE_COLLAPSIBLE_ROWS"] = Grid\Params::prepareBoolean(
+			array($this->arParams["ENABLE_COLLAPSIBLE_ROWS"]),
+			false
+		);
 
 		return $this->arParams;
 	}
@@ -328,7 +345,7 @@ class CMainUIGrid extends CBitrixComponent
 	/**
 	 * Prepares arResult
 	 * @method prepareResult
-	 * @return array
+	 * @return $this
 	 */
 	protected function prepareResult()
 	{
@@ -369,6 +386,113 @@ class CMainUIGrid extends CBitrixComponent
 		$this->arResult["PANEL_TYPES"] = $this->preparePanelTypes();
 		$this->arResult["EDITOR_TYPES"] = $this->prepareEditorTypes();
 		$this->arResult["BACKEND_URL"] = $this->prepareBackendUrl();
+		$this->arResult["ALLOW_CONTEXT_MENU"] = $this->arParams["ALLOW_CONTEXT_MENU"];
+		$this->arResult["DEFAULT_COLUMNS"] = $this->prepareDefaultColumns();
+		$this->arResult["DEPTH"] = $this->prepareDepth();
+		$this->arResult["MESSAGES"] = $this->prepareMessages($this->arParams["MESSAGES"]);
+
+		return $this;
+	}
+
+	protected function prepareMessages($messages = array())
+	{
+		$result = array();
+		$isArray = is_array($messages);
+		$isAssociative = ($isArray && \Bitrix\Main\Type\Collection::isAssociative($messages));
+
+		if ($isArray && $isAssociative)
+		{
+			$result[] = self::prepareMessage($messages);
+		}
+
+		if ($isArray && !$isAssociative)
+		{
+			foreach ($messages as $key => $message)
+			{
+				$result[] = self::prepareMessage($message);
+			}
+		}
+
+		if (is_string($messages) && $messages !== "")
+		{
+			$result[] = self::prepareMessage($messages);
+		}
+
+		return $result;
+	}
+
+
+	protected static function prepareMessage($message = array())
+	{
+		$result = array(
+			"TYPE" => Grid\MessageType::MESSAGE,
+			"TITLE" => "",
+			"TEXT" => ""
+		);
+
+		if (is_string($message) && $message !== "")
+		{
+			$result["TEXT"] = $message;
+		}
+
+		if (is_array($message))
+		{
+			if (isset($message["TEXT"]))
+			{
+				$result["TEXT"] = $message["TEXT"];
+			}
+
+			if (isset($message["TITLE"]))
+			{
+				$result["TITLE"] = $message["TITLE"];
+			}
+
+			if (isset($message["TYPE"]))
+			{
+				$result["TYPE"] = $message["TYPE"];
+			}
+		}
+
+		return $result;
+	}
+
+	protected function prepareDepth()
+	{
+		$request = $this->request;
+		return $request["depth"] !== null ? $request["depth"] : 0;
+	}
+
+	protected function prepareDefaultColumns()
+	{
+		$columns = array();
+		$commonColumns = null;
+
+		global $USER;
+		if (!$USER->CanDoOperation("edit_other_settings"))
+		{
+			$commonOptions = CUserOptions::getOption("main.interface.grid", $this->arParams["GRID_ID"], array());
+			if (!empty($commonOptions) &&
+				isset($commonOptions["views"]["default"]["columns"]) &&
+				!empty($commonOptions["views"]["default"]["columns"]))
+			{
+				$commonColumns = explode(",", $commonOptions["views"]["default"]["columns"]);
+			}
+		}
+
+		foreach ($this->arParams["COLUMNS"] as $key => $column)
+		{
+			$columns[$column["id"]] = $column;
+			$columns[$column["id"]]["sort_url"] = $this->arResult["COLUMNS_ALL"][$column["id"]]["sort_url"];
+			$columns[$column["id"]]["sort_by"] = $this->arResult["COLUMNS_ALL"][$column["id"]]["sort"];
+			$columns[$column["id"]]["sort_order"] = $this->arResult["COLUMNS_ALL"][$column["id"]]["next_sort_order"];
+
+			if (is_array($commonColumns))
+			{
+				$columns[$column["id"]]["default"] = in_array($column["id"], $commonColumns);
+			}
+		}
+
+		return $columns;
 	}
 
 	protected function prepareBackendUrl()
@@ -500,6 +624,7 @@ class CMainUIGrid extends CBitrixComponent
 		$this->applyRowsSort();
 		$this->applyColumnsSort();
 		$this->applyColumnsSizes();
+		return $this;
 	}
 
 
@@ -546,9 +671,14 @@ class CMainUIGrid extends CBitrixComponent
 		{
 			foreach ($this->getCustomNames() as $key => $value)
 			{
-				$this->arResult["COLUMNS_ALL"][$key]["name"] = $this->prepareString($value);
+				if ($this->columnExists($key))
+				{
+					$this->arResult["COLUMNS_ALL"][$key]["name"] = Bitrix\Main\Text\Converter::getHtmlConverter()->decode($value);
+				}
 			}
 		}
+
+		return $this;
 	}
 
 
@@ -569,13 +699,14 @@ class CMainUIGrid extends CBitrixComponent
 				$this->arResult["COLUMNS"][$id] = $this->arResult["COLUMNS_ALL"][$id];
 			}
 		}
+
+		return $this;
 	}
 
 
 	/**
 	 * Applies custom column sizes
-	 * @method applyColumnsSizes
-	 * @return array
+	 * @return $this
 	 */
 	protected function applyColumnsSizes()
 	{
@@ -591,6 +722,8 @@ class CMainUIGrid extends CBitrixComponent
 				$this->arResult["COLUMNS"][$key]["width"] = $colSize;
 			}
 		}
+
+		return $this;
 	}
 
 
@@ -732,7 +865,7 @@ class CMainUIGrid extends CBitrixComponent
 
 					$APPLICATION->IncludeComponent(
 						"bitrix:main.pagenavigation",
-						"modern",
+						"grid",
 						$params,
 						false,
 						array(
@@ -744,6 +877,7 @@ class CMainUIGrid extends CBitrixComponent
 				}
 				else
 				{
+					/** @noinspection PhpUndefinedClassInspection */
 					/** @var CDBResult $nav */
 					$nav = $this->arParams["NAV_OBJECT"];
 					$nav->nPageWindow = 5;
@@ -776,7 +910,7 @@ class CMainUIGrid extends CBitrixComponent
 
 				$id = !empty($rowItem["id"]) ? $rowItem["id"] : $rowItem["data"]["ID"];
 
-				foreach ($this->prepareColumns() as $headerKey => $headerItem)
+				foreach ($this->prepareColumnsAll() as $headerKey => $headerItem)
 				{
 					if (isset($headerItem["editable"]) && $headerItem["editable"] !== false)
 					{
@@ -923,33 +1057,90 @@ class CMainUIGrid extends CBitrixComponent
 		return $this->arResult["HAS_ACTIONS"];
 	}
 
-	protected function compatibleActions($actions)
+	protected function compatibleActions($actions, &$row)
 	{
 		foreach ($actions as $key => $action)
 		{
+			if (isset($action["SEPARATOR"]))
+			{
+				$isDelimiter = $action["SEPARATOR"];
+
+				$actions[$key]["delimiter"] = $isDelimiter;
+				unset($actions[$key]["SEPARATOR"]);
+
+				if($isDelimiter)
+				{
+					continue;
+				}
+			}
+
 			if (isset($action["ICONCLASS"]))
 			{
 				$actions[$key]["className"] = $action["ICONCLASS"];
+				unset($actions[$key]["ICONCLASS"]);
 			}
 
 			if (isset($action["TITLE"]))
 			{
 				$actions[$key]["title"] = $action["TITLE"];
+				unset($actions[$key]["TITLE"]);
 			}
 
 			if (isset($action["TEXT"]))
 			{
 				$actions[$key]["text"] = $action["TEXT"];
+				unset($actions[$key]["TEXT"]);
 			}
 
 			if (isset($action["ONCLICK"]))
 			{
 				$actions[$key]["onclick"] = $action["ONCLICK"];
+				unset($actions[$key]["ONCLICK"]);
+			}
+
+			if (isset($action["DEFAULT"]))
+			{
+				$actions[$key]["default"] = $action["DEFAULT"];
+				unset($actions[$key]["DEFAULT"]);
 			}
 
 			if (isset($action["MENU"]) && is_array($action["MENU"]) && !empty($action["MENU"]))
 			{
-				$actions[$key]["menu"] = $this->compatibleActions($action["MENU"]);
+				$actions[$key]["items"] = $this->compatibleActions($action["MENU"], $row);
+				unset($actions[$key]["MENU"]);
+			}
+
+			if (isset($action["HREF"]))
+			{
+				$actions[$key]["href"] = $action["HREF"];
+				unset($actions[$key]["HREF"]);
+			}
+
+			if (isset($row["default_action"]) && is_array($row["default_action"]))
+			{
+				if (isset($row["default_action"]["href"]) && is_string($row["default_action"]["href"]))
+				{
+					$row["default_action"]["js"] = "(window.location = '".$row["default_action"]["href"]."')";
+				}
+			}
+			else
+			{
+				if ($action["default"] === true)
+				{
+					$row["default_action"] = array();
+
+					if (isset($action["onclick"]) && is_string($action["onclick"]))
+					{
+						$row["default_action"]["js"] = $action["onclick"];
+					}
+
+					if (isset($action["href"]) && is_string($action["href"]))
+					{
+						$row["default_action"]["js"] = "(window.location = '".$action["href"]."')";
+					}
+
+					$row["default_action"]["title"] = isset($action["text"]) ? $action["text"] : "";
+				}
 			}
 		}
 
@@ -961,7 +1152,32 @@ class CMainUIGrid extends CBitrixComponent
 	{
 		if (isset($row["actions"]) && is_array($row["actions"]) && !empty($row["actions"]))
 		{
-			$row["actions"] = $this->compatibleActions($row["actions"]);
+			$row["actions"] = $this->compatibleActions($row["actions"], $row);
+		}
+
+		$row["attrs_string"] = "";
+
+		if (isset($row["attrs"]) && is_array($row["attrs"]) && !empty($row["attrs"]))
+		{
+			$attrsString = " ";
+
+			foreach ($row["attrs"] as $key => $value)
+			{
+				if (is_array($value))
+				{
+					$escapedValue = Text\HtmlFilter::encode(CUtil::PhpToJSObject($value));
+				}
+				else
+				{
+					$escapedValue = Text\HtmlFilter::encode($value);
+				}
+
+				$escapedKey = Text\HtmlFilter::encode($key);
+				$attrsString .= $escapedKey."=\"".$escapedValue."\"";
+			}
+
+			$attrsString .= " ";
+			$row["attrs_string"] = $attrsString;
 		}
 
 		if(!isset($row["id"]))
@@ -1000,7 +1216,6 @@ class CMainUIGrid extends CBitrixComponent
 
 		return $this->arParams["ROWS"];
 	}
-
 
 	protected function prepareColumnsEditMeta()
 	{
@@ -1183,6 +1398,24 @@ class CMainUIGrid extends CBitrixComponent
 		return $this->getUri()->getUri();
 	}
 
+	protected function columnExists($id)
+	{
+		$result = false;
+
+		if (is_array($this->arParams["COLUMNS"]) && !empty($this->arParams["COLUMNS"]))
+		{
+			foreach ($this->arParams["COLUMNS"] as $key => $column)
+			{
+				if ($column["id"] == $id)
+				{
+					$result = true;
+				}
+			}
+		}
+
+		return $result;
+	}
+
 	/**
 	 * Gets showed columns list
 	 * @method getShowedColumnsList
@@ -1201,7 +1434,7 @@ class CMainUIGrid extends CBitrixComponent
 			{
 				$item = trim($item);
 
-				if (!empty($item))
+				if (!empty($item) && $this->columnExists($item))
 				{
 					$this->showedColumnsList[] = $item;
 				}
@@ -1232,19 +1465,7 @@ class CMainUIGrid extends CBitrixComponent
 	 */
 	protected function prepareAlign($headerItem)
 	{
-		switch ($headerItem["type"])
-		{
-			case Grid\Types::GRID_CHECKBOX:
-				$align = "center";
-				break;
-			case Grid\Types::GRID_INT:
-				$align = "left";
-				break;
-			default:
-				$align = "left";
-		}
-
-		return $align;
+		return "left";
 	}
 
 
@@ -1281,7 +1502,7 @@ class CMainUIGrid extends CBitrixComponent
 	 */
 	protected function prepareHeaderName(array $headerItem)
 	{
-		return $this->prepareString($headerItem["name"]);
+		return $headerItem["name"];
 	}
 
 
@@ -1312,7 +1533,14 @@ class CMainUIGrid extends CBitrixComponent
 	 */
 	protected function prepareSortOrder(array $headerItem)
 	{
-		return $headerItem["ORDER"] === "desc" ? "desc" : "asc";
+		$sort = $headerItem["ORDER"] === "desc" ? "desc" : "asc";
+
+		if (isset($headerItem["first_order"]) && is_string($headerItem["first_order"]))
+		{
+			$sort = $headerItem["first_order"];
+		}
+
+		return $sort;
 	}
 
 
@@ -1337,11 +1565,22 @@ class CMainUIGrid extends CBitrixComponent
 	protected function prepareSortState(array $headerItem)
 	{
 		$state = null;
-		$options = $this->getCurrentOptions();
 
-		if ($options["last_sort_by"] === $headerItem["sort"])
+		if (isset($this->arParams["SORT"]) &&
+			is_array($this->arParams["SORT"]) &&
+			(is_string($headerItem["sort"]) || is_int($headerItem["sort"])) &&
+			array_key_exists($headerItem["sort"], $this->arParams["SORT"]))
 		{
-			$state = $options["last_sort_order"];
+			$state = $this->arParams["SORT"][$headerItem["sort"]];
+		}
+		else
+		{
+			$options = $this->getCurrentOptions();
+
+			if ($options["last_sort_by"] === $headerItem["sort"])
+			{
+				$state = $options["last_sort_order"];
+			}
 		}
 
 		return $state;
@@ -1371,27 +1610,76 @@ class CMainUIGrid extends CBitrixComponent
 
 	protected function prepareEditable($column)
 	{
-		if (isset($column["editable"]) &&
-			!empty($column["editable"]) &&
-			is_array($column["editable"]))
+		$result = isset($column["editable"]) ? $column["editable"] : false;
+		//For backward compatibility
+		if($result === true)
 		{
-			if (
-				(isset($column["editable"]["TYPE"]) ||
-					!empty($column["editable"]["TYPE"]) ||
-					is_string($column["editable"]["TYPE"])) &&
-				(!isset($column["editable"]["NAME"]) ||
-					empty($column["editable"]["NAME"]) ||
-					!is_string($column["editable"]["NAME"])) &&
-				(isset($column["id"]) ||
-					!empty($column["id"]) ||
-					is_string($column["id"]))
-			)
+			$result = array();
+		}
+
+		if(is_array($result))
+		{
+			if(!(isset($result["NAME"]) && is_string($result["NAME"]) && $result["NAME"] !== ""))
 			{
-				$column["editable"]["NAME"] = $column["id"];
+				$result["NAME"] = $column["id"];
+			}
+
+			$typeName = isset($result["TYPE"]) && is_string($result["TYPE"]) ? $result["TYPE"] : "";
+			if($typeName === "")
+			{
+				$columnTypeName = isset($column["type"]) && is_string($column["type"]) ? $column["type"] : "";
+				if($columnTypeName === "")
+				{
+					$columnTypeName = "text";
+				}
+
+				if($columnTypeName === "text")
+				{
+					$typeName = Grid\Editor\Types::TEXT;
+				}
+				elseif($columnTypeName === "int" || $columnTypeName === "double" || $columnTypeName === "number")
+				{
+					$typeName = Grid\Editor\Types::NUMBER;
+				}
+				elseif($columnTypeName === "checkbox")
+				{
+					$typeName = Grid\Editor\Types::CHECKBOX;
+				}
+				elseif($columnTypeName === "date")
+				{
+					$typeName = Grid\Editor\Types::DATE;
+				}
+				elseif($columnTypeName === "list")
+				{
+					$typeName = Grid\Editor\Types::DROPDOWN;
+				}
+				$result["TYPE"] = $typeName;
+			}
+
+			if($result["TYPE"] === Grid\Editor\Types::DROPDOWN
+				&& $result["items"] && is_array($result["items"])
+				&& !(isset($result["DATA"]) && isset($result["DATA"]["ITEMS"]) && is_array($result["DATA"]["ITEMS"])))
+			{
+				if(!isset($result["DATA"]))
+				{
+					$result["DATA"] = array();
+				}
+
+				if(!isset($result["DATA"]["ITEMS"]))
+				{
+					$result["DATA"]["ITEMS"] = array();
+				}
+
+				foreach($result["items"] as $k => $v)
+				{
+					$result["DATA"]["ITEMS"][] = array("VALUE" => $k, "NAME" => $v);
+				}
+
+				unset($result["items"]);
 			}
 		}
 
-		return $column["editable"];
+		return $result;
 	}
 
 
@@ -1409,14 +1697,27 @@ class CMainUIGrid extends CBitrixComponent
 		$column["sort_url"] = $this->getSortUrl($column);
 		$column["sort"] = $this->prepareSort($column["sort"]);
 		$column["showname"] = $this->isShowHeaderName($column);
-		$column["original_name"] = $this->prepareString($column["name"]);
+		$column["original_name"] = $column["name"];
 		$column["name"] = $this->prepareHeaderName($column);
 		$column["align"] = $this->prepareAlign($column);
 		$column["is_shown"] = $this->isShownColumn($column);
 		$column["class"] = $this->prepareHeaderClass($column);
 		$column["width"] = $this->prepareColumnWidth($column);
 		$column["editable"] = $this->prepareEditable($column);
+		$column["prevent_default"] = $this->preparePreventDefault($column);
 		return $column;
+	}
+
+	protected function preparePreventDefault(array $column)
+	{
+		$result = true;
+
+		if (isset($column["prevent_default"]))
+		{
+			$result = (bool) $column["prevent_default"];
+		}
+
+		return $result;
 	}
 
 	protected function prepareColumnWidth(array $column)
@@ -1475,7 +1776,6 @@ class CMainUIGrid extends CBitrixComponent
 
 	/**
 	 * Prepares each header items
-	 * @method prepareHeadersAll
 	 * @return array prepares header
 	 */
 	protected function prepareColumnsAll()
@@ -1488,6 +1788,27 @@ class CMainUIGrid extends CBitrixComponent
 			{
 				$this->arResult["COLUMNS_ALL"][$item["id"]] = $this->prepareColumn($item);
 			}
+
+			$allColumns = array_keys($this->arResult["COLUMNS_ALL"]);
+			$allColumns = array_combine($allColumns, $allColumns);
+			$showedColumns = $this->getShowedColumnsList();
+			$resultColumns = array();
+			$counter = 0;
+
+			foreach ($allColumns as $allKey => $allColumn)
+			{
+				$key = $allKey;
+
+				if (in_array($allKey, $showedColumns))
+				{
+					$key = $showedColumns[$counter];
+					$counter++;
+				}
+
+				$resultColumns[$key] = $this->arResult["COLUMNS_ALL"][$key];
+			}
+
+			$this->arResult["COLUMNS_ALL"] = $resultColumns;
 		}
 
 		return $this->arResult["COLUMNS_ALL"];
@@ -1524,17 +1845,6 @@ class CMainUIGrid extends CBitrixComponent
 		$gridOptions = $this->getGridOptions();
 		$isNeedSave = false;
 
-		if (!isset($options["columns"]) ||
-			empty($options["columns"]) ||
-			!is_string($options["columns"]))
-		{
-			$columns = $this->prepareColumns();
-			$columnsIds = array_keys($columns);
-			$columnsString = implode(",", $columnsIds);
-			$gridOptions->SetColumns($columnsString);
-			$isNeedSave = true;
-		}
-
 		if (!isset($options["columns_sizes"]) ||
 			empty($options["columns_sizes"]) ||
 			!is_array($options["columns_sizes"]))
@@ -1561,7 +1871,155 @@ class CMainUIGrid extends CBitrixComponent
 		}
 	}
 
+	protected function getJsFolder()
+	{
+		return $this->jsFolder;
+	}
 
+	protected function getBlocksFolder()
+	{
+		return $this->blocksFolder;
+	}
+
+	protected function getCssFolder()
+	{
+		return $this->cssFolder;
+	}
+
+	protected function includeScripts($folder)
+	{
+		$tmpl = $this->getTemplate();
+		$absPath = $_SERVER["DOCUMENT_ROOT"].$tmpl->GetFolder().$folder;
+		$relPath = $tmpl->GetFolder().$folder;
+
+		if (is_dir($absPath))
+		{
+			$dir = opendir($absPath);
+
+			if($dir)
+			{
+				while(($file = readdir($dir)) !== false)
+				{
+					$ext = getFileExtension($file);
+
+					if ($ext === 'js' && !(strpos($file, 'map.js') !== false || strpos($file, 'min.js') !== false))
+					{
+						$tmpl->addExternalJs($relPath.$file);
+					}
+				}
+
+				closedir($dir);
+			}
+		}
+	}
+
+	protected function includeComponentBlocks()
+	{
+		$blocksFolder = $this->getBlocksFolder();
+		$this->includeScripts($blocksFolder);
+	}
+
+	protected function includeComponentScripts()
+	{
+		$scriptsFolder = $this->getJsFolder();
+		$this->includeScripts($scriptsFolder);
+	}
+
+	protected static function sortMultilevelRows($rows, &$resultRows, $parent = 0, $depth = 0)
+	{
+		foreach ($rows as $key => $row)
+		{
+			if ($row["parent_id"] === $parent)
+			{
+				$row["depth"] = $depth;
+				$resultRows[] = $row;
+				unset($rows[$key]);
+				self::sortMultilevelRows($rows, $resultRows, $row["id"], $depth + 1);
+			}
+		}
+		return $resultRows;
+	}
+
+	protected static function normalizeParentIds(&$rows)
+	{
+		$ids = array();
+
+		foreach ($rows as $key => $row)
+		{
+			$ids[] = $row["id"];
+		}
+
+		foreach ($rows as $key => $row)
+		{
+			if (!in_array($row["parent_id"], $ids))
+			{
+				$rows[$key]["parent_id"] = 0;
+			}
+		}
+	}
+
+	protected static function restoreExpandedRowsState(&$rows, $expandedIds)
+	{
+		if (is_array($expandedIds) && !empty($expandedIds))
+		{
+			foreach ($rows as $key => $row)
+			{
+				$rows[$key]["expand"] = !isset($row["custom"]) && in_array($row["id"], $expandedIds);
+			}
+		}
+	}
+
+
+	protected static function restoreCollapsedGroupsState(&$rows, $collapsedIds)
+	{
+		if (is_array($collapsedIds) && !empty($collapsedIds))
+		{
+			foreach ($rows as $key => $row)
+			{
+				if (isset($row["custom"]))
+				{
+					$rows[$key]["expand"] = !in_array($row["id"], $collapsedIds);
+				}
+			}
+		}
+		else
+		{
+			foreach ($rows as $key => $row)
+			{
+				if (isset($row["custom"]))
+				{
+					$rows[$key]["expand"] = true;
+				}
+			}
+		}
+	}
+
+	protected function prepareMultilevelRows()
+	{
+		$result = array();
+		$parent = 0;
+		$depth = 0;
+		$request = $this->request;
+
+		if ($request["action"] === Grid\Actions::GRID_GET_CHILD_ROWS && $request["parent_id"] !== null)
+		{
+			$parent = $request["parent_id"];
+			$depth = $request["depth"];
+		}
+		else
+		{
+			self::normalizeParentIds($this->arParams["ROWS"]);
+		}
+
+		self::sortMultilevelRows($this->arParams["ROWS"], $result, $parent, $depth);
+
+		$expandedRows = $this->getGridOptions()->getExpandedRows();
+		$collapsedGroups = $this->getGridOptions()->getCollapsedGroups();
+		self::restoreExpandedRowsState($result, $expandedRows);
+		self::restoreCollapsedGroupsState($result, $collapsedGroups);
+
+		$this->arParams["ROWS"] = $result;
+	}
 
 	public function executeComponent()
 	{
@@ -1571,7 +2029,15 @@ class CMainUIGrid extends CBitrixComponent
 			$this->prepareResult();
 			$this->prepareDefaultOptions();
 			$this->applyUserSettings();
+
+			if ($this->arParams["ENABLE_COLLAPSIBLE_ROWS"])
+			{
+				$this->prepareMultilevelRows();
+			}
+
 			$this->includeComponentTemplate();
+			$this->includeComponentScripts();
+			$this->includeComponentBlocks();
 		}
 	}
 }

@@ -21,6 +21,7 @@ $MESS["rub_f_find_title"] = "Введите строку для поиска";
 $MESS["rub_del_conf"] = "Удалить рассылку?";
 $MESS["rub_f_name"] = "Название";
 $MESS["rub_f_is_public"] = "Возможность подписаться";
+$MESS["rub_f_chain_name"] = "Тема выпуска";
 
 $MESS["sender_mailing_adm_wizard"] = "Добавить через мастер";
 $MESS["sender_mailing_adm_wizard_title"] = "Добавить новую рассылку с помощью мастера";

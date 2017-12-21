@@ -825,7 +825,7 @@ function get_upload_url(additional_args)
 	if(additional_args)
 	{
 		for(x in additional_args)
-			result += '&' + x + '=' + additional_args[x];
+			result += '&' + x + '=' + BX.util.urlencode(additional_args[x]);
 	}
 	return result;
 }

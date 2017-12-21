@@ -229,7 +229,9 @@ class PostingTable extends Entity\DataManager
 			'filter' => array('=MAILING_ID' => $posting['MAILING_ID'])
 		));
 		while($unSubEmail = $unSubEmailDb->fetch())
-			$emailNotSendList[] = $unSubEmail['EMAIL'];
+		{
+			$emailNotSendList[] = strtolower($unSubEmail['EMAIL']);
+		}
 
 		$groupConnectorsDataCount = array();
 

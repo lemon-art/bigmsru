@@ -42,7 +42,7 @@ Class translate extends CModule
 	function UnInstallDB()
 	{
 		COption::RemoveOption("translate");
-		UnRegisterModuleDependences('main', 'OnPanelCreate', 'translate');
+		UnRegisterModuleDependences('main', 'OnPanelCreate', 'translate', 'CTranslateEventHandlers', 'TranslatOnPanelCreate');
 		UnRegisterModule("translate");
 		return true;
 	}
@@ -79,7 +79,7 @@ Class translate extends CModule
 
 	function DoInstall()
 	{
-		global $DB, $APPLICATION;
+		global $APPLICATION;
 		$this->InstallDB();
 		$this->InstallFiles();
 		$APPLICATION->IncludeAdminFile(GetMessage("TRANSLATE_INSTALL_TITLE"), $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/translate/install/step.php");
@@ -87,7 +87,7 @@ Class translate extends CModule
 
 	function DoUninstall()
 	{
-		global $APPLICATION, $DB;
+		global $APPLICATION;
 		$this->UnInstallFiles();
 		$this->UnInstallDB();
 		$APPLICATION->IncludeAdminFile(GetMessage("TRANSLATE_UNINSTALL_TITLE"), $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/translate/install/unstep.php");

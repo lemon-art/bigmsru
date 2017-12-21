@@ -19,4 +19,7 @@ $MESS["BX_SALE_DISCOUNT_APPLY_MODE_LAST_EXT"] = "don't apply to products whose d
 $MESS["BX_SALE_DISCOUNT_APPLY_MODE_DISABLE_EXT"] = "don't apply to products that already have any kind of discount applied";
 $MESS["BX_SALE_DISCOUNT_APPLY_MODE_FULL_LAST"] = "disable all shopping cart rules if there are products whose discount has the \"Don't apply further discounts\" option enabled";
 $MESS["BX_SALE_DISCOUNT_APPLY_MODE_FULL_DISABLE"] = "disable all shopping cart rules if there are products that already have any kind of discount applied";
+$MESS["BX_SALE_DISCOUNT_MESS_SIMPLE_DESCRIPTION_BASKET"] = "Shopping cart total change";
+$MESS["BX_SALE_DISCOUNT_MESS_SIMPLE_DESCRIPTION_DELIVERY"] = "Cost of delivery change";
+$MESS["BX_SALE_DISCOUNT_MESS_SIMPLE_DESCRIPTION_UNKNOWN"] = "Unknown shopping cart rule";
 ?>

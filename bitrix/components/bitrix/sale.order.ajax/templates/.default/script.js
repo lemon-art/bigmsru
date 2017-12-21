@@ -124,16 +124,19 @@ BX.saleOrderAjax = { // bad solution, actually, a singleton at the page
 						if(locPropId !== false){
 							BX.bindDebouncedChange(input, function(value){
 
+								var zipChangedNode = BX('ZIP_PROPERTY_CHANGED');
+								zipChangedNode && (zipChangedNode.value = 'Y');
+
 								input = null;
 								row = null;
 
 								if(BX.type.isNotEmptyString(value) && /^\s*\d+\s*$/.test(value) && value.length > 3){
 
-									ctx.getLocationByZip(value, function(locationId){
-										ctx.properties[locPropId].control.setValueByLocationId(locationId);
+									ctx.getLocationsByZip(value, function(locationsData){
+										ctx.properties[locPropId].control.setValueByLocationIds(locationsData);
 									}, function(){
 										try{
-											ctx.properties[locPropId].control.clearSelected(locationId);
+											// ctx.properties[locPropId].control.clearSelected();
 										}catch(e){}
 									});
 								}
@@ -402,7 +405,7 @@ BX.saleOrderAjax = { // bad solution, actually, a singleton at the page
 
 		return false;
 	},
-	getLocationByZip: function(value, successCallback, notFoundCallback)
+	getLocationsByZip: function(value, successCallback, notFoundCallback)
 	{
 		if(typeof this.indexCache[value] != 'undefined')
 		{
@@ -410,14 +413,9 @@ BX.saleOrderAjax = { // bad solution, actually, a singleton at the page
 			return;
 		}
 
-		var loader;
-		if (!(loader = BX.Sale.OrderAjaxComponent.startLoader()))
-			return;
-
 		var ctx = this;
 
 		BX.ajax({
-
 			url: this.options.source,
 			method: 'post',
 			dataType: 'json',
@@ -425,26 +423,22 @@ BX.saleOrderAjax = { // bad solution, actually, a singleton at the page
 			processData: true,
 			emulateOnload: true,
 			start: true,
-			data: {'ACT': 'GET_LOC_BY_ZIP', 'ZIP': value},
+			data: {'ACT': 'GET_LOCS_BY_ZIP', 'ZIP': value},
 			//cache: true,
 			onsuccess: function(result){
-				BX.Sale.OrderAjaxComponent.endLoader(loader);
-
 				if(result.result)
 				{
-					ctx.indexCache[value] = result.data.ID;
-					successCallback.apply(ctx, [result.data.ID]);
+					ctx.indexCache[value] = result.data;
+					successCallback.apply(ctx, [result.data]);
 				}
 				else
+				{
 					notFoundCallback.call(ctx);
-
+				}
 			},
 			onfailure: function(type, e){
-				BX.Sale.OrderAjaxComponent.endLoader(loader);
 				// on error do nothing
 			}
-
 		});
 	}
-
-}
+};

@@ -24,11 +24,31 @@ class Fuser
 	 * Return fuserId.
 	 *
 	 * @param bool $skipCreate		Create, if not exist.
-	 * @return int
+	 * @return int|null
 	 */
 	public static function getId($skipCreate = false)
 	{
-		$id = \CSaleUser::getID($skipCreate);
+		global $USER;
+
+		$id = null;
+
+		static $fuserList = array();
+
+		if ((isset($USER) && $USER instanceof \CUser) && $USER->IsAuthorized())
+		{
+			$currentUserId = (int)$USER->GetID();
+			if (!isset($fuserList[$currentUserId]))
+			{
+				$fuserList[$currentUserId] = static::getIdByUserId($currentUserId);
+			}
+			$id = $fuserList[$currentUserId];
+			unset($currentUserId);
+		}
+
+		if ((int)$id <= 0)
+		{
+			$id = \CSaleUser::getID($skipCreate);
+		}
 		static::updateSession($id);
 		return $id;
 	}
@@ -79,7 +99,7 @@ class Fuser
 		));
 		if ($fuserData = $res->fetch())
 		{
-			return intval($fuserData['ID']);
+			return (int)$fuserData['ID'];
 		}
 		else
 		{
@@ -128,7 +148,7 @@ class Fuser
 	public static function deleteOld($days)
 	{
 		$expired = new Main\Type\DateTime();
-		$expired->add('-'.$days.'days');
+		$expired->add('-'.$days.' days');
 		$expiredValue = $expired->format('Y-m-d H:i:s');
 
 		/** @var Main\DB\Connection $connection */

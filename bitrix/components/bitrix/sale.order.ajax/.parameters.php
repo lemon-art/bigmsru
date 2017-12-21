@@ -22,9 +22,9 @@ $arColumns = array(
 	"WEIGHT_FORMATED" => GetMessage("SOA_WEIGHT")
 );
 
+$arIblockIDs = array();
 if (Loader::includeModule('catalog'))
 {
-	$arIblockIDs = array();
 	$arIblockNames = array();
 	$parameters = array(
 		'select' => array('IBLOCK_ID', 'NAME' => 'IBLOCK.NAME', 'SITE_ID' => 'IBLOCK_SITE.SITE_ID'),
@@ -140,6 +140,14 @@ $arComponentParameters = array(
 		)
 	),
 	"PARAMETERS" => array(
+		"USER_CONSENT" => array(),
+		"ACTION_VARIABLE" => array(
+			"NAME" => GetMessage('SOA_ACTION_VARIABLE'),
+			"TYPE" => "STRING",
+			"MULTIPLE" => "N",
+			"DEFAULT" => "soa-action",
+			"PARENT" => "ADDITIONAL_SETTINGS",
+		),
 		"PATH_TO_BASKET" => array(
 			"NAME" => GetMessage("SOA_PATH_TO_BASKET1"),
 			"TYPE" => "STRING",
@@ -173,34 +181,59 @@ $arComponentParameters = array(
 			"PARENT" => "ADDITIONAL_SETTINGS",
 		),
 		"PAY_FROM_ACCOUNT" => array(
-			"NAME"=>GetMessage("SOA_ALLOW_PAY_FROM_ACCOUNT1"),
+			"NAME" => GetMessage("SOA_ALLOW_PAY_FROM_ACCOUNT1"),
 			"TYPE" => "CHECKBOX",
 			"DEFAULT" => "N",
 			"PARENT" => "BASE",
 		),
 		"ONLY_FULL_PAY_FROM_ACCOUNT" => array(
-			"NAME"=>GetMessage("SOA_ONLY_FULL_PAY_FROM_ACCOUNT1"),
+			"NAME" => GetMessage("SOA_ONLY_FULL_PAY_FROM_ACCOUNT1"),
 			"TYPE" => "CHECKBOX",
 			"DEFAULT" => "N",
 			"PARENT" => "BASE",
 		),
 		"ALLOW_AUTO_REGISTER" => array(
-			"NAME"=>GetMessage("SOA_ALLOW_AUTO_REGISTER"),
+			"NAME" => GetMessage("SOA_ALLOW_AUTO_REGISTER"),
 			"TYPE" => "CHECKBOX",
 			"DEFAULT" => "N",
 			"PARENT" => "BASE",
 		),
+		"ALLOW_APPEND_ORDER" => array(
+			"NAME" => GetMessage("SOA_ALLOW_APPEND_ORDER"),
+			"TYPE" => "CHECKBOX",
+			"DEFAULT" => "Y",
+			"PARENT" => "BASE",
+		),
 		"SEND_NEW_USER_NOTIFY" => array(
-			"NAME"=>GetMessage("SOA_SEND_NEW_USER_NOTIFY"),
+			"NAME" => GetMessage("SOA_SEND_NEW_USER_NOTIFY"),
 			"TYPE" => "CHECKBOX",
 			"DEFAULT" => "Y",
 			"PARENT" => "BASE",
 		),
 		"DELIVERY_NO_AJAX" => array(
-			"NAME" => GetMessage("SOA_DELIVERY_NO_AJAX2"),
-			"TYPE" => "CHECKBOX",
+			"NAME" => GetMessage("SOA_DELIVERY_NO_AJAX3"),
+			"TYPE" => "LIST",
 			"MULTIPLE" => "N",
+			"VALUES" => array(
+				'N' => GetMessage("SOA_DELIVERY_NO_AJAX_NO"),
+				'H' => GetMessage("SOA_DELIVERY_NO_AJAX_HANDLER"),
+				'Y' => GetMessage("SOA_DELIVERY_NO_AJAX_YES"),
+			),
 			"DEFAULT" => "N",
+			"REFRESH" => "Y",
+			"PARENT" => "BASE",
+		),
+		"SHOW_NOT_CALCULATED_DELIVERIES" => array(
+			"NAME" => GetMessage("SOA_SHOW_NOT_CALCULATED_DELIVERIES"),
+			"TYPE" => "LIST",
+			"MULTIPLE" => "N",
+			"DEFAULT" => "L",
+			"VALUES" => array(
+				'N' => GetMessage("SOA_SHOW_NOT_CALCULATED_DELIVERIES_N"),
+				'L' => GetMessage("SOA_SHOW_NOT_CALCULATED_DELIVERIES_L"),
+				'Y' => GetMessage("SOA_SHOW_NOT_CALCULATED_DELIVERIES_Y"),
+			),
+			"HIDDEN" => isset($arCurrentValues['DELIVERY_NO_AJAX']) && $arCurrentValues['DELIVERY_NO_AJAX'] === 'Y' ? 'N' : 'Y',
 			"PARENT" => "BASE",
 		),
 		"DELIVERY_NO_SESSION" => array(
@@ -223,6 +256,14 @@ $arComponentParameters = array(
 			"ADDITIONAL_VALUES" => "N",
 			"PARENT" => "BASE",
 		),
+		"SPOT_LOCATION_BY_GEOIP" => array(
+			"NAME" => GetMessage("SBB_SPOT_LOCATION_BY_GEOIP"),
+			"TYPE" => "CHECKBOX",
+			"MULTIPLE" => "N",
+			"DEFAULT" => "Y",
+			"ADDITIONAL_VALUES" => "N",
+			"PARENT" => "BASE",
+		),
 		"DELIVERY_TO_PAYSYSTEM" => array(
 			"NAME" => GetMessage("SBB_DELIVERY_PAYSYSTEM"),
 			"TYPE" => "LIST",
@@ -231,6 +272,14 @@ $arComponentParameters = array(
 				"d2p" => GetMessage("SBB_TITLE_PD"),
 				"p2d" => GetMessage("SBB_TITLE_DP")
 			),
+			"PARENT" => "BASE",
+		),
+		"SHOW_VAT_PRICE" => array(
+			"NAME" => GetMessage('SOA_SHOW_VAT_PRICE'),
+			"TYPE" => "CHECKBOX",
+			"MULTIPLE" => "N",
+			"DEFAULT" => "Y",
+			"ADDITIONAL_VALUES" => "N",
 			"PARENT" => "BASE",
 		),
 		"SET_TITLE" => array(),
@@ -296,6 +345,13 @@ $arComponentParameters["PARAMETERS"]['COMPATIBLE_MODE'] =  array(
 	"PARENT" => "BASE"
 );
 
+$arComponentParameters["PARAMETERS"]['USE_PRELOAD'] = array(
+	"NAME" => GetMessage("SOA_USE_PRELOAD"),
+	"TYPE" => "CHECKBOX",
+	"DEFAULT" => "Y",
+	"PARENT" => "BASE"
+);
+
 foreach ($arIblockIDs as $iblockId)
 {
 	$fileProperties = array('-' => GetMessage("SOA_DEFAULT"));
@@ -314,7 +370,6 @@ foreach ($arIblockIDs as $iblockId)
 
 			$fileProperties[$property['CODE']] = $propertyName;
 		}
-
 	}
 
 	$arComponentParameters["PARAMETERS"]['ADDITIONAL_PICT_PROP_'.$iblockId] = array(
@@ -335,5 +390,6 @@ $arComponentParameters["PARAMETERS"]['BASKET_IMAGES_SCALING'] =  array(
 		'adaptive' => GetMessage("SOA_ADAPTIVE"),
 		'no_scale' => GetMessage("SOA_NO_SCALE")
 	),
+	"DEFAULT" => "adaptive",
 	"PARENT" => "ADDITIONAL_SETTINGS"
 );

@@ -1257,16 +1257,13 @@ class CAllRatings
 					return false;
 
 				$arGroups = array();
-				$res = CUser::GetUserGroupList($userId);
-				while($res_arr = $res->Fetch())
-					$arGroups[] = array("GROUP_ID"=>$res_arr["GROUP_ID"], "DATE_ACTIVE_FROM"=>$res_arr["DATE_ACTIVE_FROM"], "DATE_ACTIVE_TO"=>$res_arr["DATE_ACTIVE_TO"]);
-
 				if ($assignRatingGroup > 0)
-					$arGroups[] = array("GROUP_ID"=>intval($assignRatingGroup));
+					$arGroups[] = intval($assignRatingGroup);
 				if ($assignAuthorityGroup > 0 && $assignRatingGroup != $assignAuthorityGroup)
-					$arGroups[] = array("GROUP_ID"=>intval($assignAuthorityGroup));
+					$arGroups[] = intval($assignAuthorityGroup);
 
-				CUser::SetUserGroup($userId, $arGroups);
+				if(!empty($arGroups))
+					CUser::AppendUserGroup($userId, $arGroups);
 			}
 			if (CACHED_b_rating_vote!==false)
 			{

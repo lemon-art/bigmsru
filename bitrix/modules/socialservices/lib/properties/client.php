@@ -55,9 +55,9 @@ class Client
 	 * @param string $ogrn OGRN code of the organization or individual businessman.
 	 * @return array|false
 	 */
-	public function getByOgrn($ogrn)
+	public function getByOgrn($ogrn, $showTerminated = false)
 	{
-		return $this->call(static::METHOD_COMMON_GET_BY_OGRN, array('ogrn' => $ogrn));
+		return $this->call(static::METHOD_COMMON_GET_BY_OGRN, array('ogrn' => $ogrn, 'showTerminated'=> $showTerminated));
 	}
 
 	/**
@@ -65,9 +65,9 @@ class Client
 	 * @param string $inn INN code of the organization or individual businessman.
 	 * @return array|false
 	 */
-	public function getByInn($inn)
+	public function getByInn($inn, $showTerminated = false)
 	{
-		return $this->call(static::METHOD_COMMON_GET_BY_INN, array('inn' => $inn));
+		return $this->call(static::METHOD_COMMON_GET_BY_INN, array('inn' => $inn, 'showTerminated' => $showTerminated));
 	}
 
 	/**
@@ -234,6 +234,16 @@ class Client
 				static::SERVICE_HOST.static::REST_URI.$methodName,
 				$additionalParams
 		);
+
+		if($result === false)
+		{
+			$httpErrors = $http->getError();
+			foreach ($httpErrors as $errorCode => $errorText)
+			{
+				$this->errorCollection->add(array(new Error($errorText, $errorCode)));
+			}
+			return false;
+		}
 
 		$answer = $this->prepareAnswer($result);
 

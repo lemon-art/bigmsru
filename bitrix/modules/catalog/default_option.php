@@ -67,5 +67,6 @@ $catalog_default_option = array(
 	'viewed_time' => 10,
 	'viewed_count' => 10,
 	'viewed_period' => 5,
-	'default_product_vat_included' => 'N'
+	'default_product_vat_included' => 'N',
+	'subscribe_repeated_notify' => 'Y',
 );

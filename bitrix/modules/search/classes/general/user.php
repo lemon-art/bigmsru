@@ -1,4 +1,5 @@
-<?
+<?php
+
 class CSearchUser
 {
 	protected $_user_id;
@@ -8,30 +9,30 @@ class CSearchUser
 		$this->_user_id = intval($user_id);
 	}
 
-	function OnAfterUserUpdate(&$arFields)
+	public static function OnAfterUserUpdate(&$arFields)
 	{
-		if(array_key_exists("GROUP_ID", $arFields))
+		if (array_key_exists("GROUP_ID", $arFields))
 		{
 			$ob = new CSearchUser($arFields["ID"]);
 			$ob->DeleteGroups();
 		}
 	}
 
-	function DeleteByUserID($USER_ID)
+	public static function DeleteByUserID($USER_ID)
 	{
 		$ob = new CSearchUser($USER_ID);
 		$ob->DeleteGroups();
 	}
 
-	function CheckCurrentUserGroups()
+	public static function CheckCurrentUserGroups()
 	{
 		global $USER;
 		$user_id = is_object($USER)? intval($USER->GetID()): 0;
 
-		if($user_id > 0)
+		if ($user_id > 0)
 		{
 			$arGroupCodes = array('AU', 'U'.$user_id); // Authorized
-			foreach($USER->GetUserGroupArray() as $group_id)
+			foreach ($USER->GetUserGroupArray() as $group_id)
 			{
 				$arGroupCodes[] = 'G'.$group_id;
 			}
@@ -39,7 +40,7 @@ class CSearchUser
 			foreach (GetModuleEvents("search", "OnSearchCheckPermissions", true) as $arEvent)
 			{
 				$arCodes = ExecuteModuleEventEx($arEvent, array(null));
-				if(is_array($arCodes))
+				if (is_array($arCodes))
 				{
 					$arGroupCodes = array_merge($arGroupCodes, $arCodes);
 				}
@@ -74,13 +75,13 @@ class CSearchUser
 		$DB = CDatabase::GetModuleConnection('search');
 
 		$arToInsert = array();
-		foreach($arGroups as $group_code)
+		foreach ($arGroups as $group_code)
 		{
-			if($group_code != "")
+			if ($group_code != "")
 				$arToInsert[$group_code] = $group_code;
 		}
 
-		foreach($arToInsert as $group_code)
+		foreach ($arToInsert as $group_code)
 		{
 			$DB->Query("
 				INSERT INTO b_search_user_right
@@ -119,4 +120,3 @@ class CSearchUser
 		$this->AddGroups($arGroups);
 	}
 }
-?>

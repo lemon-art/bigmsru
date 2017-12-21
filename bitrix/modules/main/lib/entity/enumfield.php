@@ -58,4 +58,9 @@ class EnumField extends ScalarField
 	{
 		return $this->values;
 	}
+
+	public function convertValueToDb($value)
+	{
+		return $this->getConnection()->getSqlHelper()->convertToDbString($value);
+	}
 }

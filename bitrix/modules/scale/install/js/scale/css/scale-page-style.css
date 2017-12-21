@@ -966,6 +966,7 @@ td.adm-scale-info-table-header {
 
 .adm-scale-block-bottom{
 	padding: 35px 0 0 30px;
+	margin-bottom: 20px;
 }
 
 .adm-scale-graph-img{
@@ -1013,4 +1014,11 @@ td.adm-scale-info-table-header {
 	border-bottom: 2px solid #DCE7ED;
 	padding: 10px;
 	vertical-align: top;
+}
+
+.adm-scale-item-role-state {
+	font-style: italic;
+	position: absolute;
+	bottom: 6px;
+	left: 7px;
 }

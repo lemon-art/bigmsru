@@ -156,6 +156,45 @@ class PostingManager
 		return (empty($result) ? null : $result);
 	}
 
+	protected static function fillHeadersByOptionHeaders(array $headers = array())
+	{
+		static $headerList = null;
+		if ($headerList === null)
+		{
+			$headerList = array();
+			// add headers from module options
+			$optionHeaders = Option::get('sender', 'mail_headers', '');
+			$optionHeaders = !empty($optionHeaders) ? unserialize($optionHeaders) : array();
+			foreach ($optionHeaders as $optionHeader)
+			{
+				$optionHeader = trim($optionHeader);
+				if (!$optionHeader)
+				{
+					continue;
+				}
+
+				$optionHeaderParts = explode(':', $optionHeader);
+				$optionHeaderName = isset($optionHeaderParts[0]) ? $optionHeaderParts[0] : '';
+				$optionHeaderName = trim($optionHeaderName);
+				$optionHeaderValue = isset($optionHeaderParts[1]) ? $optionHeaderParts[1] : '';
+				$optionHeaderValue = trim($optionHeaderValue);
+				if (!$optionHeaderName || !$optionHeaderValue)
+				{
+					continue;
+				}
+
+				$headerList[$optionHeaderName] = $optionHeaderValue;
+			}
+		}
+
+		foreach ($headerList as $optionHeaderName => $optionHeaderValue)
+		{
+			$headers[$optionHeaderName] = $optionHeaderValue;
+		}
+
+		return $headers;
+	}
+
 	/**
 	 *
 	 * @param $mailingChainId
@@ -302,6 +341,9 @@ class PostingManager
 		}
 
 
+		$params['FIELDS']['SUBJECT'] = htmlspecialcharsbx(strip_tags(
+			static::$currentMailingChainFields['MESSAGE']['SUBJECT']
+		));
 		// prepare params for send email
 		$messageParams = array(
 			'EVENT' => static::$currentMailingChainFields['EVENT'],
@@ -362,6 +404,12 @@ class PostingManager
 			$unsubUrl = $params['FIELDS']['UNSUBSCRIBE_LINK'];
 			$mailHeaders['List-Unsubscribe'] = '<'.$unsubUrl.'>';
 		}
+
+		// add header "Precedence: bulk"
+		$mailHeaders['Precedence'] = 'bulk';
+
+		// add headers from module options
+		$mailHeaders = self::fillHeadersByOptionHeaders($mailHeaders);
 
 		$mailBody = null;
 		if(static::$currentMailingChainFields['IS_MESSAGE_WITH_TEMPLATE'] && Option::get('sender', 'use_inliner_for_each_template_mail', 'N') == 'Y')

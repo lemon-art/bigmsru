@@ -21,7 +21,7 @@ $arAllOptions = array(
 	array("avatar_max_size", GetMessage("BLO_AVATAR_MAX_SIZE"), "1000000", Array("text", 10)),
 	//array("avatar_max_width", GetMessage("BLO_AVATAR_MAX_WIDTH"), "150", Array("text", 10)),
 	//array("avatar_max_height", GetMessage("BLO_AVATAR_MAX_HEIGHT"), "150", Array("text", 10)),
-	array("image_max_width", GetMessage("BLO_IMAGE_MAX_WIDTH"), "600", Array("text", 10)),
+	array("image_max_width", GetMessage("BLO_IMAGE_MAX_WIDTH"), "800", Array("text", 10)),
 	array("image_max_height", GetMessage("BLO_IMAGE_MAX_HEIGHT"), "1000", Array("text", 10)),
 	array("image_max_size", GetMessage("BLO_IMAGE_MAX_SIZE"), "5000000", Array("text", 10)),
 	array("allow_alias", GetMessage("BLO_ALLOW_ALIAS"), "Y", Array("checkbox")),
@@ -41,6 +41,7 @@ $arAllOptions = array(
 	array("comment_auth_user_max_rights", GetMessage("BLOG_COMMENT_AUTH_USER_MAX_RIGHTS"), "P", Array("selectbox"), $GLOBALS["AR_BLOG_PERMS"]),
 	array("post_group_user_max_rights", GetMessage("BLOG_POST_GROUP_USER_MAX_RIGHTS"), "W", Array("selectbox"), $GLOBALS["AR_BLOG_PERMS"]),
 	array("comment_group_user_max_rights", GetMessage("BLOG_COMMENT_GROUP_USER_MAX_RIGHTS"), "W", Array("selectbox"), $GLOBALS["AR_BLOG_PERMS"]),
+	array("smile_gallery_id", GetMessage("BLOG_OPTIONS_SMILE_GALLERY_ID"), 0, Array("selectbox"), CSmileGallery::getListForForm()),
 );
 
 $strWarning = "";

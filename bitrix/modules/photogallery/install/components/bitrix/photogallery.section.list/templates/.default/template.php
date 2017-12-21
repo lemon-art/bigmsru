@@ -102,7 +102,7 @@ endif;?>
 		"SECTION_ID" => $res["ID"],
 		"DRAG_SORT" => "N",
 		"MORE_PHOTO_NAV" => "N",
-		"THUMBNAIL_SIZE" => "70",
+		"THUMBNAIL_SIZE" => $arParams["SECTION_LIST_THUMBNAIL_SIZE"],
 		"SHOW_CONTROLS" => "Y",
 		"SHOW_RATING" => "Y",
 		"SHOW_SHOWS" => "N",

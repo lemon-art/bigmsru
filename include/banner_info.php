@@ -1,0 +1,2 @@
+<div class="r_block"><a class="r_a" href="http://www.bigms.ru/catalog/inzhenernaya/"><img class="r_img" src="/images/injener2.jpg"><span class="r_span"><p class="banner_text"></p></a></span></div>
+<div class="l_block"><a class="l_a" href="http://www.bigms.ru/catalog/bytovaya/"><img class="l_img" src="/images/buov2.jpg"><span class="l_span"><p class="banner_text"></p></a></span></div>

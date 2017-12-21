@@ -44,4 +44,5 @@ $MESS["CC_BCIH_FIELD_ERROR"] = "Error adding a dictionary entry. #MESSAGE#";
 $MESS["CC_BCIH_UNKNOWN_ERROR"] = "Unknown error #CODE#.";
 $MESS["CC_BCIH_ELEMENT_PROGRESS"] = "Items imported: #COUNT#.";
 $MESS["CC_BCIH_XML_REFERENCES"] = "CustomDictionaries";
+$MESS["CC_BCIH_REFERENCE_ERROR"] = "Error creating dictionary. #MESSAGE#";
 ?>

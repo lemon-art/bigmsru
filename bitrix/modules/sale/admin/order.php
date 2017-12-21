@@ -31,6 +31,8 @@ Loc::loadMessages(__FILE__);
 $arUserGroups = $USER->GetUserGroupArray();
 $intUserID = (int)$USER->GetID();
 
+$isUserResponsible = false;
+
 $arAccessibleSites = array();
 $dbAccessibleSites = CSaleGroupAccessToSite::GetList(
 		array(),
@@ -93,37 +95,49 @@ $arFilterFields = array(
 	"filter_delivery_service",
 	"filter_xml_id",
 	"filter_tracking_number",
-	"filtrer_source"
+	"filter_source",
+	"filter_company_id",
+	"filter_responsible_id",
 );
 
 $arOrderProps = array();
 $arOrderPropsCode = array();
 $dbProps = \Bitrix\Sale\Internals\OrderPropsTable::getList(array(
 	'order' => array("PERSON_TYPE_ID" => "ASC", "SORT" => "ASC"),
-	'select' => array("ID", "NAME", "PERSON_TYPE_NAME" => "PERSON_TYPE.NAME", "PERSON_TYPE_ID", "SORT", "IS_FILTERED", "TYPE", "CODE", "SETTINGS"),
+	'select' => array("ID", "NAME", "PERSON_TYPE_NAME" => "PERSON_TYPE.NAME", "LID" => "PERSON_TYPE.LID", "PERSON_TYPE_ID", "SORT", "IS_FILTERED", "TYPE", "CODE", "SETTINGS"),
 ));
 
 while ($arProps = $dbProps->fetch())
 {
 	$key = "";
+	$propAdded = false;
 
-	if(strlen($arProps["CODE"]) > 0)
+	if(strval(trim($arProps["CODE"])) != '')
 	{
 		$key = $arProps["CODE"];
 
 		if(empty($arOrderPropsCode[$key]))
+		{
 			$arOrderPropsCode[$key] = $arProps;
+		}
+		$propAdded = true;
 	}
-	else
+
+	if (!$propAdded)
 	{
-		$key = $arProps["ID"];
-		$arOrderProps[IntVal($key)] = $arProps;
+		$key = intval($arProps["ID"]);
+		if (empty($arOrderProps[$key]))
+		{
+			$arOrderProps[$key] = $arProps;
+		}
 	}
 
 	if($key)
 	{
 		if($arProps["IS_FILTERED"] == "Y" && $arProps["TYPE"] != "MULTISELECT" && $arProps["TYPE"] != "FILE")
+		{
 			$arFilterFields[] = "filter_prop_".$key;
+		}
 	}
 }
 
@@ -137,10 +151,16 @@ if(strlen($filter_lang) > 0)
 }
 
 $arFilter = array();
+$arSelectFields = array();
+$userCompanyList = array();
+
 if(IntVal($filter_id_from)>0) $arFilter[">=ID"] = IntVal($filter_id_from);
 if(IntVal($filter_id_to)>0) $arFilter["<=ID"] = IntVal($filter_id_to);
-if(strlen($filter_date_from)>0) $arFilter[">=DATE_INSERT"] = trim($filter_date_from);
-if(strlen($filter_date_to)>0)
+if(strval(trim($filter_date_from)) != '')
+{
+	$arFilter[">=DATE_INSERT"] = trim($filter_date_from);
+}
+if(strval(trim($filter_date_to)) != '')
 {
 	if($arDate = ParseDateTime($filter_date_to, CSite::GetDateFormat("FULL", SITE_ID)))
 	{
@@ -160,18 +180,18 @@ if(strlen($filter_date_to)>0)
 	}
 }
 
-if(strlen($filter_date_update_from)>0)
+if(strval(trim($filter_date_update_from)) != '')
 {
 	$arFilter[">=DATE_UPDATE"] = trim($filter_date_update_from);
 }
-elseif($set_filter!="Y" && $del_filter != "Y")
+elseif($set_filter!="Y" && $del_filter != "Y" && !$bExport)
 {
 	$filter_date_update_from_DAYS_TO_BACK = Option::get("sale", "order_list_date", 30);
 	$filter_date_update_from = GetTime(time()-86400*Option::get("sale", "order_list_date", 30));
 	$arFilter[">=DATE_UPDATE"] = $filter_date_update_from;
 }
 
-if(strlen($filter_date_update_to)>0)
+if(strval(trim($filter_date_update_to)) != '')
 {
 	if($arDate = ParseDateTime($filter_date_update_to, CSite::GetDateFormat("FULL", SITE_ID)))
 	{
@@ -191,9 +211,12 @@ if(strlen($filter_date_update_to)>0)
 	}
 }
 
-if(strlen($filter_date_paid_from)>0) $arFilter[">=DATE_PAYED"] = trim($filter_date_paid_from);
+if(strval(trim($filter_date_paid_from)) != '')
+{
+	$arFilter[">=DATE_PAYED"] = trim($filter_date_paid_from);
+}
 
-if(strlen($filter_date_paid_to)>0)
+if(strval(trim($filter_date_paid_to)) != '')
 {
 	if($arDate = ParseDateTime($filter_date_paid_to, CSite::GetDateFormat("FULL", SITE_ID)))
 	{
@@ -213,9 +236,12 @@ if(strlen($filter_date_paid_to)>0)
 	}
 }
 
-if(strlen($filter_date_allow_delivery_from)>0) $arFilter[">=DATE_ALLOW_DELIVERY"] = trim($filter_date_allow_delivery_from);
+if(strval(trim($filter_date_allow_delivery_from)) != '')
+{
+	$arFilter[">=DATE_ALLOW_DELIVERY"] = trim($filter_date_allow_delivery_from);
+}
 
-if(strlen($filter_date_allow_delivery_to)>0)
+if(strval(trim($filter_date_allow_delivery_to)) != '')
 {
 	if($arDate = ParseDateTime($filter_date_allow_delivery_to, CSite::GetDateFormat("FULL", SITE_ID)))
 	{
@@ -238,16 +264,19 @@ if(strlen($filter_date_allow_delivery_to)>0)
 if(strlen($filter_lang)>0 && $filter_lang!="NOT_REF") $arFilter["=LID"] = trim($filter_lang);
 if(strlen($filter_currency)>0) $arFilter["CURRENCY"] = trim($filter_currency);
 
-if(isset($filter_status) && !is_array($filter_status) && strlen($filter_status) > 0)
-	$filter_status = array($filter_status);
-if(isset($filter_status) && is_array($filter_status) && count($filter_status) > 0)
+if (isset($filter_status) && !is_array($filter_status) && strlen($filter_status) > 0)
 {
-	$countFilter = count($filter_status);
-	for ($i = 0; $i < $countFilter; $i++)
+	$filter_status = array($filter_status);
+}
+if (isset($filter_status) && is_array($filter_status) && count($filter_status) > 0)
+{
+	foreach ($filter_status as $filterStatusIndex => $filterStatusValue)
 	{
-		$filter_status[$i] = trim($filter_status[$i]);
-		if(strlen($filter_status[$i]) > 0)
-			$arFilter["=STATUS_ID"][] = $filter_status[$i];
+		$filterStatusValue = trim($filterStatusValue);
+		if (strval($filterStatusValue) != '')
+		{
+			$arFilter["=STATUS_ID"][] = $filterStatusValue;
+		}
 	}
 }
 if (strlen($filter_by_recommendation)>0) $arFilter["=BY_RECOMMENDATION"] = trim($filter_by_recommendation);
@@ -293,7 +322,7 @@ if(is_array($filter_group_id) && count($filter_group_id) > 0)
 if(IntVal($filter_affiliate_id)>0) $arFilter["AFFILIATE_ID"] = IntVal($filter_affiliate_id);
 if(strlen($filter_discount_coupon)>0) $arFilter["=ORDER_COUPONS.COUPON"] = trim($filter_discount_coupon);
 if(floatval($filter_price_from)>0) $arFilter[">=PRICE"] = floatval($filter_price_from);
-if(floatval($filter_price_to)>0) $arFilter["<PRICE"] = floatval($filter_price_to);
+if(floatval($filter_price_to)>0) $arFilter["<=PRICE"] = floatval($filter_price_to);
 if(strlen($filter_xml_id)>0) $arFilter["%XML_ID"] = trim($filter_xml_id);
 if(strlen($filter_tracking_number)>0) $arFilter["%SHIPMENT.TRACKING_NUMBER"] = trim($filter_tracking_number);
 
@@ -311,11 +340,10 @@ if(strlen($filter_sum_paid) > 0)
 
 if(isset($filter_person_type) && is_array($filter_person_type) && count($filter_person_type) > 0)
 {
-	$countFilterPerson = count($filter_person_type);
-	for ($i = 0; $i < $countFilterPerson; $i++)
+	foreach ($filter_person_type as $filterPersonTypeId)
 	{
-		if(IntVal($filter_person_type[$i]) > 0)
-			$arFilter["=PERSON_TYPE_ID"][] = $filter_person_type[$i];
+		if(intval($filterPersonTypeId) > 0)
+			$arFilter["=PERSON_TYPE_ID"][] = intval($filterPersonTypeId);
 	}
 }
 
@@ -329,12 +357,11 @@ if(isset($filter_source) && $filter_source != 0)
 
 if(!empty($filter_pay_system) && is_array($filter_pay_system))
 {
-	$countFilterPay = count($filter_pay_system);
 	$whereExpression = "";
 
-	for ($i = 0; $i < $countFilterPay; $i++)
+	foreach ($filter_pay_system as $filterPaySystemId)
 	{
-		if(intval($filter_pay_system[$i]) <= 0)
+		if(intval($filterPaySystemId) <= 0)
 			continue;
 
 		if($whereExpression == "")
@@ -342,7 +369,7 @@ if(!empty($filter_pay_system) && is_array($filter_pay_system))
 		else
 			$whereExpression .= " OR ";
 
-		$whereExpression .= "PAY_SYSTEM_ID = ".intval($filter_pay_system[$i]);
+		$whereExpression .= "PAY_SYSTEM_ID = ".intval($filterPaySystemId);
 	}
 
 	if(strlen($whereExpression) > 0)
@@ -378,9 +405,9 @@ if(!empty($filter_delivery_service) && is_array($filter_delivery_service))
 	$countFilterDeliveryService = count($filter_delivery_service);
 	$whereExpression = "";
 
-	for ($i = 0; $i < $countFilterDeliveryService; $i++)
+	foreach ($filter_delivery_service as $filterDeliveryServiceId)
 	{
-		if(intval($filter_delivery_service[$i]) <= 0)
+		if(intval($filterDeliveryServiceId) <= 0)
 			continue;
 
 		if($whereExpression == "")
@@ -388,7 +415,7 @@ if(!empty($filter_delivery_service) && is_array($filter_delivery_service))
 		else
 			$whereExpression .= " OR ";
 
-		$whereExpression .= "DELIVERY_ID = ".intval($filter_delivery_service[$i]);
+		$whereExpression .= "DELIVERY_ID = ".intval($filterDeliveryServiceId);
 	}
 
 	if(strval($whereExpression) != "")
@@ -493,6 +520,32 @@ if($saleModulePermissions < "W")
 }
 
 $allowedStatusesView = \Bitrix\Sale\OrderStatus::getStatusesUserCanDoOperations($intUserID, array('view'));
+
+if($saleModulePermissions == "P")
+{
+	$userCompanyList = Sale\Services\Company\Manager::getUserCompanyList($USER->GetID());
+	$arFilter[] = array(
+		"LOGIC" => "OR",
+		'=RESPONSIBLE_ID' => $USER->GetID(),
+		'=COMPANY_ID' => $userCompanyList,
+	);
+
+	$arSelectFields[] = 'RESPONSIBLE_ID';
+	$arSelectFields[] = 'COMPANY_ID';
+}
+
+$companyListNames = array();
+
+$dbRes = \Bitrix\Sale\Services\Company\Manager::getList(array(
+	'select' => array('ID', 'NAME'),
+	'order' => array('NAME' => 'ASC')
+));
+
+while($row = $dbRes->fetch())
+	$companyListNames[$row['ID']] = htmlspecialcharsbx($row['NAME']);
+
+if(intval($filter_company_id)>0) $arFilter["COMPANY_ID"] = intval($filter_company_id);
+if(intval($filter_responsible_id)>0) $arFilter["RESPONSIBLE_ID"] = intval($filter_responsible_id);
 
 if($saleModulePermissions < "W")
 {
@@ -638,7 +691,6 @@ $bShowBasketProps = ((string)\Bitrix\Main\Config\Option::get('sale', 'show_baske
 if(isset($arFilterTmp["NAME_SEARCH"]) && strlen($arFilterTmp["NAME_SEARCH"]) > 0)
 {
 	$nameSearch = $arFilterTmp["NAME_SEARCH"];
-	unset($arFilterTmp["NAME_SEARCH"]);
 
 	$arFilterTmp[] = array(
 		"LOGIC" => "OR",
@@ -649,6 +701,8 @@ if(isset($arFilterTmp["NAME_SEARCH"]) && strlen($arFilterTmp["NAME_SEARCH"]) > 0
 		"%USER.EMAIL" => $nameSearch,
 	);
 }
+unset($arFilterTmp["NAME_SEARCH"]);
+
 
 $propIterator = 0;
 //Order props params
@@ -675,7 +729,7 @@ foreach ($arOrderPropsCode as $key => $value)
 		$arFilterTmp["=PROP_".$propIterator.".CODE"] = $key;
 
 		if (isset($filterOrderProps["%PROPERTY_VAL_BY_CODE_".$key]))
-			$arFilterTmp["%PROP_".$propIterator.".VALUE"] = $filterOrderPropValue[$key];
+			$arFilterTmp["?PROP_".$propIterator.".VALUE"] = $filterOrderPropValue[$key];
 		else
 			$arFilterTmp["PROP_".$propIterator.".VALUE"] = $filterOrderPropValue[$key];
 	}
@@ -704,7 +758,7 @@ foreach ($arOrderProps as $key => $value)
 		$arFilterTmp["=PROP_".$propIterator.".ORDER_PROPS_ID"] = $key;
 
 		if (isset($filterOrderProps["%PROPERTY_VALUE_".$key]))
-			$arFilterTmp["%PROP_".$propIterator.".VALUE"] = $filterOrderPropValue[$key];
+			$arFilterTmp["?PROP_".$propIterator.".VALUE"] = $filterOrderPropValue[$key];
 		else
 			$arFilterTmp["PROP_".$propIterator.".VALUE"] = $filterOrderPropValue[$key];
 	}
@@ -715,7 +769,7 @@ foreach(GetModuleEvents("sale", "OnOrderListFilter", true) as $arEvent)
 
 $arID = array();
 
-if(($arID = $lAdmin->GroupAction()) && $saleModulePermissions >= "U")
+if(($arID = $lAdmin->GroupAction()) && $saleModulePermissions >= "P")
 {
 	$arAffectedOrders = array();
 	$forAll =($_REQUEST['action_target'] == 'selected');
@@ -752,6 +806,16 @@ if(($arID = $lAdmin->GroupAction()) && $saleModulePermissions >= "U")
 		if(strlen($ID) <= 0)
 			continue;
 
+		if($_REQUEST['action'] != "unlock" && substr($_REQUEST['action'], 0, strlen("status_")) != "status_")
+		{
+			/** @var \Bitrix\Sale\Order $saleOrder */
+			if(!($saleOrder = \Bitrix\Sale\Order::load($ID)))
+			{
+				$lAdmin->AddGroupError(Loc::getMessage("SO_NO_ORDER", array("#ID#" => $ID)));
+				continue;
+			}
+		}
+
 		if(CSaleOrder::IsLocked($ID, $lockedBY, $dateLock) && $_REQUEST['action'] != "unlock")
 		{
 			$lAdmin->AddGroupError(str_replace("#DATE#", "$dateLock", str_replace("#ID#", "$lockedBY", Loc::getMessage("SOE_ORDER_LOCKED"))), $ID);
@@ -761,12 +825,8 @@ if(($arID = $lAdmin->GroupAction()) && $saleModulePermissions >= "U")
 			switch ($_REQUEST['action'])
 			{
 				case "delete":
-					if(!($saleOrder = \Bitrix\Sale\Order::load($ID)))
-					{
-						$lAdmin->AddGroupError(Loc::getMessage("SALE_DELETE_ERROR_CANT_FIND", array("#ID#" => $ID)));
-						break;
-					}
-					if(!CSaleOrder::CanUserDeleteOrder($ID, $arUserGroups, $intUserID))
+					$allowedStatusesDelete = \Bitrix\Sale\OrderStatus::getStatusesUserCanDoOperations($intUserID, array('delete'));
+					if(!in_array($saleOrder->getField("STATUS_ID"), $allowedStatusesDelete))
 					{
 						$lAdmin->AddGroupError(Loc::getMessage("SO_NO_PERMS2DEL", array("#ID#" => $ID)), $ID);
 						break;
@@ -776,21 +836,19 @@ if(($arID = $lAdmin->GroupAction()) && $saleModulePermissions >= "U")
 					if(!$res->isSuccess())
 						$lAdmin->AddGroupError(implode("<br>\n", $res->getErrorMessages()));
 					break;
+
 				case "unlock":
 					CSaleOrder::UnLock($ID);
 					break;
+
 				case "cancel":
-					if(!CSaleOrder::CanUserCancelOrder($ID, $arUserGroups, $intUserID))
+					$allowedStatusesCancel = \Bitrix\Sale\OrderStatus::getStatusesUserCanDoOperations($intUserID, array('cancel'));
+					if(!in_array($saleOrder->getField("STATUS_ID"), $allowedStatusesCancel))
 					{
 						$lAdmin->AddGroupError(Loc::getMessage("SOA_PERMS_CANCEL_GROUP", array("#ID#" => $ID)), $ID);
 						break;
 					}
-					/** @var \Bitrix\Sale\Order $saleOrder */
-					if(!$saleOrder = \Bitrix\Sale\Order::load($ID))
-					{
-						$lAdmin->AddGroupError(Loc::getMessage("SO_NO_ORDER", array("#ID#" => $ID)), $ID);
-						break;
-					}
+
 					if($saleOrder->getField("CANCELED") == "Y")
 					{
 						$lAdmin->AddGroupError(Loc::getMessage("SOA_PERMS_CANCEL_GROUP_CANCEL", array("#ID#" => $ID)), $ID);
@@ -807,18 +865,15 @@ if(($arID = $lAdmin->GroupAction()) && $saleModulePermissions >= "U")
 					if(!$res->isSuccess())
 						$lAdmin->AddGroupError(implode("<br>\n", $res->getErrorMessages()), $ID);
 					break;
+
 				case "cancel_n":
-					if(!CSaleOrder::CanUserCancelOrder($ID, $arUserGroups, $intUserID))
+					$allowedStatusesCancel = \Bitrix\Sale\OrderStatus::getStatusesUserCanDoOperations($intUserID, array('cancel'));
+					if(!in_array($saleOrder->getField("STATUS_ID"), $allowedStatusesCancel))
 					{
 						$lAdmin->AddGroupError(Loc::getMessage("SOA_PERMS_CANCEL_GROUP", array("#ID#" => $ID)), $ID);
 						break;
 					}
-					/** @var \Bitrix\Sale\Order $saleOrder */
-					if(!$saleOrder = \Bitrix\Sale\Order::load($ID))
-					{
-						$lAdmin->AddGroupError(Loc::getMessage("SO_NO_ORDER", array("#ID#" => $ID)), $ID);
-						break;
-					}
+
 					if($saleOrder->getField("CANCELED") == "N")
 					{
 						$lAdmin->AddGroupError(Loc::getMessage("SOA_PERMS_CANCEL_GROUP_CANCEL_N", array("#ID#" => $ID)), $ID);
@@ -834,6 +889,276 @@ if(($arID = $lAdmin->GroupAction()) && $saleModulePermissions >= "U")
 					$res = $saleOrder->save();
 					if(!$res ->isSuccess())
 						$lAdmin->AddGroupError(implode("<br>\n", $res->getErrorMessages()), $ID);
+					break;
+
+				case "archive":
+					$allowedStatusesDelete = \Bitrix\Sale\OrderStatus::getStatusesUserCanDoOperations($intUserID, array('delete'));
+					if(!in_array($saleOrder->getField("STATUS_ID"), $allowedStatusesDelete))
+					{
+						$lAdmin->AddGroupError(Loc::getMessage("SO_NO_PERMS2ARCHIVE", array("#ID#" => $ID)), $ID);
+						break;
+					}
+
+					$result = Sale\Archive\Manager::archiveOrders(
+						array(
+							"ID" => array($ID)
+						));
+					if ($result->isSuccess())
+					{
+						$warnings = $result->getWarningMessages();
+						if (empty($warnings))
+						{
+							$lAdmin->AddActionSuccessMessage(Loc::getMessage("SO_ORDER_ARCHIVED", array("#ID#" => $ID)));
+						}
+						else
+						{
+							foreach ($warnings as $message)
+								$lAdmin->AddGroupError($message);
+						}
+					}
+					else
+					{
+						foreach ($result->getErrorMessages() as $error)
+							$lAdmin->AddGroupError($error);
+					}
+					break;
+
+				case "allow_delivery":
+				case "allow_delivery_n":
+
+					/** @var \Bitrix\Sale\Shipment $shipment */
+					foreach ($saleOrder->getShipmentCollection() as $shipment)
+					{
+						if(!$shipment->isSystem())
+						{
+							$shpMsg = Loc::getMessage(
+								'SALE_ORDER_SHIPMENT_N',
+								array(
+									'##ORDER_N##' => $saleOrder->getField('ACCOUNT_NUMBER'),
+									'##SHIPMENT_ID##' => $shipment->getId()
+							));
+
+							$allowedDeliveryStatusesUpdate = \Bitrix\Sale\DeliveryStatus::getStatusesUserCanDoOperations($USER->GetID(), array('update'));
+							$allowUpdate = in_array($shipment->getField("STATUS_ID"), $allowedDeliveryStatusesUpdate);
+
+							if(!$allowUpdate)
+							{
+								$lAdmin->AddGroupError(Loc::getMessage('SALE_SHIPMENT_ALLOW_DELIVERY_PERMS_ERR').'. '.$shpMsg);
+								continue;
+							}
+
+							if($_REQUEST['action'] == 'allow_delivery')
+								$setResult = $shipment->allowDelivery();
+							else
+								$setResult = $shipment->disallowDelivery();
+
+							if ($setResult->isSuccess())
+							{
+								$warnings = $setResult->getWarningMessages();
+
+								if (empty($warnings))
+								{
+									if($_REQUEST['action'] == 'allow_delivery')
+										$mess = Loc::getMessage('SOA_SHIPMENTS_ALLOW_DELIVERY');
+									else
+										$mess = Loc::getMessage('SOA_SHIPMENTS_NOT_ALLOW_DELIVERY');
+
+									$lAdmin->AddActionSuccessMessage($mess.'. '.$shpMsg);
+								}
+								else
+								{
+									foreach ($warnings as $message)
+										$lAdmin->AddGroupError($message.' '.$shpMsg);
+								}
+
+								$saveResult = $saleOrder->save();
+
+								if (!$saveResult->isSuccess())
+									$lAdmin->AddGroupError(join("\n", $saveResult->getErrorMessages()).' '.$shpMsg);
+							}
+							else
+							{
+								$serResultMessage = $setResult->getErrorMessages();
+
+								if (!empty($serResultMessage))
+									$lAdmin->AddGroupError(join("\n", $serResultMessage.' '.$shpMsg));
+								else
+									$lAdmin->AddGroupError(Loc::getMessage('SALE_SHIPMENT_ALLOW_DELIVERY_ERR').'. '.$shpMsg);
+							}
+						}
+					}
+
+					break;
+
+				case "deducted":
+				case "deducted_n":
+
+					/** @var \Bitrix\Sale\Shipment $shipment */
+					foreach ($saleOrder->getShipmentCollection() as $shipment)
+					{
+						if(!$shipment->isSystem())
+						{
+							$shpMsg = Loc::getMessage(
+								'SALE_ORDER_SHIPMENT_N',
+								array(
+									'##ORDER_N##' => $saleOrder->getField('ACCOUNT_NUMBER'),
+									'##SHIPMENT_ID##' => $shipment->getId()
+								));
+
+							$allowedDeliveryStatusesUpdate = \Bitrix\Sale\DeliveryStatus::getStatusesUserCanDoOperations($USER->GetID(), array('update'));
+							$allowUpdate = in_array($shipment->getField("STATUS_ID"), $allowedDeliveryStatusesUpdate);
+
+							if(!$allowUpdate)
+							{
+								$lAdmin->AddGroupError(Loc::getMessage('SALE_SHIPMENT_DEDUCTED_PERMS_ERR').'. '.$shpMsg);
+								continue;
+							}
+
+							$setResult = $shipment->setField('DEDUCTED', ($_REQUEST['action'] == 'deducted' ? 'Y' : 'N'));
+
+							if ($setResult->isSuccess())
+							{
+								$warnings = $setResult->getWarningMessages();
+
+								if (empty($warnings))
+								{
+									if($_REQUEST['action'] == 'deducted')
+										$mess = Loc::getMessage('SALE_SHIPMENT_DEDUCTED');
+									else
+										$mess = Loc::getMessage('SALE_SHIPMENT_DEDUCTED_N');
+
+									$lAdmin->AddActionSuccessMessage($mess.'. '.$shpMsg);
+								}
+								else
+								{
+									foreach ($warnings as $message)
+										$lAdmin->AddGroupError($message.' '.$shpMsg);
+								}
+
+								$saveResult = $saleOrder->save();
+
+								if (!$saveResult->isSuccess())
+									$lAdmin->AddGroupError(join("\n", $saveResult->getErrorMessages()).' '.$shpMsg);
+							}
+							else
+							{
+								$serResultMessage = $setResult->getErrorMessages();
+
+								if (!empty($serResultMessage))
+									$lAdmin->AddGroupError(join("\n", $serResultMessage).' '.$shpMsg);
+								else
+									$lAdmin->AddGroupError(Loc::getMessage('SALE_SHIPMENT_ALLOW_DELIVERY_ERR').'. '.$shpMsg);
+							}
+						}
+					}
+
+					break;
+
+				case "update_payment_status":
+
+					/** @var \Bitrix\Sale\Payment $payment */
+					foreach ($saleOrder->getPaymentCollection() as $payment)
+					{
+						$payMsg = Loc::getMessage(
+							'SALE_ORDER_PAYMENT_N',
+							array(
+								'##ORDER_N##' => $saleOrder->getField('ACCOUNT_NUMBER'),
+								'##PAYMENT_ID##' => $payment->getId()
+						));
+
+						$allowedStatusesView = \Bitrix\Sale\OrderStatus::getStatusesUserCanDoOperations($USER->GetID(), array('view'));
+						$allowView = in_array($saleOrder->getField("STATUS_ID"), $allowedStatusesView);
+
+						if(!$allowView)
+						{
+							$lAdmin->AddGroupError(Loc::getMessage('SALE_UPDATE_PAYMENT_STATUS_PERMS_ERR').'. '.$payMsg);
+							continue;
+						}
+
+						/** @var Sale\PaySystem\Service $paySystem */
+						$paySystem = $payment->getPaySystem();
+
+						if(!$paySystem)
+						{
+							$lAdmin->AddGroupError(Loc::getMessage('SALE_UPDATE_PAYMENT_STATUS_PS_NOT_FOUND').'. '.$payMsg);
+							continue;
+						}
+						
+						if(!$paySystem->isCheckable())
+						{
+							$lAdmin->AddActionSuccessMessage(
+								Loc::getMessage(
+									'SALE_UPDATE_PAYMENT_STATUS_PS_NOT_ABLE',
+									array('##PS_NAME##' => $paySystem->getField('NAME'))
+								).'. '.$payMsg
+							);
+
+							continue;
+						}
+						
+						$setResult = $paySystem->check($payment);
+
+						if (!$setResult->isSuccess())
+							$lAdmin->AddGroupError(join('\n', $setResult->getErrorMessages()));
+						else
+							$lAdmin->AddActionSuccessMessage(Loc::getMessage('SALE_UPDATE_PAYMENT_STATUS_DONE').'. '.$payMsg);
+					}
+
+					break;
+
+				case "paid":
+				case "paid_n":
+
+					/** @var \Bitrix\Sale\Payment $payment */
+					foreach ($saleOrder->getPaymentCollection() as $payment)
+					{
+						$payMsg = Loc::getMessage(
+							'SALE_ORDER_PAYMENT_N',
+							array(
+								'##ORDER_N##' => $saleOrder->getField('ACCOUNT_NUMBER'),
+								'##PAYMENT_ID##' => $payment->getId()
+							));
+
+						$allowedStatusesUpdate = \Bitrix\Sale\OrderStatus::getStatusesUserCanDoOperations($USER->GetID(), array('update'));
+						$allowUpdate = in_array($saleOrder->getField("STATUS_ID"), $allowedStatusesUpdate);
+
+						if(!$allowUpdate)
+						{
+							$lAdmin->AddGroupError(Loc::getMessage('SALE_UPDATE_PAYMENT_STATUS_PERMS_ERR').'. '.$payMsg);
+							continue;
+						}
+
+						$res = $payment->setPaid($_REQUEST['action'] == 'paid' ? 'Y' : 'N');
+
+						if (!$res->isSuccess())
+						{
+							$lAdmin->AddGroupError(join("\n", $res->getErrorMessages()));
+						}
+						elseif ($res->hasWarnings())
+						{
+							$lAdmin->AddGroupError(join("\n", $res->getWarningMessages()));
+						}
+						else
+						{
+
+							$res = $saleOrder->save();
+
+							if (!$res->isSuccess())
+							{
+								$lAdmin->AddGroupError(join("\n", $res->getErrorMessages()));
+							}
+							else
+							{
+								if($_REQUEST['action'] == 'paid')
+									$msg = Loc::getMessage('SALE_ORDER_PAID_SUCCESS');
+								else
+									$msg = Loc::getMessage('SALE_ORDER_PAID_SUCCESS_N');
+
+								$lAdmin->AddActionSuccessMessage($msg.'. '.$payMsg);
+							}
+						}
+					}
+
 					break;
 
 				default:
@@ -853,7 +1178,8 @@ if(($arID = $lAdmin->GroupAction()) && $saleModulePermissions >= "U")
 
 							if($arStatus = $resStatus->fetch())
 							{
-								if(CSaleOrder::CanUserChangeOrderStatus($ID, $statusID, $arUserGroups))
+								$allowedStatusesTo = \Bitrix\Sale\OrderStatus::getStatusesUserCanDoOperations($intUserID, array('to'));
+								if(in_array($statusID, $allowedStatusesTo))
 								{
 									if($arAffectedOrders[$ID]["STATUS_ID"] != $statusID)
 									{
@@ -923,6 +1249,9 @@ $arColumn2Field = array(
 		"USER_DESCRIPTION" => array("USER_DESCRIPTION"),
 		"EXTERNAL_ORDER" => array("EXTERNAL_ORDER"),
 		"SOURCE_NAME" => array("SOURCE_NAME"),
+		"XML_ID" => array("XML_ID"),
+		"COMPANY_ID" => array("COMPANY_ID"),
+		"RESPONSIBLE_ID" => array("RESPONSIBLE_ID")
 	);
 
 $arHeaders = array(
@@ -972,8 +1301,10 @@ $arHeaders = array(
 	array("id"=>"EXTERNAL_ORDER","content"=>Loc::getMessage("SOA_EXTERNAL_ORDER"), "sort"=>"", "default"=> false),
 	array("id"=>"SHIPMENTS","content"=>Loc::getMessage("SOA_SHIPMENTS"), "sort"=>"", "default"=> true),
 	array("id"=>"PAYMENTS","content"=>Loc::getMessage("SOA_PAYMENTS"), "sort"=>"", "default"=> true),
-	array("id"=>"SOURCE_NAME","content"=>Loc::getMessage("SALE_F_SOURCE"), "sort"=>"SOURCE_NAME", "default"=>false)
-
+	array("id"=>"SOURCE_NAME","content"=>Loc::getMessage("SALE_F_SOURCE"), "sort"=>"SOURCE_NAME", "default"=>false),
+	array("id"=>"XML_ID","content"=>Loc::getMessage("SO_XML_ID"), "sort"=>"XML_ID", "default"=>false),
+	array("id"=>"COMPANY_ID","content"=>Loc::getMessage("SALE_F_COMPANY_ID"), "sort"=>"COMPANY_ID", "default"=>false),
+	array("id"=>"RESPONSIBLE_ID","content"=>Loc::getMessage("SALE_F_RESPONSIBLE_ID"), "sort"=>"RESPONSIBLE_ID", "default"=>false),
 );
 
 if($DBType == "mysql")
@@ -998,7 +1329,6 @@ foreach ($arOrderPropsCode as $key => $value)
 
 $lAdmin->AddHeaders($arHeaders);
 
-$arSelectFields = array();
 $arSelectFields[] = "ID";
 $arSelectFields[] = "LID";
 $arSelectFields[] = "LOCK_STATUS";
@@ -1066,11 +1396,14 @@ $arFilterOrder = array();
 
 if(!empty($by) && in_array($by, $arSelectFields))
 {
-	if(!isset($order))
+	if(!isset($order) || !is_string($order))
 		$order = "DESC";
 
-	if($by == "STATUS_ID")
+	if ($by == "STATUS_ID")
+	{
+		$arFilterOrder["STATUS_ID"] = $order;
 		$arFilterOrder["DATE_STATUS"] = $order;
+	}
 	elseif($by == "CANCELED")
 		$arFilterOrder["DATE_CANCELED"] = $order;
 	else
@@ -1139,6 +1472,38 @@ if ($usePageNavigation)
 	$getListParams['offset'] = $navyParams['SIZEN']*($navyParams['PAGEN']-1);
 }
 
+/** @var \Bitrix\Main\Entity\Event $event */
+$event = new \Bitrix\Main\Event('sale', Sale\EventActions::EVENT_ON_ADMIN_ORDER_LIST, $getListParams);
+$event->send();
+
+if ($event->getResults())
+{
+	/** @var \Bitrix\Main\EventResult $eventResult */
+	foreach($event->getResults() as $eventResult)
+	{
+		if($eventResult->getType() == \Bitrix\Main\EventResult::ERROR)
+		{
+			$errorMsg = new Sale\ResultError(\Bitrix\Main\Localization\Loc::getMessage('SALE_EVENT_ON_ADMIN_ORDER_LIST_ERROR'), 'SALE_EVENT_ON_ADMIN_ORDER_LIST_ERROR');
+			if ($eventResultData = $eventResult->getParameters())
+			{
+				if (isset($eventResultData) && $eventResultData instanceof Sale\ResultError)
+				{
+					/** @var Sale\ResultError $errorMsg */
+					$errorMsg = $eventResultData;
+				}
+			}
+		}
+		elseif($eventResult->getType() == \Bitrix\Main\EventResult::SUCCESS)
+		{
+			$eventParams = $eventResult->getParameters();
+			if (is_array($eventParams))
+			{
+				$getListParams = $eventParams;
+			}
+		}
+	}
+}
+
 $totalPages = 0;
 
 if ($usePageNavigation)
@@ -1147,7 +1512,7 @@ if ($usePageNavigation)
 	$countQuery->addSelect(new \Bitrix\Main\Entity\ExpressionField('CNT', 'COUNT(1)'));
 	$countQuery->setFilter($getListParams['filter']);
 
-	foreach ($runtimeFields as $key => $field)
+	foreach ($getListParams['runtime'] as $key => $field)
 		$countQuery->registerRuntimeField($key, $field);
 
 	$totalCount = $countQuery->setLimit(null)->setOffset(null)->exec()->fetch();
@@ -1206,7 +1571,7 @@ $basketList = array();
 $recommendedList = array();
 $basketPropertyList = array();
 $users = array();
-$userIdFields = array('EMP_ALLOW_DELIVERY', 'EMP_DEDUCTED_ID', 'EMP_MARKED_ID', 'EMP_STATUS_ID', 'EMP_CANCELED_ID', 'EMP_PAYED_ID');
+$userIdFields = array('EMP_ALLOW_DELIVERY', 'EMP_DEDUCTED_ID', 'EMP_MARKED_ID', 'EMP_STATUS_ID', 'EMP_CANCELED_ID', 'EMP_PAYED_ID', 'RESPONSIBLE_ID');
 $formattedUserNames = array();
 while ($arOrder = $dbOrderList->NavNext())
 {
@@ -1228,6 +1593,7 @@ if (!empty($orderList) && is_array($orderList))
 	 */
 	if(\Bitrix\Main\Analytics\Catalog::isOn() || $bNeedBasket)
 	{
+		$basketItemIds = array();
 		$dbItemsList = \Bitrix\Sale\Internals\BasketTable::getList(array(
 						   'order' => array('ID' => 'ASC'),
 						   'filter' => array('=ORDER_ID' => array_keys($orderList))
@@ -1237,39 +1603,43 @@ if (!empty($orderList) && is_array($orderList))
 		{
 			$basketList[$item['ORDER_ID']][$item['ID']] = $item;
 
-			if (array_key_exists($item['ORDER_ID'], $recommendedList))
+			if (isset($recommendedList[$item['ORDER_ID']]) && $item['RECOMMENDATION'])
 			{
-				if($item['RECOMMENDATION'])
-				{
-					$recommendedList[$item['ORDER_ID']] = true;
-				}
+				$recommendedList[$item['ORDER_ID']] = true;
 			}
 
 			if ($bShowBasketProps)
 			{
-				if (!empty($basketList[$item['ORDER_ID']]) && is_array($basketList[$item['ORDER_ID']]))
-				{
-					$resProp = \Bitrix\Sale\Internals\BasketPropertyTable::getList(array(
-																					   'order' => array("SORT" => "ASC", "ID" => "ASC"),
-																					   'filter' => array(
-																						   "BASKET_ID" => array_keys($basketList[$item['ORDER_ID']]),
-																						   "!CODE" => array("CATALOG.XML_ID", "PRODUCT.XML_ID"))
-																				   ));
+				$basketItemIds[] = $item['ID'];
+			}
+		}
+	}
 
-					while($prop = $resProp->fetch())
-					{
-						if(strval($prop["VALUE"]) != "")
-						{
-							$basketPropertyList[$prop['BASKET_ID']][$prop['ID']] = $prop;
-						}
-					}
+	if ($bShowBasketProps && !empty($basketItemIds))
+	{
+		$basketItemIds = array_unique($basketItemIds);
+		$basketItemIdsChunk = array_chunk($basketItemIds, 1000);
+		foreach ($basketItemIdsChunk as $basketIds)
+		{
+			$resProp = \Bitrix\Sale\Internals\BasketPropertyTable::getList(array(
+				'order' => array("SORT" => "ASC", "ID" => "ASC"),
+				'filter' => array(
+					"BASKET_ID" => $basketIds,
+					"!CODE" => array("CATALOG.XML_ID", "PRODUCT.XML_ID"))
+			));
+
+			while($prop = $resProp->fetch())
+			{
+				if(strval($prop["VALUE"]) != "")
+				{
+					$basketPropertyList[$prop['BASKET_ID']][$prop['ID']] = $prop;
 				}
 			}
 		}
-
-
-
+		unset($basketItemIdsChunk, $basketItemIds);
 	}
+	$permUpdateOrderList = CSaleOrder::checkUserPermissionOrderList(array_keys($orderList), 'update', $arUserGroups);
+	$permDeleteOrderList = CSaleOrder::checkUserPermissionOrderList(array_keys($orderList), 'delete', $arUserGroups, $USER->GetID());
 
 	foreach ($orderList as $orderId => $arOrder)
 	{
@@ -1293,12 +1663,12 @@ if (!empty($orderList) && is_array($orderList))
 		{
 			$arBasketItems = array();
 
-			if (array_key_exists($orderId, $basketList))
+			if (isset($basketList[$orderId]))
 			{
 				$arBasketItems = $basketList[$orderId];
 			}
 
-			if (array_key_exists($orderId, $recommendedList))
+			if (isset($recommendedList[$orderId]))
 			{
 				$isRecommended = $recommendedList[$orderId];
 			}
@@ -1310,6 +1680,7 @@ if (!empty($orderList) && is_array($orderList))
 		$rowsList[$arOrder['ID']] = $row =& $lAdmin->AddRow($orderId, $arOrder, "sale_order_view.php?ID=".$orderId."&lang=".LANGUAGE_ID.GetFilterParams("filter_"));
 
 		$lamp = "/bitrix/images/sale/".$arOrder['LOCK_STATUS'].".gif";
+
 		if($arOrder['LOCK_STATUS']=="green")
 			$lamp_alt = Loc::getMessage("SMOL_GREEN_ALT");
 		elseif($arOrder['LOCK_STATUS']=="yellow")
@@ -1320,9 +1691,16 @@ if (!empty($orderList) && is_array($orderList))
 		//ID
 		$idTmp = '<table><tr><td valign="top">';
 		if(!$bExport)
-			$idTmp .= "<img src='".$lamp."' hspace='4' alt='".htmlspecialcharsbx($lamp_alt)."' title='".htmlspecialcharsbx($lamp_alt)."' />";
-		$idTmp .= "</td>
-			<td><b><a href='/bitrix/admin/sale_order_view.php?ID=".$orderId.GetFilterParams("filter_")."&lang=".LANGUAGE_ID."' title='".Loc::getMessage("SALE_DETAIL_DESCR")."'>##ID##</a></b></td>";
+			$idTmp .= "<img src=\"".$lamp."\" hspace='4' alt=\"".htmlspecialcharsbx($lamp_alt)."\" title=\"".htmlspecialcharsbx($lamp_alt)."\" />";
+
+		$idTmp .= "</td><td><b><a ";
+
+		if ($arOrder['MARKED'] == 'Y')
+		{
+			$idTmp .= 'style="color: red;"';
+		}
+
+		$idTmp .=" href='/bitrix/admin/sale_order_view.php?ID=".$orderId.GetFilterParams("filter_")."&lang=".LANGUAGE_ID."' title='".Loc::getMessage("SALE_DETAIL_DESCR")."'>##ID##</a></b></td>";
 		$idTmp .= "</tr>";
 
 		if($isRecommended)
@@ -1345,6 +1723,14 @@ if (!empty($orderList) && is_array($orderList))
 		}
 		$row->AddField("ACCOUNT_NUMBER", $fieldValue);
 
+		//XML_ID
+		$fieldValue = "";
+		if(in_array("XML_ID", $arVisibleColumns))
+		{
+			$fieldValue = $arOrder["XML_ID"];
+		}
+		$row->AddField("XML_ID", $fieldValue);
+
 		//LID
 		$fieldValue = "";
 		if(in_array("LID", $arVisibleColumns))
@@ -1354,7 +1740,7 @@ if (!empty($orderList) && is_array($orderList))
 			{
 				$dbSite = CSite::GetByID($arOrder["LID"]);
 				if($arSite = $dbSite->Fetch())
-					$LOCAL_SITE_LIST_CACHE[$arOrder["LID"]] = htmlspecialcharsEx($arSite["NAME"]);
+					$LOCAL_SITE_LIST_CACHE[$arOrder["LID"]] = htmlspecialcharsbx($arSite["NAME"]);
 			}
 			$fieldValue = "[".$arOrder["LID"]."] ".$LOCAL_SITE_LIST_CACHE[$arOrder["LID"]];
 		}
@@ -1368,7 +1754,7 @@ if (!empty($orderList) && is_array($orderList))
 				|| empty($LOCAL_PERSON_TYPE_CACHE[$arOrder["PERSON_TYPE_ID"]]))
 			{
 				if($arPersonType = CSalePersonType::GetByID($arOrder["PERSON_TYPE_ID"]))
-					$LOCAL_PERSON_TYPE_CACHE[$arOrder["PERSON_TYPE_ID"]] = htmlspecialcharsEx($arPersonType["NAME"]);
+					$LOCAL_PERSON_TYPE_CACHE[$arOrder["PERSON_TYPE_ID"]] = htmlspecialcharsbx($arPersonType["NAME"]);
 			}
 			$fieldValue = "[";
 			if($saleModulePermissions >= "W")
@@ -1474,6 +1860,7 @@ if (!empty($orderList) && is_array($orderList))
 						$arStatus =  StatusTable::getList(array(
 							'select' => array(
 								'NAME' => 'Bitrix\Sale\Internals\StatusLangTable:STATUS.NAME',
+								'COLOR'
 							),
 							'filter' => array(
 								'=ID' => $arOrder["STATUS_ID"],
@@ -1484,9 +1871,11 @@ if (!empty($orderList) && is_array($orderList))
 						))->fetch();
 
 						if($arStatus)
-							$LOCAL_STATUS_CACHE[$arOrder["STATUS_ID"]] = htmlspecialcharsEx($arStatus["NAME"]);
+						{
+							$LOCAL_STATUS_CACHE[$arOrder["STATUS_ID"]]['NAME'] = htmlspecialcharsbx($arStatus["NAME"]);
+							$LOCAL_STATUS_CACHE[$arOrder["STATUS_ID"]]['COLOR'] = htmlspecialcharsbx($arStatus["COLOR"]);
+						}
 					}
-
 					$fieldValue .= "[";
 					if($saleModulePermissions >= "W")
 						$fieldValue .= '<a href="/bitrix/admin/sale_status_edit.php?ID='.$arOrder["STATUS_ID"].'&lang='.LANGUAGE_ID.'">';
@@ -1494,12 +1883,24 @@ if (!empty($orderList) && is_array($orderList))
 					if($saleModulePermissions >= "W")
 						$fieldValue .= "</a>";
 
-					$fieldValue .= "] ".$LOCAL_STATUS_CACHE[$arOrder["STATUS_ID"]]."<br />";
+					$fieldValue .= "] ".$LOCAL_STATUS_CACHE[$arOrder["STATUS_ID"]]['NAME']."<br />";
 
 					$fieldValue .= $arOrder["DATE_STATUS"];
 
 					if(IntVal($arOrder["EMP_STATUS_ID"]) > 0)
 						$fieldValue .= '<br />'.$formattedUserNames[$arOrder["EMP_STATUS_ID"]];
+					$fieldValue .= "</div>";
+				}
+				$colorRGB = array();
+				$colorRGB = sscanf($LOCAL_STATUS_CACHE[$arOrder["STATUS_ID"]]['COLOR'], "#%02x%02x%02x");
+				if (count($colorRGB))
+				{
+					$color = "background:rgba(".$colorRGB[0].",".$colorRGB[1].",".$colorRGB[2].",0.6);";
+					$fieldValue = '<div style=	"'.$color.'
+									margin: 0 0 0 -16px;
+									padding: 11px 10px 10px 16px;
+									min-height: 100%;
+								">'.$fieldValue."</div>";
 				}
 				$row->AddField("STATUS", $fieldValue, true);
 			}
@@ -1555,6 +1956,7 @@ if (!empty($orderList) && is_array($orderList))
 						$arStatus =  StatusTable::getList(array(
 							'select' => array(
 								'NAME' => 'Bitrix\Sale\Internals\StatusLangTable:STATUS.NAME',
+								'COLOR'
 							),
 							'filter' => array(
 								'=ID' => $arOrder["STATUS_ID"],
@@ -1565,7 +1967,10 @@ if (!empty($orderList) && is_array($orderList))
 						))->fetch();
 
 						if($arStatus)
-							$LOCAL_STATUS_CACHE[$arOrder["STATUS_ID"]] = htmlspecialcharsEx($arStatus["NAME"]);
+						{
+							$LOCAL_STATUS_CACHE[$arOrder["STATUS_ID"]]['NAME'] = htmlspecialcharsbx($arStatus["NAME"]);
+							$LOCAL_STATUS_CACHE[$arOrder["STATUS_ID"]]['COLOR'] = htmlspecialcharsbx($arStatus["COLOR"]);
+						}
 					}
 
 					$fieldValueTmp .= "[";
@@ -1577,10 +1982,20 @@ if (!empty($orderList) && is_array($orderList))
 
 					if($saleModulePermissions >= "W")
 						$fieldValueTmp .= "</a>";
+					$fieldValue = '<span id="status_order_'.$arOrder["ID"].'">'.$LOCAL_STATUS_CACHE[$arOrder["STATUS_ID"]]['NAME'].'</span>';
+					$fieldValueTmp .= "] ".$LOCAL_STATUS_CACHE[$arOrder["STATUS_ID"]]['NAME'];
+					$colorRGB = array();
+					$colorRGB = sscanf($LOCAL_STATUS_CACHE[$arOrder["STATUS_ID"]]['COLOR'], "#%02x%02x%02x");
+					if (count($colorRGB))
+					{
+						$color = "background:rgba(".$colorRGB[0].",".$colorRGB[1].",".$colorRGB[2].",0.6);";
+						$fieldValue = '<div style=	"'.$color.'
+									margin: 0 0 0 -16px;
+									padding: 11px 10px 10px 16px;
+									min-height: 100%;
+								">'.$fieldValue."</div>";
+					}
 
-					$fieldValueTmp .= "] ".$LOCAL_STATUS_CACHE[$arOrder["STATUS_ID"]];
-					$fieldValue .= '<span id="status_order_'.$arOrder["ID"].'">'.$LOCAL_STATUS_CACHE[$arOrder["STATUS_ID"]].'</span>';
-					$fieldValueTmp .= "<br />".$arOrder["DATE_STATUS"];
 
 					if(IntVal($arOrder["EMP_STATUS_ID"]) > 0)
 						$fieldValueTmp .= '<br />'.$formattedUserNames[$arOrder["EMP_STATUS_ID"]];
@@ -1600,6 +2015,7 @@ if (!empty($orderList) && is_array($orderList))
 						";
 					}
 				}
+
 				$row->AddField("STATUS_ID", $fieldValue, true);
 			}
 			else
@@ -1633,7 +2049,7 @@ if (!empty($orderList) && is_array($orderList))
 			}
 		}
 
-		$row->AddField("PRICE_DELIVERY", '<span style="white-space:nowrap;">'.htmlspecialcharsex(SaleFormatCurrency($arOrder["PRICE_DELIVERY"], $arOrder["CURRENCY"])).'</span>');
+		$row->AddField("PRICE_DELIVERY", '<span style="white-space:nowrap;">'.SaleFormatCurrency($arOrder["PRICE_DELIVERY"], $arOrder["CURRENCY"]).'</span>');
 
 		//MARKED
 		$fieldValue = "";
@@ -1675,8 +2091,8 @@ if (!empty($orderList) && is_array($orderList))
 
 		$row->AddField("REASON_MARKED", $fieldValue);
 
-		$row->AddField("PRICE", '<span style="white-space:nowrap;">'.htmlspecialcharsex(SaleFormatCurrency($arOrder["PRICE"], $arOrder["CURRENCY"])).'</span>');
-		$row->AddField("SUM_PAID", '<span style="white-space:nowrap;">'.htmlspecialcharsex(SaleFormatCurrency($arOrder["SUM_PAID"], $arOrder["CURRENCY"])).'</span>');
+		$row->AddField("PRICE", '<span style="white-space:nowrap;">'.SaleFormatCurrency($arOrder["PRICE"], $arOrder["CURRENCY"]).'</span>');
+		$row->AddField("SUM_PAID", '<span style="white-space:nowrap;">'.SaleFormatCurrency($arOrder["SUM_PAID"], $arOrder["CURRENCY"]).'</span>');
 
 		$fieldValue = "";
 
@@ -1709,11 +2125,26 @@ if (!empty($orderList) && is_array($orderList))
 				$paymentCount = count($payments);
 				foreach($payments as $payment)
 				{
+					if ($saleModulePermissions == 'P')
+					{
+						$isPaymentUserResponsible = false;
+						if ($arOrder['RESPONSIBLE_ID'] == $USER->GetID()
+							|| $payment['RESPONSIBLE_ID'] == $USER->GetID())
+						{
+							$isPaymentUserResponsible = true;
+						}
+
+						if (!$isPaymentUserResponsible && !in_array($payment['COMPANY_ID'], $userCompanyList))
+						{
+							$payment["PAY_SYSTEM_NAME"] = Loc::getMessage('SALE_ORDER_HIDDEN');
+						}
+					}
+
 					$fieldValue .= $payment["ID_LINKED"].", ".
 						htmlspecialcharsbx($payment["PAY_SYSTEM_NAME"]).", ".
 						($payment["PAID"] == "Y" ? Loc::getMessage("SOA_PAYMENTS_PAID") :  Loc::getMessage("SOA_PAYMENTS_UNPAID")).", ".
 						(strlen($payment["PS_STATUS"]) > 0 ? Loc::getMessage("SOA_PAYMENTS_STATUS").": ".htmlspecialcharsbx($payment["PS_STATUS"]).", " : "").
-						'<span style="white-space:nowrap;">'.htmlspecialcharsex(SaleFormatCurrency($payment["SUM"], $payment["CURRENCY"])).'</span>';
+						'<span style="white-space:nowrap;">'.SaleFormatCurrency($payment["SUM"], $payment["CURRENCY"]).'</span>';
 
 					if($paymentCount > 1)
 					{
@@ -1811,7 +2242,7 @@ if (!empty($orderList) && is_array($orderList))
 			{
 				foreach($payments as $payment)
 				{
-					$tmp = '<span style="white-space:nowrap;">'.htmlspecialcharsex(SaleFormatCurrency(floatval($payment["PS_SUM"]), $payment["PS_CURRENCY"])).'</span>';
+					$tmp = '<span style="white-space:nowrap;">'.htmlspecialcharsbx(SaleFormatCurrency(floatval($payment["PS_SUM"]), $payment["PS_CURRENCY"])).'</span>';
 
 					if(count($payments) > 1)
 						$fieldValue .= $payment["ID_LINKED"].", ".$tmp."<hr>";
@@ -1824,7 +2255,7 @@ if (!empty($orderList) && is_array($orderList))
 		}
 
 		$row->AddField("DATE_UPDATE", $arOrder["DATE_UPDATE"]);
-		$row->AddField("TAX_VALUE", '<span style="white-space:nowrap;">'.htmlspecialcharsex(SaleFormatCurrency($arOrder["TAX_VALUE"], $arOrder["CURRENCY"])).'</span>');
+		$row->AddField("TAX_VALUE", '<span style="white-space:nowrap;">'.SaleFormatCurrency($arOrder["TAX_VALUE"], $arOrder["CURRENCY"]).'</span>');
 
 		//BASKET POSITIONS
 		$fieldValue = "";
@@ -1860,11 +2291,17 @@ if (!empty($orderList) && is_array($orderList))
 				$arBasketItems = CSaleBasketHelper::reSortItems($arBasketItems);
 
 			$arBasketItems = getMeasures($arBasketItems);
+			$firstItem = true;
+			$separator = "";
 
 			foreach ($arBasketItems as $arItem)
 			{
 				$measure = (isset($arItem["MEASURE_TEXT"])) ? $arItem["MEASURE_TEXT"] : Loc::getMessage("SO_SHT");
 
+				if($firstItem)
+					$firstItem = false;
+				else
+					$bNeedLine = true;
 
 				if($bNeedLine)
 				{
@@ -1885,12 +2322,10 @@ if (!empty($orderList) && is_array($orderList))
 				$fieldProductXML .= $separator;
 				$fieldDiscountValue  .= $separator;
 				$fieldVatRate  .= $separator;
-
-				$bNeedLine = true;
-
 				$hidden = "";
 				$setItemClass = "";
 				$linkClass = "";
+
 				if(CSaleBasketHelper::isSetItem($arItem))
 				{
 					$hidden = 'style="display:none"';
@@ -1899,6 +2334,7 @@ if (!empty($orderList) && is_array($orderList))
 				}
 
 				$fieldValue .= "<div ".$hidden. " ".$setItemClass.">";
+				$fieldValue .= $bNeedLine ? $basketSeparator : '';
 
 				if($arItem['RECOMMENDATION'])
 					$fieldValue .= '<div class="bx-adm-bigdata-icon-medium-inner"></div>';
@@ -1906,7 +2342,7 @@ if (!empty($orderList) && is_array($orderList))
 				$fieldValue .= "[".$arItem["PRODUCT_ID"]."] ";
 
 				if(strpos($arItem["DETAIL_PAGE_URL"], "http") === false)
-					$url = "http://".$serverName[$arOrder["LID"]].htmlspecialcharsBack($arItem["DETAIL_PAGE_URL"]);
+					$url = "//".$serverName[$arOrder["LID"]].htmlspecialcharsBack($arItem["DETAIL_PAGE_URL"]);
 				else
 					$url = htmlspecialcharsBack($arItem["DETAIL_PAGE_URL"]);
 
@@ -1916,7 +2352,7 @@ if (!empty($orderList) && is_array($orderList))
 				if(strlen($arItem["DETAIL_PAGE_URL"]) > 0)
 					$fieldValue .= "</a>";
 
-				$fieldValue .= " <nobr>(".Sale\BasketItem::formatQuantity($arItem["QUANTITY"])." ".$measure.")</nobr>";
+				$fieldValue .= " <nobr>(".Sale\BasketItem::formatQuantity($arItem["QUANTITY"])." ".htmlspecialcharsbx($measure).")</nobr>";
 
 				if($bShowBasketProps)
 				{
@@ -1936,9 +2372,6 @@ if (!empty($orderList) && is_array($orderList))
 					$fieldValue .= "</div>";
 				}
 
-				if($bNeedLine)
-					$fieldValue .= $basketSeparator;
-
 				$fieldValue .= "</div>";
 
 				if(strlen($arItem["NAME"]) > 0)
@@ -1954,7 +2387,7 @@ if (!empty($orderList) && is_array($orderList))
 				else
 					$fieldName .= "<br />";
 				if(strlen($arItem["QUANTITY"]) > 0)
-					$fieldQuantity .= htmlspecialcharsbx(Sale\BasketItem::formatQuantity($arItem["QUANTITY"]))." ".$measure;
+					$fieldQuantity .= htmlspecialcharsbx(Sale\BasketItem::formatQuantity($arItem["QUANTITY"]))." ".htmlspecialcharsbx($measure);
 				else
 					$fieldQuantity .= "<br />";
 				if(strlen($arItem["PRODUCT_ID"]) > 0)
@@ -1962,7 +2395,7 @@ if (!empty($orderList) && is_array($orderList))
 				else
 					$fieldProductID .= "<br />";
 				if(strlen($arItem["PRICE"]) > 0)
-					$fieldPrice .= "<nobr>".htmlspecialcharsex(SaleFormatCurrency($arItem["PRICE"], $arItem["CURRENCY"]))."</nobr>";
+					$fieldPrice .= "<nobr>".SaleFormatCurrency($arItem["PRICE"], $arItem["CURRENCY"])."</nobr>";
 				else
 					$fieldPrice .= "<br />";
 				if(strlen($arItem["WEIGHT"]) > 0)
@@ -1984,7 +2417,7 @@ if (!empty($orderList) && is_array($orderList))
 				else
 					$fieldNotes .= "<br />";
 				if(strlen($arItem["DISCOUNT_PRICE"]) > 0)
-					$fieldDiscountPrice .= "<nobr>".htmlspecialcharsex(SaleFormatCurrency($arItem["DISCOUNT_PRICE"], $arItem["CURRENCY"]))."</nobr>";
+					$fieldDiscountPrice .= "<nobr>".SaleFormatCurrency($arItem["DISCOUNT_PRICE"], $arItem["CURRENCY"])."</nobr>";
 				else
 					$fieldDiscountPrice .= "<br />";
 				if(strlen($arItem["CATALOG_XML_ID"]) > 0)
@@ -2083,9 +2516,25 @@ if (!empty($orderList) && is_array($orderList))
 				$shipmentCount = count($shipments);
 				foreach($shipments as $shipment)
 				{
+					if ($saleModulePermissions == 'P')
+					{
+						$isShipmentUserResponsible = false;
+						if ($arOrder['RESPONSIBLE_ID'] == $USER->GetID()
+							|| $shipment['RESPONSIBLE_ID'] == $USER->GetID())
+						{
+							$isShipmentUserResponsible = true;
+						}
+
+						if (!$isShipmentUserResponsible && !in_array($shipment['COMPANY_ID'], $userCompanyList))
+						{
+							$shipment["DELIVERY_NAME"] = Loc::getMessage('SALE_ORDER_HIDDEN');
+							$shipment["TRACKING_NUMBER"] = Loc::getMessage('SALE_ORDER_HIDDEN');
+						}
+					}
+
 					$fieldValue .= $shipment["ID_LINKED"].", ".
 						(strlen($shipment["DELIVERY_NAME"]) > 0 ? htmlspecialcharsbx($shipment["DELIVERY_NAME"]).", " : "").
-						'<span style="white-space:nowrap;">'.htmlspecialcharsEx(SaleFormatCurrency($shipment["PRICE_DELIVERY"], $shipment["CURRENCY"]))."</span>, ".
+						'<span style="white-space:nowrap;">'.SaleFormatCurrency($shipment["PRICE_DELIVERY"], $shipment["CURRENCY"])."</span>, ".
 						($shipment["ALLOW_DELIVERY"] == "Y" ? Loc::getMessage("SOA_SHIPMENTS_ALLOW_DELIVERY") : Loc::getMessage("SOA_SHIPMENTS_NOT_ALLOW_DELIVERY")).", ".
 						($shipment["CANCELED"] == "Y" ? Loc::getMessage("SOA_SHIPMENTS_CANCELED").", " : "").
 						($shipment["DEDUCTED"] == "Y" ? Loc::getMessage("SOA_SHIPMENTS_DEDUCTED").", " : "").
@@ -2111,7 +2560,7 @@ if (!empty($orderList) && is_array($orderList))
 
 			foreach($shipments as $shipment)
 				if(!empty($shipment["TRACKING_NUMBER"]))
-					$fieldValue .= $shipment["TRACKING_NUMBER"]."<br>";
+					$fieldValue .= htmlspecialcharsbx($shipment["TRACKING_NUMBER"])."<br>";
 
 			$row->AddField("TRACKING_NUMBER", $fieldValue);
 
@@ -2261,6 +2710,35 @@ if (!empty($orderList) && is_array($orderList))
 		$row->AddViewField('BASKET_DISCOUNT_NAME', ' ');
 		$row->AddViewField("SOURCE_NAME", '<span style="white-space:nowrap;">'.htmlspecialcharsbx($arOrder["SOURCE_NAME"]).'</span>');
 
+		//COMPANY_ID
+		$fieldValue = "";
+		if(in_array("COMPANY_ID", $arVisibleColumns) && intval($arOrder["COMPANY_ID"]) > 0)
+		{
+			$companyId = intval($arOrder["COMPANY_ID"]);
+			$companyName = isset($companyListNames[$companyId]) ? '&nbsp;'.$companyListNames[$companyId] : '';
+
+			$fieldValue = "[";
+			if($saleModulePermissions >= "W")
+				$fieldValue .= '<a href="/bitrix/admin/sale_company_edit.php?lang='.LANGUAGE_ID.'&ID='.$companyId.'">';
+
+			$fieldValue .= $companyId;
+
+			if($saleModulePermissions >= "W")
+				$fieldValue .= "</a>";
+
+			$fieldValue .= ']'.$companyName;
+		}
+		$row->AddField("COMPANY_ID", $fieldValue);
+
+		//RESPONSIBLE_ID
+		$fieldValue = "";
+		if(in_array("RESPONSIBLE_ID", $arVisibleColumns))
+		{
+			if(intval($arOrder["RESPONSIBLE_ID"]) > 0)
+				$fieldValue = $formattedUserNames[$arOrder["RESPONSIBLE_ID"]];
+		}
+		$row->AddField("RESPONSIBLE_ID", $fieldValue);
+
 		$arActions = array();
 
 		if(($arOrder['LOCK_STATUS'] == "red" && $saleModulePermissions >= "W") || $arOrder['LOCK_STATUS'] == "yellow")
@@ -2277,12 +2755,19 @@ if (!empty($orderList) && is_array($orderList))
 		$arActions[] = array("ICON"=>"view", "TEXT"=>Loc::getMessage("SALE_DETAIL_DESCR"), "ACTION"=>$lAdmin->ActionRedirect("sale_order_view.php?ID=".$orderId."&lang=".LANGUAGE_ID.GetFilterParams("filter_")), "DEFAULT"=>true);
 		$arActions[] = array("ICON"=>"copy", "TEXT"=>Loc::getMessage("SOA_ORDER_COPY"), "ACTION"=>$lAdmin->ActionRedirect("sale_order_create.php?ID=".$orderId."&lang=".LANGUAGE_ID."&".'SITE_ID='.$arOrder['LID'].'&'.bitrix_sessid_get().GetFilterParams("filter_")));
 		$arActions[] = array("ICON"=>"print", "TEXT"=>Loc::getMessage("SALE_PRINT_DESCR"), "ACTION"=>$lAdmin->ActionRedirect("sale_order_print.php?ID=".$orderId."&lang=".LANGUAGE_ID.GetFilterParams("filter_")));
+
 		if($arOrder['LOCK_STATUS'] != "red")
 		{
-			if(CSaleOrder::CanUserUpdateOrder($orderId, $arUserGroups))
+			if($saleModulePermissions >= "W" || !empty($permDeleteOrderList[$orderId]))
+				$arActions[] = array("ICON"=>"", "TEXT"=>Loc::getMessage("SOAN_LIST_ARCHIVE"), "ACTION"=>"if(confirm('".Loc::getMessage('SALE_CONFIRM_ARCHIVE_MESSAGE')."')) ".$lAdmin->ActionDoGroup($arOrder['ID'], 'archive'));
+
+			if (!empty($permUpdateOrderList[$orderId]))
+			{
 				$arActions[] = array("ICON"=>"edit", "TEXT"=>Loc::getMessage("SALE_OEDIT_DESCR"), "ACTION"=>$lAdmin->ActionRedirect("sale_order_edit.php?ID=".$orderId."&lang=".LANGUAGE_ID.GetFilterParams("filter_")));
+			}
+
 			if($saleModulePermissions == "W"
-				|| $arOrder["PAYED"] != "Y" && CSaleOrder::CanUserDeleteOrder($orderId, $arUserGroups, $intUserID))
+				|| $arOrder["PAYED"] != "Y" && !empty($permDeleteOrderList[$orderId]))
 			{
 				$arActions[] = array("SEPARATOR" => true);
 				$arActions[] = array("ICON"=>"delete", "TEXT"=>Loc::getMessage("SALE_DELETE_DESCR"), "ACTION"=>"if(confirm('".Loc::getMessage('SALE_CONFIRM_DEL_MESSAGE')."')) ".$lAdmin->ActionDoGroup($orderId, "delete", GetFilterParams("filter_", false)));
@@ -2383,7 +2868,7 @@ if($saleModulePermissions == "W")
 	{
 		$arFooterArray[] = array(
 			"title" => Loc::getMessage("SOAN_ITOG")." ".$arOrderList["CURRENCY"].":",
-			"value" => htmlspecialcharsex(SaleFormatCurrency($arOrderList["SUM"], $arOrderList["CURRENCY"]))
+			"value" => SaleFormatCurrency($arOrderList["SUM"], $arOrderList["CURRENCY"])
 		);
 	}
 
@@ -2504,7 +2989,7 @@ foreach($arFooterArray as $val)
 
 $arResult = array(
 	'RECOMMENDATION_ORDERS_COUNT' => $rcmCount,
-	'RECOMMENDATION_ORDERS_VALUE' => htmlspecialcharsex(join(' / ', $rcmValue))
+	'RECOMMENDATION_ORDERS_VALUE' => htmlspecialcharsbx(join(' / ', $rcmValue))
 );
 
 // prepare recommendation widget
@@ -2597,7 +3082,28 @@ $arGroupActionsTmp = array(
 	"delete" => Loc::getMessage("MAIN_ADMIN_LIST_DELETE"),
 	"cancel" => Loc::getMessage("SOAN_LIST_CANCEL"),
 	"cancel_n" => Loc::getMessage("SOAN_LIST_CANCEL_N"),
+	"allow_delivery" => Loc::getMessage("SALE_SHIPMENT_ALLOW_DELIVERY"),
+	"allow_delivery_n" => Loc::getMessage("SALE_SHIPMENT_ALLOW_DELIVERY_N"),
+	"deducted" => Loc::getMessage("SALE_SHIPMENT_DEDUCTED"),
+	"deducted_n" => Loc::getMessage("SALE_SHIPMENT_DEDUCTED_N"),
+	"update_payment_status" => Loc::getMessage("SALE_UPDATE_PAYMENT_STATUS"),
+	"paid" => Loc::getMessage("SALE_ORDER_PAID"),
+	"paid_n" => Loc::getMessage("SALE_ORDER_PAID_N")
 );
+	
+if($saleModulePermissions >= "W" || !empty($permDeleteOrderList))
+{
+	$arGroupActionsTmp["archive"] =  array(
+		"action" => "window.confirm('".Loc::getMessage('SALE_CONFIRM_ARCHIVE_GROUP')."')
+					{
+						if (BX(form_".$sTableID."))
+							BX.submit( BX(form_".$sTableID."), 'archive');
+					}
+					",
+		"value" => "archive",
+		"name" => Loc::getMessage("SOAN_LIST_ARCHIVE")
+	);
+}
 
 	$allowedStatusesFrom = \Bitrix\Sale\OrderStatus::getStatusesUserCanDoOperations($intUserID, array('from'));
 
@@ -2609,6 +3115,7 @@ $arGroupActionsTmp = array(
 			$arStatus =  StatusTable::getList(array(
 				'select' => array(
 					'NAME' => 'Bitrix\Sale\Internals\StatusLangTable:STATUS.NAME',
+					'COLOR'
 				),
 				'filter' => array(
 					'=ID' => $status,
@@ -2619,10 +3126,13 @@ $arGroupActionsTmp = array(
 			))->fetch();
 
 			if($arStatus)
-				$LOCAL_STATUS_CACHE[$status] = htmlspecialcharsEx($arStatus["NAME"]);
+			{
+				$LOCAL_STATUS_CACHE[$arOrder["STATUS_ID"]]['COLOR'] = htmlspecialcharsbx($arStatus["COLOR"]);
+				$LOCAL_STATUS_CACHE[$status]['NAME'] = htmlspecialcharsbx($arStatus["NAME"]);
+			}
 		}
 
-		$arGroupActionsTmp["status_".$status] = Loc::getMessage("SOAN_LIST_STATUS_CHANGE").' "'.$LOCAL_STATUS_CACHE[$status].'"';
+		$arGroupActionsTmp["status_".$status] = Loc::getMessage("SOAN_LIST_STATUS_CHANGE").' "'.$LOCAL_STATUS_CACHE[$status]['NAME'].'"';
 	}
 
 	$arGroupActionsTmp["export_csv"] = array(
@@ -2667,10 +3177,12 @@ if(file_exists($_SERVER["DOCUMENT_ROOT"].$strPath2Export))
 $lAdmin->AddGroupActionTable($arGroupActionsTmp);
 $aContext = array();
 
-if($saleModulePermissions == "U")
+if($saleModulePermissions >= 'P')
+{
 	$allowedStatusesUpdate = \Bitrix\Sale\OrderStatus::getStatusesUserCanDoOperations($intUserID, array('update'));
+}
 
-if($saleModulePermissions == "W" || ($saleModulePermissions == "U" && !empty($allowedStatusesUpdate)))
+if($saleModulePermissions == "W" || ($saleModulePermissions >= 'P' && !empty($allowedStatusesUpdate) ))
 {
 	$siteLID = "";
 	$arSiteMenu = array();
@@ -2718,11 +3230,33 @@ if($saleModulePermissions == "W" || ($saleModulePermissions == "U" && !empty($al
 			"LINK" => "sale_order_create.php?lang=".LANGUAGE_ID.$siteLID,
 			"TITLE" => Loc::getMessage("SALE_A_NEWORDER_TITLE"),
 			"MENU" => $arSiteMenu
-		),
+		)
 	);
 }
 
-$lAdmin->AddAdminContextMenu($aContext);
+$allowedStatusesDelete = \Bitrix\Sale\OrderStatus::getStatusesUserCanDoOperations($intUserID, array('delete'));
+
+if ($saleModulePermissions == "W" || !empty($allowedStatusesDelete))
+{
+	$aContext[] = array(
+		"TEXT" => Loc::getMessage("SOAN_ARCHIVE_LINK"),
+		"LINK" => "sale_archive.php?lang=".LANGUAGE_ID.$siteLID,
+		"TITLE" => Loc::getMessage("SOAN_ARCHIVE_LINK_TITLE")
+	);
+}
+/** @global CUser $USER */
+global $USER;
+$aAdditionalMenu = array();
+if($USER->CanDoOperation("install_updates"))
+{
+	$aAdditionalMenu[] = array(
+		"TEXT" => Loc::getMessage("SOAN_MARKETPLACE_ADD_NEW"),
+		"GLOBAL_ICON" => "adm-menu-marketplace",
+		"LINK" => "update_system_market.php?category=112&lang=".LANGUAGE_ID.$siteLID,
+		"TITLE" => Loc::getMessage("SOAN_MARKETPLACE_ADD_NEW_TITLE")
+	);
+}
+$lAdmin->AddAdminContextMenu($aContext, true, true, $aAdditionalMenu);
 $lAdmin->CheckListMode();
 
 \Bitrix\Main\Page\Asset::getInstance()->addString('<style>.adm-filter-item-center, .adm-filter-content {overflow: visible !important;}</style>');
@@ -2792,13 +3326,53 @@ $arFilterFieldsTmp = array(
 	"filter_sum_paid" => Loc::getMessage("SO_SUM_PAID"),
 	"filter_xml_id" => Loc::getMessage("SO_XML_ID"),
 	"filter_tracking_number" => Loc::getMessage("SOA_TRACKING_NUMBER"),
-	"filter_source" => Loc::getMessage("SALE_F_SOURCE")
+	"filter_source" => Loc::getMessage("SALE_F_SOURCE"),
+	"filter_company_id" => Loc::getMessage("SALE_F_COMPANY_ID"),
+	"filter_responsible_id" => Loc::getMessage("SALE_F_RESPONSIBLE_ID")
 );
 
-foreach (($arOrderProps+$arOrderPropsCode) as $key => $value)
+$isManyPersonTypes = false;
+$allOrderProps = $arOrderPropsCode + $arOrderProps;
+
+$propsIndex = array();
+$orderPropertyFilterList = array();
+$orderPropertyFilterListTmp = array();
+foreach($allOrderProps as $key => $data)
 {
-	if($value["IS_FILTERED"] == "Y" && $value["TYPE"] != "MULTIPLE")
-		$arFilterFieldsTmp[] = $value["NAME"];
+	if($data["IS_FILTERED"] == "Y" && $data["TYPE"] != "MULTIPLE")
+	{
+		if (!$isManyPersonTypes)
+		{
+			if (array_key_exists($data['NAME'], $propsIndex))
+			{
+				if (count($propsIndex[$data['NAME']]) > 1)
+				{
+					$isManyPersonTypes = true;
+				}
+				elseif (!in_array($data['PERSON_TYPE_ID'], $propsIndex[$data['NAME']]))
+				{
+					$isManyPersonTypes = true;
+				}
+			}
+
+			$propsIndex[$data['NAME']][] = $data['PERSON_TYPE_ID'];
+		}
+
+		$orderPropertyFilterListTmp[$data['LID']][$key] = $data;
+	}
+}
+
+foreach ($orderPropertyFilterListTmp as $propertyLid => $propertyListData)
+{
+	if (!empty($propertyListData) && is_array($propertyListData))
+	{
+		foreach ($propertyListData as $key => $propertyData)
+		{
+			$orderPropertyFilterList[$key] = $propertyData;
+			$arFilterFieldsTmp[] = htmlspecialcharsbx($propertyData["NAME"]) . ($isManyPersonTypes ? " (".htmlspecialcharsbx($propertyData["PERSON_TYPE_NAME"]).") [".htmlspecialcharsbx($propertyData["LID"])."]" : "");
+		}
+	}
+
 }
 
 $oFilter = new CAdminFilter(
@@ -2884,14 +3458,14 @@ $oFilter->Begin();
 	<tr>
 		<td><?echo Loc::getMessage("SALE_F_ACCOUNT_NUMBER");?>:</td>
 		<td>
-			<input type="text" name="filter_account_number" value="<?echo htmlspecialcharsEx($filter_account_number)?>" size="10">
+			<input type="text" name="filter_account_number" value="<?echo htmlspecialcharsbx($filter_account_number)?>" size="10">
 		</td>
 	</tr>
 	<tr>
 		<td><?echo Loc::getMessage("SALE_F_LANG_CUR");?>:</td>
 		<td>
 			<select name="filter_lang">
-				<option value=""><?= htmlspecialcharsex(Loc::getMessage("SALE_F_ALL")) ?></option>
+				<option value=""><?= htmlspecialcharsbx(Loc::getMessage("SALE_F_ALL")) ?></option>
 				<?
 				$b1 = "SORT";
 				$o1 = "ASC";
@@ -2902,7 +3476,7 @@ $oFilter->Begin();
 						&& $saleModulePermissions < "W")
 						continue;
 
-					?><option value="<?= htmlspecialcharsbx($arSitesList["LID"])?>"<?if($arSitesList["LID"] == $filter_lang) echo " selected";?>>[<?= htmlspecialcharsex($arSitesList["LID"]) ?>]&nbsp;<?= htmlspecialcharsex($arSitesList["NAME"]) ?></option><?
+					?><option value="<?= htmlspecialcharsbx($arSitesList["LID"])?>"<?if($arSitesList["LID"] == $filter_lang) echo " selected";?>>[<?= htmlspecialcharsbx($arSitesList["LID"]) ?>]&nbsp;<?= htmlspecialcharsbx($arSitesList["NAME"]) ?></option><?
 				}
 				?>
 			</select>
@@ -2936,7 +3510,7 @@ $oFilter->Begin();
 				{
 					if (!$statusName = $allStatusNames[$statusCode])
 						continue;
-					?><option value="<?= htmlspecialcharsbx($statusCode) ?>"<?if(is_array($filter_status) && in_array($statusCode, $filter_status)) echo " selected"?>>[<?= htmlspecialcharsbx($statusCode) ?>] <?= htmlspecialcharsEx($statusName) ?></option><?
+					?><option value="<?= htmlspecialcharsbx($statusCode) ?>"<?if(is_array($filter_status) && in_array($statusCode, $filter_status)) echo " selected"?>>[<?= htmlspecialcharsbx($statusCode) ?>] <?= htmlspecialcharsbx($statusName) ?></option><?
 				}
 				?>
 			</select>
@@ -3028,19 +3602,26 @@ $oFilter->Begin();
 				<option value=""><?echo GetMessage("SALE_F_ALL")?></option>
 				<?
 
+				Sale\Delivery\Services\Manager::getHandlersList();
 				$deliveryServiceParentListParent = array();
+				$deliveryServiceListAll = array();
 				$deliveryServiceList = array();
 
 				$res = Sale\Delivery\Services\Table::getList(array(
-																 'select' => array('ID', 'NAME', 'PARENT_ID'),
-																 'filter' => array('ACTIVE' => 'Y'),
-																 'order' => array("SORT"=>"ASC", "NAME"=>"ASC")
-															 ));
+					 'select' => array('ID', 'NAME', 'PARENT_ID', 'CLASS_NAME', 'PARENT_NAME' => 'PARENT.NAME'),
+					 'filter' => array('ACTIVE' => 'Y'),
+					 'order' => array("SORT"=>"ASC", "NAME"=>"ASC")
+				 ));
+
 				while ($deliveryService = $res->fetch())
 				{
-					if (intval($deliveryService['PARENT_ID']) == 0)
+					if(intval($deliveryService['PARENT_ID']) == 0)
 					{
 						$deliveryServiceParentListParent[$deliveryService['ID']] = $deliveryService['NAME'];
+					}
+					elseif(class_exists($deliveryService['CLASS_NAME']) && $deliveryService['CLASS_NAME']::canHasProfiles())
+					{
+						$deliveryServiceParentListParent[$deliveryService['ID']] = $deliveryService['PARENT_NAME'].':'.$deliveryService['NAME'];
 					}
 					else
 					{
@@ -3150,13 +3731,13 @@ $oFilter->Begin();
 	<tr>
 		<td><?echo Loc::getMessage("SALE_F_USER_LOGIN");?>:</td>
 		<td>
-			<input type="text" name="filter_user_login" value="<?echo htmlspecialcharsEx($filter_user_login)?>" size="40">
+			<input type="text" name="filter_user_login" value="<?echo htmlspecialcharsbx($filter_user_login)?>" size="40">
 		</td>
 	</tr>
 	<tr>
 		<td><?echo Loc::getMessage("SALE_F_USER_EMAIL");?>:</td>
 		<td>
-			<input type="text" name="filter_user_email" value="<?echo htmlspecialcharsEx($filter_user_email)?>" size="40">
+			<input type="text" name="filter_user_email" value="<?echo htmlspecialcharsbx($filter_user_email)?>" size="40">
 		</td>
 	</tr>
 	<tr>
@@ -3201,7 +3782,7 @@ $oFilter->Begin();
 					store_id = params.store_id || '0';
 
 				var popup = new BX.CDialog({
-					content_url: '/bitrix/admin/cat_product_search_dialog.php?lang='+lang+'&LID='+site_id+'&caller=' + caller + '&func_name='+callback+'&STORE_FROM_ID='+store_id,
+					content_url: '/bitrix/tools/sale/product_search_dialog.php?lang='+lang+'&LID='+site_id+'&caller=' + caller + '&func_name='+callback+'&STORE_FROM_ID='+store_id,
 					height: Math.max(500, window.innerHeight-400),
 					width: Math.max(800, window.innerWidth-400),
 					draggable: true,
@@ -3315,15 +3896,38 @@ $oFilter->Begin();
 			</select>
 		</td>
 	</tr>
+	<tr>
+		<td><?=Loc::getMessage("SALE_F_COMPANY_ID") ?>:</td>
+		<td>
+			<select name="filter_company_id">
+				<option value=""><?=Loc::getMessage("SALE_F_ALL") ?></option>
+				<?foreach($companyListNames as $id => $name):?>
+					<option value="<?=$id?>"<?=$filter_company_id == $id ? ' selected' : ''?>><?=$name?></option>
+				<?endforeach;?>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td><?= Loc::getMessage("SALE_F_RESPONSIBLE_ID") ?>:</td>
+		<td>
+			<?echo FindUserID("filter_responsible_id", $filter_responsible_id, "", "find_form");?>
+		</td>
+	</tr>
 
 	<?
-	foreach (($arOrderProps + $arOrderPropsCode) as $key => $value)
+	foreach ($orderPropertyFilterList as $key => $value)
 	{
 		if($value["IS_FILTERED"] == "Y" && $value["TYPE"] != "MULTIPLE")
 		{
 			?>
 			<tr>
-				<td valign="top"><?= $value["NAME"] ?>:</td>
+				<td valign="top"><?= htmlspecialcharsbx($value["NAME"]) ?>:
+					<?
+					if ($isManyPersonTypes)
+					{
+						?><small><?=(htmlspecialcharsbx($value["PERSON_TYPE_NAME"])." [".htmlspecialcharsbx($value["LID"])."]")?></small><?
+					}
+					?></td>
 				<td valign="top" style="overflow: visible; ">
 					<?
 					$inputParams  =  $value["SETTINGS"];

@@ -157,7 +157,7 @@ else
 						<table style="border-bottom: 1px solid #dbdbda;">
 							<tr>
 								<td nowrap valign="middle"><?=GetMessage("BUY_SUP_NAME")?></td>
-								<td style="padding: 5px 0 5px 15px;"><input type="text" name="name" value="<?=$USER->GetFullName()?>" id="name"></td>
+								<td style="padding: 5px 0 5px 15px;"><input type="text" name="name" value="<?=htmlspecialcharsbx($USER->GetFullName())?>" id="name"></td>
 								<td rowspan="3" style="color:#788186; padding-left: 25px;" valign="top"><?=GetMessage("BUY_SUP_PREQUEST")?></td>
 							</tr>
 							<tr>
@@ -166,7 +166,7 @@ else
 							</tr>
 							<tr>
 								<td nowrap valign="middle"><?=GetMessage("BUY_SUP_YEMAIL")?></td>
-								<td style="padding: 5px 0 5px 15px;"><input type="text" name="email" value="<?=$USER->GetEmail()?>" id="email"></td>
+								<td style="padding: 5px 0 5px 15px;"><input type="text" name="email" value="<?=htmlspecialcharsbx($USER->GetEmail())?>" id="email"></td>
 							</tr>
 							<tr>
 								<td colspan="3">&nbsp;</td>

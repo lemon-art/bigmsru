@@ -82,8 +82,20 @@ class CSocservContactsComponent extends CBitrixComponent
 	{
 		if (!Loader::includeModule('socialservices'))
 		{
-			throw new SystemException(Loc::getMessage('SC_SOCIALSERVICES_MODULE_NOT_INSTALLED'));
+			return false;
 		}
+
+		return true;
+	}
+
+	/**
+	 * Check Required functionality
+	 * @throws Exception
+	 */
+	protected function checkAvailability()
+	{
+		$network = new \Bitrix\Socialservices\Network();
+		return $network->isEnabled();
 	}
 
 	/**
@@ -208,9 +220,13 @@ class CSocservContactsComponent extends CBitrixComponent
 	{
 		global $APPLICATION;
 
+		if(!$this->checkModules() || !$this->checkAvailability())
+		{
+			return;
+		}
+
 		try
 		{
-			$this->checkModules();
 			$this->processRequest();
 			if (!$this->extractDataFromCache())
 			{

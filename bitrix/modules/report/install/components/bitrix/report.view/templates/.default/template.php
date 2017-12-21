@@ -16,24 +16,63 @@ function reportViewShowTopButtons(&$component, &$arParams, &$arResult)
 	global $APPLICATION;
 
 	$component->SetViewTarget("pagetitle", 100);?>
-<div class="reports-title-buttons">
-	<a class="reports-title-button" href="<?php echo $APPLICATION->GetCurPageParam("EXCEL=Y&ncc=1")?>"> <?//ncc=1 is for preventing composite work on this hit?>
-		<i class="reports-title-button-excel-icon"></i><span class="reports-link"><?=GetMessage('REPORT_EXCEL_EXPORT')?></span>
-	</a>
-	&nbsp;
-	<a class="reports-title-button" href="<?=CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_REPORT_CONSTRUCT"], array("report_id" => $arParams['REPORT_ID'], 'action' => 'copy'));?>">
-		<i class="reports-title-button-edit-icon"></i><span class="reports-link"><?=GetMessage('REPORT_COPY')?></span>
-	</a>
-<? if ($arResult['MARK_DEFAULT'] <= 0 && $arResult['AUTHOR']) : ?>
-	<a class="reports-title-button" href="<?=CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_REPORT_CONSTRUCT"], array("report_id" => $arParams['REPORT_ID'], 'action' => 'edit'));?>">
-		<i class="reports-title-button-edit-icon"></i><span class="reports-link"><?=GetMessage('REPORT_EDIT')?></span>
-	</a>
-<? endif; ?>
-	&nbsp;
-	<a class="reports-title-button" href="<?=CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_REPORT_LIST"], array());?>">
-		<i class="reports-title-button-back-icon"></i><span class="reports-link"><?=GetMessage('REPORT_RETURN_TO_LIST')?></span>
-	</a>
-</div>
+
+
+<script>
+	(function ()
+	{
+		BX.ready(function ()
+		{
+			var element = document.body.querySelector('[data-role="action-report"]');
+			BX.bind(
+				element,
+				'click',
+				function ()
+				{
+					BX.PopupMenu.show(
+						element.getAttribute('data-role'),
+						element,
+						[
+							{
+								text: '<?=GetMessage('REPORT_EXCEL_EXPORT')?>',
+								href: '<?php echo $APPLICATION->GetCurPageParam("EXCEL=Y&ncc=1")?>',
+								className: 'reports-title-excel-icon'
+							},
+							{
+								text: '<?=GetMessage('REPORT_COPY')?>',
+								href: '<?=CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_REPORT_CONSTRUCT"], array("report_id" => $arParams['REPORT_ID'], 'action' => 'copy'));?>',
+								className: 'reports-title-copy-icon'
+							}
+							<? if ($arResult['MARK_DEFAULT'] <= 0 && $arResult['AUTHOR']) : ?>
+							,{
+								text: '<?=GetMessage('REPORT_EDIT')?>',
+								href: '<?=CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_REPORT_CONSTRUCT"], array("report_id" => $arParams['REPORT_ID'], 'action' => 'edit'));?>',
+								className: 'reports-title-edit-icon'
+							}
+							<? endif; ?>
+						],
+						{
+							offsetLeft: 20,
+							angle: {
+								offset: 5
+							}
+						}
+
+					)
+				}
+			)
+		})
+	})();
+</script>
+
+<div class="webform-small-button webform-small-button-transparent webform-cogwheel" data-role="action-report">
+	<div class="webform-button-icon"></div>
+</div>	&nbsp;
+<a class="webform-small-button webform-small-button-blue webform-small-button-back" href="<?=CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_REPORT_LIST"], array());?>">
+	<span class="webform-small-button-icon"></span>
+	<span class="webform-small-button-text"><?=GetMessage('REPORT_RETURN_TO_LIST')?></span>
+</a>
+
 <?php
 	$component->EndViewTarget();
 }
@@ -191,10 +230,12 @@ function getResultColumnDataType(&$viewColumnInfo, &$customColumnTypes = array()
 			'type' => $chartType,
 			'columnTypes' => $columnsTypes
 		);
-		unset($chartType, $columnsTypes);
+		unset($columnsTypes);
 		if (!is_null($arGroupingResult) && is_array($arGroupingResult))
 		{
-			$n = min($nMaxValues, count($arGroupingResult));
+			$n = count($arGroupingResult);
+			if ($chartType !== 'pie')
+				$n = min($nMaxValues, $n);
 			for ($i = 0; $i < $n; $i++)
 			{
 				$row = array();
@@ -207,7 +248,9 @@ function getResultColumnDataType(&$viewColumnInfo, &$customColumnTypes = array()
 		}
 		else
 		{
-			$n = min($nMaxValues, count($arResult['data']));
+			$n = count($arResult['data']);
+			if ($chartType !== 'pie')
+				$n = min($nMaxValues, $n);
 			for ($i = 0; $i < $n; $i++)
 			{
 				$row = array();
@@ -655,7 +698,8 @@ function getResultColumnDataType(&$viewColumnInfo, &$customColumnTypes = array()
 							$sumTrifle = 0;
 							if ($offset > 0)
 							{
-								$arTrifle = array_splice($arCounting, $offset);
+								$arTrifle = array_slice($arCounting, $offset, null, true);
+								$arCounting = array_slice($arCounting, 0, $offset, true);
 								foreach (array_keys($arTrifle) as $k) $sumTrifle += $arConsolidated[$k];
 							}
 							if (round($prcntCount,2) < 100.0)
@@ -777,6 +821,19 @@ function getResultColumnDataType(&$viewColumnInfo, &$customColumnTypes = array()
 				thousandsSeparator:' '
 			};
 			chart.zoomOutText = "<?=GetMessage('REPORT_CHART_SHOW_ALL_TEXT')?>";
+
+			if (chart.dataProvider !== null && BX.type.isArray(chart.dataProvider) && chart.dataProvider.length > 0)
+			{
+				for (var i = 0; i < chart.dataProvider.length; i++)
+				{
+					if (chart.dataProvider[i][amChartData["categoryField"]] !== "")
+					{
+						chart.dataProvider[i]["__BN__TITLE__"] =
+							BX.util.htmlspecialchars(chart.dataProvider[i][amChartData["categoryField"]]);
+					}
+				}
+			}
+
 			if (chartType === "pie")
 			{
 				chart.addTitle(amChartData["categoryField"] + ": " + valueFields[0]);
@@ -784,7 +841,8 @@ function getResultColumnDataType(&$viewColumnInfo, &$customColumnTypes = array()
 				chart.valueField = valueFields[0];
 				chart.outlineAlpha = 0.8;
 				chart.outlineThickness = 0;
-				chart.balloonText = "<div>[[title]]: [[percents]]%</div>" + valueFields[0] + ": <b>[[value]]</b>";
+				chart.balloonText = "<div>[[__BN__TITLE__]]: [[percents]]%</div>" + valueFields[0] +
+					": <b>[[value]]</b>";
 				chart.colors = valueColors;
 				chart.groupedTitle = "<?=GetMessage('REPORT_CHART_TRIFLE_LABEL_TEXT')?>";
 			}
@@ -833,7 +891,7 @@ function getResultColumnDataType(&$viewColumnInfo, &$customColumnTypes = array()
 					var graph = new AmCharts.AmGraph();
 					graph.title = valueFields[i];
 					graph.valueField = valueFields[i];
-					graph.balloonText = "[[title]]: <b>[[value]]</b>";
+					graph.balloonText = "[[__BN__TITLE__]]: <b>[[value]]</b>";
 					graph.type = chartType;
 					graph.lineAlpha = 0.8;
 					graph.lineColor = valueColors[i];

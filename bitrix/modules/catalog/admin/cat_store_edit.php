@@ -74,8 +74,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && strlen($_REQUEST["Update"]) > 0 && !
 		"ACTIVE" => (isset($_POST['ACTIVE']) && $_POST['ACTIVE'] == 'Y' ? 'Y' : 'N'),
 		"ADDRESS" => (isset($_POST['ADDRESS']) ? $_POST['ADDRESS'] : ''),
 		"DESCRIPTION" => (isset($_POST['DESCRIPTION']) ? $_POST['DESCRIPTION'] : ''),
-		"GPS_N" => (isset($_POST['GPS_N']) ? $_POST['GPS_N'] : ''),
-		"GPS_S" => (isset($_POST['GPS_S']) ? $_POST['GPS_S'] : ''),
+		"GPS_N" => (isset($_POST['GPS_N']) ? str_replace(',', '.', $_POST['GPS_N']) : ''),
+		"GPS_S" => (isset($_POST['GPS_S']) ? str_replace(',', '.', $_POST['GPS_S']) : ''),
 		"PHONE" => (isset($_POST['PHONE']) ? $_POST['PHONE'] : ''),
 		"SCHEDULE" => (isset($_POST['SCHEDULE']) ? $_POST['SCHEDULE'] : ''),
 		"XML_ID" => (isset($_POST['XML_ID']) ? $_POST['XML_ID'] : ''),
@@ -84,7 +84,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && strlen($_REQUEST["Update"]) > 0 && !
 		"EMAIL" => (isset($_POST["EMAIL"]) ? $_POST["EMAIL"] : ''),
 		"ISSUING_CENTER" => $ISSUING_CENTER,
 		"SHIPPING_CENTER" => $SHIPPING_CENTER,
-		"SITE_ID" => $_POST["SITE_ID"]
+		"SITE_ID" => $_POST["SITE_ID"],
+		"CODE" => isset($_POST['CODE']) ? $_POST['CODE'] : false
 	);
 
 	$USER_FIELD_MANAGER->EditFormAddFields($entityId, $arFields);
@@ -164,6 +165,7 @@ if($id > 0)
 		"ISSUING_CENTER",
 		"SHIPPING_CENTER",
 		"SITE_ID",
+		"CODE"
 	);
 
 	$dbResult = CCatalogStore::GetList(array(), array('ID' => $id), false, false, $arSelect);
@@ -223,32 +225,26 @@ if ($rsCount <= 0)
 	$arSitesShop = $arSitesTmp;
 	$rsCount = count($arSitesShop);
 }
-?>
 
-<?CAdminMessage::ShowMessage($errorMessage);?>
+CAdminMessage::ShowMessage($errorMessage);?>
 
 <form enctype="multipart/form-data" method="POST" action="<?echo $APPLICATION->GetCurPage()?>?" name="store_edit">
 	<?echo GetFilterHiddens("filter_");?>
 	<input type="hidden" name="Update" value="Y">
-	<input type="hidden" name="lang" value="<?echo LANG ?>">
+	<input type="hidden" name="lang" value="<?echo LANGUAGE_ID; ?>">
 	<input type="hidden" name="ID" value="<?echo $id ?>">
-	<?=bitrix_sessid_post()?>
-
-	<?
+	<?=bitrix_sessid_post()?><?
 	$aTabs = array(
 		array("DIV" => "edit1", "TAB" => GetMessage("STORE_TAB"), "ICON" => "catalog", "TITLE" => GetMessage("STORE_TAB_DESCR")),
 	);
 
 	$tabControl = new CAdminTabControl("tabControl", $aTabs);
 	$tabControl->Begin();
-	?>
 
-	<?
 	$tabControl->BeginNextTab();
 	?>
-
-	<tr colspan="2">
-		<td align="left">
+	<tr>
+		<td align="left" colspan="2">
 			<a href="/bitrix/admin/userfield_edit.php?lang=<?=LANGUAGE_ID;?>&amp;ENTITY_ID=<?=$entityId;?>&amp;back_url=<?echo urlencode($APPLICATION->GetCurPageParam('', array('bxpublic'))."&tabControl_active_tab=user_fields_tab")?>"><?=GetMessage("STORE_E_USER_FIELDS_ADD_HREF");?></a>
 		</td>
 	</tr>
@@ -279,12 +275,12 @@ if ($rsCount <= 0)
 	<tr>
 		<td><?= GetMessage("STORE_SITE_ID") ?>:</td>
 		<td>
-			<select id="SITE_ID" style="max-width: 300px; width: 300px;" name="SITE_ID" <?=($bReadOnly) ? " disabled" : ""?> />
+			<select id="SITE_ID" style="max-width: 300px; width: 300px;" name="SITE_ID" <?=($bReadOnly) ? " disabled" : ""?>>
 			<option value=""><?=GetMessage("STORE_SELECT_SITE_ID")?></option>
 			<? foreach($arSitesShop as $key => $val)
 			{
 				$selected = ($val['ID'] == $str_SITE_ID) ? 'selected' : '';
-				echo"<option ".$selected." value=".$val['ID'].">".$val["NAME"]." (".$val["ID"].")"."</option>";
+				echo "<option ".$selected." value=".htmlspecialcharsbx($val['ID']).">".htmlspecialcharsbx($val["NAME"]." (".$val["ID"].")")."</option>";
 			}
 			?>
 			</select>
@@ -296,16 +292,22 @@ if ($rsCount <= 0)
 			<input type="text" style="width:300px" name="TITLE" value="<?=$str_TITLE?>" />
 		</td>
 	</tr>
+	<tr>
+		<td><?= GetMessage("STORE_CODE") ?>:</td>
+		<td>
+			<input type="text" style="width:300px" name="CODE" value="<?=$str_CODE?>">
+		</td>
+	</tr>
 	<tr class="adm-detail-required-field">
 		<td  class="adm-detail-valign-top"><?= GetMessage("STORE_ADDRESS") ?>:</td>
 		<td>
-			<textarea cols="35" rows="3" class="typearea" name="ADDRESS" wrap="virtual"><?= $str_ADDRESS ?></textarea>
+			<textarea cols="35" rows="3" class="typearea" name="ADDRESS"><?= $str_ADDRESS ?></textarea>
 		</td>
 	</tr>
 	<tr>
 		<td  class="adm-detail-valign-top"><?= GetMessage("STORE_DESCR") ?>:</td>
 		<td>
-			<textarea cols="35" rows="3" class="typearea" name="DESCRIPTION" wrap="virtual"><?= $str_DESCRIPTION ?></textarea>
+			<textarea cols="35" rows="3" class="typearea" name="DESCRIPTION"><?= $str_DESCRIPTION ?></textarea>
 		</td>
 	</tr>
 	<tr>
@@ -338,10 +340,9 @@ if ($rsCount <= 0)
 
 	</tr>
 	<tr>
-		<td>XML_ID:</td>
+		<td><?= GetMessage("STORE_XML_ID") ?>:</td>
 		<td><input type="text" name="XML_ID" value="<?=$str_XML_ID?>" size="45" />
 		</td>
-
 	</tr>
 	<tr>
 		<td width="40%"><?= GetMessage("CSTORE_SORT") ?>:</td>
@@ -377,9 +378,8 @@ if ($rsCount <= 0)
 			elseif($arUserField["USER_TYPE"]["BASE_TYPE"]=="file")
 				$form_value = $GLOBALS[$arUserField["FIELD_NAME"]."_old_id"];
 		}
-	?>
-	<?echo
-$tabControl->EndTab();
+
+	$tabControl->EndTab();
 
 	$tabControl->Buttons(
 		array(
@@ -390,5 +390,4 @@ $tabControl->EndTab();
 	$tabControl->End();
 	?>
 </form>
-
-<?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");?>
+<?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");

@@ -89,6 +89,12 @@ class Base
 		if ($fieldInfo instanceof Field)
 		{
 			$field = $fieldInfo;
+
+			// rewrite name
+			if (!empty($fieldName) && !is_numeric($fieldName))
+			{
+				$field->setName($fieldName);
+			}
 		}
 		elseif (!empty($fieldInfo['reference']))
 		{

@@ -81,7 +81,7 @@ if ($REQUEST_METHOD=="POST" && strlen($Update)>0 && $saleModulePermissions>="W" 
 			{
 				if (isset(${"SECTION_SELECTOR_LEVEL_".$i}) && is_array(${"SECTION_SELECTOR_LEVEL_".$i}))
 				{
-					for ($j = 0; $j < count(${"SECTION_SELECTOR_LEVEL_".$i}); $j++)
+					for ($j = 0, $maxCount = count(${"SECTION_SELECTOR_LEVEL_".$i}); $j < $maxCount; $j++)
 					{
 						if (IntVal(${"SECTION_SELECTOR_LEVEL_".$i}[$j]) > 0)
 							${"SECTION_ID_".$i} = IntVal(${"SECTION_SELECTOR_LEVEL_".$i}[$j]);
@@ -569,7 +569,7 @@ $tabControl->BeginNextTab();
 				{
 					$str1 .= "itm_id['".$arIBlock["ID"]."']['".$sectionID."'] = new Array(0";
 					$str2 .= "itm_name['".$arIBlock["ID"]."']['".$sectionID."'] = new Array(''";
-					for ($i = 0; $i < count($arSubSection); $i++)
+					for ($i = 0, $maxCount = count($arSubSection); $i < $maxCount; $i++)
 					{
 						$str1 .= ", ".$arSubSection[$i]["ID"];
 						$str2 .= ", '".CUtil::JSEscape($arSubSection[$i]["NAME"])."'";
@@ -637,7 +637,7 @@ $tabControl->BeginNextTab();
 					$dbModuleList = CModule::GetList();
 					while ($arModuleList = $dbModuleList->Fetch())
 					{
-						?>str += '<option value="<?= $arModuleList["ID"] ?>"><?= CUtil::JSEscape($arModuleList["ID"]) ?></option>';<?
+						?>str += '<option value="<?= $arModuleList["ID"] ?>"><?= htmlspecialcharsbx($arModuleList["ID"]) ?></option>';<?
 					}
 					?>
 					str += '</select>';
@@ -668,7 +668,7 @@ $tabControl->BeginNextTab();
 				<?
 				foreach ($arIBlockCache as $key => $arIBlock)
 				{
-					?>str += '<option value="<?= $arIBlock["ID"] ?>"><?= CUtil::JSEscape("[".$arIBlockTypeCache[$arIBlock["IBLOCK_TYPE_ID"]]."] ".$arIBlock["NAME"]) ?></option>';<?
+					?>str += '<option value="<?= $arIBlock["ID"] ?>"><?= htmlspecialcharsbx("[".$arIBlockTypeCache[$arIBlock["IBLOCK_TYPE_ID"]]."] ".$arIBlock["NAME"]) ?></option>';<?
 				}
 				?>
 				str += '</select><br>';
@@ -700,7 +700,7 @@ $tabControl->BeginNextTab();
 				<?
 				foreach ($arCurrencies as $key => $value)
 				{
-					?>str += '<option value="<?= $key ?>"><?= CUtil::JSEscape($value) ?></option>';<?
+					?>str += '<option value="<?= $key ?>"><?= htmlspecialcharsbx($value) ?></option>';<?
 				}
 				?>
 				str += '</select>';

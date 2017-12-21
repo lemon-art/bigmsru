@@ -186,7 +186,7 @@ class CFileMan
 			if (CSticker::CanDoOperation('sticker_new'))
 			{
 				$arMenu[] = array(
-					"TEXT" => '<div style="float: left; margin: 0 50px 0 0;">'.GetMessage("FMST_PANEL_STICKER_ADD").'</div>'.($useHotKeys ? '<div style="float: right;"><nobr>Ctrl+Shift+S</nobr></div>' : ''),
+					"TEXT" => GetMessage("FMST_PANEL_STICKER_ADD").($useHotKeys ? ' (Ctrl+Shift+S)' : ''),
 					"TITLE" => GetMessage("FMST_PANEL_STICKER_ADD_TITLE"),
 					"ICON" => "",
 					"ACTION" => CSticker::GetScriptStr('add'),
@@ -199,15 +199,14 @@ class CFileMan
 			$curPageCount = CSticker::GetCurPageCount();
 			$arMenu[] = array(
 				"ID" => "bxst-show-sticker-icon",
-				"TEXT" => '<div style="float: left; margin: 0 50px 0 0;">'.GetMessage("FMST_PANEL_STICKERS_SHOW", array("#COUNT#" => $curPageCount)).'</div>'.($useHotKeys ? '<div style="float:right;"><nobr>Ctrl+Shift+X</nobr></div>' : ''),
+				"TEXT" => GetMessage("FMST_PANEL_STICKERS_SHOW", array("#COUNT#" => $curPageCount)).($useHotKeys ? ' (Ctrl+Shift+X)' : ''),
 				"TITLE" => GetMessage("FMST_PANEL_STICKERS_SHOW_TITLE"),
 				"ICON" => CSticker::GetBShowStickers() ? " checked" : "",
 				"ACTION" => CSticker::GetScriptStr('show'),
 				"HK_ID"=>"FMST_PANEL_STICKERS_SHOW",
 			);
 			$arMenu[] = array(
-				//"TEXT" => GetMessage("FMST_PANEL_CUR_STICKER_LIST"),
-				"TEXT" => '<div style="float: left; margin: 0 50px 0 0;">'.GetMessage("FMST_PANEL_CUR_STICKER_LIST").'</div>'.($useHotKeys ? '<div style="float: right;"><nobr>Ctrl+Shift+L</nobr></div>' : ''),
+				"TEXT" => GetMessage("FMST_PANEL_CUR_STICKER_LIST").($useHotKeys ? ' (Ctrl+Shift+L)' : ''),
 				"TITLE" => GetMessage("FMST_PANEL_CUR_STICKER_LIST_TITLE"),
 				"ICON" => "",
 				"ACTION" => CSticker::GetScriptStr('list_cur'),
@@ -252,7 +251,7 @@ class CFileMan
 		return $arModuleVersion['VERSION'];
 	}
 
-	public static function SaveMenu($path, $aMenuLinksTmp, $sMenuTemplateTmp)
+	public static function SaveMenu($path, $aMenuLinksTmp, $sMenuTemplateTmp = "")
 	{
 		global $APPLICATION;
 		CMain::InitPathVars($site, $path);
@@ -1798,17 +1797,24 @@ class CFileMan
 			$templateID = "";
 		}
 
-		if(!is_set($arResult, "STYLES") || $arResult["STYLES"]==false)
+		$io = CBXVirtualIo::GetInstance();
+
+		if(!is_set($arResult, "STYLES") || $arResult["STYLES"] == false)
 		{
-			if(file_exists($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/php_interface/".(strlen($site)<=0?LANGUAGE_ID:$site)."/styles.css"))
+			if($io->FileExists($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/php_interface/".(strlen($site)<=0?LANGUAGE_ID:$site)."/styles.css"))
 			{
 				$arResult["STYLES"] = $APPLICATION->GetFileContent($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/php_interface/".(strlen($site) <= 0?LANGUAGE_ID : $site)."/styles.css");
 				$arResult["STYLES_TITLE"] = CSiteTemplate::__GetByStylesTitle($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/php_interface/".(strlen($site)<=0?LANGUAGE_ID : $site)."/.styles.php");
 			}
-			elseif(file_exists($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/php_interface/styles.css"))
+			elseif($io->FileExists($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/php_interface/styles.css"))
 			{
 				$arResult["STYLES"] = $APPLICATION->GetFileContent($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/php_interface/styles.css");
 				$arResult["STYLES_TITLE"] = CSiteTemplate::__GetByStylesTitle($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/php_interface/.styles.php");
+			}
+			elseif($io->FileExists($_SERVER["DOCUMENT_ROOT"]."local/templates/.default/styles.css"))
+			{
+				$arResult["STYLES"] = $APPLICATION->GetFileContent($_SERVER["DOCUMENT_ROOT"]."local/templates/.default/styles.css");
+				$arResult["STYLES_TITLE"] = CSiteTemplate::__GetByStylesTitle($_SERVER["DOCUMENT_ROOT"]."local/templates/.default/.styles.php");
 			}
 			else
 			{
@@ -1827,18 +1833,33 @@ class CFileMan
 			}
 		}
 
-		if(strlen($templateID)>0 && file_exists($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/templates/".$templateID."/editor.css"))
+		if(strlen($templateID) > 0 && $io->FileExists($_SERVER["DOCUMENT_ROOT"]."local/templates/".$templateID."/editor.css"))
+		{
+			$arResult["STYLES"] .= "\r\n".$APPLICATION->GetFileContent($_SERVER["DOCUMENT_ROOT"]."local/templates/".$templateID."/editor.css");
+		}
+		elseif(strlen($templateID)>0 && $io->FileExists($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/templates/".$templateID."/editor.css"))
+		{
 			$arResult["STYLES"] .= "\r\n".$APPLICATION->GetFileContent($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/templates/".$templateID."/editor.css");
-		elseif(file_exists($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/templates/.default/editor.css"))
+		}
+		elseif($io->FileExists($_SERVER["DOCUMENT_ROOT"]."local/templates/.default/editor.css"))
+		{
+			$arResult["STYLES"] .= "\r\n".$APPLICATION->GetFileContent($_SERVER["DOCUMENT_ROOT"]."local/templates/.default/editor.css");
+		}
+		elseif($io->FileExists($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/templates/.default/editor.css"))
+		{
 			$arResult["STYLES"] .= "\r\n".$APPLICATION->GetFileContent($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/templates/.default/editor.css");
-		elseif(file_exists($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/php_interface/".$site."/editor.css"))
-			$arResult["STYLES"] .= "\r\n".$APPLICATION->GetFileContent($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/php_interface/".(strlen($site)<=0?LANGUAGE_ID:$site)."/editor.css");
-		elseif(file_exists($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/php_interface/editor.css"))
+		}
+		elseif($io->FileExists($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/php_interface/".$site."/editor.css"))
+		{
+			$arResult["STYLES"] .= "\r\n".$APPLICATION->GetFileContent($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/php_interface/".(strlen($site) <= 0 ? LANGUAGE_ID : $site)."/editor.css");
+		}
+		elseif($io->FileExists($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/php_interface/editor.css"))
+		{
 			$arResult["STYLES"] .= "\r\n".$APPLICATION->GetFileContent($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/php_interface/editor.css");
+		}
 
 		$arResult["STYLES"] = preg_replace("/\r\n/", " ", $arResult["STYLES"]);
 		$arResult["STYLES"] = preg_replace("/\n/", " ", $arResult["STYLES"]);
-
 		$arResult["SITE_TEMPLATE_PATH"] =  getLocalPath('templates/'.$templateID, BX_PERSONAL_ROOT);
 
 		return $arResult;

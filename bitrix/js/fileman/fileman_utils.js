@@ -2093,7 +2093,7 @@ BXFMPack.prototype =
 
 				if (_this.bStopPacking)
 				{
-					if (!window.BXFM_archiveExists)
+					if (_this.bPack && !window.BXFM_archiveExists)
 					{
 						var fileID = _this.GetFileName(postParams.packTo),
 							filePath = _this.GetFolderPath(postParams.packTo),

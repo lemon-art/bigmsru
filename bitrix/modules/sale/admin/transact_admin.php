@@ -140,7 +140,7 @@ while ($arTransact = $dbTransactList->NavNext(true, "f_"))
 	$fieldValue  = "[<a href=\"/bitrix/admin/user_edit.php?ID=".$f_USER_ID."&lang=".LANG."\" title=\"".GetMessage("STA_USER_INFO")."\">".$f_USER_ID."</a>] ";
 	$fieldValue .= htmlspecialcharsEx($arTransact["USER_NAME"].((strlen($arTransact["USER_NAME"])<=0 || strlen($arTransact["USER_LAST_NAME"])<=0) ? "" : " ").$arTransact["USER_LAST_NAME"])."<br>";
 	$fieldValue .= htmlspecialcharsEx($arTransact["USER_LOGIN"])."&nbsp;&nbsp;&nbsp; ";
-	$fieldValue .= "<a href=\"mailto:".htmlspecialcharsEx($arTransact["USER_EMAIL"])."\" title=\"".GetMessage("STA_MAILTO")."\">".htmlspecialcharsEx($arTransact["USER_EMAIL"])."</a>";
+	$fieldValue .= "<a href=\"mailto:".htmlspecialcharsbx($arTransact["USER_EMAIL"])."\" title=\"".GetMessage("STA_MAILTO")."\">".htmlspecialcharsEx($arTransact["USER_EMAIL"])."</a>";
 	$row->AddField("USER_ID", $fieldValue);
 
 	$row->AddField("AMOUNT", (($arTransact["DEBIT"] == "Y") ? "+" : "-").SaleFormatCurrency($arTransact["AMOUNT"], $arTransact["CURRENCY"])."<br><small>".(($arTransact["DEBIT"] == "Y") ? GetMessage("STA_TO_ACCOUNT") : GetMessage("STA_FROM_ACCOUNT"))."</small>");
@@ -240,7 +240,7 @@ $oFilter->Begin();
 	<tr>
 		<td><?echo GetMessage("STA_USER")?>:</td>
 		<td>
-			<input type="text" name="filter_user" size="50" value="<?= htmlspecialcharsEx($filter_user) ?>">&nbsp;<?=ShowFilterLogicHelp()?>
+			<input type="text" name="filter_user" size="50" value="<?= htmlspecialcharsbx($filter_user) ?>">&nbsp;<?=ShowFilterLogicHelp()?>
 		</td>
 	</tr>
 	<tr>
@@ -252,7 +252,7 @@ $oFilter->Begin();
 	<tr>
 		<td><?echo GetMessage("STA_USER_LOGIN")?>:</td>
 		<td>
-			<input type="text" name="filter_login" size="50" value="<?= htmlspecialcharsEx($filter_login) ?>">
+			<input type="text" name="filter_login" size="50" value="<?= htmlspecialcharsbx($filter_login) ?>">
 		</td>
 	</tr>
 	<tr>
@@ -270,7 +270,7 @@ $oFilter->Begin();
 	<tr>
 		<td><?echo GetMessage("STA_ORDER_ID")?>:</td>
 		<td>
-			<input type="text" name="filter_order_id" size="5" value="<?= htmlspecialcharsEx($filter_order_id) ?>">
+			<input type="text" name="filter_order_id" size="5" value="<?= htmlspecialcharsbx($filter_order_id) ?>">
 		</td>
 	</tr>
 <?

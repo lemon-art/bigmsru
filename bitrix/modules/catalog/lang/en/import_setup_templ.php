@@ -184,7 +184,7 @@ $MESS["CAT_ADM_CML1_IMP_TAB2_TITLE"] = "Import result";
 $MESS["CAT_ADM_CML1_IMP_ERR_NAMEUTF"] = "Incorrect tag array.";
 $MESS["CAT_ADM_CML1_IMP_ERR_CMLCUR"] = "Incorrect currency array.";
 $MESS["CATI_OF_CAN_BUY"] = "set \"out of stock\" status";
-$MESS["CATI_OF_CAN_BUY_DESCR"] = "The \"out of stock\" status implies:<br>1. warehouse stock: 0;<br>2. decrease available stock on order: yes;<br>3. make out-of-stock items available for purchase: no;<br>4. allow negative product quantity: no.<br><br>Sections not in file become inactive.";
+$MESS["CATI_OF_CAN_BUY_DESCR"] = "The \"out of stock\" status implies:<br>1. warehouse stock: 0;<br>2. decrease available stock on order: yes;<br>3. make out-of-stock items available for purchase: no;<br><br>Sections not in file become inactive.";
 $MESS["CATI_ERR_UPDATE_SECT"] = "Cannot update section:";
 $MESS["CATI_ERR_ADD_SECT"] = "Cannot create section:";
 $MESS["CATI_ERR_PRICE_UPDATE_UNKNOWN"] = "Unknown error when updating the price.";
@@ -201,4 +201,5 @@ $MESS["CICML_INVALID_VERSION"] = "XML format version is invalid.";
 $MESS["CICML_NO_YANDEX"] = "This script is incapable of importing Yandex.Market files.";
 $MESS["CATI_ERR_PRODUCT_UPDATE_UNKNOWN"] = "Unknown error updating product parameters.";
 $MESS["CATI_ERR_PRODUCT_UPDATE"] = "Error updating product parameters: ";
+$MESS["CATI_CODE_TRANSLIT_FOR_UPDATE"] = "Apply transliteration to existing items";
 ?>

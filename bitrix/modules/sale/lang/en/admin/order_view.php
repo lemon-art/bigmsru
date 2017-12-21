@@ -23,4 +23,9 @@ $MESS["SALE_OVIEW_ORDER_COPY"] = "Copy order";
 $MESS["SALE_OVIEW_ORDER_COPY_TITLE"] = "Copy order";
 $MESS["SALE_OVIEW_BLOCK_TITLE_FINANCEINFO"] = "Payment overview";
 $MESS["SALE_OVIEW_UNLOCK"] = "Unlock order";
+$MESS["SALE_OVIEW_TO_ARCHIVE"] = "Archive order";
+$MESS["SALE_OVIEW_TO_ARCHIVE_TITLE"] = "Move order to archive";
+$MESS["SALE_CONFIRM_ARCHIVE_MESSAGE"] = "Are you sure you want to archive this order? This action cannot be undone.";
+$MESS["SALE_OVIEW_TO_ACTION"] = "Actions";
+$MESS["SALE_OVIEW_TO_ACTION_TITLE"] = "Select action from list";
 ?>

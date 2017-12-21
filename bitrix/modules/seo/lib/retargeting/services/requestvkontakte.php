@@ -16,8 +16,14 @@ class RequestVkontakte extends Request
 		$clientParameters = is_array($params['fields']) ? $params['fields'] : array();
 		$clientParameters = $clientParameters + array('access_token' => $this->adapter->getToken());
 
-		$url .= '?' . http_build_query($clientParameters, "", "&");
-
-		return $this->client->get($url);
+		if (isset($params['method']) && $params['method'] == 'POST')
+		{
+			return $this->client->post($url, $clientParameters);
+		}
+		else
+		{
+			$url .= '?' . http_build_query($clientParameters, "", "&");
+			return $this->client->get($url);
+		}
 	}
 }

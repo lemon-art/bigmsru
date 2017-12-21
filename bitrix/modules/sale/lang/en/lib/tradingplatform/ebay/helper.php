@@ -37,4 +37,6 @@ $MESS["SALE_EBAY_AT_DATA_PROCESSOR_ORDER_CHANGE_STATUS_ERROR"] = "Error updating
 $MESS["SALE_EBAY_AT_DATA_PROCESSOR_ORDER_SAVE_ERROR"] = "Error saving order";
 $MESS["SALE_EBAY_AT_DATA_PROCESSOR_ORDER_CORR_SAVE_ERROR"] = "Error saving order documentation";
 $MESS["SALE_EBAY_AT_DATA_PROCESSOR_SFTPQUEUE_FLUSHING"] = "Data ready for exchange";
+$MESS["SALE_EBAY_AT_SFTP_TOKEN_EXP"] = "SFTP Token Has Expired";
+$MESS["SALE_EBAY_AT_SFTP_TOKEN_EXP_MESSAGE"] = "SFTP Token Has Expired. You have to generate new SFTP token on ebay.com.";
 ?>

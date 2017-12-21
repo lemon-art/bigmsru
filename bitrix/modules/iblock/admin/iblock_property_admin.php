@@ -17,14 +17,7 @@ if(!is_array($arIBlock))
 if(!CIBlockRights::UserHasRightTo($arIBlock["ID"], $arIBlock["ID"], "iblock_edit"))
 	$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
 
-$simpleTypeList = array(
-	Iblock\PropertyTable::TYPE_STRING => true,
-	Iblock\PropertyTable::TYPE_NUMBER => true,
-	Iblock\PropertyTable::TYPE_LIST => true,
-	Iblock\PropertyTable::TYPE_FILE => true,
-	Iblock\PropertyTable::TYPE_SECTION => true,
-	Iblock\PropertyTable::TYPE_ELEMENT => true,
-);
+$simpleTypeList = array_fill_keys(Iblock\Helpers\Admin\Property::getBaseTypeList(false), true);
 
 $sTableID = "tbl_iblock_property_admin_".$arIBlock["ID"];
 $oSort = new CAdminSorting($sTableID, 'SORT', 'ASC');
@@ -72,14 +65,17 @@ if($lAdmin->EditAction())
 	foreach($FIELDS as $ID => $arFields)
 	{
 		$DB->StartTransaction();
-		$ID = IntVal($ID);
+		$ID = (int)$ID;
 
 		if(!$lAdmin->IsUpdated($ID))
 			continue;
 
-		$arFields["USER_TYPE"] = false;
-		if (!isset($simpleTypeList[$arFields['PROPERTY_TYPE']]))
-			list($arFields["PROPERTY_TYPE"], $arFields["USER_TYPE"]) = explode(':', $arFields["PROPERTY_TYPE"], 2);
+		if (isset($arFields['PROPERTY_TYPE']))
+		{
+			$arFields["USER_TYPE"] = false;
+			if (!isset($simpleTypeList[$arFields['PROPERTY_TYPE']]))
+				list($arFields["PROPERTY_TYPE"], $arFields["USER_TYPE"]) = explode(':', $arFields["PROPERTY_TYPE"], 2);
+		}
 
 		$ibp = new CIBlockProperty;
 		if(!$ibp->Update($ID, $arFields))
@@ -212,14 +208,7 @@ $arHeader = array(
 	),
 );
 
-$arPropType = array(
-	Iblock\PropertyTable::TYPE_STRING => GetMessage("IBLOCK_PROP_S"),
-	Iblock\PropertyTable::TYPE_NUMBER => GetMessage("IBLOCK_PROP_N"),
-	Iblock\PropertyTable::TYPE_LIST => GetMessage("IBLOCK_PROP_L"),
-	Iblock\PropertyTable::TYPE_FILE => GetMessage("IBLOCK_PROP_F"),
-	Iblock\PropertyTable::TYPE_SECTION => GetMessage("IBLOCK_PROP_G"),
-	Iblock\PropertyTable::TYPE_ELEMENT => GetMessage("IBLOCK_PROP_E"),
-);
+$arPropType = Iblock\Helpers\Admin\Property::getBaseTypeList(true);
 $arUserTypeList = CIBlockProperty::GetUserType();
 Main\Type\Collection::sortByColumn($arUserTypeList, array('DESCRIPTION' => SORT_STRING));
 foreach($arUserTypeList as $arUserType)

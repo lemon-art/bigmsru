@@ -5,19 +5,21 @@ class CCatalogStoreProductAll
 {
 	protected static function CheckFields($action, &$arFields)
 	{
+		/** @global CMain $APPLICATION */
+		global $APPLICATION;
 		if ((($action == 'ADD') || isset($arFields["STORE_ID"])) && intval($arFields["STORE_ID"])<=0)
 		{
-			$GLOBALS["APPLICATION"]->ThrowException(GetMessage("CP_EMPTY_STORE"));
+			$APPLICATION->ThrowException(GetMessage("CP_EMPTY_STORE"));
 			return false;
 		}
 		if ((($action == 'ADD') || isset($arFields["PRODUCT_ID"])) && intval($arFields["PRODUCT_ID"])<=0)
 		{
-			$GLOBALS["APPLICATION"]->ThrowException(GetMessage("CP_EMPTY_PRODUCT"));
+			$APPLICATION->ThrowException(GetMessage("CP_EMPTY_PRODUCT"));
 			return false;
 		}
 		if  (!is_numeric($arFields["AMOUNT"]))
 		{
-			$GLOBALS["APPLICATION"]->ThrowException(GetMessage("CP_FALSE_AMOUNT"));
+			$APPLICATION->ThrowException(GetMessage("CP_FALSE_AMOUNT"));
 			return false;
 		}
 
@@ -54,7 +56,7 @@ class CCatalogStoreProductAll
 		return true;
 	}
 
-	function OnIBlockElementDelete($productId)
+	public static function OnIBlockElementDelete($productId)
 	{
 		global $DB;
 		$productId = (int)$productId;

@@ -11,7 +11,6 @@ if(
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
 require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/prolog.php");
 define("HELP_FILE", "settings/settings/cache.php");
-require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/classes/general/cache_html.php");
 /** @var CUser $USER */
 /** @var CMain $APPLICATION */
 
@@ -84,7 +83,7 @@ if(
 		{
 			if(
 				is_string($file)
-				&& !preg_match("/(\\.enabled|.config\\.php)\$/", $file)
+				&& !preg_match("/(\\.enabled|\\.size|.config\\.php)\$/", $file)
 			)
 			{
 				$file_size = filesize($file);
@@ -109,7 +108,7 @@ if(
 			//no more than 200 files per second
 			usleep(5000);
 		}
-		CHTMLPagesCache::writeStatistic(false, false, false, false, -$space_freed);
+		\Bitrix\Main\Composite\Helper::updateCacheFileSize(-$space_freed);
 	}
 	elseif(\Bitrix\Main\Data\Cache::getCacheEngineType() == "cacheenginefiles")
 	{
@@ -195,16 +194,16 @@ if(
 		}
 		elseif($_REQUEST["cachetype"] == "html")
 		{
-			$staticHtmlCache = \Bitrix\Main\Data\StaticHtmlCache::getInstance();
-			$staticHtmlCache->deleteAll();
+			$page = \Bitrix\Main\Composite\Page::getInstance();
+			$page->deleteAll();
 		}
 		elseif($_REQUEST["cachetype"] == "all")
 		{
 			BXClearCache(true);
 			$GLOBALS["CACHE_MANAGER"]->CleanAll();
 			$GLOBALS["stackCacheManager"]->CleanAll();
-			$staticHtmlCache = \Bitrix\Main\Data\StaticHtmlCache::getInstance();
-			$staticHtmlCache->deleteAll();
+			$page = \Bitrix\Main\Composite\Page::getInstance();
+			$page->deleteAll();
 		}
 
 		if ($_SESSION["CACHE_STAT"])

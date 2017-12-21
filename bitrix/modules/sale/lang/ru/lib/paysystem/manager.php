@@ -1,5 +1,8 @@
 <?php
+$MESS['SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_ALFABANK'] = 'Настройки подключения Альфа-Банка';
+$MESS['SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_AUTHORIZE'] = 'Настройки подключения Authorize.net';
 $MESS['SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_YANDEX'] = 'Настройки подключения Яндекса';
+$MESS['SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_YANDEX_INVOICE'] = 'Настройки подключения Яндекс.Денег';
 $MESS['SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_WEBMONEY'] = 'Настройки подключения Webmoney';
 $MESS['SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_ASSIST'] = 'Настройки подключения Assist';
 $MESS['SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_ROBOXCHANGE'] = 'Настройки подключения RoboxChange';
@@ -12,7 +15,11 @@ $MESS['SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_BILLDE'] = 'Настройки с�
 $MESS['SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_BILLEN'] = 'Настройки счетов(Английский)';
 $MESS['SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_BILLUA'] = 'Настройки счетов(Украинский)';
 $MESS['SALE_PS_MANAGER_GROUP_CONNECT_SETTINGS_BILLLA'] = 'Настройки счетов(Испанский)';
-$MESS['SALE_PS_MANAGER_GROUP_GENERAL_SETTINGS'] = 'Дополнительные настройки платежных систем';
+$MESS['SALE_PS_MANAGER_GROUP_GENERAL_SETTINGS'] = 'Основная';
+$MESS['SALE_PS_MANAGER_GROUP_VISUAL'] = 'Стили';
+$MESS['SALE_PS_MANAGER_GROUP_HEADER_SETTINGS'] = 'Настройки верхней части документа';
+$MESS['SALE_PS_MANAGER_GROUP_FOOTER_SETTINGS'] = 'Настройки нижней части документа';
+$MESS['SALE_PS_MANAGER_GROUP_COLUMN'] = 'Колонки';
 $MESS['SALE_PS_MANAGER_GROUP_PAYMENT'] = 'Оплаты';
 $MESS['SALE_PS_MANAGER_GROUP_PAYSYSTEM'] = 'Платежные системы';
 $MESS['SALE_PS_MANAGER_GROUP_PS_OTHER'] = 'Остальные свойства платежных систем';

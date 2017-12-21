@@ -8,7 +8,8 @@
 
 namespace Bitrix\Iblock;
 
-use Bitrix\Main\Localization\Loc;
+use Bitrix\Main,
+	Bitrix\Main\Localization\Loc;
 
 Loc::loadMessages(__FILE__);
 
@@ -204,7 +205,7 @@ class SenderConnectorIblock extends \Bitrix\Sender\Connector
 		{
 			$inputSelected = ($iblock['ID'] == $this->getFieldValue('IBLOCK') ? 'selected' : '');
 			$iblockInput .= '<option value="'.$iblock['ID'].'" '.$inputSelected.'>';
-			$iblockInput .= htmlspecialcharsbx($iblock['NAME']);
+			$iblockInput .= Main\Text\HtmlFilter::encode($iblock['NAME']);
 			$iblockInput .= '</option>';
 		}
 		$iblockInput .= '</select>';
@@ -231,7 +232,7 @@ class SenderConnectorIblock extends \Bitrix\Sender\Connector
 			$inputSelected = $property['ID'] == $this->getFieldValue('PROPERTY_NAME') ? 'selected' : '';
 			$inputDisabled = (isset($property['DISABLED']) && $property['DISABLED']) ? 'disabled' : '';
 			$iblockPropertyNameInput .= '<option value="'.$property['ID'].'" '.$inputSelected.' '.$inputDisabled.'>';
-			$iblockPropertyNameInput .= htmlspecialcharsbx($property['NAME']);
+			$iblockPropertyNameInput .= Main\Text\HtmlFilter::encode($property['NAME']);
 			$iblockPropertyNameInput .= '</option>';
 		}
 		$iblockPropertyNameInput .= '</select>';
@@ -258,7 +259,7 @@ class SenderConnectorIblock extends \Bitrix\Sender\Connector
 			$inputSelected = ($property['ID'] == $this->getFieldValue('PROPERTY_EMAIL') ? 'selected' : '');
 			$inputDisabled = (isset($property['DISABLED']) && $property['DISABLED']) ? 'disabled' : '';
 			$iblockPropertyEmailInput .= '<option value="'.$property['ID'].'" '.$inputSelected.' '.$inputDisabled.'>';
-			$iblockPropertyEmailInput .= htmlspecialcharsbx($property['NAME']);
+			$iblockPropertyEmailInput .= Main\Text\HtmlFilter::encode($property['NAME']);
 			$iblockPropertyEmailInput .= '</option>';
 		}
 		$iblockPropertyEmailInput .= '</select>';

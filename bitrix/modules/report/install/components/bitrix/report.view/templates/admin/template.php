@@ -1493,18 +1493,25 @@ unset($arGroupingResult['html']);
 
 		// check
 		$chartSettings = $arResult['settings']['chart'];
-		if (!isset($chartSettings['x_column'])) return null;
+		if (!isset($chartSettings['x_column']))
+			return null;
 		$xColumnIndex = $chartSettings['x_column'];
-		if (!is_array($chartSettings['y_columns'])) return null;
+		if (!is_array($chartSettings['y_columns']))
+			return null;
 		$yColumnsCount = count($chartSettings['y_columns']);
 		if ($yColumnsCount === 0) return null;
 		$chartTypeIds = array();
-		foreach ($arResult['chartTypes'] as $chartTypeInfo) $chartTypeIds[] = $chartTypeInfo['id'];
+		foreach ($arResult['chartTypes'] as $chartTypeInfo)
+			$chartTypeIds[] = $chartTypeInfo['id'];
 		if (!is_set($chartSettings['type'])
 			|| empty($chartSettings['type'])
-			|| !in_array($chartSettings['type'], $chartTypeIds)) return null;
+			|| !in_array($chartSettings['type'], $chartTypeIds))
+		{
+			return null;
+		}
 		$chartType = $chartSettings['type'];
-		if ($chartType === 'pie') $yColumnsCount = 1;    // pie chart has only one array of a values
+		if ($chartType === 'pie')
+			$yColumnsCount = 1;    // pie chart has only one array of a values
 		$xColumnDataType = getResultColumnDataType($arResult['viewColumns'][$xColumnIndex],
 			$arResult['customColumnTypes'], $arResult['helperClassName']);
 		$xColumnResultName = $arResult['viewColumns'][$xColumnIndex]['resultName'];
@@ -1528,7 +1535,9 @@ unset($arGroupingResult['html']);
 		);
 		if (!is_null($arGroupingResult) && is_array($arGroupingResult))
 		{
-			$n = min($nMaxValues, count($arGroupingResult));
+			$n = count($arGroupingResult);
+			if ($chartType !== 'pie')
+				$n = min($nMaxValues, $n);
 			for ($i = 0; $i < $n; $i++)
 			{
 				$row = array();
@@ -1540,7 +1549,9 @@ unset($arGroupingResult['html']);
 		}
 		else
 		{
-			$n = min($nMaxValues, count($arResult['data']));
+			$n = count($arResult['data']);
+			if ($chartType !== 'pie')
+				$n = min($nMaxValues, $n);
 			for ($i = 0; $i < $n; $i++)
 			{
 				$row = array();

@@ -7,6 +7,7 @@ use Bitrix\Main\Result;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Socialservices\ApTable;
+use Bitrix\Socialservices\ContactConnectTable;
 
 Loc::loadMessages(__FILE__);
 
@@ -265,7 +266,7 @@ class Connection
 
 		if(strlen($appId) > 0)
 		{
-			$result = $host.'apconnect/?client_id='.urlencode($appId).'&state='.urlencode(http_build_query(array(
+			$result = $host.'apconnect/?client_id='.urlencode($appId).'&preset=ap&state='.urlencode(http_build_query(array(
 				'check_key' => \CSocServAuthManager::GetUniqueKey(),
 				'admin' => 1,
 				'backurl' => $APPLICATION->GetCurPageParam(),
@@ -316,5 +317,97 @@ class Connection
 			$result = $query->call('admin.profile.list', array());
 
 		return !empty($result['result']) && is_array($result['result']) ? $result['result'] : array();
+	}
+
+	/**
+	 * @return string Url to edit open lines settings.
+	 */
+	public static function getOpenLinesConfigUrl()
+	{
+		$res = self::getDataFromRest('imopenlines.config.path.get', array('result'));
+
+		if(is_array($res) && !empty($res['SERVER_ADDRESS']) && !empty($res['PUBLIC_PATH']))
+		{
+			$result = $res['SERVER_ADDRESS'].$res['PUBLIC_PATH'];
+		}
+		else
+		{
+			$domain = self::getDomain();
+
+			if(strlen($domain) <= 0)
+				return '';
+
+			$result = 'https://'.htmlspecialcharsbx($domain).'/settings/openlines/'; //default for b24 cloud
+		}
+
+		return $result;
+	}
+
+	/**
+	 * @return string Url to edit telephony settings.
+	 */
+	public static function getTelephonyConfigUrl()
+	{
+		return self::getDataFromRest('voximplant.url.get', array('result', 'lines'), '/telephony/lines.php');
+	}
+
+	/**
+	 * @return string Url to edit webform settings.
+	 */
+	public static function getWebformConfigUrl()
+	{
+		return self::getDataFromRest('crm.webform.configuration.get', array('result', 'URL'), '/crm/webform/');
+	}
+
+	/**
+	 * @return string Url to edit widgets.
+	 */
+	public static function getWidgetsConfigUrl()
+	{
+		return self::getDataFromRest('crm.sitebutton.configuration.get', array('result', 'URL'), '/crm/button/');
+	}
+
+	private static function getDataFromRest($method, $pathToData, $defaultPath = '')
+	{
+		if(!Loader::includeModule('socialservices'))
+			return '';
+
+		$result = '';
+
+		if($client = \Bitrix\Socialservices\ApClient::init())
+		{
+			$result = $client->call($method);
+
+			if(is_array($result))
+			{
+				foreach($pathToData as $idx)
+				{
+					if(!empty($result[$idx]))
+					{
+						$result = $result[$idx];
+					}
+					else
+					{
+						$result = '';
+						break;
+					}
+				}
+			}
+		}
+
+		if(is_array($result))
+			return $result;
+
+		if(strlen($result) <= 0)
+		{
+			$domain = self::getDomain();
+
+			if(strlen($domain) <= 0)
+				return '';
+
+			$result = 'https://'.htmlspecialcharsbx($domain).$defaultPath; //default for b24 cloud
+		}
+
+		return $result;
 	}
 }

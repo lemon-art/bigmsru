@@ -111,13 +111,10 @@ BXEditorTextareaView.prototype.SaveValue = function()
 
 BXEditorTextareaView.prototype.HasPlaceholderSet = function()
 {
-	return false;
 	var
-		supportsPlaceholder = supportsPlaceholderAttributeOn(this.element),
 		placeholderText = this.element.getAttribute("placeholder") || null,
-		value = this.element.value,
-		isEmpty = !value;
-	return (supportsPlaceholder && isEmpty) || (value === placeholderText);
+		value = this.element.value;
+	return !value || (value === placeholderText);
 };
 
 BXEditorTextareaView.prototype.IsEmpty = function()
@@ -365,12 +362,13 @@ BXEditorIframeView.prototype.Clear = function()
 
 BXEditorIframeView.prototype.GetValue = function(bParse, bFormat)
 {
-	var value = this.IsEmpty() ? "" : this.editor.GetInnerHtml(this.element);
+	this.iframeValue = this.IsEmpty() ? "" : this.editor.GetInnerHtml(this.element);
+	this.editor.On('OnIframeBeforeGetValue', [this.iframeValue]);
 	if (bParse)
 	{
-		value = this.editor.Parse(value, false, bFormat);
+		this.iframeValue = this.editor.Parse(this.iframeValue, false, bFormat);
 	}
-	return value;
+	return this.iframeValue;
 };
 
 BXEditorIframeView.prototype.SetValue = function(html, bParse)
@@ -452,17 +450,18 @@ BXEditorIframeView.prototype.IsFocused = function()
 	return this.isFocused;
 };
 
-BXEditorIframeView.prototype.GetTextContent = function()
+BXEditorIframeView.prototype.GetTextContent = function(clearInvisibleSpace)
 {
-	return this.editor.util.GetTextContent(this.element);
+	var txt = this.editor.util.GetTextContent(this.element);
+	return clearInvisibleSpace === true ? txt.replace(/\uFEFF/ig, '') : txt;
 };
 
 BXEditorIframeView.prototype.HasPlaceholderSet = function()
 {
-	return this.GetTextContent() == this.textarea.getAttribute("placeholder");
+	return this.textarea && this.GetTextContent() == this.textarea.getAttribute("placeholder");
 };
 
-BXEditorIframeView.prototype.IsEmpty = function()
+BXEditorIframeView.prototype.IsEmpty = function(clearInvisibleSpace)
 {
 	if (!document.querySelector)
 		return false;
@@ -474,7 +473,7 @@ BXEditorIframeView.prototype.IsEmpty = function()
 	return innerHTML === "" ||
 		innerHTML === this.caretNode ||
 		this.HasPlaceholderSet() ||
-		(this.GetTextContent() === "" && !this.element.querySelector(elementsWithVisualValue));
+		(this.GetTextContent(clearInvisibleSpace) === "" && !this.element.querySelector(elementsWithVisualValue));
 };
 
 BXEditorIframeView.prototype._initObjectResizing = function()
@@ -603,16 +602,19 @@ var focusWithoutScrolling = function(element)
 		{
 			if(e && !e.ctrlKey && !e.shiftKey && (BX.getEventButton(e) & BX.MSRIGHT))
 			{
-				editor.On("OnIframeContextMenu", [e, e.target || e.srcElement]);
+				editor.On("OnIframeContextMenu", [e, e.target || e.srcElement, _this.contMenuRangeCollapsed]);
 			}
 		});
 
 		BX.bind(_element, "mousedown", function(e)
 		{
 			var
+				range = editor.selection.GetRange(),
 				target = e.target || e.srcElement,
 				bxTag = editor.GetBxTag(target);
 
+			//mantis: 71174
+			_this.contMenuRangeCollapsed = range && range.collapsed;
 			if (editor.synchro.IsSyncOn())
 			{
 				editor.synchro.StopSync();
@@ -627,7 +629,7 @@ var focusWithoutScrolling = function(element)
 			{
 				setTimeout(function()
 				{
-					var range = editor.selection.GetRange();
+					range = editor.selection.GetRange();
 					if (range && range.collapsed && range.startContainer && range.startContainer == range.endContainer)
 					{
 						var surr = editor.phpParser.CheckParentSurrogate(range.startContainer);
@@ -640,12 +642,15 @@ var focusWithoutScrolling = function(element)
 				}, 10);
 			}
 
+			editor.action.actions.quote.checkSpaceAfterQuotes(target);
+
 			editor.selection.SaveRange(false);
+			setTimeout(function(){editor.selection.SaveRange(false);}, 10);
 			editor.On("OnIframeMouseDown", [e, target, bxTag]);
 		});
 
-		BX.bind(_element, "touchend", function(e){_this.Focus();});
-		BX.bind(_element, "touchstart", function(e){_this.Focus();});
+		BX.bind(_element, "touchend", function(){_this.Focus();});
+		BX.bind(_element, "touchstart", function(){_this.Focus();});
 
 		BX.bind(_element, "click", function(e)
 		{
@@ -672,34 +677,35 @@ var focusWithoutScrolling = function(element)
 			editor.On("OnIframeMouseUp", [e, target]);
 		});
 
-		// resizestart
-		// resizeend
-		if (BX.browser.IsIOS())
-		{
-			// When on iPad/iPhone/IPod after clicking outside of editor, the editor loses focus
-			// but the UI still acts as if the editor has focus (blinking caret and onscreen keyboard visible)
-			// We prevent _this by focusing a temporary input element which immediately loses focus
-			BX.bind(iframeWindow, "blur", function()
-			{
-				var
-					input = BX.create('INPUT', {props: {type: 'text', value: ''}}, element.ownerDocument),
-					orScrollTop = document.documentElement.scrollTop || document.body.scrollTop,
-					orScrollLeft = document.documentElement.scrollLeft || document.body.scrollLeft;
-
-				try
-				{
-					editor.selection.InsertNode(input);
-				}
-				catch(e)
-				{
-					element.appendChild(input);
-				}
-
-				BX.focus(input);
-				BX.remove(input);
-				window.scrollTo(orScrollLeft, orScrollTop);
-			});
-		}
+		// Mantis: 90137
+		//if (BX.browser.IsIOS())
+		//{
+		//	// When on iPad/iPhone/IPod after clicking outside of editor, the editor loses focus
+		//	// but the UI still acts as if the editor has focus (blinking caret and onscreen keyboard visible)
+		//	// We prevent _this by focusing a temporary input element which immediately loses focus
+		//	BX.bind(iframeWindow, "blur", function()
+		//	{
+		//		var
+		//			orScrollTop = document.documentElement.scrollTop || document.body.scrollTop,
+		//			orScrollLeft = document.documentElement.scrollLeft || document.body.scrollLeft,
+		//			input = BX.create('INPUT', {
+		//				props:{type: 'text', value: ''}
+		//			}, iframeWindow.ownerDocument);
+		//
+		//		try
+		//		{
+		//			editor.selection.InsertNode(input);
+		//		}
+		//		catch(e)
+		//		{
+		//			iframeWindow.appendChild(input);
+		//		}
+		//
+		//		BX.focus(input);
+		//		BX.remove(input);
+		//		window.scrollTo(orScrollLeft, orScrollTop);
+		//	});
+		//}
 
 		// --------- Drag & Drop events  ---------
 		BX.bind(element, "dragover", function(){editor.On("OnIframeDragOver", arguments);});
@@ -787,6 +793,24 @@ var focusWithoutScrolling = function(element)
 
 		BX.bind(element, "keydown", BX.proxy(this.KeyDown, this));
 
+		// Workaround for chrome bug with bugus scrollint to the top of the page (mantis:91555)
+		if (BX.browser.IsChrome())
+		{
+			BX.bind(window, "scroll", BX.proxy(function(e)
+			{
+				if (_this.stopBugusScroll)
+				{
+					_this.stopBugusScroll = false;
+					if (!_this.savedScroll.scrollTop && _this.lastSavedScroll)
+						_this.savedScroll = _this.lastSavedScroll;
+
+					if (_this.savedScroll && !_this.lastSavedScroll)
+						_this.lastSavedScroll = _this.savedScroll;
+					_this._RestoreScrollTop();
+				}
+			}, this));
+		}
+
 		// Show urls and srcs in tooltip when hovering links or images
 		var nodeTitles = {
 			IMG: BX.message.SrcTitle + ": ",
@@ -818,6 +842,13 @@ var focusWithoutScrolling = function(element)
 	{
 		this.SetFocusedFlag(true);
 		this.editor.iframeKeyDownPreventDefault = false;
+
+		// Workaround for chrome bug with bugus scrollint to the top of the page (mantis:91555)
+		if (BX.browser.IsChrome())
+		{
+			this.stopBugusScroll = true;
+			this.savedScroll = BX.GetWindowScrollPos(document);
+		}
 
 		var
 			_this = this,
@@ -913,7 +944,6 @@ var focusWithoutScrolling = function(element)
 			}
 		}
 		// END: Bug mantis: #59759
-
 
 		// Clear link with image
 		if (selectedNode && selectedNode.nodeName === "IMG" &&
@@ -1079,164 +1109,109 @@ var focusWithoutScrolling = function(element)
 		}
 
 		var
-			list, i, li, br, blockElement,
+			list, br, blockElement,
 			blockTags  = ["LI", "P", "H1", "H2", "H3", "H4", "H5", "H6"],
 			listTags  = ["UL", "OL", "MENU"];
 
-
-		// We trying to exit from list (double enter) (only in Chrome)
-		if (keyCode === this.editor.KEY_CODES["enter"] &&
-			BX.browser.IsChrome() &&
-			selectedNode.nodeName === "LI" &&
-			selectedNode.childNodes.length == 1 &&
-			selectedNode.firstChild.nodeName === "BR")
+		if (BX.util.in_array(selectedNode.nodeName, blockTags))
 		{
-			// 1. Get parrent list
-			list = BX.findParent(selectedNode, function(n)
-			{
-				return BX.util.in_array(n.nodeName, listTags);
-			}, _this.document.body);
-
-			li = list.getElementsByTagName('LI');
-
-			// Last item - we have to exit from list and insert <br>
-			if (selectedNode === li[li.length - 1])
-			{
-				br = BX.create("BR", {}, _this.document);
-				this.editor.util.InsertAfter(br, list);
-				this.editor.selection.SetBefore(br);
-				this.editor.Focus();
-				BX.remove(selectedNode);
-			}
-			else // We have to split list into 2 lists
-			{
-				var
-					newList = list.ownerDocument.createElement(list.nodeName),
-					toNew = false,
-					invisText = _this.editor.util.GetInvisibleTextNode();
-
-				for (i = 0; i < li.length; i++)
-				{
-					if (li[i] == selectedNode)
-					{
-						toNew = true;
-						continue;
-					}
-
-					if (toNew)
-					{
-						newList.appendChild(li[i]);
-					}
-				}
-
-				if (list.nextSibling)
-				{
-					list.parentNode.insertBefore(list.nextSibling, invisText);
-					invisText.parentNode.insertBefore(invisText.nextSibling, newList);
-				}
-				else
-				{
-					list.parentNode.appendChild(invisText);
-					list.parentNode.appendChild(newList);
-				}
-				this.editor.selection.SetAfter(invisText);
-
-				this.editor.Focus();
-				BX.remove(selectedNode);
-			}
-
-			return BX.PreventDefault(e);
+			blockElement = selectedNode;
 		}
 		else
 		{
-			if (BX.util.in_array(selectedNode.nodeName, blockTags))
+			blockElement = BX.findParent(selectedNode, function(n)
 			{
-				blockElement = selectedNode;
-			}
-			else
-			{
-				blockElement = BX.findParent(selectedNode, function(n)
-				{
-					return BX.util.in_array(n.nodeName, blockTags);
-				}, this.document.body);
-			}
+				return BX.util.in_array(n.nodeName, blockTags);
+			}, this.document.body);
+		}
 
-			if (blockElement)
+		if (blockElement)
+		{
+			if (blockElement.nodeName === "LI")
 			{
-				if (blockElement.nodeName === "LI")
+				if (keyCode === _this.editor.KEY_CODES["enter"] && blockElement && blockElement.parentNode)
 				{
-					if (keyCode === _this.editor.KEY_CODES["enter"] && blockElement && blockElement.parentNode)
-					{
-						var bullitClass = _this.editor.action.actions.insertUnorderedList.getCustomBullitClass(blockElement.parentNode);
-					}
+					var bullitClass = _this.editor.action.actions.insertUnorderedList.getCustomBullitClass(blockElement.parentNode);
+				}
 
-					// Some browsers create <p> elements after leaving a list
-					// check after keydown of backspace and return whether a <p> got inserted and unwrap it
-					setTimeout(function()
+				// Some browsers create <p> elements after leaving a list
+				// check after keydown of backspace and return whether a <p> got inserted and unwrap it
+				setTimeout(function()
+				{
+					var node = _this.editor.selection.GetSelectedNode(true);
+					if (node)
 					{
-						var node = _this.editor.selection.GetSelectedNode(true);
-						if (node)
+						list = BX.findParent(node, function(n)
 						{
-							list = BX.findParent(node, function(n)
-							{
-								return BX.util.in_array(n.nodeName, listTags);
-							}, _this.document.body);
+							return BX.util.in_array(n.nodeName, listTags);
+						}, _this.document.body);
 
-							// Check if it's list with custom styled bullits - we have to check it all items have same style
-							if (keyCode === _this.editor.KEY_CODES["enter"] && blockElement && blockElement.parentNode)
-							{
-								_this.editor.action.actions.insertUnorderedList.checkCustomBullitList(blockElement.parentNode, bullitClass, true);
-							}
+						// Check if it's list with custom styled bullits - we have to check it all items have same style
+						if (keyCode === _this.editor.KEY_CODES["enter"] && blockElement && blockElement.parentNode)
+						{
+							_this.editor.action.actions.insertUnorderedList.checkCustomBullitList(blockElement.parentNode, bullitClass, true);
+						}
 
-							if (!list)
+						// mantis: 82028, 83178
+						if (list && BX.browser.IsChrome() && keyCode === _this.editor.KEY_CODES["enter"])
+						{
+							var i, li = list.getElementsByTagName('LI');
+
+							for (i = 0; i < li.length; i++)
 							{
-								unwrap(node);
+								//&65279; === \uFEFF - invisible space
+								li[i].innerHTML = li[i].innerHTML.replace(/\uFEFF/ig, '');
 							}
 						}
-					}, 0);
-				}
-				else if (blockElement.nodeName.match(/H[1-6]/) && keyCode === this.editor.KEY_CODES["enter"])
-				{
-					setTimeout(function()
-					{
-						unwrap(_this.editor.selection.GetSelectedNode());
-					}, 0);
-				}
 
-				return true;
+						if (!list)
+						{
+							unwrap(node);
+						}
+					}
+				}, 0);
+			}
+			else if (blockElement.nodeName.match(/H[1-6]/) && keyCode === this.editor.KEY_CODES["enter"])
+			{
+				setTimeout(function()
+				{
+					unwrap(_this.editor.selection.GetSelectedNode());
+				}, 0);
 			}
 
-			if (keyCode === this.editor.KEY_CODES["enter"] && !BX.browser.IsFirefox() && this.editor.action.IsSupported('insertLineBreak'))
-			{
-				if (BX.browser.IsIE10() || BX.browser.IsIE11())
-				{
-					this.editor.action.Exec('insertHTML', '<br>' + this.editor.INVISIBLE_SPACE);
-				}
-				else if(BX.browser.IsChrome())
-				{
-					this.editor.action.Exec('insertLineBreak');
+			return true;
+		}
 
-					// Bug in Chrome - when you press enter but it put carret on the prev string
-					// Chrome 43.0.2357 in Mac puts visible space instead of invisible
-					if (BX.browser.IsMac())
-					{
-						var tmpId = "bx-editor-temp-" + Math.round(Math.random() * 1000000);
-						this.editor.action.Exec('insertHTML', '<span id="' + tmpId + '">' + this.editor.INVISIBLE_SPACE + '</span>');
-						var tmpElement = this.editor.GetIframeElement(tmpId);
-						if (tmpElement)
-							BX.remove(tmpElement);
-					}
-					else
-					{
-						this.editor.action.Exec('insertHTML', this.editor.INVISIBLE_SPACE);
-					}
+		if (keyCode === this.editor.KEY_CODES["enter"] && !BX.browser.IsFirefox() && this.editor.action.IsSupported('insertLineBreak'))
+		{
+			if (BX.browser.IsIE10() || BX.browser.IsIE11())
+			{
+				this.editor.action.Exec('insertHTML', '<br>' + this.editor.INVISIBLE_SPACE);
+			}
+			else if(BX.browser.IsChrome())
+			{
+				this.editor.action.Exec('insertLineBreak');
+
+				// Bug in Chrome - when you press enter but it put carret on the prev string
+				// Chrome 43.0.2357 in Mac puts visible space instead of invisible
+				if (BX.browser.IsMac())
+				{
+					var tmpId = "bx-editor-temp-" + Math.round(Math.random() * 1000000);
+					this.editor.action.Exec('insertHTML', '<span id="' + tmpId + '">' + this.editor.INVISIBLE_SPACE + '</span>');
+					var tmpElement = this.editor.GetIframeElement(tmpId);
+					if (tmpElement)
+						BX.remove(tmpElement);
 				}
 				else
 				{
-					this.editor.action.Exec('insertLineBreak');
+					this.editor.action.Exec('insertHTML', this.editor.INVISIBLE_SPACE);
 				}
-				return BX.PreventDefault(e);
 			}
+			else
+			{
+				this.editor.action.Exec('insertLineBreak');
+			}
+			return BX.PreventDefault(e);
 		}
 
 		if ((BX.browser.IsChrome() || BX.browser.IsIE10() || BX.browser.IsIE11()) && keyCode == this.editor.KEY_CODES['backspace'] && range.collapsed)
@@ -1655,6 +1630,7 @@ var focusWithoutScrolling = function(element)
 		if (!this.editor.skipPasteHandler)
 		{
 			this.editor.skipPasteHandler = true;
+			this.editor.pasteNodeIndex = {};
 			var
 				originalScrollTop = document.documentElement.scrollTop || document.body.scrollTop,
 				originalScrollLeft = document.documentElement.scrollLeft || document.body.scrollLeft,
@@ -1666,16 +1642,10 @@ var focusWithoutScrolling = function(element)
 			{
 				if (n && n.setAttribute)
 				{
-					n.setAttribute('data-bx-paste-flag', 'Y');
+					var randValue = Math.round(Math.random() * 1000000);
+					_this.editor.pasteNodeIndex[randValue] = true;
+					n.setAttribute('data-bx-paste-flag', randValue);
 				}
-			}
-
-			function getElementParent(n)
-			{
-				return n.nodeType == 1 ? n : BX.findParent(n, function(node)
-				{
-					return node.nodeType == 1;
-				});
 			}
 
 			curNode = this.document.body;
@@ -1711,7 +1681,10 @@ var focusWithoutScrolling = function(element)
 				this.editor.synchro.StopSync();
 			}
 
-			setTimeout(function()
+			if (this.editor.iframeView.pasteHandlerTimeout)
+				clearTimeout(this.editor.iframeView.pasteHandlerTimeout);
+
+			this.pasteHandlerTimeout = setTimeout(function()
 			{
 				_this.editor.SetCursorNode();
 
@@ -1772,7 +1745,7 @@ var focusWithoutScrolling = function(element)
 		// Init Autolink system
 		var
 			ignorableParents = {"CODE" : 1, "PRE" : 1, "A" : 1, "SCRIPT" : 1, "HEAD" : 1, "TITLE" : 1, "STYLE" : 1},
-			urlRegExp = /(((?:https?|ftp):\/\/|www\.)[^\s<]{3,500})/gi,
+			urlRegExp = /(((?:https?|ftp):\/\/|www\.)[^\s'"<]{3,500})/gi,
 			emailRegExp = /[\.a-z0-9_\-]+@[\.a-z0-9_\-]+\.[\.a-z0-9_\-]+/gi,
 			MAX_LENGTH = 100,
 			BRACKETS = {
@@ -1847,22 +1820,23 @@ var focusWithoutScrolling = function(element)
 
 		function convertUrlToLink(str)
 		{
+			str = BX.util.htmlspecialchars(str);
 			return str.replace(urlRegExp, function(match, url)
 			{
 				var
-					punctuation = (url.match(/([^\w\u0430-\u0456\u0451\/\-](,?))$/i) || [])[1] || "",
+					punctuation = (url.match(/([^\w\u0430-\u0456\u0451\/\-#](,?))$/i) || [])[1] || "",
 					opening = BRACKETS[punctuation];
 
-				url = url.replace(/([^\w\u0430-\u0456\u0451\/\-](,?))$/i, "");
+				url = url.replace(/([^\w\u0430-\u0456\u0451\/\-#](,?))$/i, "");
+
 				if (url.split(opening).length > url.split(punctuation).length)
 				{
 					url = url + punctuation;
 					punctuation = "";
 				}
-
 				var
 					realUrl = url,
-					displayUrl = url;
+					displayUrl = BX.util.htmlspecialchars(url);
 
 				if (url.length > MAX_LENGTH)
 					displayUrl = displayUrl.substr(0, MAX_LENGTH) + "...";
@@ -1877,6 +1851,7 @@ var focusWithoutScrolling = function(element)
 
 		function convertEmailToLink(str)
 		{
+			str = BX.util.htmlspecialchars(str);
 			return str.replace(emailRegExp, function(email)
 			{
 				var
@@ -1909,7 +1884,8 @@ var focusWithoutScrolling = function(element)
 			if (element && !ignorableParents[element.nodeName])
 			{
 				// Replaces the content of the text node by link
-				if (element.nodeType === 3 && element.data.match(urlRegExp) && element.parentNode)
+				if (element.nodeType === 3 &&
+					element.data.match(urlRegExp) && element.parentNode)
 				{
 					parentNode = element.parentNode;
 					tmpDiv = getTmpDiv(parentNode.ownerDocument);
@@ -1921,7 +1897,8 @@ var focusWithoutScrolling = function(element)
 
 					parentNode.removeChild(element);
 				}
-				else if (element.nodeType === 3 && element.data.match(emailRegExp) && element.parentNode)
+				else if (element.nodeType === 3 &&
+					element.data.match(emailRegExp) && element.parentNode)
 				{
 					parentNode = element.parentNode;
 					tmpDiv = getTmpDiv(parentNode.ownerDocument);
@@ -2049,6 +2026,7 @@ var focusWithoutScrolling = function(element)
 			if (this.editor.bbCode)
 			{
 				value = this.iframeView.GetValue(this.editor.bbParseContentMode, false);
+
 				value = BX.util.trim(value);
 				if (value !== this.lastIframeValue)
 				{
@@ -2088,6 +2066,7 @@ var focusWithoutScrolling = function(element)
 		FromTextareaToIframe: function(bParseHtml)
 		{
 			var value = this.textareaView.GetValue();
+
 			if (value !== this.lastTextareaValue)
 			{
 				if (value)

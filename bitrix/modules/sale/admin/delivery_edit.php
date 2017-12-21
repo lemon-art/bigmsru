@@ -1,5 +1,10 @@
 <?
 
+/*
+ * Deprecated
+ * Use delivery_service_edit.php instead this.
+ */
+
 use Bitrix\Sale\Location;
 
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
@@ -196,7 +201,7 @@ if ($ID>0)
 	$db_delivery->ExtractFields("str_");
 	$oldLogo = (int)$str_LOGOTIP;
 	$arDeliveryDescription = CSaleDelivery::GetByID($ID);
-	$str_DESCRIPTION = $arDeliveryDescription["DESCRIPTION"];
+	$str_DESCRIPTION = htmlspecialcharsbx($arDeliveryDescription["DESCRIPTION"]);
 }
 else
 {

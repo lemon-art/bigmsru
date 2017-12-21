@@ -8,6 +8,74 @@ define('BX_SECURITY_SESSION_READONLY', true);
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?><?
 
+const IMAGE_MAX_WIDTH = 1000;
+const IMAGE_MIN_WIDTH = 10;
+const IMAGE_MAX_HEIGHT = 1000;
+const IMAGE_MIN_HEIGHT = 10;
+
+function getValidImageSizes()
+{
+	return array(
+		"WIDTH" => array(
+			"70" => 70,
+			"100" => 100,
+			"200" => 200,
+			"300" => 300,
+			"1000" => 1000,
+		),
+		"HEIGHT" => array(
+			"70" => 70,
+			"100" => 100,
+			"200" => 200,
+			"300" => 300,
+			"1000" => 1000,
+		),
+	);
+}
+
+function validImageSizes($width, $height, $fileArray)
+{
+	$result = array("WIDTH" => "", "HEIGHT" => "");
+	$validSizes = getValidImageSizes();
+	
+//	try find sizes in valid array. If fail - need match new scaled sizes
+	if(array_key_exists($width, $validSizes["WIDTH"]) && array_key_exists($height, $validSizes["HEIGHT"]))
+	{
+		$result["WIDTH"] = $width;
+		$result["HEIGHT"] = $height;
+	}
+//	if we use just rounded sizes - we get different image names, but equal scale sizes. Need match correct sizes
+	else
+	{
+//		to preserve overlimits
+		$width = max($width, IMAGE_MIN_WIDTH);
+		$height = max($height, IMAGE_MIN_HEIGHT);
+		
+		$arSourceSize = array();
+		$arDestinationSize = array();
+		$bNeedCreatePicture = false;
+		CFile::ScaleImage($fileArray["WIDTH"], $fileArray["HEIGHT"],
+			array("width" => $width, "height" => $height),
+			($_REQUEST["type"] == "square") ? BX_RESIZE_IMAGE_EXACT : BX_RESIZE_IMAGE_PROPORTIONAL,
+			$bNeedCreatePicture, $arSourceSize, $arDestinationSize
+		);
+		$result["WIDTH"] = roundTo10($arDestinationSize["width"]);
+		$result["HEIGHT"] = roundTo10($arDestinationSize["height"]);
+		
+//		to preserve overlimits
+		$result["WIDTH"] = min($result["WIDTH"], IMAGE_MAX_WIDTH);
+		$result["HEIGHT"] = min($result["HEIGHT"], IMAGE_MAX_HEIGHT);
+	}
+	
+	return $result;
+}
+
+function roundTo10($val)
+{
+	return ceil($val/10) * 10;
+}
+
+
 $MESS = array();
 $path = str_replace(array("\\", "//"), "/", dirname(__FILE__)."/lang/".LANGUAGE_ID."/show_file.php");
 include_once($path);
@@ -130,6 +198,11 @@ if (!empty($arError))
 
 if (strlen(CFile::CheckImageFile(CFile::MakeFileArray($arResult["FILE"]['ID']))) <= 0)
 {
+//	get only valid image sizes, to preserve ddos
+	$validSizes = validImageSizes($arParams['WIDTH'], $arParams['HEIGHT'], $arResult["FILE"]);
+	$arParams['WIDTH'] = $validSizes["WIDTH"];
+	$arParams['HEIGHT'] = $validSizes["HEIGHT"];
+	
 	if ($arResult["FILE"]["WIDTH"] > $arParams['WIDTH'] || $arResult["FILE"]["HEIGHT"] > $arParams['HEIGHT'])
 	{
 		$arFileTmp = CFile::ResizeImageGet(

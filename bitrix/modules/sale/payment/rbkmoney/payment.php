@@ -13,7 +13,7 @@ $ACTION_TYPE = CSalePaySystemAction::GetParamValue("PAYMENT_VALUE");
 ?>
 	<input type="hidden" name="eshopId" value="<?=CSalePaySystemAction::GetParamValue("ESHOP_ID")?>">
 	<input type="hidden" name="orderId" value="<?=CSalePaySystemAction::GetParamValue("ORDER_ID")?>">
-	<input type="hidden" name="serviceName" value="<?=CSalePaySystemAction::GetParamValue("SERVICE_NAME")?> <?=CSalePaySystemAction::GetParamValue("ORDER_ID")?>">
+	<input type="hidden" name="serviceName" value="<?=trim(CSalePaySystemAction::GetParamValue("SERVICE_NAME").' '.CSalePaySystemAction::GetParamValue("ORDER_ID"))?>">
 	<input type="hidden" name="recipientAmount" value="<?=number_format(CSalePaySystemAction::GetParamValue("SHOULD_PAY"), 2, '.', '')?>">
 	<input type="hidden" name="recipientCurrency" value="<?=$recipientCurrencyB?>">
 	<input type="hidden" name="userName" value="<?=CSalePaySystemAction::GetParamValue("F_NAME")?> <?=CSalePaySystemAction::GetParamValue("S_NAME")?>">

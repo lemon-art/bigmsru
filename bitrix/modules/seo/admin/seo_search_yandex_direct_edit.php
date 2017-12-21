@@ -48,19 +48,19 @@ $currentUser = $engine->getCurrentUser();
 $bNeedAuth = !is_array($currentUser);
 
 //get string of campaign CURRENCY name
-//todo: del debug - after update socialservices to 17.0.0 delete this statement
-$socservissesVersion = Main\ModuleManager::getVersion('socialservices');
-$socservissesVersion = explode('.',$socservissesVersion);
-$socservissesVersion = $socservissesVersion[0];
-if(!$bNeedAuth && $socservissesVersion >= 17)
+try
 {
 	$clientsSettings = $engine->getClientsSettings();
 	$clientCurrency = current($clientsSettings);
 	$clientCurrency = Loc::getMessage('SEO_YANDEX_CURRENCY__'.$clientCurrency['Currency']);
 }
-else
+catch(Engine\YandexDirectException $e)
 {
-	$clientCurrency = '';
+	$seoproxyAuthError = new CAdminMessage(array(
+		"TYPE" => "ERROR",
+		"MESSAGE" => Loc::getMessage('SEO_YANDEX_SEOPROXY_AUTH_ERROR'),
+		"DETAILS" => $e->getMessage(),
+	));
 }
 
 $bReadOnly = $bNeedAuth;
@@ -463,6 +463,9 @@ if(!defined('BX_PUBLIC_MODE') || !BX_PUBLIC_MODE)
 {
 	require_once("tab/seo_search_yandex_direct_auth.php");
 }
+
+if(isset($seoproxyAuthError))
+	echo $seoproxyAuthError->Show();
 
 $context = new CAdminContextMenu($aMenu);
 $context->Show();

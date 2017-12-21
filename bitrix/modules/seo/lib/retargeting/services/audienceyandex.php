@@ -99,9 +99,7 @@ class AudienceYandex extends Audience
 				'file' => array(
 					'filename' => 'data.tsv',
 					'contentType' => 'application/octet-stream',
-					'resource' => fopen(
-						'data://text/plain;base64,' . base64_encode($this->prepareContacts($contacts, $hashed, $type)), 'r'
-					)
+					'content' => $this->prepareContacts($contacts, $hashed, $type)
 				)
 			),
 		));

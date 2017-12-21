@@ -43,6 +43,13 @@ class CSaleOrderUserProps extends CAllSaleOrderUserProps
 
 		$arSqls["SELECT"] = str_replace("%%_DISTINCT_%%", "DISTINCT", $arSqls["SELECT"]);
 
+		$dateTimeFields = array("DATE_UPDATE", "FORMAT_DATE_UPDATE", "DATE_UPDATE_FORMAT");
+		foreach ($arOrder as $orderValue => $by)
+		{
+			if (in_array($orderValue, $dateTimeFields))
+				$arSqls["SELECT"] .= ", P.".$orderValue." ".$orderValue."_RAW";
+		}
+
 		if (is_array($arGroupBy) && count($arGroupBy)==0)
 		{
 			$strSql =

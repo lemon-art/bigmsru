@@ -38,7 +38,7 @@ if (!function_exists('MULChangeOnlineStatus'))
 			$arUserListOnlineHTML_ID = array();
 			while($arUser = $rsUser->Fetch())
 			{
-				if ((time() - intval(MakeTimeStamp($arUser["LAST_ACTIVITY_DATE"], "YYYY-MM-DD HH-MI-SS"))) < 120)
+				if ((time() - intval(MakeTimeStamp($arUser["LAST_ACTIVITY_DATE"], "YYYY-MM-DD HH-MI-SS"))) < CUser::GetSecondsForLimitOnline()) // TODO change to use CUser::GetOnlineStatus see more in docs.bx
 				{
 					foreach($arUserList as $arTmp)
 						if ($arUser["ID"] == $arTmp["USER_ID"])

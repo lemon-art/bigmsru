@@ -23,7 +23,7 @@ if ($GLOBALS["install_step"] == 2):
 		</tr>
 		<?
 		$sites = CSite::GetList($by, $order, Array("ACTIVE"=>"Y"));
-		while($site = $sites->Fetch())
+		while($site = $sites->GetNext())
 		{
 			?>
 			<tr>

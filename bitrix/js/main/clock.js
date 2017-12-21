@@ -292,13 +292,13 @@ Show: function(cont)
 AlignToPos: function(pos)
 {
 	var
-		h = JCClock.getOption("popupHeight", 170),
+		h = JCClock.getOption("popupHeight", 250),
 		x = pos.left,
 		y = pos.top - h,
 		scroll = BX.GetWindowScrollPos();
 
 	if (scroll.scrollTop > y || y < 0)
-		y = pos.top + 20;
+		y = pos.top + 40;
 
 	return {left: x, top: y};
 },

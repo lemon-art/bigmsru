@@ -91,7 +91,7 @@ while ($arTransact = $dbTransactList->NavNext(true, "f_"))
 	$fieldValue .= htmlspecialcharsEx($arTransact["USER_NAME"].((strlen($arTransact["USER_NAME"])<=0 || strlen($arTransact["USER_LAST_NAME"])<=0) ? "" : " ").$arTransact["USER_LAST_NAME"])."<br>";
 	$fieldValue .= htmlspecialcharsEx($arTransact["AFFILIATE_SITE_ID"])."&nbsp;&nbsp;&nbsp; ";
 	$fieldValue .= htmlspecialcharsEx($arTransact["USER_LOGIN"])."&nbsp;&nbsp;&nbsp; ";
-	$fieldValue .= "<a href=\"mailto:".htmlspecialcharsEx($arTransact["USER_EMAIL"])."\" title=\"".GetMessage("SAT2_MAIL")."\">".htmlspecialcharsEx($arTransact["USER_EMAIL"])."</a>";
+	$fieldValue .= "<a href=\"mailto:".htmlspecialcharsbx($arTransact["USER_EMAIL"])."\" title=\"".GetMessage("SAT2_MAIL")."\">".htmlspecialcharsEx($arTransact["USER_EMAIL"])."</a>";
 	$row->AddField("AFFILIATE_ID", $fieldValue);
 
 	$row->AddField("AMOUNT", (($arTransact["DEBIT"] == "Y") ? "+" : "-").SaleFormatCurrency($arTransact["AMOUNT"], $arTransact["CURRENCY"])."<br><small>".(($arTransact["DEBIT"] == "Y") ? GetMessage("SAT2_TO_ACCT") : GetMessage("SAT2_FROM_ACCT"))."</small>");
@@ -202,7 +202,7 @@ $oFilter->Begin();
 	<tr>
 		<td><?echo GetMessage("SAT2_USER1")?></td>
 		<td>
-			<input type="text" name="filter_user" size="50" value="<?= htmlspecialcharsEx($filter_user) ?>">&nbsp;<?=ShowFilterLogicHelp()?>
+			<input type="text" name="filter_user" size="50" value="<?= htmlspecialcharsbx($filter_user) ?>">&nbsp;<?=ShowFilterLogicHelp()?>
 		</td>
 	</tr>
 	<tr>

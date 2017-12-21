@@ -279,12 +279,12 @@ if($_REQUEST['action'] == 'sitemap_run' && check_bitrix_sessid())
 				{
 					$sitemapFile->delete();
 				}
-
-				$xmlFiles = array_merge($NS['XML_FILES'], $sitemapFile->getNameList());
+				
+				$xmlFiles = $sitemapFile->getNameList();
 				$directory = $sitemapFile->getPathDirectory();
 				foreach($xmlFiles as &$xmlFile)
 					$xmlFile = $directory.$xmlFile;
-				$NS['XML_FILES'] = array_merge($NS['XML_FILES'], $xmlFiles);
+				$NS['XML_FILES'] = array_unique(array_merge($NS['XML_FILES'], $xmlFiles));
 			}
 			else
 			{
@@ -460,6 +460,7 @@ if($_REQUEST['action'] == 'sitemap_run' && check_bitrix_sessid())
 								'SECTION_ID' => intval($NS['CURRENT_SECTION']),
 								'>ID' => intval($NS['LAST_ELEMENT_ID']),
 								'SITE_ID' => $arSitemap['SITE_ID'],
+								"ACTIVE_DATE" => "Y"
 							),
 							false,
 							array('nTopCount' => 1000),
@@ -656,11 +657,11 @@ if($_REQUEST['action'] == 'sitemap_run' && check_bitrix_sessid())
 							if(!is_array($NS['XML_FILES']))
 								$NS['XML_FILES'] = array();
 
-							$xmlFiles = array_merge($NS['XML_FILES'], $sitemapFile->getNameList());
+							$xmlFiles = $sitemapFile->getNameList();
 							$directory = $sitemapFile->getPathDirectory();
 							foreach($xmlFiles as &$xmlFile)
 								$xmlFile = $directory.$xmlFile;
-							$NS['XML_FILES'] = array_merge($NS['XML_FILES'], $xmlFiles);
+							$NS['XML_FILES'] = array_unique(array_merge($NS['XML_FILES'], $xmlFiles));
 						}
 						else
 						{
@@ -893,11 +894,11 @@ if($_REQUEST['action'] == 'sitemap_run' && check_bitrix_sessid())
 						if(!is_array($NS['XML_FILES']))
 							$NS['XML_FILES'] = array();
 
-						$xmlFiles = array_merge($NS['XML_FILES'], $sitemapFile->getNameList());
+						$xmlFiles = $sitemapFile->getNameList();
 						$directory = $sitemapFile->getPathDirectory();
 						foreach($xmlFiles as &$xmlFile)
 							$xmlFile = $directory.$xmlFile;
-						$NS['XML_FILES'] = array_merge($NS['XML_FILES'], $xmlFiles);
+						$NS['XML_FILES'] = array_unique(array_merge($NS['XML_FILES'], $xmlFiles));
 					}
 					else
 					{

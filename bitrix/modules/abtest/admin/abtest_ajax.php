@@ -7,7 +7,7 @@ Bitrix\Main\Loader::includeModule('abtest');
 
 $error = getMessage('ACCESS_DENIED');
 
-if ($USER->canDoOperation('edit_php'))
+if ($APPLICATION->getGroupRight('abtest') >= 'W')
 {
 	$error = false;
 

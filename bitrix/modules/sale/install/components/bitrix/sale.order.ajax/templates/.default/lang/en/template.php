@@ -29,6 +29,7 @@ $MESS["SOA_NUM_STEP"] = "doesn't match";
 $MESS["SOA_LESS"] = "at least";
 $MESS["SOA_MORE"] = "less than";
 $MESS["SOA_SYMBOLS"] = "symbols";
+$MESS["SOA_INVALID_PATTERN"] = "does not match the pattern";
 $MESS["SOA_PROP_NEW_PROFILE"] = "New profile";
 $MESS["SOA_PAY_SYSTEM"] = "Payment system";
 $MESS["SOA_PAY_ACCOUNT3"] = "You have sufficient credit to pay the order in full.";
@@ -115,18 +116,19 @@ $MESS["SELECT_PICKUP_DEFAULT"] = "Select";
 $MESS["INNER_PS_BALANCE_DEFAULT"] = "Your balance:";
 $MESS["ORDER_DESC_DEFAULT"] = "Order comments:";
 $MESS["SELECT_FILE_DEFAULT"] = "Select";
+$MESS["SUCCESS_PRELOAD_TEXT_DEFAULT"] = "You previously shopped with us and we remember you, so we have taken the liberty to fill in the fields for you.<br />
+If the information is correct, click \"#ORDER_BUTTON#\".
+";
+$MESS["FAIL_PRELOAD_TEXT_DEFAULT"] = "You previously shopped with us and we remember you, so we have taken the liberty to fill in the fields for you.<br />
+Check the order information thoroughly and edit your order if required. Once you see everything is good, click \"#ORDER_BUTTON#\".
+";
 $MESS["DELIVERY_CALC_ERROR_TITLE_DEFAULT"] = "Cannot calculate delivery price.";
 $MESS["DELIVERY_CALC_ERROR_TEXT_DEFAULT"] = "Continue checkout. Our sales representative will contact you with delivery details.";
 $MESS["EMPTY_BASKET_TITLE"] = "Your cart is empty";
 $MESS["EMPTY_BASKET_HINT"] = "#A1#Click here#A2# to continue shopping";
 $MESS["SOA_BAD_EXTENSION"] = "Invalid file type";
 $MESS["SOA_MAX_SIZE"] = "Max. file size exceeded";
-$MESS["SUCCESS_PRELOAD_TEXT_DEFAULT"] = "
-You previously shopped with us and we remember you, so we have taken the liberty to fill in the fields for you.<br />
-If the information is correct, click \"#ORDER_BUTTON#\".
-";
-$MESS["FAIL_PRELOAD_TEXT_DEFAULT"] = "
-You previously shopped with us and we remember you, so we have taken the liberty to fill in the fields for you.<br />
-Check the order information thoroughly and edit your order if required. Once you see everything is good, click \"#ORDER_BUTTON#\".
-";
+$MESS["PAY_SYSTEM_PAYABLE_ERROR_DEFAULT"] = "You'll be able to pay for the order after we verify that the items you have ordered are in stock. Once your order is fulfilled, you'll receive an email with payment instructions. You'll be able to complete the purchase inside your customer account.";
+$MESS["PRICE_FREE_DEFAULT"] = "free";
+$MESS["ECONOMY_DEFAULT"] = "Save";
 ?>

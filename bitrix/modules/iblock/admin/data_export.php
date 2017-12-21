@@ -1,4 +1,5 @@
 <?
+/** @global CMain $APPLICATION */
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
 CModule::IncludeModule("iblock");
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/iblock/prolog.php");
@@ -50,8 +51,13 @@ array(
 */
 function ArrayMultiply(&$arResult, $arTuple, $arTemp = array())
 {
+	global $csvFile, $DATA_FILE_NAME, $num_rows_writed;
 	if(count($arTuple) == 0)
-		$arResult[] = $arTemp;
+	{
+		//$arResult[] = $arTemp;
+		$csvFile->SaveFile($_SERVER["DOCUMENT_ROOT"].$DATA_FILE_NAME, $arTemp);
+		$num_rows_writed++;
+	}
 	else
 	{
 		$head = array_shift($arTuple);
@@ -363,12 +369,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && $STEP > 1 && check_bitrix_sessid())
 
 					ArrayMultiply($arResFields, $arTuple);
 				}
-
-				foreach($arResFields as $arTuple)
-				{
-					$csvFile->SaveFile($_SERVER["DOCUMENT_ROOT"].$DATA_FILE_NAME, $arTuple);
-					$num_rows_writed++;
-				}
 			}
 		}
 
@@ -380,13 +380,13 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && $STEP > 1 && check_bitrix_sessid())
 <div id="result">
 	<div style="text-align: center; margin: 20px;">
 <?echo GetMessage("IBLOCK_ADM_EXP_LINES_EXPORTED", array("#LINES#" => "<b>".intval($num_rows_writed)."</b>")) ?><br />
-<?echo GetMessage("IBLOCK_ADM_EXP_DOWNLOAD_RESULT", array("#HREF#" => "<a href=\"".htmlspecialcharsbx($DATA_FILE_NAME)."\">".htmlspecialcharsex($DATA_FILE_NAME)."</a>")) ?>
+<?echo GetMessage("IBLOCK_ADM_EXP_DOWNLOAD_RESULT", array("#HREF#" => "<a href=\"".htmlspecialcharsbx($DATA_FILE_NAME)."\">".htmlspecialcharsbx($DATA_FILE_NAME)."</a>")) ?>
 	</div>
 </div>
 
 <script type="text/javaScript">
 top.BX.closeWait();
-var w = top.BX.WindowManager.Get()
+var w = top.BX.WindowManager.Get();
 w.SetTitle('<?=CUtil::JSEscape(GetMessage("IBLOCK_ADM_EXP_PAGE_TITLE")." ".$STEP)?>');
 w.SetHead('');
 w.ClearButtons();
@@ -411,9 +411,7 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_aft
 /*********************************************************************/
 CAdminMessage::ShowMessage($strError);
 ?>
-
-<form method="POST" action="<?echo $sDocPath?>?lang=<?echo LANG ?>" ENCTYPE="multipart/form-data" name="dataload">
-
+<form method="POST" action="<?=$APPLICATION->GetCurPage();?>?lang=<?=LANGUAGE_ID; ?>" ENCTYPE="multipart/form-data" name="dataload">
 <input type="hidden" name="STEP" value="<?echo $STEP + 1;?>">
 <?=bitrix_sessid_post()?>
 <?
@@ -421,9 +419,6 @@ if ($STEP > 1)
 {
 	?><input type="hidden" name="IBLOCK_ID" value="<?echo $IBLOCK_ID ?>"><?
 }
-?>
-
-<?
 if (!$bPublicMode)
 	$aTabs = array(
 		array("DIV" => "edit1", "TAB" => GetMessage("IBLOCK_ADM_EXP_TAB1"), "ICON" => "iblock", "TITLE" => GetMessage("IBLOCK_ADM_EXP_TAB1_ALT")),
@@ -606,8 +601,19 @@ if ($STEP == 2)
 	</tr>
 	<tr>
 		<td><?echo GetMessage("IBLOCK_ADM_EXP_ENTER_FILE_NAME") ?>:</td>
-		<td>
-			<input type="text" name="DATA_FILE_NAME" size="40" value="<?echo htmlspecialcharsbx(strlen($DATA_FILE_NAME) > 0? $DATA_FILE_NAME: "/".COption::GetOptionString("main", "upload_dir", "upload")."/export_file_".mt_rand(0, 999999).".csv")?>"><br>
+		<td><?
+			if (strlen($DATA_FILE_NAME) > 0)
+			{
+				$exportFileName = $DATA_FILE_NAME;
+			}
+			else
+			{
+				$exportFileName = "/".COption::GetOptionString("main", "upload_dir", "upload")."/export_file_";
+				$exportFileName .= randString(16);
+				$exportFileName .= '.csv';
+			}
+			?>
+			<input type="text" name="DATA_FILE_NAME" size="40" value="<?=htmlspecialcharsbx($exportFileName); ?>"><br>
 			<small><?echo GetMessage("IBLOCK_ADM_EXP_FILE_WARNING") ?></small>
 		</td>
 	</tr>
@@ -683,9 +689,6 @@ BX.ready(function() {
 <?
 endif;
 ?>
-
 </form>
-
 <?
 require($DOCUMENT_ROOT."/bitrix/modules/main/include/epilog_admin.php");
-?>

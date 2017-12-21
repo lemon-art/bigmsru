@@ -272,11 +272,11 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_aft
 			<td><? echo GetMessage("CONTRACTOR_TYPE") ?>:</td>
 			<td>
 				<select name="filter_contractor_type">
-					<option value=""><? echo htmlspecialcharsex(GetMessage("CONTRACTOR_FIELD_EMPTY")) ?></option>
+					<option value=""><?=htmlspecialcharsbx(GetMessage("CONTRACTOR_FIELD_EMPTY")); ?></option>
 					<?
 					foreach ($typeList as $typeId => $typeTitle)
 					{
-						?><option value="<? echo $typeId; ?>"<?if($filter_contractor_type == $typeId) echo " selected"?>><? echo htmlspecialcharsex($typeTitle); ?></option><?
+						?><option value="<? echo $typeId; ?>"<?if($filter_contractor_type == $typeId) echo " selected"?>><?=htmlspecialcharsbx($typeTitle); ?></option><?
 					}
 					?>
 				</select>

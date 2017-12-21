@@ -835,14 +835,30 @@ class Vote extends BaseObject implements \ArrayAccess
 			foreach ($this->questions as $questionId => $question)
 			{
 				?><tr><th align="left" colspan="3"><?=(++$q)?>. <?=$question["QUESTION"]?></th></tr><?
+
 				foreach ($question["ANSWERS"] as $answer)
 				{
 					?><tr><td colspan="3"><?=$answer["MESSAGE"]?> (<?=$answer["COUNTER"]?>)</td></tr><?
-
+					$guests = 0;
 					foreach ($answer["STAT"] as $event)
 					{
-						$user = \CUser::formatName($nameTemplate, $event["USER"], true, false);
-						?><tr><td></td><td><?=$user?></td><td><?=$event["MESSAGE"]?></td></tr><?
+						if ($event["USER"]["ID"] > 0)
+						{
+							$user = \CUser::formatName($nameTemplate, $event["USER"], true, false);
+							?><tr><td></td><td><?=$user?></td><td><?=$event["MESSAGE"]?></td></tr><?
+						}
+						else if ($event["MESSAGE"] !== "")
+						{
+							?><tr><td></td><td><?=Loc::getMessage("VOTE_GUEST")?></td><td><?=$event["MESSAGE"]?></td></tr><?
+						}
+						else
+						{
+							$guests++;
+						}
+					}
+					if ($guests > 0)
+					{
+						?><tr><td></td><td><?=Loc::getMessage("VOTE_GUESTS")?>: <?=$guests?></td><td></td></tr><?
 					}
 				}
 			}?>
@@ -867,14 +883,14 @@ class Vote extends BaseObject implements \ArrayAccess
 	public function voteFor(array $request)
 	{
 		if ($this["LAMP"] == "red")
-			throw new AccessDeniedException();
+			throw new AccessDeniedException(Loc::getMessage("VOTE_IS_NOT_ACTIVE"));
 
 		$voteId = $this->getId();
 		$userId = $this->getUser()->getId();
 
 		$statusVote = $this->isVotedFor($userId);
 		if (!($statusVote === false || $statusVote == 8 && $this->getUser()->isAuthorized()))
-			throw new AccessDeniedException();
+			throw new AccessDeniedException(Loc::getMessage("VOTE_ALREADY_VOTED"));
 
 		$sqlAnswers = array();
 		$questions = $this->getQuestions();

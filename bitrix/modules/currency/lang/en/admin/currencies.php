@@ -26,4 +26,6 @@ $MESS["CURRENCY_SET_BASE"] = "Make base currency";
 $MESS["CURRENCY_SET_BASE_TITLE"] = "Use this currency as base currency";
 $MESS["CONFIRM_SET_BASE_MESSAGE"] = "Are you sure you want to set this currency as the base one?";
 $MESS["CONFIRM_DEL_MESSAGE"] = "Are you sure to delete this currency?";
+$MESS["currency_add_from_classifier"] = "Add from code registry";
+$MESS["currency_add_from_classifier_title"] = "Add currency from code registry";
 ?>

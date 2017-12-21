@@ -57,9 +57,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $query<>"" && $isAdmin && check_bitri
 		$arFieldName = Array();
 		while ($i<$intNumFields)
 		{
+			$fieldName = htmlspecialcharsbx($rsData->FieldName($i));
 			$header[] =
-				array("id"=>$rsData->FieldName($i), "content"=>$rsData->FieldName($i),	"sort"=>$rsData->FieldName($i), "default"=>true, "align"=>"left", "valign" => "top");
-			$arFieldName[] = $rsData->FieldName($i);
+				array("id"=>$fieldName, "content"=>$fieldName,	"sort"=>$fieldName, "default"=>true, "align"=>"left", "valign" => "top");
+			$arFieldName[] = $fieldName;
 			$i++;
 		}
 

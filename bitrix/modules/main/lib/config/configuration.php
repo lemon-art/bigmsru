@@ -334,7 +334,7 @@ final class Configuration
 			"value" => array(
 				"debug" => true,
 				"handled_errors_types" => E_ALL & ~E_NOTICE & ~E_STRICT & ~E_USER_NOTICE,
-				"exception_errors_types" => E_ALL & ~E_NOTICE & ~E_WARNING & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_WARNING & ~E_COMPILE_WARNING,
+				"exception_errors_types" => E_ALL & ~E_NOTICE & ~E_WARNING & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_WARNING & ~E_COMPILE_WARNING & ~E_DEPRECATED,
 				"ignore_silence" => false,
 				"assertion_throws_exception" => true,
 				"assertion_error_type" => E_USER_ERROR,
@@ -355,7 +355,7 @@ final class Configuration
 
 		$DBType = strtolower($DBType);
 		if ($DBType == 'mysql')
-			$dbClassName = "\\Bitrix\\Main\\DB\\MysqlConnection";
+			$dbClassName = defined('BX_USE_MYSQLI') && BX_USE_MYSQLI === true ? "\\Bitrix\\Main\\DB\\MysqliConnection" : "\\Bitrix\\Main\\DB\\MysqlConnection";
 		elseif ($DBType == 'mssql')
 			$dbClassName = "\\Bitrix\\Main\\DB\\MssqlConnection";
 		else

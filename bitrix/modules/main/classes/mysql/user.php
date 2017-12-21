@@ -97,7 +97,7 @@ class CUser extends CAllUser
 			$USER_FIELD_MANAGER->Update("USER", $ID, $arFields);
 
 			if(is_set($arFields, "GROUP_ID"))
-				CUser::SetUserGroup($ID, $arFields["GROUP_ID"]);
+				CUser::SetUserGroup($ID, $arFields["GROUP_ID"], true);
 
 			//update digest hash for http digest authorization
 			if(COption::GetOptionString('main', 'use_digest_auth', 'N') == 'Y')
@@ -120,6 +120,8 @@ class CUser extends CAllUser
 			$CACHE_MANAGER->ClearByTag("USER_NAME_".$ID);
 			$CACHE_MANAGER->ClearByTag("USER_NAME");
 		}
+		
+		\Bitrix\Main\UserTable::indexRecord($ID);
 
 		return $Result;
 	}
@@ -180,7 +182,7 @@ class CUser extends CAllUser
 		$obUserFieldsSql->SetFilter($arFilter);
 		$obUserFieldsSql->SetOrder($arOrder);
 
-		$arFields_m = array("ID", "ACTIVE", "LAST_LOGIN", "LOGIN", "EMAIL", "NAME", "LAST_NAME", "SECOND_NAME", "TIMESTAMP_X", "PERSONAL_BIRTHDAY", "IS_ONLINE");
+		$arFields_m = array("ID", "ACTIVE", "LAST_LOGIN", "LOGIN", "EMAIL", "NAME", "LAST_NAME", "SECOND_NAME", "TIMESTAMP_X", "PERSONAL_BIRTHDAY", "IS_ONLINE", "IS_REAL_USER");
 		$arFields = array(
 			"DATE_REGISTER", "PERSONAL_PROFESSION", "PERSONAL_WWW", "PERSONAL_ICQ", "PERSONAL_GENDER", "PERSONAL_PHOTO", "PERSONAL_PHONE", "PERSONAL_FAX",
 			"PERSONAL_MOBILE", "PERSONAL_PAGER", "PERSONAL_STREET", "PERSONAL_MAILBOX", "PERSONAL_CITY", "PERSONAL_STATE", "PERSONAL_ZIP", "PERSONAL_COUNTRY", "PERSONAL_NOTES",
@@ -191,7 +193,7 @@ class CUser extends CAllUser
 		$arFields_all = array_merge($arFields_m, $arFields);
 
 		$arSelectFields = array();
-		$online_interval = (array_key_exists("ONLINE_INTERVAL", $arParams) && intval($arParams["ONLINE_INTERVAL"]) > 0 ? $arParams["ONLINE_INTERVAL"] : 120);
+		$online_interval = (array_key_exists("ONLINE_INTERVAL", $arParams) && intval($arParams["ONLINE_INTERVAL"]) > 0 ? $arParams["ONLINE_INTERVAL"] : CUser::GetSecondsForLimitOnline());
 		if (isset($arParams['FIELDS']) && is_array($arParams['FIELDS']) && count($arParams['FIELDS']) > 0 && !in_array("*", $arParams['FIELDS']))
 		{
 			foreach ($arParams['FIELDS'] as $field)
@@ -203,6 +205,8 @@ class CUser extends CAllUser
 					$arSelectFields[$field] = $DB->DateToCharFunction("U.PERSONAL_BIRTHDAY", "SHORT")." PERSONAL_BIRTHDAY, U.PERSONAL_BIRTHDAY PERSONAL_BIRTHDAY_DATE";
 				elseif ($field == 'IS_ONLINE')
 					$arSelectFields[$field] = "IF(U.LAST_ACTIVITY_DATE > DATE_SUB(NOW(), INTERVAL ".$online_interval." SECOND), 'Y', 'N') IS_ONLINE";
+				elseif ($field == 'IS_REAL_USER')
+					$arSelectFields[$field] = "IF(U.EXTERNAL_AUTH_ID IN ('".join("', '", CUser::GetExternalUserTypes())."'), 'N', 'Y') IS_REAL_USER";
 				elseif (in_array($field, $arFields_all))
 					$arSelectFields[$field] = 'U.'.$field;
 			}
@@ -241,6 +245,7 @@ class CUser extends CAllUser
 					&& $key != "!LAST_LOGIN"
 					&& $key != "EXTERNAL_AUTH_ID"
 					&& $key != "!EXTERNAL_AUTH_ID"
+					&& $key != "IS_REAL_USER"
 				)
 				{
 					if(strlen($val) <= 0 || $val === "NOT_REF")
@@ -437,6 +442,16 @@ class CUser extends CAllUser
 				case "INTRANET_USERS":
 					$arSqlSearch[] = "U.ACTIVE = 'Y' AND U.LAST_LOGIN IS NOT NULL AND EXISTS(SELECT 'x' FROM b_utm_user UF1, b_user_field F1 WHERE F1.ENTITY_ID = 'USER' AND F1.FIELD_NAME = 'UF_DEPARTMENT' AND UF1.FIELD_ID = F1.ID AND UF1.VALUE_ID = U.ID AND UF1.VALUE_INT IS NOT NULL AND UF1.VALUE_INT <> 0)";
 					break;
+				case "IS_REAL_USER":
+					if($val === true || $val === 'Y')
+					{
+						$arSqlSearch[] = "U.EXTERNAL_AUTH_ID NOT IN ('".join("', '", CUser::GetExternalUserTypes())."') OR U.EXTERNAL_AUTH_ID IS NULL";
+					}
+					else
+					{
+						$arSqlSearch[] = "U.EXTERNAL_AUTH_ID IN ('".join("', '", CUser::GetExternalUserTypes())."')";
+					}
+					break;
 				default:
 					if(in_array($key, $arFields))
 						$arSqlSearch[] = GetFilterQuery('U.'.$key, $val, ($arFilter[$key."_EXACT_MATCH"]=="Y" && $match_value_set? "N" : "Y"));
@@ -492,6 +507,18 @@ class CUser extends CAllUser
 					if ($bSingleBy)
 						$by = strtolower($field);
 				}
+			}
+			elseif ($field == 'FULL_NAME')
+			{
+				$arSqlOrder[$field] = sprintf(
+					"IF(U.LAST_NAME IS NULL OR U.LAST_NAME = '', 1, 0) %1\$s,
+					IF(U.LAST_NAME IS NULL OR U.LAST_NAME = '', 1, U.LAST_NAME) %1\$s,
+					IF(U.NAME IS NULL OR U.NAME = '', 1, 0) %1\$s,
+					IF(U.NAME IS NULL OR U.NAME = '', 1, U.NAME) %1\$s,
+					IF(U.SECOND_NAME IS NULL OR U.SECOND_NAME = '', 1, 0) %1\$s,
+					IF(U.SECOND_NAME IS NULL OR U.SECOND_NAME = '', 1, U.SECOND_NAME) %1\$s,
+					U.LOGIN %1\$s", $dir
+				);
 			}
 			else
 			{
@@ -582,23 +609,31 @@ class CUser extends CAllUser
 		return $res;
 	}
 
-	public static function IsOnLine($id, $interval = 120)
+	public static function IsOnLine($id, $interval = null)
 	{
 		global $DB;
 
 		$id = intval($id);
 		if ($id <= 0)
+		{
 			return false;
+		}
 
-		$interval = intval($interval);
-		if ($interval <= 0)
-			$interval = 120;
+		if (is_null($interval))
+		{
+			$interval = CUser::GetSecondsForLimitOnline();
+		}
+		else
+		{
+			$interval = intval($interval);
+			if ($interval <= 0)
+			{
+				$interval = CUser::GetSecondsForLimitOnline();
+			}
+		}
 
 		$dbRes = $DB->Query("SELECT 'x' FROM b_user WHERE ID = ".$id." AND LAST_ACTIVITY_DATE > DATE_SUB(NOW(), INTERVAL ".$interval." SECOND)");
-		if ($arRes = $dbRes->Fetch())
-			return true;
-		else
-			return false;
+		return $arRes = $dbRes->Fetch()? true: false;
 	}
 }
 

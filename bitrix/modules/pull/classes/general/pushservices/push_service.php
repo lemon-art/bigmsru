@@ -43,9 +43,10 @@ abstract class CPushService
 					$id = rand(1, 10000);
 					$message->setCustomIdentifier($id);
 					$text = \Bitrix\Main\Text\Encoding::convertEncoding($messageArray["MESSAGE"], SITE_CHARSET, "utf-8");
+					$title = \Bitrix\Main\Text\Encoding::convertEncoding($messageArray["TITLE"], SITE_CHARSET, "utf-8");
 					$message->setSound('');
 					$message->setText($text);
-					$message->setTitle($messageArray["TITLE"]);
+					$message->setTitle($title);
 					if (strlen($text) > 0)
 					{
 						$message->setSound(

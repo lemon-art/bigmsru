@@ -254,7 +254,7 @@ var WIN_ID = document.getElementById('<?echo $win_id?>');
 				$arSectionList[] = $opened_section;
 
 ?>
-WIN_ID.__object.LoadSection('<?echo $opened_section?>', true);
+WIN_ID.__object.LoadSection('<?echo intval($opened_section)?>', true);
 <?
 				$opened_section = $arSections[$opened_section]['IBLOCK_SECTION_ID'];
 			}

@@ -8,4 +8,8 @@ $MESS["CP_SBB_TPL_THEME_WOOD"] = "Holz";
 $MESS["CP_SBB_TPL_THEME_YELLOW"] = "Gelb";
 $MESS["CP_SBB_TPL_THEME_BLACK"] = "dunkel";
 $MESS["CP_SBB_TPL_TEMPLATE_THEME"] = "Farbschema";
+$MESS["CP_SBB_TPL_USE_ENHANCED_ECOMMERCE"] = "E-commerce Daten an Google senden";
+$MESS["USE_ENHANCED_ECOMMERCE_TIP"] = "Die Optionen von Google Analytics Enhanced Ecommerce müssen dafür konfiguriert werden";
+$MESS["CP_SBB_TPL_DATA_LAYER_NAME"] = "Name des Datencontainers";
+$MESS["CP_SBB_TPL_BRAND_PROPERTY"] = "Eigenschaft der Handelsmarken";
 ?>

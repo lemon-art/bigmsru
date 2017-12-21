@@ -139,4 +139,5 @@ $MESS["P_UPLOAD_MAX_FILE_SIZE"] = "Maximum file size, MB (must not exceed #UPLOA
 $MESS["P_UPLOADER_TYPE_FORM_SIMPLE"] = "HTML5 uploader";
 $MESS["P_UPLOADER_TYPE_APPLET"] = "HTML5 or Java/ActiveX uploader";
 $MESS["P_UPLOADER_TYPE_FLASH"] = "HTML5 or Flash uploader";
+$MESS["P_SECTION_LIST_THUMBS_SIZE"] = "Preview image size in Albums list (px)";
 ?>

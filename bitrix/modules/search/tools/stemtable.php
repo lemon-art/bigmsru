@@ -69,7 +69,7 @@ class CSearchStemTable extends CSearchFullText
 		}
 	}
 
-	function DelayStemIndex($ID)
+	public static function DelayStemIndex($ID)
 	{
 		$DB = CDatabase::GetModuleConnection('search');
 		$ID = intval($ID);
@@ -112,7 +112,7 @@ class CSearchStemTable extends CSearchFullText
 		}
 	}
 
-	function DelayedStemIndex()
+	public static function DelayedStemIndex()
 	{
 		$DB = CDatabase::GetModuleConnection('search');
 		$etime = time() + intval(COption::GetOptionString("search", "agent_duration"));

@@ -76,12 +76,11 @@ body {font-size: 10pt;}
 		</table>
 		<table border="0" cellspacing="0" cellpadding="0" style="width:122mm; margin-top:3pt;">
 			<tr>
-				<td style="width:60mm; border-bottom:1pt solid #000000;"><?=Loc::getMessage('SALE_HANDLERS_PAY_SYSTEM_SBERBANK_ORDER_ID')?>
-	<?=$params["PAYMENT_ID"]?>
+				<td style="width:60mm; border-bottom:1pt solid #000000;"><?=Loc::getMessage('SALE_HANDLERS_PAY_SYSTEM_SBERBANK_ORDER_ID', array('#PAYMENT_ID#' => $params["PAYMENT_ID"], '#ORDER_ID#' => $params["PAYMENT_ORDER_ID"]))?>
 	<?=Loc::getMessage('SALE_HANDLERS_PAY_SYSTEM_SBERBANK_ORDER_FROM')?>
 	<?=$params["PAYMENT_DATE_INSERT"]?></td>
 				<td style="width:2mm;">&nbsp;</td>
-				<td style="border-bottom:1pt solid #000000;">&nbsp;</td>
+				<td style="border-bottom:1pt solid #000000;"><?=$params['BUYER_PERSON_BANK_ACCOUNT'];?></td>
 			</tr>
 			<tr>
 				<td align="center"><small><?=Loc::getMessage('SALE_HANDLERS_PAY_SYSTEM_SBERBANK_PAYMENT_NAME')?></small></td>
@@ -221,12 +220,11 @@ body {font-size: 10pt;}
 		</table>
 		<table border="0" cellspacing="0" cellpadding="0" style="width:122mm; margin-top:3pt;">
 			<tr>
-				<td style="width:60mm; border-bottom:1pt solid #000000;"><?=Loc::getMessage('SALE_HANDLERS_PAY_SYSTEM_SBERBANK_ORDER_ID')?>
-	<?=$params["PAYMENT_ID"]?>
+				<td style="width:60mm; border-bottom:1pt solid #000000;"><?=Loc::getMessage('SALE_HANDLERS_PAY_SYSTEM_SBERBANK_ORDER_ID', array('#PAYMENT_ID#' => $params["PAYMENT_ID"], '#ORDER_ID#' => $params["PAYMENT_ORDER_ID"]))?>
 	<?=Loc::getMessage('SALE_HANDLERS_PAY_SYSTEM_SBERBANK_ORDER_FROM')?>
 	<?=$params["PAYMENT_DATE_INSERT"]?></td>
 				<td style="width:2mm;">&nbsp;</td>
-				<td style="border-bottom:1pt solid #000000;">&nbsp;</td>
+				<td style="border-bottom:1pt solid #000000;"><?=$params['BUYER_PERSON_BANK_ACCOUNT'];?></td>
 			</tr>
 			<tr>
 				<td align="center"><small><?=Loc::getMessage('SALE_HANDLERS_PAY_SYSTEM_SBERBANK_PAYMENT_NAME')?></small></td>

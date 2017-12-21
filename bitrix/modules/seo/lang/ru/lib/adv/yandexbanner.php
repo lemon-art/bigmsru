@@ -8,6 +8,7 @@ $MESS["SEO_BANNER_ERROR_NO_TEXT"] = "Не указан текст объявле
 $MESS["SEO_BANNER_ERROR_LONG_NAME"] = "Длина заголовка объявления не должна превышать #MAX# символа";
 $MESS["SEO_BANNER_ERROR_LONG_TEXT"] = "Длина текста объявления не должна превышать #MAX# символов";
 $MESS["SEO_BANNER_ERROR_NO_HREF"] = "Не указана ссылка объявления";
+$MESS["SEO_BANNER_ERROR_NO_GEO"] = "Не выбран ни один регион географического таргетинга";
 $MESS["SEO_BANNER_ERROR_NO_PHRASES"] = "Не указаны ключевые фразы объявления";
 $MESS["SEO_CAMPAIGN_ERROR_BANNER_NOT_FOUND"] = "Объявление №#ID# не найдено в Яндекс.Директ!";
 $MESS["SEO_BANNER_ERROR_CAMPAIGN_NOT_FOUND"] = "Рекламная кампания не найдена";

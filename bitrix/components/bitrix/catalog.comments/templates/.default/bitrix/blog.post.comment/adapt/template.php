@@ -1,7 +1,13 @@
 <?if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 /** @global CMain $APPLICATION */
-CJSCore::Init(array("image"));?>
-<script>
+/** @global array $arParams */
+/** @global array $arResult */
+CJSCore::Init(array("image"));
+
+$iblockId = (isset($_REQUEST['IBLOCK_ID']) && is_string($_REQUEST['IBLOCK_ID']) ? (int)$_REQUEST['IBLOCK_ID'] : 0);
+$elementId = (isset($_REQUEST['ELEMENT_ID']) && is_string($_REQUEST['ELEMENT_ID']) ? (int)$_REQUEST['ELEMENT_ID'] : 0);
+
+?><script>
 BX.ready( function(){
 	if(BX.viewImageBind)
 	{
@@ -11,13 +17,18 @@ BX.ready( function(){
 			{tag:'IMG', attr: 'data-bx-image'}
 		);
 	}
+
+	BX.message({'BPC_ERROR_NO_TEXT':'<?=GetMessage("BPC_ERROR_NO_TEXT")?>'});
 });
 </script>
 <div class="blog-comments" id="blg-comment-<?=$arParams["ID"]?>">
 <a name="comments"></a>
 <?
 if($arResult["is_ajax_post"] != "Y")
+{
 	include($_SERVER["DOCUMENT_ROOT"].$templateFolder."/script.php");
+	include($_SERVER["DOCUMENT_ROOT"].$templateFolder."/scripts_for_editor.php");
+}
 else
 {
 	$APPLICATION->RestartBuffer();
@@ -26,7 +37,7 @@ else
 		{
 			?>
 				var cc;
-				if(document.cookie.indexOf('<?echo session_name()?>'+'=') == -1)
+				if(document.cookie.indexOf('<?echo session_name()?>'+'=') === -1)
 					cc = Math.random();
 				else
 					cc ='<?=$arResult["CaptchaCode"]?>';
@@ -42,12 +53,15 @@ else
 	if(!top.arImagesId)
 		top.arImagesId = [];
 	<?
-	foreach($arResult["Images"] as $aImg)
+	if(!empty($arResult["Images"]))
 	{
-		?>
-		top.arImages.push('<?=CUtil::JSEscape($aImg["SRC"])?>');
-		top.arImagesId.push('<?=$aImg["ID"]?>');
-		<?
+		foreach($arResult["Images"] as $aImg)
+		{
+			?>
+			top.arImages.push('<?=CUtil::JSEscape($aImg["SRC"])?>');
+			top.arImagesId.push('<?=$aImg["ID"]?>');
+			<?
+		}
 	}
 	?>
 	</script><?
@@ -126,20 +140,14 @@ else
 			<div id="form_comment_" style="display:none;">
 				<div id="form_c_del" style="display:none;">
 				<div class="blog-comment-form">
-				<form method="POST" name="form_comment" id="form_comment" action="<?=$ajaxPath; ?>">
+				<form method="POST" name="form_comment" id="<?=$component->createPostFormId()?>" action="<?=$ajaxPath; ?>">
 				<input type="hidden" name="parentId" id="parentId" value="">
 				<input type="hidden" name="edit_id" id="edit_id" value="">
 				<input type="hidden" name="act" id="act" value="add">
 				<input type="hidden" name="post" value="Y">
+				<input type="hidden" name="IBLOCK_ID" value="<?=$iblockId; ?>">
+				<input type="hidden" name="ELEMENT_ID" value="<?=$elementId; ?>">
 				<?
-				if(isset($_REQUEST["IBLOCK_ID"]))
-				{
-					?><input type="hidden" name="IBLOCK_ID" value="<?=(int)$_REQUEST["IBLOCK_ID"]; ?>"><?
-				}
-				if(isset($_REQUEST["ELEMENT_ID"]))
-				{
-					?><input type="hidden" name="ELEMENT_ID" value="<?=(int)$_REQUEST["ELEMENT_ID"]; ?>"><?
-				}
 				if(isset($_REQUEST["SITE_ID"]))
 				{
 					?><input type="hidden" name="SITE_ID" value="<?=htmlspecialcharsbx($_REQUEST["SITE_ID"]); ?>"><?
@@ -174,8 +182,8 @@ else
 						<?
 					}
 
-					include($_SERVER["DOCUMENT_ROOT"].$templateFolder."/lhe.php");
-
+					include($_SERVER["DOCUMENT_ROOT"].$templateFolder."/neweditor.php");
+					
 					if($arResult["COMMENT_PROPERTIES"]["SHOW"] == "Y")
 					{
 						?><br /><?
@@ -214,14 +222,42 @@ else
 								<input type="hidden" name="captcha_code" id="captcha_code" value="<?=$arResult["CaptchaCode"]?>">
 								<input type="text" size="30" name="captcha_word" id="captcha_word" value=""  tabindex="7">
 								</div>
-							<div class="blog-comment-field-captcha-image"><div id="div_captcha"></div></div>
+							<div class="blog-comment-field-captcha-image">
+								<div id="div_captcha">
+									<img src="" width="180" height="40" id="captcha" style="display:none;">
+								</div>
+							</div>
 						</div>
 						<?
 					}
 					?>
+					
+					<?php
+//					only for not registered users
+					if($arResult['userID'] == null && $arParams['USER_CONSENT'] == 'Y')
+					{
+						$APPLICATION->IncludeComponent(
+							"bitrix:main.userconsent.request",
+							"",
+							array(
+								"ID" => $arParams["USER_CONSENT_ID"],
+								"IS_CHECKED" => $arParams["USER_CONSENT_IS_CHECKED"],
+								"AUTO_SAVE" => "Y",
+								"IS_LOADED" => $arParams["USER_CONSENT_IS_LOADED"],
+								"ORIGIN_ID" => "sender/sub",
+								"ORIGINATOR_ID" => "",
+								"REPLACE" => array(
+									'button_caption' => GetMessage("B_B_MS_SEND"),
+									'fields' => array(GetMessage("B_B_MS_NAME"), 'E-mail')
+								),
+								"SUBMIT_EVENT_NAME" => "OnUCFormCheckConsent",
+							)
+						);
+					}
+					?>
 
 					<div class="blog-comment-buttons">
-						<input tabindex="10" value="<?=GetMessage("B_B_MS_SEND")?>" type="button" name="sub-post" id="post-button" onclick="submitComment()">
+						<input tabindex="10" value="<?=GetMessage("B_B_MS_SEND")?>" type="button" name="sub-post" id="post-button" onclick="submitCommentNew()">
 					</div>
 				</div>
 				<input type="hidden" name="blog_upload_cid" id="upload-cid" value="">
@@ -230,22 +266,14 @@ else
 			</div>
 			</div>
 			<?
-			if($arResult["use_captcha"]===true)
-			{
-				?>
-				<div id="captcha_del">
-					<img src="/bitrix/tools/captcha.php?captcha_code=<?=$arResult["CaptchaCode"]?>" width="180" height="40" id="captcha" style="display:none;">
-					<script>
-						document.getElementById('captcha_code').value = '<?=$arResult["CaptchaCode"]?>';
-					</script>
-				</div>
-				<?
-			}
 		}
 
 		$prevTab = 0;
 		function ShowComment($comment, $tabCount=0, $tabSize=2.5, $canModerate=false, $User=Array(), $use_captcha=false, $bCanUserComment=false, $errorComment=false, $arParams = array())
 		{
+			$iblockId = (isset($_REQUEST['IBLOCK_ID']) && is_string($_REQUEST['IBLOCK_ID']) ? (int)$_REQUEST['IBLOCK_ID'] : 0);
+			$elementId = (isset($_REQUEST['ELEMENT_ID']) && is_string($_REQUEST['ELEMENT_ID']) ? (int)$_REQUEST['ELEMENT_ID'] : 0);
+
 			$comment["urlToAuthor"] = "";
 			$comment["urlToBlog"] = "";
 
@@ -494,7 +522,7 @@ else
 						if($bCanUserComment===true)
 						{
 							?>
-							<span class="blog-comment-answer"><a href="javascript:void(0)" onclick="return showComment('<?=$comment["ID"]?>')"><?=GetMessage("B_B_MS_REPLY")?></a></span>
+							<span class="blog-comment-answer"><a href="javascript:void(0)" onclick="return replyCommentNew('<?=$comment["ID"]?>', '<?=$comment["POST_ID"]?>')"><?=GetMessage("B_B_MS_REPLY")?></a></span>
 							<span class="blog-vert-separator"></span>
 							<?
 						}
@@ -506,9 +534,7 @@ else
 							<span class="blog-vert-separator"></span>
 							<?
 						}
-						?>
-						<span class="blog-comment-link"><a href="#<?=$comment["ID"]?>"><?=GetMessage("B_B_MS_LINK")?></a></span>
-						<?
+
 						if($comment["CAN_EDIT"] == "Y")
 						{
 							?>
@@ -517,7 +543,7 @@ else
 								top.title<?=$comment["ID"]?> = title<?=$comment["ID"]?> = '<?=CUtil::JSEscape($comment["TITLE"])?>';
 							</script>
 							<span class="blog-vert-separator"></span>
-							<span class="blog-comment-edit"><a href="javascript:void(0)" onclick="return editComment('<?=$comment["ID"]?>')"><?=GetMessage("BPC_MES_EDIT")?></a></span>
+							<span class="blog-comment-edit"><a href="javascript:void(0)" onclick="return editCommentNew('<?=$comment["ID"]?>', <?=$comment["POST_ID"]?>)"><?=GetMessage("BPC_MES_EDIT")?></a></span>
 							<?
 						}
 						if(strlen($comment["urlToShow"])>0)
@@ -539,9 +565,9 @@ else
 							<span class="blog-vert-separator"></span>
 							<span class="blog-comment-show">
 								<?if($arParams["AJAX_POST"] == "Y"):?>
-									<a href="javascript:void(0)" onclick="return hideShowComment('<?=$comment["urlToHide"]."&".bitrix_sessid_get()?>&IBLOCK_ID=<?=$_REQUEST["IBLOCK_ID"]?>&ELEMENT_ID=<?=$_REQUEST["ELEMENT_ID"]?>', '<?=$comment["ID"]?>');" title="<?=GetMessage("BPC_MES_HIDE")?>">
+									<a href="javascript:void(0)" onclick="return hideShowComment('<?=$comment["urlToHide"]."&".bitrix_sessid_get()?>&IBLOCK_ID=<?=$iblockId; ?>&ELEMENT_ID=<?=$elementId; ?>', '<?=$comment["ID"]?>');" title="<?=GetMessage("BPC_MES_HIDE")?>">
 								<?else:?>
-									<a href="<?=$comment["urlToHide"]."&".bitrix_sessid_get()?>&IBLOCK_ID=<?=$_REQUEST["IBLOCK_ID"]?>&ELEMENT_ID=<?=$_REQUEST["ELEMENT_ID"]?>" title="<?=GetMessage("BPC_MES_HIDE")?>">
+									<a href="<?=$comment["urlToHide"]."&".bitrix_sessid_get()?>&IBLOCK_ID=<?=$iblockId; ?>&ELEMENT_ID=<?=$elementId; ?>" title="<?=GetMessage("BPC_MES_HIDE")?>">
 								<?endif;?>
 								<?=GetMessage("BPC_MES_HIDE")?></a></span>
 							<?
@@ -552,9 +578,9 @@ else
 							<span class="blog-vert-separator"></span>
 							<span class="blog-comment-delete">
 								<?if($arParams["AJAX_POST"] == "Y"):?>
-									<a href="javascript:void(0)" onclick="if(confirm('<?=GetMessage("BPC_MES_DELETE_POST_CONFIRM")?>')) deleteComment('<?=$comment["urlToDelete"]."&".bitrix_sessid_get()?>&IBLOCK_ID=<?=$_REQUEST["IBLOCK_ID"]?>&ELEMENT_ID=<?=$_REQUEST["ELEMENT_ID"]?>', '<?=$comment["ID"]?>');" title="<?=GetMessage("BPC_MES_DELETE")?>">
+									<a href="javascript:void(0)" onclick="if(confirm('<?=GetMessage("BPC_MES_DELETE_POST_CONFIRM")?>')) deleteComment('<?=$comment["urlToDelete"]."&".bitrix_sessid_get()?>&IBLOCK_ID=<?=$iblockId; ?>&ELEMENT_ID=<?=$elementId; ?>', '<?=$comment["ID"]?>');" title="<?=GetMessage("BPC_MES_DELETE")?>">
 								<?else:?>
-									<a href="javascript:if(confirm('<?=GetMessage("BPC_MES_DELETE_POST_CONFIRM")?>')) window.location='<?=$comment["urlToDelete"]."&".bitrix_sessid_get()?>&IBLOCK_ID=<?=$_REQUEST["IBLOCK_ID"]?>&ELEMENT_ID=<?=$_REQUEST["ELEMENT_ID"]?>'" title="<?=GetMessage("BPC_MES_DELETE")?>">
+									<a href="javascript:if(confirm('<?=GetMessage("BPC_MES_DELETE_POST_CONFIRM")?>')) window.location='<?=$comment["urlToDelete"]."&".bitrix_sessid_get()?>&IBLOCK_ID=<?=$iblockId; ?>&ELEMENT_ID=<?=$elementId; ?>'" title="<?=GetMessage("BPC_MES_DELETE")?>">
 								<?endif;?>
 								<?=GetMessage("BPC_MES_DELETE")?></a></span>
 							<?
@@ -607,9 +633,9 @@ else
 						$level = 0;
 						$commentPreview = Array(
 								"ID" => "preview",
-								"TitleFormated" => htmlspecialcharsEx($_POST["subject"]),
-								"TextFormated" => $_POST["commentFormated"],
-								"AuthorName" => $User["NAME"],
+								"TitleFormated" => htmlspecialcharsbx($_POST["subject"]),
+								"TextFormated" => htmlspecialcharsbx($_POST["commentFormated"]),
+								"AuthorName" => htmlspecialcharsbx($User["NAME"]),
 								"DATE_CREATE" => GetMessage("B_B_MS_PREVIEW_TITLE"),
 							);
 						ShowComment($commentPreview, (IntVal($_POST["edit_id"]) == $comment["ID"] && $comment["CAN_EDIT"] == "Y") ? $level : ($level+1), 2.5, false, Array(), false, false, false, $arParams);
@@ -632,6 +658,9 @@ else
 					<div id="form_comment_<?=$comment['ID']?>"></div>
 					<div id="new_comment_cont_<?=$comment['ID']?>" style="padding-left:<?=$paddingSizeNew?>em;"></div>
 					<div id="new_comment_<?=$comment['ID']?>" style="display:none;"></div>
+					<!-- placeholder for past editor -->
+					<div id="record-<?=$arParams["ENTITY_XML_ID"]?>-<?=$comment["ID"]?>-placeholder" class="blog-comment-edit feed-com-add-block blog-post-edit" style="display:none;"></div>
+
 
 					<?
 					if((strlen($errorComment) > 0 || strlen($_POST["preview"]) > 0)
@@ -645,10 +674,11 @@ else
 						<?
 						if(IntVal($_POST["edit_id"]) == $comment["ID"])
 						{
-							?>editComment('<?=$comment["ID"]?>');<?
+							?>editCommentNew('<?=$comment["ID"]?>');<?
 						}
 						else
 						{
+//							dbg showComment?
 							?>showComment('<?=$comment["ID"]?>', 'Y', '<?=CUtil::JSEscape($_POST["user_name"])?>', '<?=CUtil::JSEscape($_POST["user_email"])?>', 'Y');<?
 						}
 						?>
@@ -712,7 +742,7 @@ else
 				if($arParams["NOT_USE_COMMENT_TITLE"] != "Y")
 					$postTitle = "RE: ".CUtil::JSEscape($arResult["Post"]["TITLE"]);
 				?>
-				<div class="blog-add-comment"><a class="bx_medium bx_bt_button" href="javascript:void(0)" onclick="return showComment('0')"><b><?=GetMessage("B_B_MS_ADD_COMMENT")?></b></a><br /></div>
+				<div class="blog-add-comment"><a class="bx_medium bx_bt_button" href="javascript:void(0)" onclick="return editCommentNew('0', <?=$arParams["ID"]?>)"><b><?=GetMessage("B_B_MS_ADD_COMMENT")?></b></a><br /></div>
 				<a name="0"></a>
 				<?
 				if(strlen($arResult["COMMENT_ERROR"]) > 0 && strlen($_POST["parentId"]) < 2
@@ -752,6 +782,9 @@ else
 					<div id="form_comment_0"></div>
 					<div id="new_comment_cont_0"></div>
 					<div id="new_comment_0" style="display:none;"></div>
+					<!--				placeholder for past editor					-->
+					<div id="record-<?=$arParams["ENTITY_XML_ID"]?>-0-placeholder" class="blog-comment-edit feed-com-add-block blog-post-edit" style="display:none;"></div>
+
 				</div>
 				<?
 				if((strlen($arResult["COMMENT_ERROR"])>0 || strlen($_POST["preview"]) > 0)
@@ -812,6 +845,10 @@ else
 ?>
 </div>
 <?
+
+//bind entity to new editor js object
+echo $component->bindPostToEditorForm($arParams["ENTITY_XML_ID"], null, $arParams);
+
 if($arResult["is_ajax_post"] == "Y")
 	die();
 

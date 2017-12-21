@@ -18,7 +18,7 @@ else
 
 $oSort = new CAdminSorting($sTableID, "TIMESTAMP_X", "desc");
 $arOrder = (strtoupper($by) === "ID"? array($by => $order): array($by => $order, "ID" => "ASC"));
-$lAdmin = new CAdminList($sTableID, $oSort);
+$lAdmin = new CAdminUiList($sTableID, $oSort);
 
 $arFilterFields = Array(
 	"find_id",
@@ -40,6 +40,51 @@ $arFilter = array(
 	"MIN_PERMISSION" => "U",
 	"CNT_ALL" => "Y",
 );
+
+/* Prepare data for new filter */
+$queryObject = CLang::getList($b = "sort", $o = "asc", array("VISIBLE" => "Y"));
+$listLang = array();
+while($lang = $queryObject->getNext())
+	$listLang[$lang["LID"]] = $lang["NAME"];
+
+$filterFields = array(
+	array(
+		"id" => "NAME",
+		"name" => GetMessage("IBLOCK_ADM_FILT_NAME"),
+		"filterable" => "?",
+		"quickSearch" => "?",
+		"default" => true
+	),
+	array(
+		"id" => "LID",
+		"name" => GetMessage("IBLOCK_ADM_FILT_SITE"),
+		"type" => "list",
+		"items" => $listLang,
+		"filterable" => ""
+	),
+	array(
+		"id" => "ACTIVE",
+		"name" => GetMessage("IBLOCK_ADM_FILT_ACT"),
+		"type" => "list",
+		"items" => array(
+			"Y" => GetMessage("IBLOCK_YES"),
+			"N" => GetMessage("IBLOCK_NO")
+		),
+		"filterable" => ""
+	),
+	array(
+		"id" => "CODE",
+		"name" => GetMessage("IBLOCK_FIELD_CODE"),
+		"filterable" => "?"
+	),
+);
+
+$arFilter = array(
+	"TYPE" => $type,
+	"MIN_PERMISSION" => "U",
+	"CNT_ALL" => "Y",
+);
+$lAdmin->AddFilter($filterFields, $arFilter);
 
 if($lAdmin->EditAction())
 {
@@ -234,10 +279,10 @@ if($bBizproc && IsModuleInstalled("bizprocdesigner"))
 $lAdmin->AddHeaders($arHeader);
 
 $rsIBlocks = CIBlock::GetList($arOrder, $arFilter, false);
-$rsIBlocks = new CAdminResult($rsIBlocks, $sTableID);
+$rsIBlocks = new CAdminUiResult($rsIBlocks, $sTableID);
 $rsIBlocks->NavStart();
 
-$lAdmin->NavText($rsIBlocks->GetNavPrint($arIBTYPE["NAME"]));
+$lAdmin->SetNavigationParams($rsIBlocks);
 
 while($dbrs = $rsIBlocks->NavNext(true, "f_"))
 {
@@ -392,12 +437,11 @@ if($USER->IsAdmin() && ($_REQUEST["admin"] == "Y"))
 	$lAdmin->AddAdminContextMenu($aContext);
 
 	$lAdmin->AddGroupActionTable(Array(
-		"delete"=>GetMessage("MAIN_ADMIN_LIST_DELETE"),
+		"edit"=>true,
+		"delete"=>true,
 		"activate"=>GetMessage("MAIN_ADMIN_LIST_ACTIVATE"),
 		"deactivate"=>GetMessage("MAIN_ADMIN_LIST_DEACTIVATE"),
 		));
-
-
 }
 else
 {
@@ -409,76 +453,17 @@ $lAdmin->CheckListMode();
 $APPLICATION->SetTitle(GetMessage("IBLOCK_ADM_TITLE", array("#IBLOCK_TYPE#" => $arIBTYPE["~NAME"])));
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
-?>
-<form method="GET" action="iblock_admin.php?type=<?=urlencode($type)?>" name="find_form">
-<input type="hidden" name="admin" value="<?echo ($_REQUEST["admin"]=="Y"? "Y": "N")?>">
-<input type="hidden" name="lang" value="<?echo LANGUAGE_ID?>">
-<input type="hidden" name="filter" value="Y">
-<input type="hidden" name="type" value="<?echo htmlspecialcharsbx($type)?>">
-<?
-$oFilter = new CAdminFilter(
-	$sTableID."_filter",
-	array(
-		GetMessage("IBLOCK_ADM_FILT_SITE"),
-		GetMessage("IBLOCK_ADM_FILT_ACT"),
-		"ID",
-		GetMessage("IBLOCK_FIELD_CODE")
-	)
-);
 
-$oFilter->Begin();
-?>
-	<tr>
-		<td><b><?echo GetMessage("IBLOCK_ADM_FILT_NAME")?></b></td>
-		<td><input type="text" name="find_name" value="<?echo htmlspecialcharsbx($find_name)?>" size="40">&nbsp;<?=ShowFilterLogicHelp()?></td>
-	</tr>
-	<tr>
-		<td><?echo GetMessage("IBLOCK_ADM_FILT_SITE");?>:</td>
-		<td>
-			<select name="find_lang">
-				<option value=""><?echo GetMessage("IBLOCK_ALL")?></option>
-			<?
-			$l = CLang::GetList($b="sort", $o="asc", Array("VISIBLE"=>"Y"));
-			while($ar = $l->GetNext()):
-				?><option value="<?echo $ar["LID"]?>"<?if($find_lang==$ar["LID"])echo " selected"?>><?echo $ar["NAME"]?></option><?
-			endwhile;
-			?>
-			</select>
-		</td>
-	</tr>
-	<tr>
-		<td><?echo GetMessage("IBLOCK_ADM_FILT_ACT")?>:</td>
-		<td>
-			<?
-			$arr = array("reference"=>array(GetMessage("IBLOCK_YES"), GetMessage("IBLOCK_NO")), "reference_id"=>array("Y","N"));
-			echo SelectBoxFromArray("find_active", $arr, htmlspecialcharsex($find_active), GetMessage('IBLOCK_ALL'));
-			?>
-		</td>
-	</tr>
-	<tr>
-		<td>ID:</td>
-		<td><input type="text" name="find_id" value="<?echo htmlspecialcharsbx($find_id)?>" size="15"></td>
-	</tr>
-	<tr>
-		<td><?echo GetMessage("IBLOCK_FIELD_CODE")?>:</td>
-		<td><input type="text" name="find_code" value="<?echo htmlspecialcharsbx($find_code)?>" size="15">&nbsp;<?=ShowFilterLogicHelp()?></td>
-	</tr>
-<?
-$oFilter->Buttons(array("table_id"=>$sTableID, "url"=>$APPLICATION->GetCurPageParam().'?type='.urlencode($type), "form"=>"find_form"));
-$oFilter->End();
-?>
-</form>
-<?
+$lAdmin->DisplayFilter($filterFields);
 $lAdmin->DisplayList();
 
-if($_REQUEST["admin"]!="Y"):
+if ($_REQUEST["admin"]!="Y"):
 	echo	BeginNote(),
-		GetMessage("IBLOCK_ADM_MANAGE_HINT"),
+	GetMessage("IBLOCK_ADM_MANAGE_HINT"),
 		' <a href="iblock_admin.php?type='.htmlspecialcharsbx($type).'&amp;lang='.LANGUAGE_ID.'&amp;admin=Y">',
-		GetMessage("IBLOCK_ADM_MANAGE_HINT_HREF"),
-		'</a>.',
+	GetMessage("IBLOCK_ADM_MANAGE_HINT_HREF"),
+	'</a>.',
 	EndNote();
 endif;
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");
-?>

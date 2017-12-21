@@ -33,9 +33,9 @@ elseif ($action == 'edit_collection')
 	$parent = intVal($_POST['parent']);
 	$id = CMedialib::EditCollection(array(
 		'id' => intVal($_POST['id']),
-		'name' => $APPLICATION->UnJSEscape($_POST['name']),
-		'desc' => $APPLICATION->UnJSEscape($_POST['desc']),
-		'keywords' => $APPLICATION->UnJSEscape($_POST['keywords']),
+		'name' => \Bitrix\Main\Text\Encoding::convertEncoding(rawurldecode($_POST['name']), 'UTF-8', SITE_CHARSET),
+		'desc' => \Bitrix\Main\Text\Encoding::convertEncoding(rawurldecode($_POST['desc']), 'UTF-8', SITE_CHARSET),
+		'keywords' => \Bitrix\Main\Text\Encoding::convertEncoding(rawurldecode($_POST['keywords']), 'UTF-8', SITE_CHARSET),
 		'parent' =>$parent,
 		'site' => $_GET['site'],
 		'type' => $_POST['type']

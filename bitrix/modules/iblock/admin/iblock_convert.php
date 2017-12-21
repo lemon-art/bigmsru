@@ -179,6 +179,8 @@ function FirstStep12($arIBlock)
 {
 	global $DB, $_SESSION, $arErrors, $arMessages, $INTERVAL;
 
+	$arIBlock["ID"] = (int)$arIBlock["ID"];
+
 	$obIBlock = new CIBlock;
 	$LAST_CONV_ELEMENT = intval($arIBlock["LAST_CONV_ELEMENT"]);
 	if($LAST_CONV_ELEMENT==0)
@@ -276,6 +278,7 @@ function FirstStep12($arIBlock)
 function NextStep12($arIBlock)
 {
 	global $DB,$_SESSION,$arErrors,$arMessages,$INTERVAL;
+	$arIBlock["ID"] = (int)$arIBlock["ID"];
 	$LAST_CONV_ELEMENT = intval($arIBlock["LAST_CONV_ELEMENT"]);
 	$strSql = "
 		SELECT ID
@@ -365,6 +368,7 @@ function NextStep12($arIBlock)
 function LastStep12($arIBlock)
 {
 	global $DB,$_SESSION,$arErrors,$arMessages,$INTERVAL;
+	$arIBlock["ID"] = (int)$arIBlock["ID"];
 	$DB->Query("UPDATE b_iblock_property SET VERSION=2 WHERE IBLOCK_ID = ".$arIBlock["ID"]);
 	$DB->Query("UPDATE b_iblock SET VERSION=2,LAST_CONV_ELEMENT = 0 WHERE ID = ".$arIBlock["ID"]);
 	CIBlock::CleanCache($arIBlock["ID"]);
@@ -373,6 +377,7 @@ function LastStep12($arIBlock)
 function FirstStep21($arIBlock)
 {
 	global $DB,$_SESSION,$arErrors,$arMessages,$INTERVAL;
+	$arIBlock["ID"] = (int)$arIBlock["ID"];
 	$arMultiple = array();
 	$arSingle = array();
 	$arNumber = array();
@@ -427,6 +432,7 @@ function FirstStep21($arIBlock)
 function NextStep21($arIBlock)
 {
 	global $DB,$_SESSION,$arErrors,$arMessages,$INTERVAL;
+	$arIBlock["ID"] = (int)$arIBlock["ID"];
 	$strSql = "
 		SELECT *
 		FROM b_iblock_element_prop_s".$arIBlock["ID"]."
@@ -501,6 +507,7 @@ function NextStep21($arIBlock)
 function LastStep21($arIBlock)
 {
 	global $DB,$_SESSION,$arErrors,$arMessages,$INTERVAL;
+	$arIBlock["ID"] = (int)$arIBlock["ID"];
 	$DB->Query("UPDATE b_iblock_property SET VERSION=1 WHERE IBLOCK_ID = ".$arIBlock["ID"]);
 	$DB->Query("UPDATE b_iblock SET VERSION=1,LAST_CONV_ELEMENT = 0 WHERE ID = ".$arIBlock["ID"]);
 	CIBlock::CleanCache($arIBlock["ID"]);
@@ -516,4 +523,3 @@ if($STEP==0)
 	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");
 else
 	require($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/include/epilog_admin_js.php");
-?>

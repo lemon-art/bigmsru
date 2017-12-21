@@ -36,3 +36,4 @@ $MESS["SALE_HPS_ROBOXCHANGE_HandyBankFU"] = "ФьючерБанк";
 $MESS["SALE_HPS_ROBOXCHANGE_HandyBankFB"] = "ФлексБанк";
 $MESS["SALE_HPS_ROBOXCHANGE_HandyBankBO"] = "Банк Образование";
 $MESS["SALE_HPS_ROBOXCHANGE_BANKOCEAN3CHECKR"] = "Мобильная ROBOKASSA";
+$MESS["SALE_HPS_ROBOXCHANGE_NO_CHOOSE"] = "Не выбран";

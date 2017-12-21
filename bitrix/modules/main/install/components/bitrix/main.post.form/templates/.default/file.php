@@ -71,7 +71,8 @@ foreach ($arParams["UPLOADS"] as $v)
 			array(
 				"arUserField" => $v,
 				"DISABLE_CREATING_FILE_BY_CLOUD" => (isset($arParams["DISABLE_CREATING_FILE_BY_CLOUD"]) ? $arParams["DISABLE_CREATING_FILE_BY_CLOUD"] : $v["DISABLE_CREATING_FILE_BY_CLOUD"]),
-				"DISABLE_LOCAL_EDIT" => (isset($arParams["DISABLE_LOCAL_EDIT"]) ? $arParams["DISABLE_LOCAL_EDIT"] : $v["DISABLE_LOCAL_EDIT"])
+				"DISABLE_LOCAL_EDIT" => (isset($arParams["DISABLE_LOCAL_EDIT"]) ? $arParams["DISABLE_LOCAL_EDIT"] : $v["DISABLE_LOCAL_EDIT"]),
+				"HIDE_CHECKBOX_ALLOW_EDIT" => (isset($arParams["HIDE_CHECKBOX_ALLOW_EDIT"]) ? $arParams["HIDE_CHECKBOX_ALLOW_EDIT"] : $v["HIDE_CHECKBOX_ALLOW_EDIT"]),
 			),
 			null,
 			array("HIDE_ICONS" => "Y")

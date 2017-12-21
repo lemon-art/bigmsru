@@ -4,6 +4,8 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 if(!CModule::IncludeModule("sale") || !CModule::IncludeModule("currency"))
 	return false;
 
+global $USER;
+
 $saleModulePermissions = $GLOBALS["APPLICATION"]->GetGroupRight("sale");
 
 if (intval($arGadgetParams["ITEMS_COUNT"]) <= 0 || intval($arGadgetParams["ITEMS_COUNT"]) > 40)
@@ -28,19 +30,66 @@ $arOrderStats = Array();
 $arOrders = Array();
 $arCurUsed = Array();
 
-if (strlen($arGadgetParams["SITE_ID"]) > 0)
-	$arFilterLID = array("LID" => $arGadgetParams["SITE_ID"]);
-else
-	$arFilterLID = array();
+$userGroups = $USER->GetUserGroupArray();
 
 if ($saleModulePermissions != "W")
-
-	$arFilterPerms = array(
-		"STATUS_PERMS_GROUP_ID" => $GLOBALS["USER"]->GetUserGroupArray(),
-		">=STATUS_PERMS_PERM_VIEW" => "Y"
+{
+	$accessibleSites = array();
+	$resAccessibleSites = CSaleGroupAccessToSite::GetList(
+		array(),
+		array("GROUP_ID" => $userGroups),
+		false,
+		false,
+		array("SITE_ID")
 	);
+	while ($accessibleSiteData = $resAccessibleSites->Fetch())
+	{
+		if(!in_array($accessibleSiteData["SITE_ID"], $accessibleSites))
+		{
+			$accessibleSites[] = $accessibleSiteData["SITE_ID"];
+		}
+	}
+
+
+	if (strval($arGadgetParams["SITE_ID"]) > 0)
+	{
+		if(in_array($arGadgetParams["SITE_ID"], $accessibleSites))
+		{
+			$arFilterLID['=LID'][] = $accessibleSiteData["SITE_ID"];
+		}
+		else
+		{
+			$arFilterLID['=LID'] = false;
+		}
+	}
+	else
+	{
+		$arFilterLID['=LID'] = (count($accessibleSites) > 0 ? $accessibleSites : false);
+	}
+
+
+}
 else
+{
+	if (strlen($arGadgetParams["SITE_ID"]) > 0)
+	{
+		$arFilterLID = array("=LID" => $arGadgetParams["SITE_ID"]);
+	}
+	else
+	{
+		$arFilterLID = array();
+	}
+}
+
+if ($saleModulePermissions != "W")
+{
+	$allowedStatusesView = \Bitrix\Sale\OrderStatus::getStatusesGroupCanDoOperations($userGroups, array('view'));
+	$arFilterPerms["=STATUS_ID"] = $allowedStatusesView;
+}
+else
+{
 	$arFilterPerms = array();
+}
 
 $BeforeLastMonth_minDate = ConvertTimeStamp(AddToTimeStamp(array("MM" => -2), mktime(0, 0, 0, date("n"), 1, date("Y"))), "FULL");
 $BeforeLastMonth_maxDate =  ConvertTimeStamp(AddToTimeStamp(array("MM" => -1, "SS" => -1), mktime(0, 0, 0, date("n"), 1, date("Y"))), "FULL");
@@ -129,11 +178,12 @@ $arDatePeriods = array(
 $arStatus1 = array(
 	"CREATED" => array(
 		"NAME" => GetMessage("GD_ORDERS_STATUS_1_CREATED"),
-		"DB_FIELD" => "DATE"
+		"DB_FIELD" => "DATE_INSERT"
 	),
 	"PAID" => array(
 		"NAME" => GetMessage("GD_ORDERS_STATUS_1_PAID"),
-		"DB_FIELD" => "DATE_PAYED"
+		"DB_FIELD" => "DATE_PAYED",
+		"Y_FIELD" => "PAYED"
 	),
 	"CANCELED" => array(
 		"NAME" => GetMessage("GD_ORDERS_STATUS_1_CANCELED"),
@@ -154,9 +204,8 @@ foreach($arDatePeriods as $key => $arPeriod)
 		$arOrderStats[$key][$status_code] = 0;
 		$arOrderStats[$key]["PRICE_".$status_code] = 0;
 	}
-
 	$obCache = new CPHPCache;
-	$cache_id = $key."_".md5(serialize($arFilterLID))."_".md5(serialize($arGadgetParams["ORDERS_STATUS_1"]));
+	$cache_id = $key."_".md5(serialize($arPeriod))."_".md5(serialize($arFilterLID))."_".md5(serialize($arFilterPerms))."_".md5(serialize($arGadgetParams["ORDERS_STATUS_1"]));
 	if($obCache->InitCache($arPeriod["CACHE_TIME"], $cache_id, "/"))
 	{
 		$vars = $obCache->GetVars();
@@ -176,24 +225,32 @@ foreach($arDatePeriods as $key => $arPeriod)
 			)
 			{
 				if (array_key_exists("Y_FIELD", $arStatus) && strlen($arStatus["Y_FIELD"]) > 0)
-					$arFilterYField = array($arStatus["Y_FIELD"] => "Y");
+					$arFilterYField = array("=".$arStatus["Y_FIELD"] => "Y");
 				else
 					$arFilterYField = array();
 
 				$arFilter = array_merge(
 					array(
-						$arStatus["DB_FIELD"]."_FROM"=> $arPeriod["MIN_DATE"],
-						$arStatus["DB_FIELD"]."_TO" => $arPeriod["MAX_DATE"]
+						">=".$arStatus["DB_FIELD"]=> $arPeriod["MIN_DATE"],
+						"<=".$arStatus["DB_FIELD"] => $arPeriod["MAX_DATE"]
 					),
 					$arFilterLID,
+					$arFilterPerms,
 					$arFilterYField
 				);
 
-				$dbOrder = CSaleOrder::GetList(Array(), $arFilter, array("SUM" => "PRICE", "COUNT" => "ID"), array('ID', 'PRICE'));
-				if($arOrder = $dbOrder->Fetch())
+				$resOrder = \Bitrix\Sale\Internals\OrderTable::getList(array(
+					'select' => array(
+						new \Bitrix\Main\Entity\ExpressionField('SUM', 'SUM(%s)', 'PRICE'),
+						new \Bitrix\Main\Entity\ExpressionField('COUNT', 'COUNT(%s)', 'ID')
+					),
+					'filter' => $arFilter
+				));
+
+				while($orderData = $resOrder->fetch())
 				{
-					$arOrderStats[$key][$status_code] = $arOrder["ID"];
-					$arOrderStats[$key]["PRICE_".$status_code] = $arOrder["PRICE"];
+					$arOrderStats[$key][$status_code] = $orderData["COUNT"];
+					$arOrderStats[$key]["PRICE_".$status_code] = $orderData["SUM"];
 				}
 			}
 		}
@@ -219,9 +276,38 @@ $arFilter = array_merge(
 	$arFilterPerms
 );
 $arSelectedFields = Array("ID", "PAYED", "DATE_PAYED", "CANCELED", "DATE_CANCELED", "STATUS_ID", "DATE_STATUS", "PRICE_DELIVERY", "ALLOW_DELIVERY", "DATE_ALLOW_DELIVERY", "PRICE", "CURRENCY", "DISCOUNT_VALUE", "PAY_SYSTEM_ID", "DELIVERY_ID", "DATE_INSERT", "LID", "USER_ID", "USER_NAME", "USER_LAST_NAME");
-$dbOrder = CSaleOrder::GetList(Array("DATE_UPDATE"=>"DESC"), $arFilter, false, array("nTopCount" => $arGadgetParams["ITEMS_COUNT"]), $arSelectedFields);
-while($arOrder = $dbOrder->Fetch())
-	$arOrders[] = $arOrder;
+
+$resOrder = \Bitrix\Sale\Internals\OrderTable::getList(array(
+	'select' => array(
+		"ID",
+		"PAYED",
+		"DATE_PAYED",
+		"CANCELED",
+		"DATE_CANCELED",
+		"STATUS_ID",
+		"DATE_STATUS",
+		"PRICE_DELIVERY",
+		"ALLOW_DELIVERY",
+		"DATE_ALLOW_DELIVERY",
+		"PRICE",
+		"CURRENCY",
+		"DISCOUNT_VALUE",
+		"PAY_SYSTEM_ID",
+		"DELIVERY_ID",
+		"DATE_INSERT",
+		"LID",
+		"USER_ID",
+		'USER_NAME' => "USER.NAME",
+		'USER_LAST_NAME' => "USER.LAST_NAME"
+	),
+	'filter' => $arFilter,
+	'order' => array("DATE_UPDATE" => "DESC"),
+	'limit' => $arGadgetParams["ITEMS_COUNT"]
+));
+while($orderData = $resOrder->fetch())
+{
+	$arOrders[] = $orderData;
+}
 
 $today = ConvertTimeStamp(time());
 $yesterday = ConvertTimeStamp(AddToTimeStamp(array("DD" => -2, "MM" => 0, "YYYY"	=> 0, "HH" => 0, "MI" => 0, "SS" => 0), time()));

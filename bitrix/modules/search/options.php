@@ -8,7 +8,7 @@ global $APPLICATION;
 
 $bVarsFromForm = false;
 $aTabs = array(
-	array(
+	0 => array(
 		"DIV" => "index",
 		"TAB" => GetMessage("SEARCH_OPTIONS_TAB_INDEX"),
 		"ICON" => "search_settings",
@@ -20,7 +20,7 @@ $aTabs = array(
 			"page_tag_property" => Array(GetMessage("SEARCH_OPTIONS_PAGE_PROPERTY"), Array("text", "tags")),
 		)
 	),
-	array(
+	1 => array(
 		"DIV" => "stemming",
 		"TAB" => GetMessage("SEARCH_OPTIONS_TAB_STEMMING"),
 		"ICON" => "search_settings",
@@ -81,9 +81,10 @@ index bitrix
 }
 </pre>
 			"), "sphinx"),
+			"mysql_note" => Array("", Array("note", GetMessage("SEARCH_OPTIONS_MYSQL_NOTE")), "mysql"),
 		)
 	),
-	array(
+	2 => array(
 		"DIV" => "search",
 		"TAB" => GetMessage("SEARCH_OPTIONS_TAB_SEARCH"),
 		"ICON" => "search_settings",
@@ -104,7 +105,7 @@ index bitrix
 			"suggest_save_days" => Array(GetMessage("SEARCH_OPTIONS_SUGGEST_SAVE_DAYS"), Array("text", 6)),
 		)
 	),
-	array(
+	3 => array(
 		"DIV" => "statistic",
 		"TAB" => GetMessage("SEARCH_OPTIONS_TAB_STATISTIC"),
 		"ICON" => "search_settings",
@@ -115,6 +116,13 @@ index bitrix
 		)
 	),
 );
+
+$DB = CDatabase::GetModuleConnection('search');
+if ($DB->type === 'MYSQL')
+{
+	$aTabs[1]['OPTIONS']['full_text_engine'][1][1]['mysql'] = GetMessage("SEARCH_OPTIONS_FULL_TEXT_ENGINE_MYSQL");
+}
+
 $tabControl = new CAdminTabControl("tabControl", $aTabs);
 
 if($REQUEST_METHOD=="POST" && strlen($Update.$Apply.$RestoreDefaults)>0 && check_bitrix_sessid())
@@ -133,6 +141,17 @@ if($REQUEST_METHOD=="POST" && strlen($Update.$Apply.$RestoreDefaults)>0 && check
 				$e = $APPLICATION->GetException();
 				if(is_object($e))
 					$message = new CAdminMessage(GetMessage("SEARCH_OPTIONS_SPHINX_ERROR"), $e);
+				$bVarsFromForm = true;
+			}
+		}
+		elseif ($_POST["full_text_engine"] === "mysql")
+		{
+			$search = new CSearchMysql();
+			if (!$search->connect())
+			{
+				$e = $APPLICATION->GetException();
+				if(is_object($e))
+					$message = new CAdminMessage(GetMessage("SEARCH_OPTIONS_MYSQL_ERROR"), $e);
 				$bVarsFromForm = true;
 			}
 		}

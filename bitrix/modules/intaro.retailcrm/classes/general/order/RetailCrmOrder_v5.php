@@ -83,7 +83,7 @@ class RetailCrmOrder
                         if ($arLoc) {
                             $server = \Bitrix\Main\Context::getCurrent()->getServer()->getDocumentRoot();
                             $countrys = array();
-                            if (file_exists($server . '/bitrix/modules/intaro.retailcrm/classes/general/config/objects.xml')) {
+                            if (file_exists($server . '/bitrix/modules/intaro.retailcrm/classes/general/config/country.xml')) {
                                 $countrysFile = simplexml_load_file($server . '/bitrix/modules/intaro.retailcrm/classes/general/config/country.xml'); 
                                 foreach ($countrysFile->country as $country) {
                                     $countrys[RCrmActions::fromJSON((string) $country->name)] = (string) $country->alpha;
@@ -173,7 +173,7 @@ class RetailCrmOrder
                 $order = $newResOrder;
             } elseif ($newResOrder === false) {
                 RCrmActions::eventLog('RetailCrmOrder::orderSend', 'retailCrmBeforeOrderSend()', 'OrderID = ' . $arFields['ID'] . '. Sending canceled after retailCrmBeforeOrderSend');
-                
+
                 return false;
             }
         }
@@ -187,53 +187,6 @@ class RetailCrmOrder
         if($send) {
             if (!RCrmActions::apiMethod($api, $methodApi, __METHOD__, $order, $site)) {
                 return false;
-            }
-
-            if ($methodApi == 'ordersEdit') {
-                $crmPayments = array();
-                if (!empty($arParams['crmOrder']['payments'])) {
-                    foreach ($arParams['crmOrder']['payments'] as $crmPayment) {
-                        if (isset($crmPayment['externalId'])) {
-                            $crmPayments['externalIds'][$crmPayment['externalId']] = $crmPayment;
-                        } else {
-                            $crmPayments['ids'][$crmPayment['id']] = $crmPayment;
-                        }
-                    }
-                }
-
-                foreach ($order['payments'] as $payment) {
-                    if (isset($crmPayments['externalIds'][$payment['externalId']])) {
-                        //update payment
-                        if ($payment['type'] == $crmPayments['externalIds'][$payment['externalId']]['type']) {
-                            if (RCrmActions::apiMethod($api, 'ordersPaymentEdit', __METHOD__, $payment, $site)) {
-                                unset($crmPayments['externalIds'][$payment['externalId']]);
-                            }
-                        } else {
-                            RCrmActions::apiMethod($api, 'ordersPaymentDelete', __METHOD__, $crmPayments['externalIds'][$payment['externalId']]['id']);
-                            $payment['order']['externalId'] = $order['externalId'];
-                            RCrmActions::apiMethod($api, 'ordersPaymentCreate', __METHOD__, $payment, $site);
-                            unset($crmPayments['externalIds'][$payment['externalId']]);
-                        }
-                    } else {
-                        //create
-                        $payment['order']['externalId'] = $order['externalId'];
-                        RCrmActions::apiMethod($api, 'ordersPaymentCreate', __METHOD__, $payment, $site);
-                    }
-                }
-                
-                //delete in crm
-                if (!empty($crmPayments['ids'])) {
-                    foreach ($crmPayments['ids'] as $payment) {
-                        //delete
-                        RCrmActions::apiMethod($api, 'ordersPaymentDelete', __METHOD__, $payment['id']);
-                    }
-                }
-                if (!empty($crmPayments['externalIds'])) {
-                    foreach ($crmPayments['externalIds'] as $payment) {
-                        //delete
-                        RCrmActions::apiMethod($api, 'ordersPaymentDelete', __METHOD__, $payment['id']);
-                    }
-                }
             }
         }
 
@@ -326,12 +279,6 @@ class RetailCrmOrder
             $order = self::orderObjToArr($id);
             $user = Bitrix\Main\UserTable::getById($order['USER_ID'])->fetch();
 
-            if(array_key_exists($arOrder['LID'], $optionsSitesList)) {
-                $site = $optionsSitesList[$arOrder['LID']];   
-            } else {
-                $site = null;
-            }
-
             $arCustomers = RetailCrmUser::customerSend($user, $api, $optionsContragentType[$order['PERSON_TYPE_ID']], false, $site);
             $arOrders = self::orderSend($order, $api, $arParams, false, $site); 
 
@@ -347,10 +294,14 @@ class RetailCrmOrder
         
         if (count($resOrders) > 0) {
             foreach ($resCustomers as $key => $customerLoad) {
-                if(array_key_exists($key, $optionsSitesList)) {
-                    $site = $optionsSitesList[$key];   
-                } else {
-                    $site = null;
+                if ($optionsSitesList) {
+                    if (array_key_exists($key, $optionsSitesList) && $optionsSitesList[$key] != null) {
+                        $site = $optionsSitesList[$key];
+                    } else {
+                        continue;
+                    }
+                } elseif (!$optionsSitesList) {
+                    $site == null;
                 }
                 if (RCrmActions::apiMethod($api, 'customersUpload', __METHOD__, $customerLoad, $site) === false) {
                     return false;
@@ -360,10 +311,14 @@ class RetailCrmOrder
                 }
             }
             foreach ($resOrders as $key => $orderLoad) {
-                if(array_key_exists($key, $optionsSitesList)) {
-                    $site = $optionsSitesList[$key];   
-                } else {
-                    $site = null;
+                if ($optionsSitesList) {
+                    if (array_key_exists($key, $optionsSitesList) && $optionsSitesList[$key] != null) {
+                        $site = $optionsSitesList[$key];
+                    } else {
+                        continue;
+                    }
+                } elseif (!$optionsSitesList) {
+                    $site == null;
                 }
                 if (RCrmActions::apiMethod($api, 'ordersUpload', __METHOD__, $orderLoad, $site) === false) {
                     return false;

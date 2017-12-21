@@ -425,7 +425,16 @@ class CAllCatalogSku
 		return $result;
 	}
 
-	public static function getOffersList($productID, $iblockID = 0, $skuFilter = array(), $fields = array(), $propertyFilter = array())
+	/**
+	 * @param int|array $productID
+	 * @param int $iblockID
+	 * @param array $skuFilter
+	 * @param array $fields
+	 * @param array $propertyFilter
+	 * @param array $options
+	 * @return array|bool
+	 */
+	public static function getOffersList($productID, $iblockID = 0, $skuFilter = array(), $fields = array(), $propertyFilter = array(), $options = array())
 	{
 		static $propertyCache = array();
 
@@ -563,19 +572,19 @@ class CAllCatalogSku
 		$iblockProperties = array();
 		if (!empty($propertyFilter['ID']) || !empty($propertyFilter['CODE']))
 		{
+			sort($offersIblock);
 			$propertyIblock = array('@IBLOCK_ID' => $offersIblock);
 			if (!empty($propertyFilter['ID']))
 			{
 				sort($propertyFilter['ID']);
-				$propertyKey = md5(implode('|', $propertyFilter['ID']));
 				$propertyIblock['@ID'] = $propertyFilter['ID'];
 			}
 			else
 			{
 				sort($propertyFilter['CODE']);
-				$propertyKey = md5(implode('|', $propertyFilter['CODE']));
 				$propertyIblock['@CODE'] = $propertyFilter['CODE'];
 			}
+			$propertyKey = md5(serialize($propertyIblock));
 			if (!isset($propertyCache[$propertyKey]))
 			{
 				$propertyCache[$propertyKey] = array_fill_keys($offersIblock, array());
@@ -625,19 +634,31 @@ class CAllCatalogSku
 					continue;
 				$offer['ID'] = (int)$offer['ID'];
 				$offer['IBLOCK_ID'] = (int)$offer['IBLOCK_ID'];
+				$offer['PARENT_ID'] = $offerProduct;
 				$offer['PROPERTIES'] = array();
 				$result[$offerProduct][$offer['ID']] = $offer;
 				$offersLinks[$offer['ID']] = &$result[$offerProduct][$offer['ID']];
 			}
 			unset($offerProduct, $offer, $offersIterator, $skuProperty);
-			if (!empty($iblockProperties[$iblockSku[$iblockID]['IBLOCK_ID']]))
+			if (!empty($offersLinks) && !empty($iblockProperties[$iblockSku[$iblockID]['IBLOCK_ID']]))
 			{
-				CIBlockElement::GetPropertyValuesArray(
-					$offersLinks,
-					$iblockSku[$iblockID]['IBLOCK_ID'],
-					$iblockFilter,
-					array('ID' => $iblockProperties[$iblockSku[$iblockID]['IBLOCK_ID']])
-				);
+				$offerIds = array_keys($offersLinks);
+				foreach (array_chunk($offerIds, 500) as $pageIds)
+				{
+					$pageOffersFilter = array(
+						'ID' => $pageIds,
+						'IBLOCK_ID' => $iblockSku[$iblockID]['IBLOCK_ID']
+					);
+					CIBlockElement::GetPropertyValuesArray(
+						$offersLinks,
+						$iblockSku[$iblockID]['IBLOCK_ID'],
+						$pageOffersFilter,
+						array('ID' => $iblockProperties[$iblockSku[$iblockID]['IBLOCK_ID']]),
+						$options
+					);
+					unset($pageOffersFilter);
+				}
+				unset($pageIds, $offerIds);
 			}
 			unset($offersLinks);
 		}

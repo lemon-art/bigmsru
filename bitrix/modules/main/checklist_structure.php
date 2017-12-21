@@ -287,9 +287,6 @@ $arCheckListStructure=Array(
 		"QP0080" => Array(
 			"PARENT"=>"QPERFORMANCE"
 		),
-		"QP0090" => Array(
-			"PARENT"=>"QPERFORMANCE"
-		),
 		"QP0100" => Array(
 			"PARENT"=>"QPERFORMANCE"
 		),

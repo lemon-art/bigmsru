@@ -20,7 +20,7 @@ if (isset($arParams["DATA"]) && !empty($arParams["DATA"]) && is_array($arParams[
 	$tabIDList = array();
 ?>
 <div id="<? echo $arResult["ID"]; ?>" class="bx-catalog-tab-section-container"<?=isset($arResult["WIDTH"]) ? ' style="width: '.$arResult["WIDTH"].'px;"' : ''?>>
-	<ul class="bx-catalog-tab-list" style="left: 0px;">
+	<ul class="bx-catalog-tab-list" style="left: 0;">
 		<?
 		foreach ($arParams["DATA"] as $tabId => $arTab)
 		{
@@ -29,7 +29,7 @@ if (isset($arParams["DATA"]) && !empty($arParams["DATA"]) && is_array($arParams[
 				$id = $arResult["ID"].$tabId;
 				$tabActive = (isset($arTab["ACTIVE"]) && $arTab["ACTIVE"] == "Y");
 				?><li id="<?=$id?>"><span><?=$arTab["NAME"]?></span></li><?
-				if($tabActive || $activeTabId == "")
+				if($tabActive || $activeTabId === "")
 					$activeTabId = $tabId;
 
 				$content .= '<div id="'.$id.'_cont" class="tab-off">'.$arTab["CONTENT"].'</div>';

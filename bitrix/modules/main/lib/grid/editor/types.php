@@ -3,6 +3,10 @@
 namespace Bitrix\Main\Grid\Editor;
 
 
+/**
+ * Class Types. Inline editor field types
+ * @package Bitrix\Main\Grid\Editor
+ */
 class Types
 {
 	const DROPDOWN = "DROPDOWN";
@@ -14,6 +18,11 @@ class Types
 	const TEXTAREA = "TEXTAREA";
 	const CUSTOM = "CUSTOM";
 
+
+	/**
+	 * Gets types list
+	 * @return array
+	 */
 	public static function getList()
 	{
 		$reflection = new \ReflectionClass(__CLASS__);

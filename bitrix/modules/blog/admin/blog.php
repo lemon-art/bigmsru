@@ -20,7 +20,8 @@ $arFilterFields = array(
 	"filter_url",
 	"filter_group_id",
 	//"filter_use_socnet",
-	"filter_owner"
+	"filter_owner",
+	"filter_id"
 );
 $USER_FIELD_MANAGER->AdminListAddFilterFields("BLOG_BLOG", $arFilterFields);
 
@@ -39,6 +40,8 @@ else
 	$filter_group_id = array();
 if (strlen($filter_owner) > 0)
 	$arFilter["%OWNER"] = $filter_owner;
+if (strlen($filter_id) > 0)
+	$arFilter["ID"] = $filter_id;
 
 $USER_FIELD_MANAGER->AdminListAddFilter("BLOG_BLOG", $arFilter);
 
@@ -231,7 +234,8 @@ $oFilter = new CAdminFilter(
 		GetMessage("BLB_FILTER_ACTIVE"),
 		GetMessage("BLB_FILTER_URL"),
 		GetMessage("BLB_FILTER_GROUP_ID"),
-		GetMessage("BLB_FILTER_OWNER")
+		GetMessage("BLB_FILTER_OWNER"),
+		"ID"
 	)
 );
 
@@ -259,8 +263,8 @@ $oFilter->Begin();
 		<td valign="top"><?echo GetMessage("BLB_FILTER_GROUP_ID");?>:</td>
 		<td>
 			<select name="filter_group_id[]" multiple size="5">
-				<option value=""><?echo GetMessage("BLB_F_ALL")?></option>
 				<?
+				
 				$dbGroup = CBlogGroup::GetList(array("NAME" => "ASC"), array());
 				while ($arGroup = $dbGroup->GetNext())
 				{
@@ -273,6 +277,10 @@ $oFilter->Begin();
 	<tr>
 		<td><?echo GetMessage("BLB_FILTER_OWNER")?>:</td>
 		<td><input type="text" name="filter_owner" value="<?echo htmlspecialcharsbx($filter_owner)?>" size="40"><?=ShowFilterLogicHelp()?></td>
+	</tr>
+	<tr>
+		<td>ID:</td>
+		<td><input type="text" name="filter_id" value="<?echo htmlspecialcharsbx($filter_id)?>" size="40"></td>
 	</tr>
 <?
 $USER_FIELD_MANAGER->AdminListShowFilter("BLOG_BLOG");

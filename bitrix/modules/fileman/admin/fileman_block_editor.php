@@ -7,8 +7,10 @@ if(!\Bitrix\Main\Loader::includeModule("fileman"))
 
 $isAdmin = $USER->CanDoOperation('lpa_template_edit');
 $isUserHavePhpAccess = $USER->CanDoOperation('edit_php');
+$canWorkWithHtml = $isAdmin || $isUserHavePhpAccess;
+
 $POST_RIGHT = $APPLICATION->GetGroupRight("fileman");
-if($POST_RIGHT=="D" || (!$isAdmin && !$isUserHavePhpAccess))
+if($POST_RIGHT=="D")
 	$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
 
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_js.php");
@@ -17,10 +19,17 @@ switch($request->get('action'))
 {
 	case 'save_file':
 
-		$result = array();
+		$result = array(
+			'error' => false,
+			'errorText' => '',
+			'data' => array(
+				'list' => array(),
+			)
+		);
 		$fileList = array();
 
 		//New from media library and file structure
+		$isCheckedSuccess = false;
 		$requestFiles = $request->getPost('NEW_FILE_EDITOR');
 		if($requestFiles && is_array($requestFiles))
 		{
@@ -37,20 +46,25 @@ switch($request->get('action'))
 
 				$isCheckedSuccess = false;
 				$io = CBXVirtualIo::GetInstance();
+				$docRoot = \Bitrix\Main\Application::getDocumentRoot();
 				if(strpos($filePath, CTempFile::GetAbsoluteRoot()) === 0)
 				{
 					$absPath = $filePath;
-					$normPath = $filePath;
+				}
+				elseif(strpos($io->CombinePath($docRoot, $filePath), CTempFile::GetAbsoluteRoot()) === 0)
+				{
+					$absPath = $io->CombinePath($docRoot, $filePath);
 				}
 				else
 				{
-					$normPath = $io->CombinePath("/", $filePath);
-					$absPath = $io->CombinePath($_SERVER['DOCUMENT_ROOT'], $normPath);
+					$absPath = $io->CombinePath(CTempFile::GetAbsoluteRoot(), $filePath);
 				}
 
 				if ($io->ValidatePathString($absPath) && $io->FileExists($absPath))
 				{
-					$perm = $APPLICATION->GetFileAccessPermission($normPath);
+					$docRoot = $io->CombinePath($docRoot, '/');
+					$relPath = str_replace($docRoot, '', $absPath);
+					$perm = $APPLICATION->GetFileAccessPermission($relPath);
 					if ($perm >= "W")
 					{
 						$isCheckedSuccess = true;
@@ -64,6 +78,13 @@ switch($request->get('action'))
 					{
 						$fileList[$filePath]['name'] = $value['name'];
 					}
+				}
+				else
+				{
+					$result['data']['list'][] = array(
+						'tmp' => $filePath,
+						'path' => ''
+					);
 				}
 			}
 		}
@@ -81,8 +102,17 @@ switch($request->get('action'))
 			$fid = intval(CFile::SaveFile($file, "fileman", true));
 			if($fid > 0 && ($filePath = CFile::GetPath($fid)) && strlen($filePath) > 0)
 			{
-				$result[$tmpFileName] = $filePath;
+				$result['data']['list'][] = array(
+					'tmp' => $tmpFileName,
+					'path' => $filePath
+				);
 			}
+		}
+
+		if (!$isCheckedSuccess && count($fileList) == 0)
+		{
+			$result['error'] = true;
+			$result['errorText'] = GetMessage("ACCESS_DENIED");
 		}
 
 		echo CUtil::PhpToJSObject($result);
@@ -90,6 +120,11 @@ switch($request->get('action'))
 
 
 	case 'set':
+
+		if (!$canWorkWithHtml)
+		{
+			$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
+		}
 
 		if($request->isPost() && check_bitrix_sessid())
 		{
@@ -106,6 +141,11 @@ switch($request->get('action'))
 
 
 	case 'preview_mail':
+
+		if (!$canWorkWithHtml)
+		{
+			$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
+		}
 
 		$request = \Bitrix\Main\Context::getCurrent()->getRequest();
 		$previewParams = array(

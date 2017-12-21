@@ -31,6 +31,7 @@ $MESS["sender_mailing_chain_adm_action_pause"] = "Пауза";
 $MESS["sender_mailing_chain_adm_action_stop"] = "Остановить";
 $MESS["sender_mailing_chain_adm_action_edit"] = "Изменить";
 $MESS["sender_mailing_chain_adm_action_copy"] = "Копировать";
+$MESS["sender_mailing_chain_adm_action_stats"] = "Статистика";
 $MESS["sender_mailing_chain_adm_action_delete"] = "Удалить";
 $MESS["sender_mailing_chain_adm_action_delete_confirm"] = "Подтвердите, что вы хотите удалить этот выпуск";
 $MESS["sender_mailing_chain_adm_title"] = "Выпуски рассылки";

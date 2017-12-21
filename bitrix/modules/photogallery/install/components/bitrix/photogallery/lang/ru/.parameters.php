@@ -31,6 +31,7 @@ $MESS["P_PHOTO_SETTINGS"] = "Настройки фотогалереи";
 $MESS["P_ALBUM_PHOTO_THUMBS_SIZE"] = "Размер картинки-анонса фотоальбома (px)";
 $MESS["P_ALBUM_PHOTO_SIZE"] = "Размер картинки фотоальбома (px)";
 $MESS["P_THUMBS_SIZE"] = "Размер фотографии-анонса (px)";
+$MESS["P_SECTION_LIST_THUMBS_SIZE"] = "Размер картинки в предпросмотре в списке альбомов (px)";
 $MESS["P_PREVIEW_SIZE"] = "Размер детальной фотографии (px)";
 $MESS["P_PATH_TO_USER"] = "Путь к профилю пользователя";
 $MESS["P_PATH_TO_BLOG"] = "Путь к блогу";

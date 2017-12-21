@@ -13,8 +13,8 @@ BX.Sale.Admin.OrderBuyer =
 		return {
 			"BUYER_USER_NAME": BX.Sale.Admin.OrderBuyer.setBuyerName,
 			"BUYER_PROFILES_LIST": BX.Sale.Admin.OrderBuyer.setBuyerProfilesList,
-			"PROPERTIES": BX.Sale.Admin.OrderBuyer.setOrderProps,
 			"PROPERTIES_ARRAY": BX.Sale.Admin.OrderBuyer.setOrderPropsArray,
+			"PROPERTIES": BX.Sale.Admin.OrderBuyer.setOrderProps,
 			"BUYER_PROFILES_DATA": BX.Sale.Admin.OrderBuyer.setProfilesData
 		};
 	},
@@ -156,16 +156,15 @@ BX.Sale.Admin.OrderBuyer =
 					"PERSON_TYPE_ID": this.getBuyerTypeId(),
 					"CURRENCY": BX.Sale.Admin.OrderEditPage.currency,
 					"ORDER_ID": BX.Sale.Admin.OrderEditPage.orderId,
-					"SITE_ID": BX.Sale.Admin.OrderEditPage.siteId
+					"SITE_ID": BX.Sale.Admin.OrderEditPage.siteId,
+					"BUYER_ID_CHANGED": "Y"
 				},
 				demandFields:[
 					"BUYER_PROFILES_LIST",
 					"BUYER_PROFILES_DATA",
 					"BUYER_USER_NAME",
 					"BUYER_BUDGET",
-					//"COUPONS_LIST",
-					"PROPERTIES",
-					//"COUPONS",
+					"PROPERTIES"
 				]
 			}), false, true
 		);
@@ -173,19 +172,29 @@ BX.Sale.Admin.OrderBuyer =
 
 	onBuyerTypeChange: function(personTypeId)
 	{
-		var demanded = ["BUYER_PROFILES_LIST"];
+		var demanded = ["BUYER_PROFILES_LIST", "BUYER_PROFILES_DATA"];
 
 		if(!BX.Sale.Admin.OrderBuyer.savedPropsCollections[personTypeId])
+		{
 			demanded.push("PROPERTIES_ARRAY");
+		}
 		else
+		{
 			BX.Sale.Admin.OrderBuyer.setOrderPropsArray();
+		}
+
+//		demanded.push("PROPERTIES");
 
 		BX.Sale.Admin.OrderAjaxer.sendRequest(
 			BX.Sale.Admin.OrderEditPage.ajaxRequests.refreshOrderData({
-					demanded: demanded,
-					operation: "BUYER_CHANGED"
+				demandFields: demanded,
+				operation: "BUYER_CHANGED",
+				givenFields: {
+					"USER_ID": this.getBuyerId(),
+					"PERSON_TYPE_ID": personTypeId,
+					"SITE_ID": BX.Sale.Admin.OrderEditPage.siteId
 				}
-			)
+			})
 		);
 	},
 

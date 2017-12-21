@@ -29,4 +29,5 @@ $MESS["IBLOCK_FIELD"] = "Поля";
 $MESS["IBLOCK_ELEMENT_SORT_ORDER"] = "Порядок сортування фотографій у розділі";
 $MESS["IBLOCK_TYPE"] = "Тип інфоблоку";
 $MESS["T_IBLOCK_DESC_PAGER_PHOTO"] = "Фотографії";
+$MESS["CP_BPS_SET_LAST_MODIFIED"] = "У заголовках відповіді час модифікації сторінки";
 ?>

@@ -219,12 +219,12 @@ else:
 				<input type="hidden" name="element[ID]" value="<?=$id?>" />
 				<div id="ib_external_values_<?=$randTag?>">
 
-					<table class="internal" style="margin: 0 auto">
+					<table class="internal" style="margin: 0 auto; min-width: 600px;">
 						<tbody class="bx-ui-dynamiclist-container">
 							<tr class="heading">
-								<td><?=Loc::getMessage('SALE_LOCATION_E_HEADER_LOC_LOCATION')?></td>
-								<td><?=Loc::getMessage('SALE_LOCATION_E_HEADER_LOC_SORT')?></td>
-								<td><?=Loc::getMessage('SALE_LOCATION_E_HEADER_LOC_REMOVE')?></td>
+								<td width="70%"><?=Loc::getMessage('SALE_LOCATION_E_HEADER_LOC_LOCATION')?></td>
+								<td width="20%"><?=Loc::getMessage('SALE_LOCATION_E_HEADER_LOC_SORT')?></td>
+								<td width="10%"><?=Loc::getMessage('SALE_LOCATION_E_HEADER_LOC_REMOVE')?></td>
 							</tr>
 
 							<?if(is_array($formData['LOCATION'])):?>

@@ -33,4 +33,5 @@ $MESS["SALE_DH_CPCR_ERROR_CONNECT"] = "Cannot calculate the delivery cost: conne
 $MESS["SALE_DH_CPCR_ERROR_RESPONSE"] = "Cannot calculate the delivery cost: bad server response";
 $MESS["SALE_DH_CPCR_NEXT_STEP"] = "Edit locations";
 $MESS["SALE_DH_CPCR_DAYS"] = "days";
+$MESS["SALE_DH_DEPRECATED_MESSAGE"] = "This delivery service handler is outdated and no longer supported. Please use the #A1#new SPSR handler#A2#";
 ?>

@@ -200,6 +200,7 @@ abstract class CDatabaseMysql extends CAllDatabase
 			return false;
 		}
 
+
 		$res = new CDBResult($result);
 		$res->DB = $this;
 		if($DB->ShowSqlStat)
@@ -330,9 +331,7 @@ abstract class CDatabaseMysql extends CAllDatabase
 		//time zone
 		if($strType == "FULL" && CTimeZone::Enabled())
 		{
-			static $diff = false;
-			if($diff === false)
-				$diff = CTimeZone::GetOffset();
+			$diff = CTimeZone::GetOffset();
 
 			if($diff <> 0)
 				$sFieldExpr = "DATE_ADD(".$strFieldName.", INTERVAL ".$diff." SECOND)";
@@ -348,9 +347,7 @@ abstract class CDatabaseMysql extends CAllDatabase
 		//time zone
 		if($strType == "FULL" && CTimeZone::Enabled())
 		{
-			static $diff = false;
-			if($diff === false)
-				$diff = CTimeZone::GetOffset();
+			$diff = CTimeZone::GetOffset();
 
 			if($diff <> 0)
 				$sFieldExpr = "DATE_ADD(".$sFieldExpr.", INTERVAL -(".$diff.") SECOND)";
@@ -645,7 +642,7 @@ abstract class CDatabaseMysql extends CAllDatabase
 	{
 		global $DB;
 
-		if(!is_object($this) || !isset($this->type))
+		if(!isset($this) || !is_object($this) || !isset($this->type))
 		{
 			return $DB->Add($tablename, $arFields, $arCLOBFields, $strFileDir, $ignore_errors, $error_position, $arOptions);
 		}

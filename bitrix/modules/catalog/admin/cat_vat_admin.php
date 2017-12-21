@@ -1,4 +1,7 @@
 <?
+/** @global CUser $USER */
+/** @global CMain $APPLICATION */
+/** @global CDatabase $DB */
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/catalog/prolog.php");
 if (!($USER->CanDoOperation('catalog_read') || $USER->CanDoOperation('catalog_vat')))
@@ -260,29 +263,29 @@ $oFilter->Begin();
 	<tr>
 		<td>ID:</td>
 		<td>
-			<input type="text" name="filter_id" size="5" value="<?echo htmlspecialcharsex($filter_id)?>" size="5" />
+			<input type="text" name="filter_id" size="5" value="<?=htmlspecialcharsbx($filter_id)?>">
 		</td>
 	</tr>
 	<tr>
 		<td><?= GetMessage("CVAT_FILTER_ACTIVE") ?>:</td>
 		<td>
 			<select name="filter_active">
-				<option value=""><?= htmlspecialcharsex("(".GetMessage("CVAT_ALL").")") ?></option>
-				<option value="Y"<?if ($filter_active=="Y") echo " selected"?>><?= htmlspecialcharsex(GetMessage("CVAT_YES")) ?></option>
-				<option value="N"<?if ($filter_active=="N") echo " selected"?>><?= htmlspecialcharsex(GetMessage("CVAT_NO")) ?></option>
+				<option value=""><?=htmlspecialcharsbx("(".GetMessage("CVAT_ALL").")") ?></option>
+				<option value="Y"<?if ($filter_active=="Y") echo " selected"?>><?=htmlspecialcharsbx(GetMessage("CVAT_YES")) ?></option>
+				<option value="N"<?if ($filter_active=="N") echo " selected"?>><?=htmlspecialcharsbx(GetMessage("CVAT_NO")) ?></option>
 			</select>
 		</td>
 	</tr>
 	<tr>
 		<td><?= GetMessage("CVAT_FILTER_NAME") ?>:</td>
 		<td>
-			<input type="text" name="filter_name" size="50" value="<?echo htmlspecialcharsex($filter_name)?>" size="30" />&nbsp;<?=ShowFilterLogicHelp()?>
+			<input type="text" name="filter_name" size="30" value="<?=htmlspecialcharsbx($filter_name)?>">&nbsp;<?=ShowFilterLogicHelp()?>
 		</td>
 	</tr>
 	<tr>
 		<td><?= GetMessage("CVAT_FILTER_RATE") ?>:</td>
 		<td>
-			<input type="text" name="filter_rate" size="5" value="<?echo htmlspecialcharsex($filter_rate)?>" size="30" />%
+			<input type="text" name="filter_rate" size="30" value="<?=htmlspecialcharsbx($filter_rate)?>">%
 		</td>
 	</tr>
 <?
@@ -300,4 +303,3 @@ $oFilter->End();
 $lAdmin->DisplayList();
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");
-?>

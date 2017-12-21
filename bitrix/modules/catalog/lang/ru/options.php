@@ -127,6 +127,7 @@ $MESS["CAT_QUANTITY_CONTROL_TAB"] = "Очистка каталога";
 $MESS["CAT_QUANTITY_CONTROL"] = "Очистка Торгового каталога";
 $MESS["CAT_PRODUCT_SUBSCRIBE"] = "Разрешить подписку при отсутствии товара";
 $MESS["CAT_SHOW_CATALOG_TAB"] = "Показывать вкладку Торговый каталог для товаров, имеющих торговые предложения";
+$MESS["CAT_ENABLE_SHOW_CATALOG_TAB_WITH_OFFERS"] = "Данная настройка является устаревшей. При ее включении автоматический расчет доступности товара по данным торговых предложений будет отключен. Доступность товара будет рассчитываться на основе данных самого товара.";
 $MESS["CAT_PRODUCT_DEFAULT_VAT_INCLUDED"] = "Устанавливать параметр \"НДС включен в цену\" при создании новых товаров и предложений";
 $MESS["CAT_STORE_LIST_IS_EMPTY"] = "Склады отсутствуют";
 $MESS["CAT_PRODUCT_CARD_DEFAULT_VALUES"] = "Значения параметров товаров по умолчанию";
@@ -153,4 +154,7 @@ $MESS["CAT_PROC_REINDEX_SETS_AVAILABLE_ALERT"] = "Внимание! Выполн
 $MESS["CAT_PRODUCT_SETTINGS_STATUS_YES"] = "Да";
 $MESS["CAT_PRODUCT_SETTINGS_STATUS_NO"] = "Нет";
 $MESS["CAT_PRODUCT_SETTINGS_CHANGE"] = "Изменить";
+$MESS["CAT_PRODUCT_SUBSCRIBE_TITLE"] = "Подписка на товары";
+$MESS["CAT_PRODUCT_SUBSCRIBE_LABLE_ENABLE"] = "Разрешить подписку на товары";
+$MESS["CAT_PRODUCT_SUBSCRIBE_LABLE_REPEATED_NOTIFY"] = "Отправка дополнительного письма при повторном отсутствии товара";
 ?>

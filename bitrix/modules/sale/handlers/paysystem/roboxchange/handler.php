@@ -25,9 +25,11 @@ class RoboxchangeHandler extends PaySystem\ServiceHandler
 		if ($this->isTestMode($payment))
 			$test = '_TEST';
 
+		$paymentShouldPay = (float)$this->getBusinessValue($payment, 'PAYMENT_SHOULD_PAY');
+
 		$signatureValue = md5(
 			$this->getBusinessValue($payment, 'ROBOXCHANGE_SHOPLOGIN').":".
-			$this->getBusinessValue($payment, 'PAYMENT_SHOULD_PAY').":".
+			$paymentShouldPay.":".
 			$this->getBusinessValue($payment, 'PAYMENT_ID').":".
 			$this->getBusinessValue($payment, 'ROBOXCHANGE_SHOPPASSWORD'.$test).':'.
 			'SHP_BX_PAYSYSTEM_CODE='.$payment->getPaymentSystemId().':'.
@@ -39,6 +41,7 @@ class RoboxchangeHandler extends PaySystem\ServiceHandler
 			'PS_MODE' => $this->service->getField('PS_MODE'),
 			'SIGNATURE_VALUE' => $signatureValue,
 			'BX_PAYSYSTEM_CODE' => $payment->getPaymentSystemId(),
+			'PAYMENT_SHOULD_PAY' => $paymentShouldPay,
 		);
 		$this->setExtraParams($params);
 
@@ -109,7 +112,7 @@ class RoboxchangeHandler extends PaySystem\ServiceHandler
 	{
 		return array(
 			'pay' => array(
-				self::ACTIVE_URL => 'https://merchant.roboxchange.com/Index.aspx'
+				self::ACTIVE_URL => 'https://auth.robokassa.ru/Merchant/Index.aspx'
 			)
 		);
 	}
@@ -220,22 +223,22 @@ class RoboxchangeHandler extends PaySystem\ServiceHandler
 	public static function getHandlerModeList()
 	{
 		return array(
-			'Qiwi40RIBRM' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_QIWIR_TERMINALS'),
-			'WMRRM' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_WMRM_EMONEY'),
-			'AlfaBankRIBR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_ALFABANKOCEANR_BANK'),
-			'BANKOCEAN3R' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_OCEANBANKOCEANR_BANK'),
-			'MixplatMegafonRIBR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_MEGAFONR_MOBILE'),
-			'MixplatMTSRIBR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_MTSR_MOBILE'),
-			'RapidaRIBEurosetR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_RAPIDAOCEANEUROSETR_OTHER'),
-			'MixplatTele2RIBR' => 'Tele2',
-			'MixplatBeelineRIBR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_MMixplatBeelineRIBR'),
-			'RussianStandardBankRIBR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_RussianStandardBankRIBR'),
-			'BSSNationalBankTRUSTR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_BSSNationalBankTRUSTR'),
-			'BSSTatfondbankR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_BSSTatfondbankR'),
-			'PSKBR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_PSKBR'),
-			'HandyBankMerchantOceanR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_HandyBankMerchantOceanR'),
+			'' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_NO_CHOOSE'),
+			'WMR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_WMRM_EMONEY'),
+			'AlfaBank' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_ALFABANKOCEANR_BANK'),
+			'BankCard' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_OCEANBANKOCEANR_BANK'),
+			'PhoneMegafon' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_MEGAFONR_MOBILE'),
+			'PhoneMTS' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_MTSR_MOBILE'),
+			'StoreEuroset' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_RAPIDAOCEANEUROSETR_OTHER'),
+			'PhoneTele2' => 'Tele2',
+			'PhoneBeeline' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_MMixplatBeelineRIBR'),
+			'BankRSB' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_RussianStandardBankRIBR'),
+			'BankTrust' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_BSSNationalBankTRUSTR'),
+			'BankTatfondbank' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_BSSTatfondbankR'),
+			'BankPSB' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_PSKBR'),
+			'HandyBank' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_HandyBankMerchantOceanR'),
 			'HandyBankBO' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_HandyBankBO'),
-			'RapidaRIBSvyaznoyR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_RapidaRIBSvyaznoyR'),
+			'StoreSvyaznoy' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_RapidaRIBSvyaznoyR'),
 			'HandyBankFB' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_HandyBankFB'),
 			'HandyBankFU' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_HandyBankFU'),
 			'HandyBankKB' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_HandyBankKB'),
@@ -244,14 +247,14 @@ class RoboxchangeHandler extends PaySystem\ServiceHandler
 			'HandyBankNSB' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_HandyBankNSB'),
 			'HandyBankTB' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_HandyBankTB'),
 			'HandyBankVIB' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_HandyBankVIB'),
-			'BSSMezhtopenergobankR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_BSSMezhtopenergobankR'),
-			'MINBankR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_MINBankR'),
-			'BSSFederalBankForInnovationAndDevelopmentR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_BSSFederalBankForInnovationAndDevelopmentR'),
-			'BSSIntezaR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_BSSIntezaR'),
-			'BSSBankGorodR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_BSSBankGorodR'),
-			'BSSAvtovazbankR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_BSSAvtovazbankR'),
-			'KUBankR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_KUBankR'),
-			'BANKOCEAN3CHECKR' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_BANKOCEAN3CHECKR'),
+			'BankMTEB' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_BSSMezhtopenergobankR'),
+			'BankMIN' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_MINBankR'),
+			'BankFBID' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_BSSFederalBankForInnovationAndDevelopmentR'),
+			'BankInteza' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_BSSIntezaR'),
+			'BankGorod' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_BSSBankGorodR'),
+			'BankAVB' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_BSSAvtovazbankR'),
+			'KUBank' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_KUBankR'),
+			'MobileRobokassa' => Loc::getMessage('SALE_HPS_ROBOXCHANGE_BANKOCEAN3CHECKR'),
 		);
 	}
 }

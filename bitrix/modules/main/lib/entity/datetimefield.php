@@ -19,4 +19,9 @@ class DatetimeField extends DateField
 	{
 		ScalarField::__construct($name, $parameters);
 	}
+
+	public function convertValueToDb($value)
+	{
+		return $this->getConnection()->getSqlHelper()->convertToDbDateTime($value);
+	}
 }

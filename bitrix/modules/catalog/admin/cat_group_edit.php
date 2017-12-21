@@ -295,8 +295,8 @@ $tabControl->BeginNextTab();
 	foreach ($arLangList as &$arOneLang)
 	{
 		?><tr>
-			<td width="40%"><?echo GetMessage("NAME") ?> (<? echo htmlspecialcharsex($arOneLang['NAME']);?>):</td>
-			<td width="60%"><input type="text" name="NAME_LANG[<? echo htmlspecialcharsbx($arOneLang['LID']); ?>]" value="<? echo htmlspecialcharsbx(isset($arGroupLangList[$arOneLang['LID']]) ? $arGroupLangList[$arOneLang['LID']] : ''); ?>"></td>
+			<td width="40%"><?echo GetMessage("NAME") ?> (<?=htmlspecialcharsbx($arOneLang['NAME']); ?>):</td>
+			<td width="60%"><input type="text" name="NAME_LANG[<?=htmlspecialcharsbx($arOneLang['LID']); ?>]" value="<?=htmlspecialcharsbx(isset($arGroupLangList[$arOneLang['LID']]) ? $arGroupLangList[$arOneLang['LID']] : ''); ?>"></td>
 		</tr><?
 	}
 	if (isset($arOneLang))
@@ -311,7 +311,7 @@ $tabControl->BeginNextTab();
 			<?
 			foreach ($arUserGroupList as &$arOneGroup)
 			{
-				?><option value="<? echo $arOneGroup["ID"]; ?>"<?if (in_array($arOneGroup["ID"], $arGroupUserList)) echo " selected"?>><? echo "[".$arOneGroup["ID"]."] ".htmlspecialcharsex($arOneGroup["NAME"]); ?></option><?
+				?><option value="<? echo $arOneGroup["ID"]; ?>"<?if (in_array($arOneGroup["ID"], $arGroupUserList)) echo " selected"?>><? echo "[".$arOneGroup["ID"]."] ".htmlspecialcharsbx($arOneGroup["NAME"]); ?></option><?
 			}
 			if (isset($arOneGroup))
 				unset($arOneGroup);
@@ -328,7 +328,7 @@ $tabControl->BeginNextTab();
 			<?
 			foreach ($arUserGroupList as &$arOneGroup)
 			{
-				?><option value="<? echo $arOneGroup["ID"]; ?>"<?if (in_array($arOneGroup["ID"], $arGroupUserBuyList)) echo " selected"?>><? echo "[".$arOneGroup["ID"]."] ".htmlspecialcharsex($arOneGroup["NAME"]); ?></option><?
+				?><option value="<? echo $arOneGroup["ID"]; ?>"<?if (in_array($arOneGroup["ID"], $arGroupUserBuyList)) echo " selected"?>><? echo "[".$arOneGroup["ID"]."] ".htmlspecialcharsbx($arOneGroup["NAME"]); ?></option><?
 			}
 			if (isset($arOneGroup))
 				unset($arOneGroup);

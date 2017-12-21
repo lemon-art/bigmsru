@@ -1,4 +1,7 @@
 <?if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED!==true) die();
+
+$enableAuthorize = (isset($arCurrentValues['SHOW_AUTHOR']) && $arCurrentValues['SHOW_AUTHOR'] == 'Y');
+
 $arComponentParameters = array(
 	"GROUPS" => array(
 		"PERSONAL" => array(
@@ -55,8 +58,9 @@ $arComponentParameters = array(
 		"SHOW_PERSONAL_LINK" => array(
 			"NAME" => GetMessage("SBBL_SHOW_PERSONAL_LINK"),
 			"TYPE" => "CHECKBOX",
-			"DEFAULT" => "N",
+			"DEFAULT" => "Y",
 			"PARENT" => "PERSONAL",
+			"REFRESH" => "Y"
 		),
 		"PATH_TO_PERSONAL" => array(
 			"NAME" => GetMessage("SBBL_PATH_TO_PERSONAL"),
@@ -64,6 +68,7 @@ $arComponentParameters = array(
 			"DEFAULT" => '={SITE_DIR."personal/"}',
 			"COLS" => 25,
 			"PARENT" => "PERSONAL",
+			"HIDDEN" => (isset($arCurrentValues['SHOW_PERSONAL_LINK']) && $arCurrentValues['SHOW_PERSONAL_LINK'] == 'N' ? 'Y' : 'N')
 		),
 		// AUTHOR
 		"SHOW_AUTHOR" => array(
@@ -71,18 +76,28 @@ $arComponentParameters = array(
 			"TYPE" => "CHECKBOX",
 			"DEFAULT" => "N",
 			"PARENT" => "AUTHOR",
+			"REFRESH" => "Y"
 		),
 		"PATH_TO_REGISTER" => array(
 			"NAME" => GetMessage("SBBL_PATH_TO_REGISTER"),
 			"TYPE" => "STRING",
 			"DEFAULT" => '={SITE_DIR."login/"}',
 			"PARENT" => "AUTHOR",
+			"HIDDEN" => ($enableAuthorize ? 'N' : 'Y')
+		),
+		"PATH_TO_AUTHORIZE" => array(
+			"NAME" => GetMessage("SBBL_PATH_TO_AUTHORIZE"),
+			"TYPE" => "STRING",
+			"DEFAULT" => "",
+			"PARENT" => "AUTHOR",
+			"HIDDEN" => ($enableAuthorize ? 'N' : 'Y')
 		),
 		"PATH_TO_PROFILE" => array(
 			"NAME" => GetMessage("SBBL_PATH_TO_PROFILE"),
 			"TYPE" => "STRING",
 			"DEFAULT" => '={SITE_DIR."personal/"}',
 			"PARENT" => "AUTHOR",
+			"HIDDEN" => ($enableAuthorize ? 'N' : 'Y')
 		),
 		// LIST
 		"SHOW_PRODUCTS" => array(
@@ -115,12 +130,6 @@ if($arCurrentValues["SHOW_PRODUCTS"] == "Y")
 		),
 		"SHOW_NOTAVAIL" => array(
 			"NAME" => GetMessage('SBBL_SHOW_NOTAVAIL'),
-			"TYPE" => "CHECKBOX",
-			"DEFAULT" => "N",
-			"PARENT" => "LIST",
-		),
-		"SHOW_SUBSCRIBE" => array(
-			"NAME" => GetMessage('SBBL_SHOW_SUBSCRIBE'),
 			"TYPE" => "CHECKBOX",
 			"DEFAULT" => "N",
 			"PARENT" => "LIST",

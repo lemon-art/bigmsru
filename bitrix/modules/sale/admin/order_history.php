@@ -57,8 +57,10 @@ $arHistSort["ID"] = $order;
 
 $arFilterHistory = array("ORDER_ID" => $ID);
 
-if (isset($entity))
-	$arFilterHistory = array_merge($entity, $arFilterHistory);
+if (isset($historyEntity) && is_array($historyEntity))
+{
+	$arFilterHistory = array_merge($historyEntity, $arFilterHistory);
+}
 
 if (strlen($filter_type)>0) $arFilterHistory["TYPE"] = trim($filter_type);
 if (IntVal($filter_user)>0) $arFilterHistory["USER_ID"] = intval($filter_user);
@@ -114,6 +116,7 @@ if ($filter_important === 'Y')
 	$arFilterHistory['@TYPE'] = \Bitrix\Sale\OrderHistory::getManagerLogItems();
 }
 
+CTimeZone::Disable();
 
 // new order history data
 $dbOrderChange = CSaleOrderChange::GetList(
@@ -126,6 +129,8 @@ $dbOrderChange = CSaleOrderChange::GetList(
 
 while ($arChangeRecord = $dbOrderChange->Fetch())
 	$arHistoryData[] = $arChangeRecord;
+
+CTimeZone::Enable();
 
 // advancing sorting is necessary if old history results are mixed with new order changes
 if ($bUseOldHistory)

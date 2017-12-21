@@ -13,4 +13,6 @@ $MESS["SALE_SLS_SEARCH_BY_PRIMARY_PARAMETER"] = "Шукати за іденти�
 $MESS["SALE_SLS_PROVIDE_LINK_BY_PARAMETER"] = "Зберігати зв'язок через";
 $MESS["SALE_SLS_PROVIDE_LINK_BY_PARAMETER_ID"] = "Ідентифікатор (id)";
 $MESS["SALE_SLS_PROVIDE_LINK_BY_PARAMETER_CODE"] = "Символьний код (code)";
+$MESS["SALE_SLS_PRESELECT_TREE_TRUNK_PARAMETER"] = "Відображати статичний стовбур дерева";
+$MESS["SALE_SLS_PRECACHE_LAST_LEVEL_PARAMETER"] = "Попередньо завантажувати останній вибраний рівень";
 ?>

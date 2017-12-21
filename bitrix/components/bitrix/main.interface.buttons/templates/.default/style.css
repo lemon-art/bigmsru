@@ -11,7 +11,6 @@
 
 .main-buttons {
     -moz-user-select: none;
-    -khtml-user-select: none;
     -webkit-user-select: none;
     user-select: none;
 }
@@ -78,6 +77,7 @@
     height: 65px;
     font: 15px/65px "OpenSans-Semibold", "Helvetica Neue", Arial, Helvetica, sans-serif;
     color: #545c6a;
+	outline: none;
 	text-decoration: none;
     -webkit-transition: color .3s ease;
     transition: color .3s ease;
@@ -87,6 +87,13 @@
     -khtml-user-drag: none;
     -webkit-user-drag: none;
     text-transform: none;
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+.main-buttons-item:focus,
+.main-buttons-item:focus .main-buttons-item-link,
+.main-buttons-item-link:focus {
+	outline: none;
 }
 
 .main-buttons-item-link:hover {
@@ -329,9 +336,9 @@
 
 
 /**
- * Submenu seporator styles
+ * Submenu separator styles
  */
-.menu-popup .menu-popup-items .main-buttons-submenu-item.main-buttons-submenu-seporator {
+.menu-popup .menu-popup-items .main-buttons-submenu-item.main-buttons-submenu-separator {
     margin-top: 4px;
     margin-bottom: 4px;
     height: 0;
@@ -341,7 +348,7 @@
 
 
 
-.menu-popup .menu-popup-items .main-buttons-submenu-item.main-buttons-submenu-seporator.main-buttons-hidden-label {
+.menu-popup .menu-popup-items .main-buttons-submenu-item.main-buttons-submenu-separator.main-buttons-hidden-label {
     margin-top: 8px;
     margin-bottom: 8px;
     height: 0;
@@ -350,11 +357,11 @@
 	z-index: 2;
 }
 
-.menu-popup .menu-popup-items .main-buttons-submenu-item.main-buttons-submenu-seporator.main-buttons-hidden-label .menu-popup-item-icon {
+.menu-popup .menu-popup-items .main-buttons-submenu-item.main-buttons-submenu-separator.main-buttons-hidden-label .menu-popup-item-icon {
     display: none;
 }
 
-.menu-popup .menu-popup-items .main-buttons-submenu-item.main-buttons-submenu-seporator:hover {
+.menu-popup .menu-popup-items .main-buttons-submenu-item.main-buttons-submenu-separator:hover {
     background: none;
     box-shadow: none;
     border-bottom: 1px rgba(0,0,0,.1) solid;
@@ -363,11 +370,11 @@
 
 
 
-.menu-popup .menu-popup-items .main-buttons-submenu-item.main-buttons-submenu-seporator {
+.menu-popup .menu-popup-items .main-buttons-submenu-item.main-buttons-submenu-separator {
 	padding: 0;
 }
 
-.menu-popup .menu-popup-items .main-buttons-submenu-item.main-buttons-submenu-seporator .menu-popup-item-text {
+.menu-popup .menu-popup-items .main-buttons-submenu-item.main-buttons-submenu-separator .menu-popup-item-text {
 	width: 100%;
 	padding-left: 0;
 	box-sizing: border-box;
@@ -378,7 +385,7 @@
 	top: -8px;
 }
 
-.menu-popup .menu-popup-items .main-buttons-submenu-item.main-buttons-submenu-seporator .menu-popup-item-text span {
+.menu-popup .menu-popup-items .main-buttons-submenu-item.main-buttons-submenu-separator .menu-popup-item-text span {
 	position: relative;
 	display: inline-block;
 	padding: 0 12px;
@@ -392,11 +399,14 @@
 	vertical-align: middle;
 	height: 16px;
 	line-height: 16px;
+}
+
+.template-bitrix24 .menu-popup .menu-popup-items .main-buttons-submenu-item.main-buttons-submenu-separator .menu-popup-item-text span {
 	top: -19px;
 }
 
 
-.menu-popup .menu-popup-items .main-buttons-submenu-item.main-buttons-submenu-seporator.main-buttons-manage {
+.menu-popup .menu-popup-items .main-buttons-submenu-item.main-buttons-submenu-separator.main-buttons-manage {
 	margin-top: 12px;
 	margin-bottom: 12px;
 }

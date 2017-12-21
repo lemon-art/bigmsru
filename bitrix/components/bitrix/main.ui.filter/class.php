@@ -3,6 +3,8 @@
 use Bitrix\Main\UI\Filter\Type;
 use Bitrix\Main\UI\Filter\Field;
 use Bitrix\Main\UI\Filter\DateType;
+use Bitrix\Main\UI\Filter\NumberType;
+use Bitrix\Main\UI\Filter\Theme;
 use Bitrix\Main\Localization\Loc;
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true)
@@ -17,7 +19,14 @@ class CMainUiFilter extends CBitrixComponent
 {
 	protected $defaultViewSort = 500;
 	protected $options;
-	protected $gridOptions;
+	protected $jsFolder = "/js/";
+	protected $blocksFolder = "/blocks/";
+	protected $cssFolder = "/css/";
+	protected $themesFolder = "/themes/";
+	protected $configName = "config.json";
+	protected $commonOptions;
+	protected $theme;
+	protected $themeInstance;
 
 
 	protected function prepareResult()
@@ -30,256 +39,572 @@ class CMainUiFilter extends CBitrixComponent
 		$this->arResult["TARGET_VIEW_SORT"] = $this->getViewSort();
 		$this->arResult["SETTINGS_URL"] = $this->prepareSettingsUrl();
 		$this->arResult["FILTER_ROWS"] = $this->prepareFilterRows();
-		$this->arResult["CURRENT_PRESET"] = $this->getDefaultPreset();
+		$this->arResult["CURRENT_PRESET"] = $this->prepareDefaultPreset();
+		$this->arResult["ENABLE_LABEL"] = $this->prepareEnableLabel();
+		$this->arResult["ENABLE_LIVE_SEARCH"] = $this->prepareEnableLiveSearch();
+		$this->arResult["DISABLE_SEARCH"] = $this->prepareDisableSearch();
+		$this->arResult["COMPACT_STATE"] = $this->prepareCompactState();
+		$this->arResult["MAIN_UI_FILTER__AND"] = Loc::getMessage('MAIN_UI_FILTER__AND');
+		$this->arResult["MAIN_UI_FILTER__MORE"] = Loc::getMessage('MAIN_UI_FILTER__MORE');
+		$this->arResult["MAIN_UI_FILTER__BEFORE"] = Loc::getMessage("MAIN_UI_FILTER__BEFORE");
+		$this->arResult["MAIN_UI_FILTER__AFTER"] = Loc::getMessage("MAIN_UI_FILTER__AFTER");
+		$this->arResult["MAIN_UI_FILTER__NUMBER_MORE"] = Loc::getMessage("MAIN_UI_FILTER__NUMBER_MORE");
+		$this->arResult["MAIN_UI_FILTER__NUMBER_LESS"] = Loc::getMessage("MAIN_UI_FILTER__NUMBER_LESS");
+		$this->arResult["MAIN_UI_FILTER__PLACEHOLDER_DEFAULT"] = Loc::getMessage("MAIN_UI_FILTER__PLACEHOLDER_DEFAULT");
+		$this->arResult["MAIN_UI_FILTER__PLACEHOLDER_WITH_FILTER"] = Loc::getMessage("MAIN_UI_FILTER__PLACEHOLDER_WITH_FILTER");
+		$this->arResult["MAIN_UI_FILTER__PLACEHOLDER"] = Loc::getMessage("MAIN_UI_FILTER__PLACEHOLDER");
+		$this->arResult["MAIN_UI_FILTER__QUARTER"] = Loc::getMessage("MAIN_UI_FILTER__QUARTER");
+		$this->arResult["MAIN_UI_FILTER__IS_SET_AS_DEFAULT_PRESET"] = Loc::getMessage("MAIN_UI_FILTER__IS_SET_AS_DEFAULT_PRESET");
+		$this->arResult["MAIN_UI_FILTER__SET_AS_DEFAULT_PRESET"] = Loc::getMessage("MAIN_UI_FILTER__SET_AS_DEFAULT_PRESET");
+		$this->arResult["MAIN_UI_FILTER__EDIT_PRESET_TITLE"] = Loc::getMessage("MAIN_UI_FILTER__EDIT_PRESET_TITLE");
+		$this->arResult["MAIN_UI_FILTER__REMOVE_PRESET"] = Loc::getMessage("MAIN_UI_FILTER__REMOVE_PRESET");
+		$this->arResult["MAIN_UI_FILTER__DRAG_TITLE"] = Loc::getMessage("MAIN_UI_FILTER__DRAG_TITLE");
+		$this->arResult["MAIN_UI_FILTER__DRAG_FIELD_TITLE"] = Loc::getMessage("MAIN_UI_FILTER__DRAG_FIELD_TITLE");
+		$this->arResult["MAIN_UI_FILTER__REMOVE_FIELD"] = Loc::getMessage("MAIN_UI_FILTER__REMOVE_FIELD");
+		$this->arResult["MAIN_UI_FILTER__CONFIRM_MESSAGE_FOR_ALL"] = Loc::getMessage("MAIN_UI_FILTER__CONFIRM_MESSAGE_FOR_ALL");
+		$this->arResult["MAIN_UI_FILTER__CONFIRM_APPLY_FOR_ALL"] = Loc::getMessage("MAIN_UI_FILTER__CONFIRM_APPLY_FOR_ALL");
+		$this->arResult["MAIN_UI_FILTER__DATE_NEXT_DAYS_LABEL"] = Loc::getMessage("MAIN_UI_FILTER__DATE_NEXT_DAYS_LABEL");
+		$this->arResult["MAIN_UI_FILTER__DATE_PREV_DAYS_LABEL"] = Loc::getMessage("MAIN_UI_FILTER__DATE_PREV_DAYS_LABEL");
+		$this->arResult["CLEAR_GET"] = $this->prepareClearGet();
+		$this->arResult["VALUE_REQUIRED_MODE"] = $this->prepareValueRequiredMode();
+		$this->arResult["THEME"] = $this->getTheme();
+		$this->arResult["RESET_TO_DEFAULT_MODE"] = $this->prepareResetToDefaultMode();
+		$this->arResult["COMMON_PRESETS_ID"] = $this->arParams["COMMON_PRESETS_ID"];
+		$this->arResult["IS_AUTHORIZED"] = $this->prepareIsAuthorized();
 	}
 
-	protected function prepareCurrentPreset()
-	{
-		$options = $this->getOptions()->getOptions();
-		$currentFilter = $this->prepareDefaultPreset();
 
-		if (isset($options["filter"]) && !empty($options["filter"]))
+	protected static function prepareIsAuthorized()
+	{
+		global $USER;
+		return $USER->isAuthorized();
+	}
+
+	protected function prepareResetToDefaultMode()
+	{
+		$result = true;
+
+		if (isset($this->arParams["RESET_TO_DEFAULT_MODE"]) && is_bool($this->arParams["RESET_TO_DEFAULT_MODE"]))
 		{
-			$currentFilter = $options["filter"];
+			$result = $this->arParams["RESET_TO_DEFAULT_MODE"];
 		}
 
-		return $currentFilter;
+		return $result;
 	}
 
-	protected function prepareFilterRows()
+	protected function prepareValueRequiredMode()
 	{
-		$resultRows = array();
+		return ($this->arParams["VALUE_REQUIRED_MODE"] == true);
+	}
 
-		if (is_array($this->arParams["FILTER_ROWS"]))
+	protected function prepareClearGet()
+	{
+		$apply = $this->request->get("apply_filter");
+		return !empty($apply);
+	}
+
+	protected function prepareDisableSearch()
+	{
+		$result = false;
+
+		if (isset($this->arParams["DISABLE_SEARCH"]) && $this->arParams["DISABLE_SEARCH"])
 		{
-			$sourceRows = $this->arParams["FILTER_ROWS"];
+			$result = true;
+		}
 
-			foreach ($sourceRows as $filedId => $fieldValue)
+		return $result;
+	}
+
+	protected function prepareEnableLiveSearch()
+	{
+		$this->arResult["ENABLE_LIVE_SEARCH"] = false;
+
+		if (isset($this->arParams["ENABLE_LIVE_SEARCH"]) && is_bool($this->arParams["ENABLE_LIVE_SEARCH"]))
+		{
+			$this->arResult["ENABLE_LIVE_SEARCH"] = $this->arParams["ENABLE_LIVE_SEARCH"];
+		}
+
+		return $this->arResult["ENABLE_LIVE_SEARCH"];
+	}
+
+	protected function prepareCompactState()
+	{
+		$result = false;
+
+		if (isset($this->arParams["COMPACT_STATE"]) && $this->arParams["COMPACT_STATE"])
+		{
+			$result = true;
+		}
+
+		return $result;
+	}
+
+	protected function prepareEnableLabel()
+	{
+		$this->arResult["ENABLE_LABEL"] = false;
+
+		if (is_bool($this->arParams["ENABLE_LABEL"]) && $this->arParams["ENABLE_LABEL"] === true)
+		{
+			$this->arResult["ENABLE_LABEL"] = true;
+		}
+
+		return $this->arResult["ENABLE_LABEL"];
+	}
+
+	protected function getUserOptions()
+	{
+		if (!($this->options instanceof \Bitrix\Main\UI\Filter\Options))
+		{
+			$this->options = new \Bitrix\Main\UI\Filter\Options(
+				$this->arParams["FILTER_ID"],
+				$this->arParams["FILTER_PRESETS"],
+				$this->arParams["COMMON_PRESETS_ID"]
+			);
+		}
+
+		return $this->options;
+	}
+
+	protected function prepareParams()
+	{
+		$options = $this->getUserOptions();
+		$presets = $this->arParams["FILTER_PRESETS"];
+
+		foreach ($presets as $key => $preset)
+		{
+			if ($options->isDeletedPreset($key))
 			{
-				$resultRows[] = $this->preparePresetField($filedId, $fieldValue);
+				unset($this->arParams["FILTER_PRESETS"][$key]);
 			}
 		}
 
-		return $resultRows;
+		$this->arParams["FILTER_ROWS"] = $this->prepareFilterRowsParam();
 	}
 
-	protected function preparePresets()
+	protected function prepareFilterRowsParam()
 	{
-		if (!is_array($this->arResult["PRESETS"]))
+		if (!isset($this->arParams["FILTER_ROWS"]) || !is_array($this->arParams["FILTER_ROWS"]))
 		{
-			$defaultPreset = $this->prepareDefaultPreset();
-			$sourcePresets = $this->arParams["FILTER_PRESETS"];
-			$sourcePresets["default_filter"] = $defaultPreset["default_filter"];
+			$this->arParams["FILTER_ROWS"] = array();
 
-			if (!empty($sourcePresets))
+			if (isset($this->arParams["FILTER"]) &&
+				!empty($this->arParams["FILTER"]) &&
+				is_array($this->arParams["FILTER"]))
 			{
-				foreach ($sourcePresets as $presetId => $preset)
+				foreach ($this->arParams["FILTER"] as $key => $field)
 				{
-					$tmpPreset = array();
-					$tmpPreset["TITLE"] = $preset["name"];
-					$tmpPreset["ID"] = $presetId;
-					$tmpPreset["FIELDS"] = array();
-
-					if (isset($preset["fields"]) && is_array($preset["fields"]))
+					if ($field["default"])
 					{
-						foreach ($preset["fields"] as $fieldId => $fieldValue)
+						$this->arParams["FILTER_ROWS"][$field["id"]] = true;
+					}
+				}
+			}
+		}
+
+		return $this->arParams["FILTER_ROWS"];
+	}
+
+
+
+	protected static function prepareSelectValue(Array $items = array(), $value = "")
+	{
+		$result = array();
+
+		foreach ($items as $key => $item)
+		{
+			if ($item["VALUE"] == $value)
+			{
+				$result = $item;
+				continue;
+			}
+		}
+
+		return $result;
+	}
+
+	protected static function prepareMultiselectValue(Array $items = array(), Array $value = array())
+	{
+		$result = array();
+		$values = array_values($value);
+
+		foreach ($items as $key => $item)
+		{
+			if (in_array($item["VALUE"], $values))
+			{
+				$result[] = $item;
+			}
+		}
+
+		return $result;
+	}
+
+	protected static function prepareValue(Array $field, Array $presetFields = array(), $prefix)
+	{
+		$fieldValuesKeys = array_keys($field["VALUES"]);
+		$fieldName = strpos($field["NAME"], $prefix) !== false ? str_replace($prefix, "", $field["NAME"]) : $field["NAME"];
+		$result = array();
+
+		foreach ($fieldValuesKeys as $key => $keyName)
+		{
+			$currentFieldName = $fieldName.$keyName;
+			$result[$keyName] = "";
+
+			if (array_key_exists($currentFieldName, $presetFields))
+			{
+				$result[$keyName] = $presetFields[$currentFieldName];
+			}
+		}
+
+		return $result;
+	}
+
+	protected static function prepareSubtype(Array $field, Array $presetFields = array(), $prefix)
+	{
+		$subTypes = $field["SUB_TYPES"];
+		$dateselName = strpos($field["NAME"], $prefix) === false ? $field["NAME"].$prefix : $field["NAME"];
+		$result = $subTypes[0];
+
+		if (array_key_exists($dateselName, $presetFields))
+		{
+			foreach ($subTypes as $key => $subType)
+			{
+				if ($subType["VALUE"] === $presetFields[$dateselName])
+				{
+					$result = $subType;
+				}
+			}
+		}
+
+		return $result;
+	}
+
+	protected static function prepareCustomEntityValue(Array $field, Array $presetFields = array())
+	{
+		$fieldName = $field["NAME"];
+		$fieldNameLabel = $fieldName."_label";
+		$fieldNameLabelAlias = $fieldName."_name";
+		$fieldNameValue = $fieldName."_value";
+		$result = array(
+			"_label" => "",
+			"_value" => ""
+		);
+
+		if (array_key_exists($fieldName, $presetFields))
+		{
+			$result["_value"] = $presetFields[$fieldName];
+
+		}
+
+		if (empty($result["_value"]) && array_key_exists($fieldNameValue, $presetFields))
+		{
+			$result["_value"] = $presetFields[$fieldNameValue];
+
+		}
+
+		if (array_key_exists($fieldNameLabel, $presetFields))
+		{
+			$result["_label"] = $presetFields[$fieldNameLabel];
+		}
+
+		if (empty($result["_label"]) && array_key_exists($fieldNameLabelAlias, $presetFields))
+		{
+			$result["_label"] = $presetFields[$fieldNameLabelAlias];
+		}
+
+		if (!empty($result["_value"]) && empty($result["_label"]))
+		{
+			$result["_label"] = "#".$result["_value"];
+		}
+
+		return $result;
+	}
+
+	protected static function prepareCustomValue(Array $field, Array $presetFields = array())
+	{
+		return array_key_exists($field["NAME"], $presetFields) ? $presetFields[$field["NAME"]] : "";
+	}
+
+	protected function preparePresetFields($presetRows = array(), $presetFields = array())
+	{
+		$result = array();
+
+		if (is_array($presetRows) && is_array($presetFields))
+		{
+			foreach ($presetRows as $rowKey => $rowName)
+			{
+				$field = $this->getField($rowName);
+
+				if (empty($field))
+				{
+					continue;
+				}
+
+				$value = array_key_exists($rowName, $presetFields) ? $presetFields[$rowName] : "";
+
+				switch ($field["TYPE"])
+				{
+					case Type::SELECT :
+					{
+						if (!empty($value) && is_array($value))
 						{
-							$tmpPreset["FIELDS"][] = $this->preparePresetField($fieldId, $fieldValue);
+							$values = array_values($value);
+							$value = $values[0];
+						}
+
+						$field["VALUE"] = self::prepareSelectValue($field["ITEMS"], $value);
+						break;
+					}
+
+					case Type::MULTI_SELECT :
+					{
+						$value = is_array($value) ? $value : array();
+						$field["VALUE"] = self::prepareMultiselectValue($field["ITEMS"], $value);
+						break;
+					}
+
+					case Type::DATE :
+					{
+						$field["SUB_TYPE"] = self::prepareSubtype($field, $presetFields, "_datesel");
+						$field["VALUES"] = self::prepareValue($field, $presetFields, "_datesel");
+						break;
+					}
+
+					case Type::NUMBER :
+					{
+						$field["SUB_TYPE"] = self::prepareSubtype($field, $presetFields, "_numsel");
+						$field["VALUES"] = self::prepareValue($field, $presetFields, "_numsel");
+						break;
+					}
+
+					case Type::CUSTOM_ENTITY :
+					{
+						$field["VALUES"] = self::prepareCustomEntityValue($field, $presetFields);
+						break;
+					}
+
+					case Type::CUSTOM :
+					{
+						$field["_VALUE"] = self::prepareCustomValue($field, $presetFields);
+						break;
+					}
+
+					case Type::STRING :
+					{
+						$field["VALUE"] = $value;
+						break;
+					}
+				}
+
+				$result[] = $field;
+			}
+		}
+
+		return $result;
+	}
+
+	protected function applyOptions()
+	{
+		$options = $this->getUserOptions();
+		$arOptions = $options->getOptions();
+		$optionsPresets = $arOptions["filters"];
+		$defaultPresets = $this->preparePresets();
+		$arFilter = $options->getFilter($this->arParams["FILTER"]);
+
+		if (!empty($optionsPresets) && is_array($optionsPresets))
+		{
+			$index = 0;
+
+			foreach ($optionsPresets as $presetId => $presetFields)
+			{
+				$rows = array();
+				if (isset($presetFields["filter_rows"]))
+				{
+					$rows = explode(",", $presetFields["filter_rows"]);
+				}
+				elseif(isset($presetFields["fields"]) && is_array($presetFields["fields"]))
+				{
+					$rows = array_keys($presetFields["fields"]);
+				}
+
+				$fields = isset($presetFields["fields"]) && is_array($presetFields["fields"])
+					? $presetFields["fields"] : array();
+
+				$preset = array(
+					"ID" => $presetId,
+					"SORT" => $presetFields["sort"] !== null ? $presetFields["sort"] : $index,
+					"TITLE" => $presetFields["name"],
+					"FIELDS" => $this->preparePresetFields($rows, $fields),
+					"IS_PINNED" => false
+				);
+
+				if (is_array($presetFields["additional"]))
+				{
+					if (isset($presetFields["additional_rows"]))
+					{
+						$additionalRows = explode(",", $presetFields["additional_rows"]);
+					}
+					else
+					{
+						$additionalRows = array();
+
+						foreach ($presetFields["additional"] as $fieldKey => $fieldValue)
+						{
+							$fieldKey = str_replace(
+								array("_numsel", "_datesel", "_from", "_to", "_days", "_year", "_month", "_quarter"),
+								"",
+								$fieldKey
+							);
+
+							if (!in_array($fieldKey, $additionalRows))
+							{
+								$additionalRows[] = $fieldKey;
+							}
 						}
 					}
 
-					$this->arResult["PRESETS"][] = $tmpPreset;
+					$preset["ADDITIONAL"] = $this->preparePresetFields($additionalRows, $presetFields["additional"]);
 				}
-			}
-		}
 
-		return $this->arResult["PRESETS"];
-	}
-
-	protected function getDefaultPreset()
-	{
-		$presets = $this->preparePresets();
-		$preset = array();
-
-		if (is_array($presets) && !empty($presets))
-		{
-			foreach ($presets as $presetKey => $currentPreset)
-			{
-				if ($currentPreset["ID"] === "default_filter")
+				if ($arOptions["default"] === $presetId)
 				{
-					$preset = $currentPreset;
+					$preset["IS_PINNED"] = true;
+				}
+
+				if ($preset["ID"] === "default_filter")
+				{
+					$preset["FIELDS_COUNT"] = $this->prepareFieldsCount();
+				}
+
+				if ($preset["ID"] === "tmp_filter")
+				{
+					$preset["FIELDS_COUNT"] = $this->prepareFieldsCount();
+				}
+
+				$isReplace = array_key_exists($presetId, $this->arParams["FILTER_PRESETS"]);
+				if ($isReplace || $preset["ID"] === "default_filter")
+				{
+					foreach ($defaultPresets as $defKey => $defaultPreset)
+					{
+						if ($defaultPreset["ID"] === $preset["ID"])
+						{
+							if (!isset($presetFields["fields"]) && !isset($presetFields["filter_rows"]))
+							{
+								$preset["FIELDS"] = $this->arResult["PRESETS"][$defKey]["FIELDS"];
+							}
+
+							$this->arResult["PRESETS"][$defKey] = $preset;
+						}
+					}
+				}
+				else
+				{
+					$this->arResult["PRESETS"][] = $preset;
+				}
+
+				$index++;
+			}
+
+			if (isset($arFilter["PRESET_ID"]))
+			{
+				foreach ($this->arResult["PRESETS"] as $key => $preset)
+				{
+					if ($arFilter["PRESET_ID"] === $preset["ID"])
+					{
+						$this->arResult["CURRENT_PRESET"] = $preset;
+						$this->arResult["CURRENT_PRESET"]["FIND"] = $arFilter["FIND"];
+					}
 				}
 			}
 		}
 
-		return $preset;
+		\Bitrix\Main\Type\Collection::sortByColumn(
+			$this->arResult["PRESETS"],
+			array("SORT" => array(SORT_NUMERIC, SORT_ASC)),
+			'',
+			1000
+		);
 	}
 
 	protected function prepareDefaultPreset()
 	{
-		return array(
-			"default_filter" => array(
-				"name" => Loc::getMessage("MAIN_UI_FILTER__DEFAULT_FILTER_NAME"),
-				"fields" => $this->arParams["FILTER_ROWS"]
-			)
-		);
-	}
-
-
-	protected function preparePresetField($fieldId, $fieldValue = "")
-	{
-		$field = $this->getField($fieldId);
-		$field["VALUE"] = !empty($fieldValue) ? $fieldValue : $field["VALUE"];
-		return $field;
-	}
-
-
-	protected function getField($name = "")
-	{
-		$fields = $this->prepareFields();
-		$filteredField = array();
-
-		if (is_array($fields) && !empty($fields))
+		if (!is_array($this->arResult["CURRENT_PRESET"]))
 		{
-			foreach ($fields as $key => $field)
-			{
-				if ($field["NAME"] === $name)
-				{
-					$filteredField = $this->prepareField($field);
-					break;
-				}
-			}
-		}
-
-		return $filteredField;
-	}
-
-	protected function getDataTypesList()
-	{
-		if (!isset($this->dateTypesList))
-		{
-			$this->dateTypesList = DateType::getList();
-		}
-
-		return $this->dateTypesList;
-	}
-
-	protected function getDateTypesList()
-	{
-		return DateType::getList();
-	}
-
-	protected function prepareField($field = array())
-	{
-		if ($field["TYPE"] === Type::DATE)
-		{
-			$subTypes = array();
-			$subType = is_array($field["SUB_TYPE"]) ? $field["SUB_TYPE"]["VALUE"] : $field["SUB_TYPE"];
-			$dateTypesList = $this->getDateTypesList();
-
-			foreach ($dateTypesList as $key => $type)
-			{
-				$subTypes[] = array(
-					"NAME" => Loc::getMessage("MAIN_UI_FILTER__".$key),
-					"VALUE" => $key
-				);
-			}
-
-			$field["SUB_TYPES"] = $subTypes;
-			$field["SUB_TYPE"] = array(
-				"NAME" => Loc::getMessage("MAIN_UI_FILTER__".$subType),
-				"VALUE" => $subType
+			$this->arResult["CURRENT_PRESET"] = array(
+				"ID" => "default_filter",
+				"TITLE" => Loc::getMessage("MAIN_UI_FILTER__DEFAULT_FILTER_TITLE"),
+				"FIELDS" => $this->prepareFilterRows(),
+				"FIELDS_COUNT" => $this->prepareFieldsCount()
 			);
 		}
 
-		return $field;
+		return $this->arResult["CURRENT_PRESET"];
 	}
 
-	protected function prepareFields()
+	protected function prepareFieldsCount()
 	{
-		if (!is_array($this->arResult["FIELDS"]))
+		$options = $this->getUserOptions();
+		$filter = $options->getFilter($this->arParams["FILTER"]);
+		$arOptions = $options->getOptions();
+		$count = 0;
+
+		if (!empty($filter) && array_key_exists($filter["PRESET_ID"], $arOptions["filters"]))
 		{
-			$fields = array();
-			$sourceFields = $this->getSourceFields();
+			$preset = $arOptions["filters"][$filter["PRESET_ID"]];
+			$fields = $preset["fields"];
+			$rows = explode(",", $preset["filter_rows"]);
 
-			foreach ($sourceFields as $key => $item)
+			foreach ($rows as $key => $row)
 			{
-				$tmpField = array();
-
-				switch ($item["type"])
+				if (array_key_exists($row, $fields) && !empty($fields[$row]))
 				{
-					case "list" : {
-						$items = array();
+					$count++;
+				}
+				else
+				{
+					$dataRow = $row."_datesel";
+					$numRow = $row."_numsel";
+					$from = $row."_from";
+					$to = $row."_to";
+					$days = $row."_days";
 
-						foreach ($item["items"] as $selectItemValue => $selectItemText)
-						{
-							$items[] = array("NAME" => $selectItemText, "VALUE" => $selectItemValue);
-						}
-
-						if ($item["params"]["multiple"] !== "Y")
-						{
-							$tmpField = Field::select($item["id"], $items, array(), $item["name"]);
-						}
-						else
-						{
-							$tmpField = Field::multiSelect($item["id"], $items, array(), $item["name"]);
-						}
-
-						break;
-					}
-
-					case "date" : {
-						$tmpField = Field::date($item["id"], DateType::SINGLE, array(), $item["name"]);
-						$tmpField = $this->prepareField($tmpField);
-						break;
-					}
-
-					case "checkbox" : {
-						$items = array(
-							array("NAME" => Loc::getMessage("MAIN_UI_FILTER__YES"), "VALUE" => "true"),
-							array("NAME" => Loc::getMessage("MAIN_UI_FILTER__NO"), "VALUE" => "false"),
-						);
-
-						$tmpField = Field::select($item["id"], $items, $items[1], $item["name"]);
-
-						break;
-					}
-
-
-					default : {
-						$tmpField = Field::string($item["id"], "", $item["name"]);
-						break;
+					if ((array_key_exists($dataRow, $fields) || array_key_exists($numRow, $fields)) && (
+							(array_key_exists($from, $fields) && !empty($fields[$from])) ||
+							(array_key_exists($to, $fields) && !empty($fields[$to])) ||
+							(array_key_exists($days, $fields) && !empty($fields[$days]))
+						)
+					)
+					{
+						$count++;
 					}
 				}
-
-				$fields[] = $tmpField;
 			}
-
-			$this->arResult["FIELDS"] = $fields;
 		}
 
-		return $this->arResult["FIELDS"];
+		return $count;
 	}
 
-
-	protected function getSourceFields()
+	protected function prepareFilterRows()
 	{
-		$sourceFields = array();
-
-		if (isset($this->arParams["FILTER"]) &&
-			!empty($this->arParams["FILTER"]) &&
-			is_array($this->arParams["FILTER"]))
+		if (!is_array($this->arResult["FILTER_ROWS"]))
 		{
-			$sourceFields = $this->arParams["FILTER"];
-		}
-		else if (isset($this->arParams["FILTER_FIELDS"]) &&
-				 !empty($this->arParams["FILTER_FIELDS"]) &&
-				 is_array($this->arParams["FILTER_FIELDS"]))
-		{
-			$sourceFields = $this->arParams["FILTER_FIELDS"];
+			$this->arResult["FILTER_ROWS"] = array();
+
+			if (isset($this->arParams["FILTER_ROWS"]) &&
+				!empty($this->arParams["FILTER_ROWS"]) &&
+				is_array($this->arParams["FILTER_ROWS"]))
+			{
+				foreach ($this->arParams["FILTER_ROWS"] as $rowId => $isEnabled)
+				{
+					if ($isEnabled)
+					{
+						$field = $this->getField($rowId);
+						$this->arResult["FILTER_ROWS"][] = $field;
+					}
+				}
+			}
 		}
 
-		return $sourceFields;
+		return $this->arResult["FILTER_ROWS"];
 	}
 
 	protected function getViewId()
@@ -309,130 +634,288 @@ class CMainUiFilter extends CBitrixComponent
 		return $viewSort;
 	}
 
-	protected function getGridId()
+	protected function prepareSourcePresets()
 	{
-		return $this->arParams["GRID_ID"];
-	}
+		$sourcePresets = $this->arParams["FILTER_PRESETS"];
+		$presets = array();
+		$sort = 0;
 
-	protected function getFilterId()
-	{
-		return $this->arParams["FILTER_ID"];
-	}
-
-	protected function getPresets()
-	{
-		return is_array($this->arParams["FILTER_PRESETS"]) ? $this->arParams["FILTER_PRESETS"] : array();
-	}
-
-
-	protected function getGridOptions()
-	{
-		if (!($this->gridOptions instanceof \Bitrix\Main\Grid\Options))
+		if (!empty($sourcePresets) && is_array($sourcePresets))
 		{
-			$gridId = $this->getGridId();
+			$preset = array();
 
-			if (!empty($gridId) && is_string($gridId))
+			foreach ($sourcePresets as $presetId => $presetFields)
 			{
-				$presets = $this->getPresets();
-				$this->gridOptions = new \Bitrix\Main\Grid\Options($gridId, $presets);
+				$rows = array_keys($presetFields["fields"]);
+				$preset["ID"] = $presetId;
+				$preset["TITLE"] = $presetFields["name"];
+				$preset["SORT"] = $sort;
+				$preset["FIELDS"] = $this->preparePresetFields($rows, $presetFields["fields"]);
+				$preset["IS_DEFAULT"] = true;
+				$preset["PINNED"] = $presetFields["default"] == true;
+
+				$presets[] = $preset;
+				$sort++;
 			}
 		}
 
-		return $this->gridOptions;
-	}
-
-
-	protected function getOptions()
-	{
-		if (!($this->options instanceof \Bitrix\Main\UI\Filter\Options))
+		global $USER;
+		if (!$USER->CanDoOperation("edit_other_settings"))
 		{
-			$filterId = $this->getFilterId();
-			$this->options = null;
+			$commonOptions = $this->getCommonOptions();
 
-			if (!empty($filterId) && is_string($filterId))
+			if (!empty($commonOptions) &&
+				is_array($commonOptions) &&
+				isset($commonOptions["filters"]) &&
+				is_array($commonOptions["filters"]) &&
+				isset($commonOptions["filters"]["default_filter"]))
 			{
-				$this->options = new \Bitrix\Main\UI\Filter\Options($filterId);
+				$rows = explode(",", $commonOptions["filters"]["default_filter"]["filter_rows"]);
+			}
+			else
+			{
+				$rows = array_keys($this->prepareFilterRowsParam());
 			}
 		}
+		else
+		{
+			$rows = array_keys($this->prepareFilterRowsParam());
+		}
 
-		return $this->options;
+		$sort++;
+
+		$presets[] = array(
+			"ID" => "default_filter",
+			"TITLE" => Loc::getMessage("MAIN_UI_FILTER__DEFAULT_FILTER_TITLE"),
+			"SORT" => $sort,
+			"FIELDS" => $this->preparePresetFields($rows, $rows),
+			"IS_DEFAULT" => true
+		);
+
+		return $presets;
 	}
 
-	protected function prepareOptions()
+	protected function preparePresets()
 	{
-		$options = $this->getOptions();
-		$filterOptions = $options->getOptions();
-
-		if (empty($filterOptions["filters"]))
+		if (!is_array($this->arResult["PRESETS"]))
 		{
-			$gridOptions = $this->getGridOptions();
+			$this->arResult["PRESETS"] = $this->prepareSourcePresets();
+		}
 
-			if ($gridOptions instanceof \Bitrix\Main\Grid\Options)
+		return $this->arResult["PRESETS"];
+	}
+
+	protected function getField($fieldId)
+	{
+		$fields = $this->prepareFields();
+		$resultField = array();
+
+		if (!empty($fields) && is_array($fields))
+		{
+			foreach ($fields as $fieldKey => $fieldFields)
 			{
-				$gridOptions = $gridOptions->GetOptions();
-				$gridFilters = $gridOptions["filters"];
-
-				if (is_array($gridFilters) && !empty($gridFilters))
+				if ($fieldFields["NAME"] === $fieldId ||
+					$fieldFields["NAME"]."_datesel" === $fieldId ||
+					$fieldFields["NAME"]."_numsel" === $fieldId)
 				{
-					$options->setFilters($gridFilters);
-					$options->save();
+					$resultField = $fieldFields;
 				}
 			}
-
-			$presets = $this->getPresets();
-
-			if (!empty($presets) && is_array($presets))
-			{
-				$options->setFilters($presets);
-				$options->save();
-			}
 		}
+
+		return $resultField;
 	}
 
-	protected function prepareOptionsPresets($presets)
+	protected function prepareFields()
 	{
-		$resultPresets = array();
-
-		if (!empty($presets))
+		if (!is_array($this->arResult["FIELDS"]))
 		{
-			foreach ($presets as $presetId => $preset)
-			{
-				$tmpPreset = $preset;
-				$fields = explode(",", $preset["filter_rows"]);
+			$this->arResult["FIELDS"] = array();
+			$sourceFields = $this->arParams["FILTER"];
 
-				foreach ($fields as $fieldKey => $field)
+			if (is_array($sourceFields) && !empty($sourceFields))
+			{
+				foreach ($sourceFields as $sourceFieldKey => $sourceField)
 				{
-					$fieldValue = $tmpPreset[$field];
+					switch ($sourceField["type"])
+					{
+						case "list" :
+						{
+							$items = array();
 
-					$preset["fields"][$field] = !empty($fieldValue) ? $fieldValue : "";
+							if (isset($sourceField["items"]) && !empty($sourceField["items"]) && is_array($sourceField["items"]))
+							{
+								foreach ($sourceField["items"] as $selectItemValue => $selectItem)
+								{
+									if (is_array($selectItem))
+									{
+										$selectItem["VALUE"] = $selectItemValue;
+										$listItem = $selectItem;
+									}
+									else
+									{
+										$listItem = array("NAME" => $selectItem, "VALUE" => $selectItemValue);
+									}
+
+									$items[] = $listItem;
+								}
+							}
+
+							if ($sourceField["params"]["multiple"] === "Y")
+							{
+								$field = Field::multiSelect(
+									$sourceField["id"],
+									$items, array(),
+									$sourceField["name"],
+									$sourceField["placeholder"]
+								);
+							}
+							else
+							{
+								if (empty($items[0]["VALUE"]) && empty($items[0]["NAME"]))
+								{
+									$items[0]["NAME"] = Loc::getMessage("MAIN_UI_FILTER__NOT_SET");
+								}
+
+								if (!empty($items[0]["VALUE"]) && !empty($items[0]["NAME"]))
+								{
+									array_unshift($items, array("NAME" => Loc::getMessage("MAIN_UI_FILTER__NOT_SET"), "VALUE" => ""));
+								}
+
+								$field = Field::select(
+									$sourceField["id"],
+									$items,
+									array(),
+									$sourceField["name"],
+									$sourceField["placeholder"]
+								);
+							}
+
+							break;
+						}
+
+						case "date" :
+						{
+							$field = Field::date(
+								$sourceField["id"],
+								DateType::NONE, array(),
+								$sourceField["name"],
+								$sourceField["placeholder"],
+								$sourceField["time"],
+								$sourceField["exclude"]
+							);
+							break;
+						}
+
+						case "number" :
+						{
+							$field = Field::number(
+								$sourceField["id"],
+								NumberType::SINGLE,
+								array(),
+								$sourceField["name"],
+								$sourceField["placeholder"]
+							);
+
+							$subTypes = array();
+							$subType = is_array($field["SUB_TYPE"]) ? $field["SUB_TYPE"]["VALUE"] : $field["SUB_TYPE"];
+							$dateTypesList = NumberType::getList();
+
+							foreach ($dateTypesList as $key => $type)
+							{
+								$subTypes[] = array(
+									"NAME" => Loc::getMessage("MAIN_UI_FILTER__NUMBER_".$key),
+									"PLACEHOLDER" => "",
+									"VALUE" => $type
+								);
+
+								if ($type === $subType)
+								{
+									$field["SUB_TYPE"] = array(
+										"NAME" => Loc::getMessage("MAIN_UI_FILTER__NUMBER_".$key),
+										"PLACEHOLDER" => "",
+										"VALUE" => $subType
+									);
+								}
+							}
+
+							$field["SUB_TYPES"] = $subTypes;
+
+							break;
+						}
+
+						case "custom" :
+						{
+							$field = Field::custom(
+								$sourceField["id"],
+								$sourceField["value"],
+								$sourceField["name"],
+								$sourceField["placeholder"],
+								$sourceField["style"]
+							);
+							break;
+						}
+
+						case "custom_entity" :
+						{
+							$multiple = $sourceField["params"]["multiple"] === "Y" || $sourceField["params"]["multiple"] === true;
+							$field = Field::customEntity(
+								$sourceField["id"],
+								$sourceField["name"],
+								$sourceField["placeholder"],
+								$multiple
+							);
+							break;
+						}
+
+						case "checkbox" :
+						{
+							$values = isset($sourceField["valueType"]) && $sourceField["valueType"] === "numeric"
+								? array("1", "0")
+								: array("Y", "N");
+
+							$items = array(
+								array("NAME" => Loc::getMessage("MAIN_UI_FILTER__NOT_SET"), "VALUE" => ""),
+								array("NAME" => Loc::getMessage("MAIN_UI_FILTER__YES"), "VALUE" => $values[0]),
+								array("NAME" => Loc::getMessage("MAIN_UI_FILTER__NO"), "VALUE" => $values[1])
+							);
+
+							$field = Field::select(
+								$sourceField["id"],
+								$items,
+								$items[0],
+								$sourceField["name"],
+								$sourceField["placeholder"]
+							);
+
+							break;
+						}
+
+						default :
+						{
+							$field = Field::string(
+								$sourceField["id"],
+								"",
+								$sourceField["name"],
+								$sourceField["placeholder"]
+							);
+							break;
+						}
+					}
+
+					$this->arResult["FIELDS"][] = $field;
 				}
-
-				$resultPresets[$presetId] = $preset;
 			}
 		}
 
-		return $resultPresets;
+		return $this->arResult["FIELDS"];
 	}
-
-	protected function applyOptions()
-	{
-		$options = $this->getOptions();
-		$filterOptions = $options->getOptions();
-		$filterPresets = $filterOptions["filters"];
-
-		if (!empty($filterPresets))
-		{
-			$this->arParams["FILTER_PRESETS"] = $this->prepareOptionsPresets($filterPresets);
-		}
-	}
-
 
 	protected function prepareSettingsUrl()
 	{
 		$path = $this->getPath();
 		return join("/", array($path, "settings.ajax.php"));
 	}
-
 
 	protected function checkRequiredParams()
 	{
@@ -453,15 +936,225 @@ class CMainUiFilter extends CBitrixComponent
 		return $errors->count() === 0;
 	}
 
+	protected function getJsFolder()
+	{
+		return $this->jsFolder;
+	}
+
+	protected function getBlocksFolder()
+	{
+		return $this->blocksFolder;
+	}
+
+	protected function getCssFolder()
+	{
+		return $this->cssFolder;
+	}
+
+	protected function includeScripts($folder)
+	{
+		$tmpl = $this->getTemplate();
+		$absPath = $_SERVER["DOCUMENT_ROOT"].$tmpl->GetFolder().$folder;
+		$relPath = $tmpl->GetFolder().$folder;
+
+		if (is_dir($absPath))
+		{
+			$dir = opendir($absPath);
+
+			if($dir)
+			{
+				while(($file = readdir($dir)) !== false)
+				{
+					$ext = getFileExtension($file);
+
+					if ($ext === 'js' && !(strpos($file, 'map.js') !== false || strpos($file, 'min.js') !== false))
+					{
+						$tmpl->addExternalJs($relPath.$file);
+					}
+				}
+
+				closedir($dir);
+			}
+		}
+	}
+
+	protected function includeStyles($folder)
+	{
+		$tmpl = $this->getTemplate();
+		$absPath = $_SERVER["DOCUMENT_ROOT"].$tmpl->GetFolder().$folder;
+		$relPath = $tmpl->GetFolder().$folder;
+
+		if (is_dir($absPath))
+		{
+			$dir = opendir($absPath);
+
+			if($dir)
+			{
+				while(($file = readdir($dir)) !== false)
+				{
+					$ext = getFileExtension($file);
+
+					if ($ext === 'css' && !(strpos($file, 'map.css') !== false || strpos($file, 'min.css') !== false))
+					{
+						$tmpl->addExternalCss($relPath.$file);
+					}
+				}
+
+				closedir($dir);
+			}
+		}
+	}
+
+	protected function includeComponentBlocks()
+	{
+		$blocksFolder = $this->getBlocksFolder();
+		$this->includeScripts($blocksFolder);
+	}
+
+	protected function includeComponentScripts()
+	{
+		$scriptsFolder = $this->getJsFolder();
+		$this->includeScripts($scriptsFolder);
+	}
+
+	protected function saveOptions()
+	{
+		$request = $this->request;
+
+		if ($request->getPost("apply_filter") === "Y")
+		{
+			$options = $this->getUserOptions();
+			$options->setFilterSettings($request->get("filter_id"), $request->toArray());
+			$options->save();
+		}
+	}
+
+	protected function prepareDefaultPresets()
+	{
+		$this->arResult["DEFAULT_PRESETS"] = $this->prepareSourcePresets();
+	}
+
+	protected function getCommonOptions()
+	{
+		if (!$this->commonOptions)
+		{
+			$this->commonOptions = \CUserOptions::getOption("main.ui.filter.common", $this->arParams["FILTER_ID"], array());
+		}
+
+		return $this->commonOptions;
+	}
+
+	protected function initParams()
+	{
+		global $USER;
+		if (!$USER->CanDoOperation("edit_other_settings"))
+		{
+			$commonOptions = $this->getCommonOptions();
+			$filters = $commonOptions["filters"];
+
+			if (!empty($filters) && is_array($filters))
+			{
+				unset($filters["tmp_filter"]);
+				$this->arParams["FILTER_PRESETS"] = $filters;
+			}
+		}
+
+		if (!isset($this->arParams["FILTER_PRESETS"]) || !is_array($this->arParams["FILTER_PRESETS"]))
+		{
+			$this->arParams["FILTER_PRESETS"] = array();
+		}
+
+		if (!is_array($this->arParams["CONFIG"]))
+		{
+			$this->arParams["CONFIG"] = array();
+		}
+	}
+
+	protected function getTheme()
+	{
+		if (!$this->theme && isset($this->arParams["THEME"]) && !empty($this->arParams["THEME"]))
+		{
+			$availableThemes = Theme::getList();
+			if (in_array($this->arParams["THEME"], $availableThemes))
+			{
+				$this->theme = $this->arParams["THEME"];
+			}
+		}
+
+		if (!$this->theme)
+		{
+			$this->theme = Theme::DEFAULT_FILTER;
+		}
+
+		return $this->theme;
+	}
+
+	protected function includeTheme()
+	{
+		$theme = $this->getTheme();
+		if ($theme !== Theme::DEFAULT_FILTER)
+		{
+			$themePath = strtolower($theme);
+			$themePath = $this->themesFolder.$themePath."/";
+
+			$this->includeStyles($themePath);
+			$this->includeScripts($themePath);
+		}
+	}
+
+	protected function getConfig($path)
+	{
+		$file = new \Bitrix\Main\IO\File($path);
+		$config = array();
+
+		if ($file->isExists())
+		{
+			$jsonConfig = $file->getContents();
+
+			if (!empty($jsonConfig))
+			{
+				$config = \Bitrix\Main\Web\Json::decode($jsonConfig);
+			}
+		}
+
+		return $config;
+	}
+
+	protected function getAbsoluteThemesPath()
+	{
+		$templatePath = $this->getTemplate()->getFolder();
+		$relativeThemesPath = $templatePath.$this->themesFolder;
+		$absolutePath = \Bitrix\Main\IO\Path::convertRelativeToAbsolute($relativeThemesPath);
+		return $absolutePath;
+	}
+
+	public function prepareConfig()
+	{
+		$themesPath = $this->getAbsoluteThemesPath();
+		$themeId = $this->getTheme();
+		$themeFolder = strtolower($themeId);
+		$defaultConfigPath = $themesPath."/".$this->configName;
+		$themeConfigPath = $themesPath."/".$themeFolder."/".$this->configName;
+		$defaultConfig = $this->getConfig($defaultConfigPath);
+		$themeConfig = $this->getConfig($themeConfigPath);
+		$paramsConfig = $this->arParams["CONFIG"];
+		return array_merge($defaultConfig, $themeConfig, $paramsConfig);
+	}
 
 	public function executeComponent()
 	{
 		if ($this->checkRequiredParams())
 		{
-			$this->prepareOptions();
-			$this->applyOptions();
+ 			$this->initParams();
+			$this->prepareDefaultPresets();
+			$this->saveOptions();
+			$this->prepareParams();
 			$this->prepareResult();
+			$this->applyOptions();
 			$this->includeComponentTemplate();
+			$this->includeComponentScripts();
+			$this->includeComponentBlocks();
+			$this->includeTheme();
 		}
 	}
 }

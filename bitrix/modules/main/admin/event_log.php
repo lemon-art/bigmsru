@@ -63,6 +63,7 @@ $arFilterFields = array(
 	"find_timestamp_x_2",
 	"find_severity",
 	"find_audit_type_id",
+	"find_audit_type",
 	"find_module_id",
 	"find_item_id",
 	"find_site_id",
@@ -99,22 +100,6 @@ function CheckFilter()
 $arFilter = array();
 $lAdmin->InitFilter($arFilterFields);
 InitSorting();
-
-$find = $_REQUEST["find"];
-$find_id = $_REQUEST["find_id"];
-$find_severity = $_REQUEST["find_severity"];
-$find_audit_type = $_REQUEST["find_audit_type"];
-$find_type = $_REQUEST["find_type"];
-$find_audit_type_id = $_REQUEST["find_audit_type_id"];
-$find_timestamp_x_1 = $_REQUEST["find_timestamp_x_1"];
-$find_timestamp_x_2 = $_REQUEST["find_timestamp_x_2"];
-$find_module_id = $_REQUEST["find_module_id"];
-$find_item_id = $_REQUEST["find_item_id"];
-$find_site_id = $_REQUEST["find_site_id"];
-$find_guest_id = $_REQUEST["find_guest_id"];
-$find_remote_addr = $_REQUEST["find_remote_addr"];
-$find_request_uri = $_REQUEST["find_request_uri"];
-$find_user_agent = $_REQUEST["find_user_agent"];
 
 if(CheckFilter())
 {

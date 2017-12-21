@@ -3,6 +3,8 @@ namespace Bitrix\Perfmon\Php;
 
 class Statement
 {
+	public $tableName = '';
+	public $dependOn = '';
 	protected $bodyLines = array();
 	public $conditions = array();
 

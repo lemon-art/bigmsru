@@ -88,7 +88,6 @@
 						}
 					}
 				}
-
 				var
 					url = this.config.requestUrl,
 					reqId = Math.round(Math.random() * 1000000),
@@ -96,6 +95,7 @@
 						component_params_manager: reqId,
 						sessid: BX.bitrix_sessid(),
 						site_template: params.siteTemplate || '',
+						site: params.siteId || BX.message('SITE_ID'),
 						component_name: params.name,
 						component_template: params.template,
 						current_values: curValues
@@ -488,7 +488,7 @@
 
 		CheckLastCell: function()
 		{
-			if (this.lastCell)
+			if (this.lastCell && this.lastTitle)
 			{
 				var
 					wrapHeight = this.pParamsWrap.offsetHeight,
@@ -603,7 +603,7 @@
 			param._propId = BX.util.htmlspecialchars(param.ID || Math.round(Math.random() * 10000)) + '_' + this.id;
 
 			// Hidden;
-			if (param.HIDDEN && param.HIDDEN.toString().toUpperCase() == "Y")
+			if (param.HIDDEN && param.HIDDEN.toString().toUpperCase() == "Y" && value !== undefined)
 			{
 				return this.DisplayHiddenParam(param, value, frag);
 			}
@@ -1314,6 +1314,8 @@
 
 		DisplayHiddenParam: function(param, value, frag)
 		{
+
+
 			var
 				tr = BX.adjust(frag.appendChild(BX.create("TR")), {props: {className: 'bxcompprop-prop-tr-hidden'}}),
 				td = BX.adjust(tr.insertCell(-1), {props: {colSpan: 2}}),
@@ -1374,6 +1376,7 @@
 
 		DoRefreshParams: function()
 		{
+			BX.onCustomEvent(this, 'onComponentParamsBeforeRefresh');
 			var _this = this;
 			setTimeout(function()
 			{
@@ -1602,7 +1605,7 @@
 				val = parseInt(_val);
 			}
 
-			return !isNaN(val) ? (_val == val) : false;
+			return !isNaN(val) ? (_val === val) : false;
 		},
 
 		ConvertArrayToString: function(ar)

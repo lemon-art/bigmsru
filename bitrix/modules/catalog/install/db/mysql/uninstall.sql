@@ -32,3 +32,6 @@ drop table if exists b_catalog_measure;
 drop table if exists b_catalog_measure_ratio;
 drop table if exists b_catalog_product_sets;
 drop table if exists b_catalog_viewed_product;
+drop table if exists b_catalog_subscribe;
+drop table if exists b_catalog_subscribe_access;
+drop table if exists b_catalog_rounding;

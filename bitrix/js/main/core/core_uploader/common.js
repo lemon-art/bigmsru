@@ -18,29 +18,170 @@
 				BX.UploaderLog.push(arguments);
 			}
 		},
-		Hash : function()
-		{
-			this.length = 0;
-			this.items = {};
-			this.order = [];
-			var i;
-			if (arguments.length == 1 && BX.type.isArray(arguments[0]) && arguments[0].length > 0)
-			{
-				var data = arguments[0];
-				for (i = 0; i < data.length; i++)
+		Hash : (function(){
+			var d = function() {
+				this.length = 0;
+				this.items = {};
+				this.order = [];
+				var i;
+				if (arguments.length == 1 && BX.type.isArray(arguments[0]) && arguments[0].length > 0)
 				{
-					if (data[i] && typeof data[i] == "object" && data[i]["id"])
+					var data = arguments[0];
+					for (i = 0; i < data.length; i++)
 					{
-						this.setItem(data[i]["id"], data[i]);
+						if (data[i] && typeof data[i] == "object" && data[i]["id"])
+						{
+							this.setItem(data[i]["id"], data[i]);
+						}
 					}
 				}
-			}
-			else
-			{
-				for (i = 0; i < arguments.length; i += 2)
-					this.setItem(arguments[i], arguments[i + 1]);
-			}
-		},
+				else
+				{
+					for (i = 0; i < arguments.length; i += 2)
+						this.setItem(arguments[i], arguments[i + 1]);
+				}
+			};
+			d.prototype = {
+				getIds : function()
+				{
+					return this.order;
+				},
+				getQueue : function(id)
+				{
+					id += '';
+					return BX.util.array_search(id, this.order);
+				},
+				getByOrder : function(order)
+				{
+					return this.getItem(this.order[order]);
+				},
+				removeItem : function(in_key)
+				{
+					in_key += '';
+					var tmp_value, number;
+					if (typeof(this.items[in_key]) != 'undefined') {
+						tmp_value = this.items[in_key];
+						number = this.getQueue(in_key);
+						this.pointer -= (this.pointer >= number ? 1 : 0);
+						delete this.items[in_key];
+						this.order = BX.util.deleteFromArray(this.order, number);
+						this.length = this.order.length;
+
+					}
+					return tmp_value;
+				},
+
+				getItem : function(in_key) {
+					in_key += '';
+					return this.items[in_key];
+				},
+
+				unshiftItem : function(in_key, in_value)
+				{
+					in_key += '';
+					if (typeof(in_value) != 'undefined')
+					{
+						if (typeof(this.items[in_key]) == 'undefined')
+						{
+							this.order.unshift(in_key);
+							this.length = this.order.length;
+						}
+						this.items[in_key] = in_value;
+					}
+					return in_value;
+				},
+				setItem : function(in_key, in_value)
+				{
+					in_key += '';
+					if (typeof(in_value) != 'undefined')
+					{
+						if (typeof(this.items[in_key]) == 'undefined')
+						{
+							this.order.push(in_key);
+							this.length = this.order.length;
+						}
+						this.items[in_key] = in_value;
+					}
+					return in_value;
+				},
+
+				hasItem : function(in_key)
+				{
+					in_key += '';
+					return typeof(this.items[in_key]) != 'undefined';
+				},
+				insertBeforeItem : function(in_key, in_value, after_key)
+				{
+					in_key += '';
+					if (typeof(in_value) != 'undefined')
+					{
+						if (typeof(this.items[in_key]) == 'undefined')
+						{
+							this.order.splice(this.getQueue(after_key), 0, in_key);
+							this.length = this.order.length;
+						}
+						this.items[in_key] = in_value;
+					}
+					return in_value;
+				},
+				getFirst : function()
+				{
+					var in_key, item = null;
+					for (var ii = 0; ii < this.order.length; ii++)
+					{
+						in_key = this.order[ii];
+						if (!!in_key && this.hasItem(in_key))
+						{
+							item = this.getItem(in_key);
+							break;
+						}
+					}
+					return item;
+				},
+				getNext : function()
+				{
+					this.pointer = (0 <= this.pointer && this.pointer < this.order.length ? this.pointer : -1);
+					var res = this.getItem(this.order[this.pointer + 1]);
+					if (!!res)
+						this.pointer++;
+					else
+						this.pointer = -1;
+					return res;
+				},
+				getPrev : function()
+				{
+					this.pointer = (0 <= this.pointer && this.pointer < this.order.length ? this.pointer : 0);
+					var res = this.getItem(this.order[this.pointer - 1]);
+					if (!!res)
+						this.pointer--;
+					return res;
+				},
+				reset : function()
+				{
+					this.pointer = -1;
+				},
+				setPointer : function(in_key)
+				{
+					this.pointer = this.getQueue(in_key);
+					return this.pointer;
+				},
+				getLast : function()
+				{
+					var in_key, item = null;
+					for (var ii = this.order.length; ii >=0; ii--)
+					{
+						in_key = this.order[ii];
+						if (!!in_key && this.hasItem(in_key))
+						{
+							item = this.getItem(in_key);
+							break;
+						}
+					}
+					return item;
+				}
+			};
+			return d;
+		})(),
 		getFileNameOnly : function (name)
 		{
 			var delimiter = "\\", start = name.lastIndexOf(delimiter), finish = name.length;
@@ -117,34 +258,54 @@
 					width = sourceImageWidth;
 					height = sourceImageHeight;
 				}
-
-				if (resizeType == "circumscribed")
+				if (resizeType == "exact")
 				{
-					ResizeCoeff = {
-						width : (width > 0 ? arSize["width"] / width : 1),
-						height: (height > 0 ? arSize["height"] / height : 1)};
+					var
+						ratio = (sourceImageWidth / sourceImageHeight < arSize["width"] / arSize["height"] ? arSize["width"] / sourceImageWidth : arSize["height"] / sourceImageHeight),
+						x = Math.max(0, Math.round(sourceImageWidth / 2 - (arSize["width"] / 2) / ratio)),
+						y = Math.max(0, Math.round(sourceImageHeight / 2 - (arSize["height"] / 2) / ratio));
 
-					iResizeCoeff = Math.max(ResizeCoeff["width"], ResizeCoeff["height"], 1);
+					res.bNeedCreatePicture = true;
+					res.coeff = ratio;
+
+					res.destin["width"] = arSize["width"];
+					res.destin["height"] = arSize["height"];
+
+					res.source["x"] = x;
+					res.source["y"] = y;
+					res.source["width"] = Math.round(arSize["width"] / ratio, 0);
+					res.source["height"] = Math.round(arSize["height"] / ratio, 0);
 				}
 				else
 				{
-					ResizeCoeff = {
-						width : (width > 0 ? arSize["width"] / width : 1),
-						height: (height > 0 ? arSize["height"] / height : 1)};
+					if (resizeType == "circumscribed")
+					{
+						ResizeCoeff = {
+							width : (width > 0 ? arSize["width"] / width : 1),
+							height: (height > 0 ? arSize["height"] / height : 1)};
 
-					iResizeCoeff = Math.min(ResizeCoeff["width"], ResizeCoeff["height"], 1);
-					iResizeCoeff = (0 < iResizeCoeff ? iResizeCoeff : 1);
+						iResizeCoeff = Math.max(ResizeCoeff["width"], ResizeCoeff["height"], 1);
+					}
+					else
+					{
+						ResizeCoeff = {
+							width : (width > 0 ? arSize["width"] / width : 1),
+							height: (height > 0 ? arSize["height"] / height : 1)};
+
+						iResizeCoeff = Math.min(ResizeCoeff["width"], ResizeCoeff["height"], 1);
+						iResizeCoeff = (0 < iResizeCoeff ? iResizeCoeff : 1);
+					}
+					res.bNeedCreatePicture = (iResizeCoeff != 1);
+					res.coeff = iResizeCoeff;
+					res.destin["width"] = Math.max(1, parseInt(iResizeCoeff * sourceImageWidth));
+					res.destin["height"] = Math.max(1, parseInt(iResizeCoeff * sourceImageHeight));
+
+					res.source["x"] = 0;
+					res.source["y"] = 0;
+					res.source["width"] = sourceImageWidth;
+					res.source["height"] = sourceImageHeight;
 				}
 
-				res.bNeedCreatePicture = (iResizeCoeff != 1);
-				res.coeff = iResizeCoeff;
-				res.destin["width"] = Math.max(1, parseInt(iResizeCoeff * sourceImageWidth));
-				res.destin["height"] = Math.max(1, parseInt(iResizeCoeff * sourceImageHeight));
-
-				res.source["x"] = 0;
-				res.source["y"] = 0;
-				res.source["width"] = sourceImageWidth;
-				res.source["height"] = sourceImageHeight;
 			}
 			return res;
 		},
@@ -291,11 +452,11 @@
 				}
 
 				if('mozSlice' in file)
-					blob = file.mozSlice(start, end);
+					blob = file.mozSlice(start, end, file.type);
 				else if ('webkitSlice' in file)
-					blob = file.webkitSlice(start, end);
+					blob = file.webkitSlice(start, end, file.type);
 				else if ('slice' in file)
-					blob = file.slice(start, end);
+					blob = file.slice(start, end, file.type);
 				else
 					blob = file.Slice(start, end, file.type);
 
@@ -457,144 +618,4 @@
 		}
 		return false;
 	};
-	BX.UploaderUtils.Hash.prototype = {
-		getIds : function()
-		{
-			return this.order;
-		},
-		getQueue : function(id)
-		{
-			id += '';
-			return BX.util.array_search(id, this.order);
-		},
-		getByOrder : function(order)
-		{
-			return this.getItem(this.order[order]);
-		},
-		removeItem : function(in_key)
-		{
-			in_key += '';
-			var tmp_value, number;
-			if (typeof(this.items[in_key]) != 'undefined') {
-				tmp_value = this.items[in_key];
-				number = this.getQueue(in_key);
-				this.pointer -= (this.pointer >= number ? 1 : 0);
-				delete this.items[in_key];
-				this.order = BX.util.deleteFromArray(this.order, number);
-				this.length = this.order.length;
-
-			}
-			return tmp_value;
-		},
-
-		getItem : function(in_key) {
-			in_key += '';
-			return this.items[in_key];
-		},
-
-		unshiftItem : function(in_key, in_value)
-		{
-			in_key += '';
-			if (typeof(in_value) != 'undefined')
-			{
-				if (typeof(this.items[in_key]) == 'undefined')
-				{
-					this.order.unshift(in_key);
-					this.length = this.order.length;
-				}
-				this.items[in_key] = in_value;
-			}
-			return in_value;
-		},
-		setItem : function(in_key, in_value)
-		{
-			in_key += '';
-			if (typeof(in_value) != 'undefined')
-			{
-				if (typeof(this.items[in_key]) == 'undefined')
-				{
-					this.order.push(in_key);
-					this.length = this.order.length;
-				}
-				this.items[in_key] = in_value;
-			}
-			return in_value;
-		},
-
-		hasItem : function(in_key)
-		{
-			in_key += '';
-			return typeof(this.items[in_key]) != 'undefined';
-		},
-		insertBeforeItem : function(in_key, in_value, after_key)
-		{
-			in_key += '';
-			if (typeof(in_value) != 'undefined')
-			{
-				if (typeof(this.items[in_key]) == 'undefined')
-				{
-					this.order.splice(this.getQueue(after_key), 0, in_key);
-					this.length = this.order.length;
-				}
-				this.items[in_key] = in_value;
-			}
-			return in_value;
-		},
-		getFirst : function()
-		{
-			var in_key, item = null;
-			for (var ii = 0; ii < this.order.length; ii++)
-			{
-				in_key = this.order[ii];
-				if (!!in_key && this.hasItem(in_key))
-				{
-					item = this.getItem(in_key);
-					break;
-				}
-			}
-			return item;
-		},
-		getNext : function()
-		{
-			this.pointer = (0 <= this.pointer && this.pointer < this.order.length ? this.pointer : -1);
-			var res = this.getItem(this.order[this.pointer + 1]);
-			if (!!res)
-				this.pointer++;
-			else
-				this.pointer = -1;
-			return res;
-		},
-		getPrev : function()
-		{
-			this.pointer = (0 <= this.pointer && this.pointer < this.order.length ? this.pointer : 0);
-			var res = this.getItem(this.order[this.pointer - 1]);
-			if (!!res)
-				this.pointer--;
-			return res;
-		},
-		reset : function()
-		{
-			this.pointer = -1;
-		},
-		setPointer : function(in_key)
-		{
-			this.pointer = this.getQueue(in_key);
-			return this.pointer;
-		},
-		getLast : function()
-		{
-			var in_key, item = null;
-			for (var ii = this.order.length; ii >=0; ii--)
-			{
-				in_key = this.order[ii];
-				if (!!in_key && this.hasItem(in_key))
-				{
-					item = this.getItem(in_key);
-					break;
-				}
-			}
-			return item;
-		}
-	};
-
 }(window));

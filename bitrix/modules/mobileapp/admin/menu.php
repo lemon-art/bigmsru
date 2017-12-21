@@ -1,4 +1,6 @@
 <?
+use Bitrix\Main\Localization\Loc;
+
 IncludeModuleLangFile(__FILE__);
 
 if ($USER->isAdmin())
@@ -19,6 +21,12 @@ if ($USER->isAdmin())
 				"more_url" => Array("mobile_designer.php"),
 				"title" => GetMessage("MOBILE_DESIGNER"),
 			),
+//			array(
+//				"text" => Loc::getMessage("MOBILEAPP_PUSH_NOTIFICATIONS"),
+//				"url" => "mobile_app_list.php?lang=" . LANGUAGE_ID,
+//				"more_url" => Array("mobile_designer.php"),
+//				"title" => GetMessage("MOBILE_APP_LIST"),
+//			)
 		),
 	);
 	return $aMenu;

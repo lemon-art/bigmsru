@@ -5,6 +5,12 @@
 /** @global CMain $APPLICATION */
 /** @global string $ACTION */
 /** @global array $arOldSetupVars */
+/** @global int $IBLOCK_ID */
+/** @global string $SETUP_FILE_NAME */
+/** @global string $SETUP_SERVER_NAME */
+/** @global mixed $V */
+/** @global mixed $XML_DATA */
+/** @global string $SETUP_PROFILE_NAME */
 IncludeModuleLangFile($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/catalog/export_setup_templ.php');
 
 global $APPLICATION, $USER;
@@ -36,11 +42,17 @@ if (($ACTION == 'EXPORT_EDIT' || $ACTION == 'EXPORT_COPY') && $STEP == 1)
 		$USE_HTTPS = $arOldSetupVars['USE_HTTPS'];
 	if (isset($arOldSetupVars['FILTER_AVAILABLE']))
 		$filterAvalable = $arOldSetupVars['FILTER_AVAILABLE'];
+	if (isset($arOldSetupVars['DISABLE_REFERERS']))
+		$disableReferers = $arOldSetupVars['DISABLE_REFERERS'];
+	if (isset($arOldSetupVars['MAX_EXECUTION_TIME']))
+		$maxExecutionTime = $arOldSetupVars['MAX_EXECUTION_TIME'];
+	if (isset($arOldSetupVars['CHECK_PERMISSIONS']))
+		$checkPermissions = $arOldSetupVars['CHECK_PERMISSIONS'];
 }
 
 if ($STEP > 1)
 {
-	$IBLOCK_ID = intval($IBLOCK_ID);
+	$IBLOCK_ID = (int)$IBLOCK_ID;
 	$rsIBlocks = CIBlock::GetByID($IBLOCK_ID);
 	if ($IBLOCK_ID <= 0 || !($arIBlock = $rsIBlocks->Fetch()))
 	{
@@ -55,7 +67,7 @@ if ($STEP > 1)
 		}
 	}
 
-	if (strlen($SETUP_FILE_NAME)<=0)
+	if (!isset($SETUP_FILE_NAME) || $SETUP_FILE_NAME == '')
 	{
 		$arSetupErrors[] = GetMessage("CET_ERROR_NO_FILENAME");
 	}
@@ -113,10 +125,10 @@ if ($STEP > 1)
 		$_REQUEST['V'] = $V;
 	}
 
-	$arCatalog = CCatalogSKU::GetInfoByIBlock($IBLOCK_ID);
-	if (CCatalogSKU::TYPE_PRODUCT == $arCatalog['CATALOG_TYPE'] || CCatalogSKU::TYPE_FULL == $arCatalog['CATALOG_TYPE'])
+	$arCatalog = CCatalogSku::GetInfoByIBlock($IBLOCK_ID);
+	if (CCatalogSku::TYPE_PRODUCT == $arCatalog['CATALOG_TYPE'] || CCatalogSku::TYPE_FULL == $arCatalog['CATALOG_TYPE'])
 	{
-		if (strlen($XML_DATA) <= 0)
+		if (!isset($XML_DATA) || $XML_DATA == '')
 		{
 			$arSetupErrors[] = GetMessage('YANDEX_ERR_SKU_SETTINGS_ABSENT');
 		}
@@ -124,11 +136,25 @@ if ($STEP > 1)
 
 	if (!isset($USE_HTTPS) || $USE_HTTPS != 'Y')
 		$USE_HTTPS = 'N';
+	if (isset($_POST['FILTER_AVAILABLE']) && is_string($_POST['FILTER_AVAILABLE']))
+		$filterAvalable = $_POST['FILTER_AVAILABLE'];
 	if (!isset($filterAvalable) || $filterAvalable != 'Y')
 		$filterAvalable = 'N';
+	if (isset($_POST['DISABLE_REFERERS']) && is_string($_POST['DISABLE_REFERERS']))
+		$disableReferers = $_POST['DISABLE_REFERERS'];
+	if (!isset($disableReferers) || $disableReferers != 'Y')
+		$disableReferers = 'N';
+	if (isset($_POST['MAX_EXECUTION_TIME']) && is_string($_POST['MAX_EXECUTION_TIME']))
+		$maxExecutionTime = $_POST['MAX_EXECUTION_TIME'];
+	$maxExecutionTime = (!isset($maxExecutionTime) ? 0 : (int)$maxExecutionTime);
+	if ($maxExecutionTime < 0)
+		$maxExecutionTime = 0;
 
-	if (($ACTION=="EXPORT_SETUP" || $ACTION=="EXPORT_EDIT" || $ACTION=="EXPORT_COPY") && strlen($SETUP_PROFILE_NAME)<=0)
-		$arSetupErrors[] = GetMessage("CET_ERROR_NO_PROFILE_NAME");
+	if ($ACTION=="EXPORT_SETUP" || $ACTION=="EXPORT_EDIT" || $ACTION=="EXPORT_COPY")
+	{
+		if (!isset($SETUP_PROFILE_NAME) || $SETUP_PROFILE_NAME == '')
+			$arSetupErrors[] = GetMessage("CET_ERROR_NO_PROFILE_NAME");
+	}
 
 	if (!empty($arSetupErrors))
 	{
@@ -152,6 +178,7 @@ $context->Show();
 if (!empty($arSetupErrors))
 	ShowError(implode('<br>', $arSetupErrors));
 ?>
+<!--suppress JSUnresolvedVariable -->
 <form method="post" action="<?echo $APPLICATION->GetCurPage() ?>" name="yandex_setup_form" id="yandex_setup_form">
 <?
 $aTabs = array(
@@ -166,6 +193,20 @@ $tabControl->BeginNextTab();
 
 if ($STEP == 1)
 {
+	if (!isset($XML_DATA))
+		$XML_DATA = '';
+	if (!isset($filterAvalable) || $filterAvalable != 'Y')
+		$filterAvalable = 'N';
+	if (!isset($USE_HTTPS) || $USE_HTTPS != 'Y')
+		$USE_HTTPS = 'N';
+	if (!isset($disableReferers) || $disableReferers != 'Y')
+		$disableReferers = 'N';
+	if (!isset($SETUP_SERVER_NAME))
+		$SETUP_SERVER_NAME = '';
+	if (!isset($SETUP_FILE_NAME))
+		$SETUP_FILE_NAME = 'yandex_'.mt_rand(0, 999999).'.php';
+	if (!isset($checkPermissions) || $checkPermissions != 'Y')
+		$checkPermissions = 'N';
 ?><tr>
 	<td width="40%"><? echo GetMessage('CET_SELECT_IBLOCK_EXT'); ?></td>
 	<td width="60%"><?
@@ -237,10 +278,12 @@ if ($STEP == 1)
 	<td width="60%"><?
 	if ($intCountSelected)
 	{
-		foreach ($V as &$oneKey)
+		foreach ($V as $oneKey)
 		{
-			?><input type="hidden" value="<? echo intval($oneKey); ?>" name="V[]" id="oldV<? echo intval($oneKey); ?>"><?
+			$oneKey = (int)$oneKey;
+			?><input type="hidden" value="<? echo $oneKey; ?>" name="V[]" id="oldV<? echo $oneKey; ?>"><?
 		}
+		unset($oneKey);
 	}
 	?><div id="tree"></div>
 	<script type="text/javascript">
@@ -298,14 +341,14 @@ if ($STEP == 1)
 
 		for (i in Tree[0])
 		{
-			if (!Tree[i])
+			if (!Tree[0][i])
 			{
-				space = '<input type="checkbox" name="V[]" value="'+i+'" id="V'+i+'"'+(BX.util.in_array(i,TreeSelected) ? ' checked' : '')+' onclick="delOldV(this);"><label for="V'+i+'"><font class="text">' + Tree[0][i][0] + '</font></label>';
+				space = '<input type="checkbox" name="V[]" value="'+i+'" id="V'+i+'"'+(BX.util.in_array(i,TreeSelected) ? ' checked' : '')+' onclick="delOldV(this);"><label for="V'+i+'"><span class="text">' + Tree[0][i][0] + '</span></label>';
 				imgSpace = '';
 			}
 			else
 			{
-				space = '<input type="checkbox" name="V[]" value="'+i+'"'+(BX.util.in_array(i,TreeSelected) ? ' checked' : '')+' onclick="delOldV(this);"><a href="javascript: collapse(' + i + ')"><font class="text"><b>' + Tree[0][i][0] + '</b></font></a>';
+				space = '<input type="checkbox" name="V[]" value="'+i+'"'+(BX.util.in_array(i,TreeSelected) ? ' checked' : '')+' onclick="delOldV(this);"><a href="javascript: collapse(' + i + ')"><span class="text"><b>' + Tree[0][i][0] + '</b></span></a>';
 				imgSpace = '<img src="/bitrix/images/catalog/load/plus.gif" width="13" height="13" id="img_' + i + '" OnClick="collapse(' + i + ')">';
 			}
 
@@ -335,7 +378,7 @@ if ($STEP == 1)
 
 			for (i in Tree[node])
 			{
-				if (!Tree[i])
+				if (!Tree[node][i])
 				{
 					space = '<input type="checkbox" name="V[]" value="'+i+'" id="V'+i+'"'+(BX.util.in_array(i,TreeSelected) ? ' checked' : '')+' onclick="delOldV(this);"><label for="V'+i+'"><font class="text">' + Tree[node][i][0] + '</font></label>';
 					imgSpace = '';
@@ -396,7 +439,14 @@ if ($STEP == 1)
 		}
 		</script>
 		<input type="button" onclick="showDetailPopup(); return false;" value="<? echo GetMessage('CAT_DETAIL_PROPS_RUN'); ?>">
-		<input type="hidden" id="XML_DATA" name="XML_DATA" value="<? echo (strlen($XML_DATA) > 0 ? $XML_DATA : ''); ?>" />
+		<input type="hidden" id="XML_DATA" name="XML_DATA" value="<?=htmlspecialcharsbx($XML_DATA); ?>">
+	</td>
+</tr>
+<tr>
+	<td width="40%"><? echo GetMessage('CAT_YANDEX_CHECK_PERMISSIONS'); ?></td>
+	<td width="60%">
+		<input type="hidden" name="CHECK_PERMISSIONS" value="N">
+		<input type="checkbox" name="CHECK_PERMISSIONS" value="Y"<?=($checkPermissions == 'Y' ? ' checked' : ''); ?>
 	</td>
 </tr>
 <tr>
@@ -414,15 +464,33 @@ if ($STEP == 1)
 	</td>
 </tr>
 <tr>
+	<td width="40%"><? echo GetMessage('CAT_YANDEX_DISABLE_REFERERS'); ?></td>
+	<td width="60%">
+		<input type="hidden" name="DISABLE_REFERERS" value="N">
+		<input type="checkbox" name="DISABLE_REFERERS" value="Y"<? echo ($disableReferers == 'Y' ? ' checked' : ''); ?>
+	</td>
+</tr><?
+	$maxExecutionTime = (isset($maxExecutionTime) ? (int)$maxExecutionTime : 0);
+?><tr>
+	<td width="40%"><?=GetMessage('CAT_MAX_EXECUTION_TIME');?></td>
+	<td width="60%">
+		<input type="text" name="MAX_EXECUTION_TIME" size="40" value="<?=$maxExecutionTime; ?>">
+	</td>
+</tr>
+<tr>
+	<td width="40%" style="padding-top: 0;">&nbsp;</td>
+	<td width="60%" style="padding-top: 0;"><small><?=GetMessage("CAT_MAX_EXECUTION_TIME_NOTE");?></small></td>
+</tr>
+<tr>
 	<td width="40%"><?echo GetMessage("CET_SERVER_NAME");?></td>
 	<td width="60%">
-		<input type="text" name="SETUP_SERVER_NAME" value="<?echo (strlen($SETUP_SERVER_NAME)>0) ? htmlspecialcharsbx($SETUP_SERVER_NAME) : '' ?>" size="50" /> <input type="button" onclick="this.form['SETUP_SERVER_NAME'].value = window.location.host;" value="<?echo htmlspecialcharsbx(GetMessage('CET_SERVER_NAME_SET_CURRENT'))?>" />
+		<input type="text" name="SETUP_SERVER_NAME" value="<?=htmlspecialcharsbx($SETUP_SERVER_NAME); ?>" size="50"> <input type="button" onclick="this.form['SETUP_SERVER_NAME'].value = window.location.host;" value="<?echo htmlspecialcharsbx(GetMessage('CET_SERVER_NAME_SET_CURRENT'))?>">
 	</td>
 </tr>
 <tr>
 	<td width="40%"><?echo GetMessage("CET_SAVE_FILENAME");?></td>
 	<td width="60%">
-		<b><? echo htmlspecialcharsbx(COption::GetOptionString("catalog", "export_default_path", "/bitrix/catalog_export/"));?></b><input type="text" name="SETUP_FILE_NAME" value="<?echo (strlen($SETUP_FILE_NAME)>0) ? htmlspecialcharsbx($SETUP_FILE_NAME) : "yandex_".mt_rand(0, 999999).".php" ?>" size="50" />
+		<b><? echo htmlspecialcharsbx(COption::GetOptionString("catalog", "export_default_path", "/bitrix/catalog_export/"));?></b><input type="text" name="SETUP_FILE_NAME" value="<?=htmlspecialcharsbx($SETUP_FILE_NAME); ?>" size="50">
 	</td>
 </tr>
 <?
@@ -470,7 +538,7 @@ if (2 > $STEP)
 	<input type="hidden" name="ACT_FILE" value="<?echo htmlspecialcharsbx($_REQUEST["ACT_FILE"]) ?>">
 	<input type="hidden" name="ACTION" value="<?echo htmlspecialcharsbx($ACTION) ?>">
 	<input type="hidden" name="STEP" value="<?echo intval($STEP) + 1 ?>">
-	<input type="hidden" name="SETUP_FIELDS_LIST" value="V,IBLOCK_ID,SETUP_SERVER_NAME,SETUP_FILE_NAME,XML_DATA,USE_HTTPS,FILTER_AVAILABLE">
+	<input type="hidden" name="SETUP_FIELDS_LIST" value="V,IBLOCK_ID,SETUP_SERVER_NAME,SETUP_FILE_NAME,XML_DATA,USE_HTTPS,FILTER_AVAILABLE,DISABLE_REFERERS,MAX_EXECUTION_TIME,CHECK_PERMISSIONS">
 	<input type="submit" value="<?echo ($ACTION=="EXPORT")?GetMessage("CET_EXPORT"):GetMessage("CET_SAVE")?>"><?
 }
 

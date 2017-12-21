@@ -33,4 +33,5 @@ $MESS["SSAN_NOTIFY_N"] = "No";
 $MESS["SSAN_TYPE"] = "Status type";
 $MESS["SSEN_TYPE_O"] = "Order";
 $MESS["SSEN_TYPE_D"] = "Delivery";
+$MESS["SSAN_COLOR"] = "Status color";
 ?>

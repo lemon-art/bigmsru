@@ -370,7 +370,10 @@ div.sender-group-address-counter .sender-group-address-counter-cnttext{
     background-position: 0 -90px
 }
 .sender-template-list-type-blockempty{
-    margin: 50px;
+    margin: 50px 0;
+    font-size: 38px;
+    color: #dddddd;
+    text-align: center;
 }
 .sender-template-list-type-block{
     width: 140px;

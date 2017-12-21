@@ -10,6 +10,7 @@ $MESS["CC_BCIH_ERROR_FILE_OPEN"] = "Ошибка открытия файла #FI
 $MESS["CC_BCIH_ERROR_HTTP_READ"] = "Ошибка чтения HTTP данных.";
 $MESS["CC_BCIH_XML_PARSE_ERROR"] = "Ошибка разбора XML. Код ошибки: #CODE#.";
 $MESS["CC_BCIH_REFERENCE_FOUND_OR_CREATED"] = "Найден или создан справочник. Код справочника: #CODE#.";
+$MESS["CC_BCIH_REFERENCE_ERROR"] = "Ошибка при создании справочника. #MESSAGE#";
 $MESS["CC_BCIH_FIELD_ERROR"] = "Ошибка при создании поля в справочнике. #MESSAGE#";
 $MESS["CC_BCIH_UNKNOWN_ERROR"] = "Неизвестная ошибка с кодом #CODE#.";
 $MESS["CC_BCIH_ELEMENT_PROGRESS"] = "Импортировано элементов: #COUNT#.";

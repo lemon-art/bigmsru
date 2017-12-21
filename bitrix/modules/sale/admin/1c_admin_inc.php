@@ -50,29 +50,29 @@ foreach($deliveryList as $shipmentService)
 }
 
 $arAllOptions = array(
-	array("1C_SALE_SITE_LIST", GetMessage("SALE_1C_SITE_LIST"), "", Array("list", $arSites)),
-	array("1C_IMPORT_NEW_ORDERS", GetMessage("SALE_1C_IMPORT_NEW_ORDERS"), "N", Array("checkbox")),
-	array("1C_SITE_NEW_ORDERS", GetMessage("SALE_1C_SITE_NEW_ORDERS"), "s1", Array("list", $arSites)),
-	array("1C_SALE_ACCOUNT_NUMBER_SHOP_PREFIX", GetMessage("SALE_1C_SALE_ACCOUNT_NUMBER_SHOP_PREFIX"), "", Array("text")),
-	array("1C_EXPORT_PAYED_ORDERS", GetMessage("SALE_1C_EXPORT_PAYED_ORDERS"), "", Array("checkbox")),
-	array("1C_EXPORT_ALLOW_DELIVERY_ORDERS", GetMessage("SALE_1C_EXPORT_ALLOW_DELIVERY_ORDERS"), "", Array("checkbox")),
-	array("1C_CHANGE_STATUS_FROM_1C", GetMessage("SALE_1C_CHANGE_STATUS_FROM_1C"), "", Array("checkbox")),
-	array("1C_EXPORT_FINAL_ORDERS", GetMessage("SALE_1C_EXPORT_FINAL_ORDERS"), "", Array("list", $arStatuses)),
-	array("1C_FINAL_STATUS_ON_DELIVERY", GetMessage("SALE_1C_FINAL_STATUS_ON_DELIVERY"), "F", Array("list", $arStatuses)),
-	array("1C_REPLACE_CURRENCY", GetMessage("SALE_1C_REPLACE_CURRENCY"), GetMessage("SALE_1C_RUB"), Array("text")),
-	array("1C_IMPORT_DEFAULT_PS", GetMessage("SALE_1C_IMPORT_DEFAULT_PS_C"), "", Array("list", $arPaySystems)),
-	array("1C_IMPORT_DEFAULT_PS_B", GetMessage("SALE_1C_IMPORT_DEFAULT_PS_B"), "", Array("list", $arPaySystems)),
-	array("1C_IMPORT_DEFAULT_PS_A", GetMessage("SALE_1C_IMPORT_DEFAULT_PS_A"), "", Array("list", $arPaySystems)),
-	array("1C_IMPORT_DEFAULT_PS_ORDER_PAID", GetMessage("SALE_1C_IMPORT_DEFAULT_PS_ORDER_PAID"), "", Array("list", $arPaySystemsWithoutInner)),
-	array("1C_IMPORT_DEFAULT_SHIPMENT_SERVICE", GetMessage("SALE_1C_IMPORT_DEFAULT_SHIPMENT_SERVICE"), "", Array("list", $shipmentServices)),
-	array("1C_IMPORT_UPDATE_BASKET_QUANTITY", GetMessage("SALE_1C_IMPORT_UPDATE_BASKET_QUANTITY"), "", Array("checkbox")),
-	array("1C_IMPORT_NEW_PAYMENT", GetMessage("SALE_1C_IMPORT_NEW_PAYMENT"), "", Array("checkbox")),
-	array("1C_IMPORT_NEW_SHIPMENT", GetMessage("SALE_1C_IMPORT_NEW_SHIPMENT"), "", Array("checkbox")),
-	array("1C_IMPORT_NEW_ORDER_NEW_SHIPMENT", GetMessage("SALE_1C_IMPORT_NEW_ORDER_NEW_SHIPMENT"), "", Array("checkbox")),
-	array("1C_SALE_GROUP_PERMISSIONS", GetMessage("SALE_1C_GROUP_PERMISSIONS"), "1", Array("mlist", 5, $arUGroupsEx)),
-	array("1C_SALE_USE_ZIP", GetMessage("SALE_1C_USE_ZIP"), "Y", Array("checkbox")),
-	array("1C_INTERVAL", GetMessage("SALE_1C_INTERVAL"), 30, Array("text", 20)),
-	array("1C_FILE_SIZE_LIMIT", GetMessage("SALE_1C_FILE_SIZE_LIMIT"), 200*1024, Array("text", 20)),
+	array("1C_SALE_SITE_LIST", GetMessage("SALE_1C_SITE_LIST"), "", Array("list", $arSites), array()),
+	array("1C_IMPORT_NEW_ORDERS", GetMessage("SALE_1C_IMPORT_NEW_ORDERS"), "N", Array("checkbox"), array()),
+	array("1C_SITE_NEW_ORDERS", GetMessage("SALE_1C_SITE_NEW_ORDERS"), "s1", Array("list", $arSites), array()),
+	array("1C_SALE_ACCOUNT_NUMBER_SHOP_PREFIX", GetMessage("SALE_1C_SALE_ACCOUNT_NUMBER_SHOP_PREFIX"), "", Array("text"), array("note"=>GetMessage("SALE_1C_SALE_ACCOUNT_NUMBER_SHOP_PREFIX_NOTE"))),
+	array("1C_EXPORT_PAYED_ORDERS", GetMessage("SALE_1C_EXPORT_PAYED_ORDERS"), "", Array("checkbox"), array()),
+	array("1C_EXPORT_ALLOW_DELIVERY_ORDERS", GetMessage("SALE_1C_EXPORT_ALLOW_DELIVERY_ORDERS"), "", Array("checkbox"), array()),
+	array("1C_CHANGE_STATUS_FROM_1C", GetMessage("SALE_1C_CHANGE_STATUS_FROM_1C"), "", Array("checkbox"), array()),
+	array("1C_EXPORT_FINAL_ORDERS", GetMessage("SALE_1C_EXPORT_FINAL_ORDERS"), "", Array("list", $arStatuses), array()),
+	array("1C_FINAL_STATUS_ON_DELIVERY", GetMessage("SALE_1C_FINAL_STATUS_ON_DELIVERY"), "F", Array("list", $arStatuses), array()),
+	array("1C_REPLACE_CURRENCY", GetMessage("SALE_1C_REPLACE_CURRENCY"), GetMessage("SALE_1C_RUB"), Array("text"), array()),
+	array("1C_IMPORT_DEFAULT_PS", GetMessage("SALE_1C_IMPORT_DEFAULT_PS_C"), "", Array("list", $arPaySystems), array()),
+	array("1C_IMPORT_DEFAULT_PS_B", GetMessage("SALE_1C_IMPORT_DEFAULT_PS_B"), "", Array("list", $arPaySystems), array()),
+	array("1C_IMPORT_DEFAULT_PS_A", GetMessage("SALE_1C_IMPORT_DEFAULT_PS_A"), "", Array("list", $arPaySystems), array()),
+	array("1C_IMPORT_DEFAULT_PS_ORDER_PAID", GetMessage("SALE_1C_IMPORT_DEFAULT_PS_ORDER_PAID"), "", Array("list", $arPaySystemsWithoutInner), array()),
+	array("1C_IMPORT_DEFAULT_SHIPMENT_SERVICE", GetMessage("SALE_1C_IMPORT_DEFAULT_SHIPMENT_SERVICE"), "", Array("list", $shipmentServices), array()),
+	array("1C_IMPORT_UPDATE_BASKET_QUANTITY", GetMessage("SALE_1C_IMPORT_UPDATE_BASKET_QUANTITY"), "", Array("checkbox"), array()),
+	array("1C_IMPORT_NEW_PAYMENT", GetMessage("SALE_1C_IMPORT_NEW_PAYMENT"), "", Array("checkbox"), array()),
+	array("1C_IMPORT_NEW_SHIPMENT", GetMessage("SALE_1C_IMPORT_NEW_SHIPMENT"), "", Array("checkbox"), array()),
+	array("1C_IMPORT_NEW_ORDER_NEW_SHIPMENT", GetMessage("SALE_1C_IMPORT_NEW_ORDER_NEW_SHIPMENT"), "", Array("checkbox"), array()),
+	array("1C_SALE_GROUP_PERMISSIONS", GetMessage("SALE_1C_GROUP_PERMISSIONS"), "1", Array("mlist", 5, $arUGroupsEx), array()),
+	array("1C_SALE_USE_ZIP", GetMessage("SALE_1C_USE_ZIP"), "Y", Array("checkbox"), array()),
+	array("1C_INTERVAL", GetMessage("SALE_1C_INTERVAL"), 30, Array("text", 20), array()),
+	array("1C_FILE_SIZE_LIMIT", GetMessage("SALE_1C_FILE_SIZE_LIMIT"), 200*1024, Array("text", 20), array()),
 );
 
 if($REQUEST_METHOD=="POST" && strlen($Update)>0 && $CAT_RIGHT>="W" && check_bitrix_sessid())
@@ -94,6 +94,7 @@ if($REQUEST_METHOD=="POST" && strlen($Update)>0 && $CAT_RIGHT>="W" && check_bitr
 foreach($arAllOptions as $Option):
 	$val = COption::GetOptionString("sale", $Option[0], $Option[2]);
 	$type = $Option[3];
+	$params = $Option[4];
 	?>
 	<tr>
 		<td width="40%"<?if($type[0]=="mlist") echo " valign=\"top\""?>><?	if($type[0]=="checkbox")
@@ -123,6 +124,20 @@ foreach($arAllOptions as $Option):
 				<?endif?>
 		</td>
 	</tr>
+	<?
+	if(isset($params['note']))
+	{
+		?>
+		<tr>
+			<td colspan="2" align="center">
+				<?echo BeginNote('align="center"');?>
+				<?=$params["note"]?>
+				<?echo EndNote();?>
+			</td>
+		</tr>
+		<?
+	}
+	?>
 <?endforeach;
 endif;
 ?>

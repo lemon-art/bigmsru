@@ -24,6 +24,9 @@ Loc::loadMessages(__FILE__);
  * <li> DATE_CREATE datetime optional
  * <li> CREATED_BY int optional
  * <li> DESCRIPTION string optional
+ * <li> CREATED_BY_USER reference to {@link \Bitrix\Main\UserTable}
+ * <li> MODIFIED_BY_USER reference to {@link \Bitrix\Main\UserTable}
+ * <li> DISCOUNT reference to {@link \Bitrix\Catalog\DiscountTable}
  * </ul>
  *
  * @package Bitrix\Catalog
@@ -109,18 +112,19 @@ class DiscountCouponTable extends Main\Entity\DataManager
 			)),
 			'CREATED_BY_USER' => new Main\Entity\ReferenceField(
 				'CREATED_BY_USER',
-				'Bitrix\Main\User',
+				'\Bitrix\Main\User',
 				array('=this.CREATED_BY' => 'ref.ID')
 			),
 			'MODIFIED_BY_USER' => new Main\Entity\ReferenceField(
 				'MODIFIED_BY_USER',
-				'Bitrix\Main\User',
+				'\Bitrix\Main\User',
 				array('=this.MODIFIED_BY' => 'ref.ID')
 			),
 			'DISCOUNT' => new Main\Entity\ReferenceField(
 				'DISCOUNT',
-				'Bitrix\Catalog\Discount',
-				array('=this.DISCOUNT_ID' => 'ref.ID')
+				'\Bitrix\Catalog\Discount',
+				array('=this.DISCOUNT_ID' => 'ref.ID'),
+				array('join_type' => 'LEFT')
 			)
 		);
 	}

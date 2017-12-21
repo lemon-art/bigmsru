@@ -59,7 +59,7 @@ if($bSecModuleInstalled){
 	$bSecurityFilter = false;
 	$securityEventsCount = 0;
 }
-if(!$bSecurityFilter || !$isScanNeeded || !isset($lastResult["results"]) || !empty($lastResult["results"])) {
+if(!$bSecurityFilter || $isScanNeeded || !isset($lastResult["results"]) || !empty($lastResult["results"])) {
 	$shieldClassColor = "red";
 } else {
 	$shieldClassColor = "blue";

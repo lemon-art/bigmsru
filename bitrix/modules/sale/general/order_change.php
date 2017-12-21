@@ -76,6 +76,42 @@ class CAllSaleOrderChange
 		return $DB->Query("DELETE FROM b_sale_order_change WHERE ORDER_ID = ".$id." ", true);
 	}
 
+	/**
+	 * Delete records from history which older then count days
+	 *
+	 * @param $days
+	 * @param null $limit
+	 *
+	 * @return bool
+	 */
+	public static function deleteOld($days, $limit = null)
+	{
+		$days = (int)($days);
+
+		if ($days <= 0)
+			return false;
+
+		$expired = new \Bitrix\Main\Type\DateTime();
+		$expired->add('-'.$days.' days');
+		$expiredValue = $expired->format('Y-m-d H:i:s');
+
+		/** @var \Bitrix\Main\DB\Connection $connection */
+		$connection = \Bitrix\Main\Application::getConnection();
+		/** @var \Bitrix\Main\DB\SqlHelper $sqlHelper */
+		$sqlHelper = $connection->getSqlHelper();
+		$sqlExpiredDate = $sqlHelper->getDateToCharFunction("'" . $expiredValue . "'");
+
+		if ($connection instanceof \Bitrix\Main\DB\MysqlCommonConnection)
+		{
+			$query = "DELETE FROM b_sale_order_change WHERE DATE_CREATE < $sqlExpiredDate";
+			if ((int)$limit > 0)
+				$query .= " LIMIT ".(int)$limit;
+			$connection->queryExecute($query);
+		}
+
+		return true;
+	}
+
 	/*
 	 * Adds record to the order change history
 	 * Wrapper around CSaleOrderChange::Add method
@@ -965,6 +1001,13 @@ class CSaleOrderChangeFormat
 			"ENTITY" => 'SHIPMENT_ITEM'
 		),
 
+		"MARKER_SUCCESS" => array(
+			"TRIGGER_FIELDS" => array(),
+			"FUNCTION" => "FormatMarkerSuccess",
+			"DATA_FIELDS" => array("ENTITY_ID", "MESSAGE"),
+			"ENTITY" => 'SHIPMENT'
+		),
+
 	);
 
 	public static function FormatBasketAdded($data)
@@ -1149,7 +1192,7 @@ class CSaleOrderChangeFormat
 			{
 				if ($param == "DELIVERY_ID")
 				{
-					if (!array_key_exists('DELIVERY_NAME', $arData) && strval($arData['DELIVERY_NAME']) != '')
+					if (!array_key_exists('DELIVERY_NAME', $data) && strval($data['DELIVERY_NAME']) != '')
 					{
 						if (strpos($value, ":") !== false)
 						{
@@ -1174,7 +1217,7 @@ class CSaleOrderChangeFormat
 					}
 					else
 					{
-						$value = "\"".$arData['DELIVERY_NAME']."\"";
+						$value = "\"".$data['DELIVERY_NAME']."\"";
 					}
 				}
 				elseif($param == "DELIVERY_NAME")
@@ -1374,7 +1417,7 @@ class CSaleOrderChangeFormat
 					$reqDescription .=": ".$data["TEXT"].".";
 
 				if(isset($data["DATA"]))
-					$reqDescription .= GetMessage("SOC_ORDER_DELIVERY_REQUEST_SENT_ADD_INFO").": ".serialize($arData["DATA"]);
+					$reqDescription .= GetMessage("SOC_ORDER_DELIVERY_REQUEST_SENT_ADD_INFO").": ".serialize($data["DATA"]);
 			}
 
 		}
@@ -1581,7 +1624,7 @@ class CSaleOrderChangeFormat
 
 		foreach ($arData as $param => $value)
 		{
-			$status = \Bitrix\Sale\Helpers\Admin\Blocks\OrderShipmentStatus::getShipmentStatusList();
+			$status = \Bitrix\Sale\Helpers\Admin\Blocks\OrderShipmentStatus::getShipmentStatusList($arData['STATUS_ID']);
 			$info = str_replace("#".$param."#", $status[$value], $info);
 		}
 
@@ -1827,5 +1870,25 @@ class CSaleOrderChangeFormat
 		}
 
 		return $text;
+	}
+
+
+	public static function FormatMarkerSuccess($data)
+	{
+		$info = GetMessage("SOC_MARKER_SUCCESS_INFO");
+
+
+		if (!empty($data['ENTITY_TYPE']))
+		{
+			$data['ENTITY_NAME'] = \Bitrix\Main\Localization\Loc::getMessage('SOC_MARKER_'. $data['ENTITY_TYPE'] .'_INFO');
+		}
+
+		$info = static::doProcessLogMessage($info, $data);
+
+
+		return array(
+			"NAME" => GetMessage("SOC_MARKER_SUCCESS"),
+			"INFO" => $info,
+		);
 	}
 }

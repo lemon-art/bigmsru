@@ -1216,12 +1216,7 @@ window.JCCatalogSectionBest.prototype.Basket = function()
 		if (this.basketData.useProps && !this.basketData.emptyProps)
 		{
 			this.InitPopupWindow();
-			this.obPopupWin.setTitleBar({
-				content: BX.create('div', {
-					style: { marginRight: '30px', whiteSpace: 'nowrap' },
-					text: BX.message('TITLE_BASKET_PROPS')
-				})
-			});
+			this.obPopupWin.setTitleBar(BX.message('TITLE_BASKET_PROPS'));
 			if (BX(this.visual.BASKET_PROP_DIV))
 			{
 				contentBasketProps = BX(this.visual.BASKET_PROP_DIV).innerHTML;
@@ -1254,17 +1249,15 @@ window.JCCatalogSectionBest.prototype.BasketResult = function(arResult)
 	var strContent = '',
 		strName = '',
 		strPict = '',
-		successful = true,
+		successful,
 		buttons = [];
 
 	if (!!this.obPopupWin)
-	{
 		this.obPopupWin.close();
-	}
-	if ('object' !== typeof arResult)
-	{
-		return false;
-	}
+
+	if (!BX.type.isPlainObject(arResult))
+		return;
+
 	successful = ('OK' === arResult.STATUS);
 	if (successful)
 	{
@@ -1283,7 +1276,7 @@ window.JCCatalogSectionBest.prototype.BasketResult = function(arResult)
 			);
 			break;
 		}
-		strContent = '<div style="width: 96%; margin: 10px 2%; text-align: center;"><img src="'+strPict+'" height="130" style="max-height:130px"><p>'+strName+'</p></div>';
+		strContent = '<div style="width: 100%; margin: 0; text-align: center;"><img src="'+strPict+'" height="130" style="max-height:130px"><p>'+strName+'</p></div>';
 		buttons = [
 			new BasketButton({
 				ownerClass: this.obProduct.parentNode.parentNode.parentNode.className,
@@ -1310,12 +1303,7 @@ window.JCCatalogSectionBest.prototype.BasketResult = function(arResult)
 		];
 	}
 	this.InitPopupWindow();
-	this.obPopupWin.setTitleBar({
-		content: BX.create('div', {
-			style: { marginRight: '30px', whiteSpace: 'nowrap' },
-			text: (successful ? BX.message('TITLE_SUCCESSFUL') : BX.message('TITLE_ERROR'))
-		})
-	});
+	this.obPopupWin.setTitleBar(successful ? BX.message('TITLE_SUCCESSFUL') : BX.message('TITLE_ERROR'));
 	this.obPopupWin.setContent(strContent);
 	this.obPopupWin.setButtons(buttons);
 	this.obPopupWin.show();
@@ -1324,9 +1312,8 @@ window.JCCatalogSectionBest.prototype.BasketResult = function(arResult)
 window.JCCatalogSectionBest.prototype.InitPopupWindow = function()
 {
 	if (!!this.obPopupWin)
-	{
 		return;
-	}
+
 	this.obPopupWin = BX.PopupWindowManager.create('CatalogSectionBasket_'+this.visual.ID, null, {
 		autoHide: false,
 		offsetLeft: 0,
@@ -1334,7 +1321,8 @@ window.JCCatalogSectionBest.prototype.InitPopupWindow = function()
 		overlay : true,
 		closeByEsc: true,
 		titleBar: true,
-		closeIcon: {top: '10px', right: '10px'}
+		closeIcon: true,
+		contentColor: 'white'
 	});
 };
 })(window);

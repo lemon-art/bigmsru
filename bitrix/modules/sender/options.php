@@ -18,7 +18,8 @@ $arAllOptions = array(
 	array("unsub_link", GetMessage("opt_unsub_link"), array("text", 35)),
 	array("sub_link", GetMessage("opt_sub_link"), array("text", 35)),
 	array("address_from", GetMessage("opt_address_from"), array("text-list", 3, 20)),
-	array("address_send_to_me", GetMessage("opt_address_send_to_me"), array("text-list", 3, 20))
+	array("address_send_to_me", GetMessage("opt_address_send_to_me"), array("text-list", 3, 20)),
+	array("mail_headers", GetMessage("opt_mail_headers"), array("srlz-list", 3, 20))
 );
 $aTabs = array(
 	array("DIV" => "edit1", "TAB" => GetMessage("MAIN_TAB_SET"), "ICON" => "sender_settings", "TITLE" => GetMessage("MAIN_TAB_TITLE_SET")),
@@ -40,7 +41,13 @@ if($REQUEST_METHOD=="POST" && strlen($Update.$Apply.$RestoreDefaults)>0 && $POST
 		foreach($arAllOptions as $arOption)
 		{
 			$name = $arOption[0];
-			if($arOption[2][0]=="text-list")
+			if($arOption[2][0]=="srlz-list")
+			{
+				$val = ${$name};
+				TrimArr($val);
+				$val = serialize($val);
+			}
+			else if($arOption[2][0]=="text-list")
 			{
 				$val = "";
 				$valCount = count(${$name});
@@ -104,8 +111,16 @@ $tabControl->BeginNextTab();
 				?><input type="text" size="<?echo $type[1]?>" maxlength="255" value="<?echo htmlspecialcharsbx($val)?>" name="<?echo htmlspecialcharsbx($Option[0])?>"><?
 			elseif($type[0]=="textarea"):
 				?><textarea rows="<?echo $type[1]?>" cols="<?echo $type[2]?>" name="<?echo htmlspecialcharsbx($Option[0])?>"><?echo htmlspecialcharsbx($val)?></textarea><?
-			elseif($type[0]=="text-list"):
-				$aVal = explode(",", $val);
+			elseif($type[0]=="text-list" || $type[0]=="srlz-list"):
+				if ($type[0]=="srlz-list")
+				{
+					$aVal = !empty($val) ? unserialize($val) : '';
+				}
+				else
+				{
+					$aVal = explode(",", $val);
+				}
+
 				$aValCount = count($aVal);
 				for($j=0; $j<$aValCount; $j++):
 					?><input type="text" size="<?echo $type[2]?>" value="<?echo htmlspecialcharsbx($aVal[$j])?>" name="<?echo htmlspecialcharsbx($Option[0])."[]"?>"><br><?

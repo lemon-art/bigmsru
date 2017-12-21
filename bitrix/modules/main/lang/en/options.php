@@ -213,4 +213,8 @@ $MESS["MAIN_OPTIONS_IMAGES"] = "User profile images";
 $MESS["MAIN_OPTIONS_IMAGES_WIDTH"] = "Max. width (px):";
 $MESS["MAIN_OPTIONS_IMAGES_HEIGHT"] = "Max. height (px):";
 $MESS["MAIN_OPTIONS_IMAGES_SIZE"] = "Max. file size, bytes:";
+$MESS["MAIN_REGISTER_AGREEMENT_TITLE"] = "Manage Agreements. <a href=\"#AGGREMENT_CREATE_URL#\" target=\"_blank\">Create a new Agreement</a>";
+$MESS["MAIN_REGISTER_AGREEMENT_DEFAUTL_VALUE"] = "(Select Agreement)";
+$MESS["MAIN_OPTIONS_PHONE_NUMBER_FORMAT"] = "Phone number format";
+$MESS["MAIN_OPTIONS_PHONE_NUMBER_DEFAULT_COUNTRY"] = "Default country:";
 ?>

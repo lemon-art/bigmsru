@@ -115,6 +115,8 @@ if(strlen($arResult["ERROR"]) <= 0 && $saleModulePermissions >= "W" && check_bit
 			break;
 
 		case "delete_restriction":
+			Manager::getClassesList();
+
 			$restrictionId = ($request->get('restrictionId') !== null) ? (int)$request->get('restrictionId') : 0;
 			$paySystemId = ($request->get('paySystemId') !== null) ? (int)$request->get('paySystemId') : 0;
 
@@ -226,9 +228,16 @@ if(strlen($arResult["ERROR"]) <= 0 && $saleModulePermissions >= "W" && check_bit
 				require $_SERVER['DOCUMENT_ROOT'].$path.'/.description.php';
 
 				if (isset($psDescription)) // for compatibility
+				{
 					$arResult["DESCRIPTION"] = $psDescription;
+				}
 				elseif (isset($description))
-					$arResult["DESCRIPTION"] = $description;
+				{
+					if (is_array($description))
+						$arResult["DESCRIPTION"] = (array_key_exists('MAIN', $description)) ? $description['MAIN'] : implode("\n", $description);
+					else
+						$arResult["DESCRIPTION"] = $description;
+				}
 
 				if ($paySystemId <= 0)
 				{
@@ -258,7 +267,7 @@ if(strlen($arResult["ERROR"]) <= 0 && $saleModulePermissions >= "W" && check_bit
 			);
 			$http = new \Bitrix\Main\Web\HttpClient();
 			$response = @$http->get('https://'.$_SERVER['SERVER_NAME'].'/bitrix/tools/sale_ps_result.php');
-			if (!$response || $http->getStatus() != 200)
+			if ($response === false || $http->getStatus() != 200)
 			{
 				$arResult['CHECK_STATUS'] =  'ERROR';
 				$arResult['CHECK_MESSAGE'] =  join('\n', $http->getError());

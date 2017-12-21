@@ -69,8 +69,8 @@ if (CModule::IncludeModule("form"))
 		// get variables
 		CComponentEngine::InitComponentVariables($componentPage, $arComponentVariables, $arVariableAliases, $arVariables);
 
-		if (intval($arVariables["WEB_FORM_ID"] > 0)) $arParams["WEB_FORM_ID"] = intval($arVariables["WEB_FORM_ID"]);
-		if (intval($arVariables["RESULT_ID"] > 0)) $arParams["RESULT_ID"] = intval($arVariables["RESULT_ID"]);
+		if (intval($arVariables["WEB_FORM_ID"]) > 0) $arParams["WEB_FORM_ID"] = intval($arVariables["WEB_FORM_ID"]);
+		if (intval($arVariables["RESULT_ID"]) > 0) $arParams["RESULT_ID"] = intval($arVariables["RESULT_ID"]);
 
 		// set component params for pages
 		switch ($componentPage)

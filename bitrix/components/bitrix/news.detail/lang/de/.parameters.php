@@ -24,4 +24,5 @@ $MESS["CP_BND_SET_META_DESCRIPTION"] = "Beschreibung der Seite definieren";
 $MESS["CP_BND_SET_BROWSER_TITLE"] = "Überschrift des Browserfensters festlegen";
 $MESS["CP_BND_SET_CANONICAL_URL"] = "Kanonische URL verwenden";
 $MESS["CP_BND_SET_LAST_MODIFIED"] = "Im Header der Antwort den Zeitpunkt der Seitenänderung angeben";
+$MESS["CP_BND_STRICT_SECTION_CHECK"] = "Übergeordneten Bereich prüfen, wenn das Element angezeigt wird";
 ?>

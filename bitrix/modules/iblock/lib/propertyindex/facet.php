@@ -140,7 +140,7 @@ class Facet
 	 * @param array $facetTypes Which facet types will be used.
 	 * @param integer $facetId Which facet category filter should not be applied.
 	 *
-	 * @return \Bitrix\Main\DB\Result
+	 * @return \Bitrix\Main\DB\Result|false
 	 */
 	public function query(array $filter, array $facetTypes = array(), $facetId = 0)
 	{
@@ -159,7 +159,7 @@ class Facet
 
 			$element = new \CIBlockElement;
 			$element->strField = "ID";
-			$element->getList(array(), $filter, false, false, array("ID"));
+			$element->prepareSql(array("ID"), $filter, false, false);
 			$elementFrom = $element->sFrom;
 			$elementWhere = $element->sWhere;
 		}

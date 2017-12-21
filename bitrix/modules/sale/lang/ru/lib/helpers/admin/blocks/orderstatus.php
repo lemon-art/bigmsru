@@ -17,4 +17,8 @@ $MESS["SALE_ORDER_STATUS_TOGGLE"] = "свернуть";
 $MESS["SALE_ORDER_STATUS_SITE"] = "Сайт";
 $MESS["SALE_ORDER_STATUS_SOURCE"] = "Источник заказа";
 $MESS["SALE_ORDER_STATUS_AFFILIATE"] = "Аффилиат";
+$MESS["SALE_ORDER_STATUS_ARCHIVED"] = "Перенесен в архив";
+$MESS["SALE_ORDER_WRONG_GUEST_PATH"] = "Неверный шаблон пути к странице заказа. Проверьте путь <a target=\"_blank\" href=\"/bitrix/admin/settings.php?lang=#LANGUAGE_ID#&mid=sale#guest_order_view_block\">в настройках модуля";
+$MESS["SALE_ORDER_GUEST_PATH"] = "Заказ ID(#ID#) | №#ACCOUNT_NUMBER#";
+$MESS["SALE_ORDER_GUEST_VIEW"] = "Публичная ссылка";
 ?>

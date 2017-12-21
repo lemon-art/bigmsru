@@ -1459,10 +1459,44 @@ class CForumSimpleHTMLParser
 	var $replace_tag_begin = '/^\s*\w+\s*/';
 	var $parse_params = '/([a-z]+)\s*=\s*(?:([^\s]*)|(?:[\'"]([^\'"])[\'"]))/im';
 	var $lastError = '';
+	private $preg = array(
+			"counter" => 0,
+			"pattern" => array(),
+			"replace" => array()
+		);
 
 	function __construct ($data)
 	{
-		$this->data = $data;
+		$this->data = $this->prepare($data);
+	}
+	/**
+	 * @param string $text
+	 * @return string
+	 */
+	private function prepare($text)
+	{
+		$text = preg_replace_callback(
+			"/<pre>(.+?)<\\/pre>/is".BX_UTF_PCRE_MODIFIER,
+			array($this, "defendTags"),
+			(is_string($text) ? $text : strval($text))
+		);
+		$text = str_replace(array("\r\n", "\n", "\t"), "", $text);
+		$text = str_replace($this->preg["pattern"], $this->preg["replace"], $text);
+		$this->preg["pattern"] = array();
+		$this->preg["replace"] = array();
+		return $text;
+	}
+
+	/**
+	 * @param array $matches
+	 * @return string
+	 */
+	public function defendTags($matches)
+	{
+		$text = "<\017#".(++$this->preg["counter"]).">";
+		$this->preg["pattern"][] = $text;
+		$this->preg["replace"][] = $matches[0];
+		return $text;
 	}
 
 	function findTagStart($needle) // needle = input[name=input;class=red]

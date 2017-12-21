@@ -625,7 +625,7 @@ class CAutoCheck
 		$arCount = 0;
 		$arResult = array();
 		$arResult["STATUS"] = false;
-		$bMcrypt = function_exists('mcrypt_encrypt');
+		$bMcrypt = function_exists('mcrypt_encrypt') || function_exists('openssl_encrypt');
 		$bBitrixCloud = $bMcrypt && CModule::IncludeModule('bitrixcloud') && CModule::IncludeModule('clouds');
 
 		$site = CSite::GetSiteByFullPath(DOCUMENT_ROOT);
@@ -776,23 +776,14 @@ class CAutoCheck
 		$module_id = $NS["MLIST"][$NS["MNUM"]];
 		$module_folder = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$module_id."/";
 		$dbtype = strtolower($DB->type);
-		if ($module_id == "main")
-		{
-			$ver = SM_VERSION;
-		}
-		else
-		{
-			$arModuleVersion = array();
-			@include($module_folder."install/version.php");
-			$ver = $arModuleVersion["VERSION"];
-		}
-
 		$arFilesCount = 0;
 		$arModifiedFilesCount = 0;
 		$state = array();
 		$Skip = false;
 
-		if (!$ver)
+		$ver = \Bitrix\Main\ModuleManager::getVersion($module_id);
+
+		if ($ver === false)
 		{
 			$state = array(
 				"STATUS" => false,

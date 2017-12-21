@@ -19,9 +19,19 @@ class CIBlockResult extends CDBResult
 	var $_LAST_IBLOCK_ID = "";
 	var $_FILTER_IBLOCK_ID = array();
 
+	public function __construct($res = null)
+	{
+		parent::__construct($res);
+	}
+
+	/**
+	 * @deprected
+	 *
+	 * @param $res
+	 */
 	function CIBlockResult($res)
 	{
-		parent::CDBResult($res);
+		self::__construct($res);
 	}
 
 	function SetUrlTemplates($DetailUrl = "", $SectionUrl = "", $ListUrl = "")
@@ -75,7 +85,7 @@ class CIBlockResult extends CDBResult
 		global $DB;
 		$res = parent::Fetch();
 
-		if(!is_object($this))
+		if(!isset($this) || !is_object($this))
 			return $res;
 
 		$arUpdate = array();

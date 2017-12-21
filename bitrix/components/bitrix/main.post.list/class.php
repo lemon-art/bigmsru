@@ -140,6 +140,10 @@ HTML;
 					unset($comment["MOBILE"]);
 					$comment["ACTION"] = $arParams["PUSH&PULL"]["ACTION"];
 					$comment["USER_ID"] = (isset($arParams["PUSH&PULL"]) && isset($arParams["PUSH&PULL"]["AUTHOR_ID"]) && intval($arParams["PUSH&PULL"]["AUTHOR_ID"]) > 0 ? intval($arParams["PUSH&PULL"]["AUTHOR_ID"]) : $this->getUser()->getId());
+					if ($this->request->getPost("EXEMPLAR_ID") !== null)
+						$comment["EXEMPLAR_ID"] = $this->request->getPost("EXEMPLAR_ID");
+					if ($this->request->getPost("COMMENT_EXEMPLAR_ID") !== null)
+						$comment["COMMENT_EXEMPLAR_ID"] = $this->request->getPost("COMMENT_EXEMPLAR_ID");
 
 					\CPullWatch::AddToStack('UNICOMMENTSEXTENDED'.$arParams["ENTITY_XML_ID"],
 						array(
@@ -581,10 +585,15 @@ HTML;
 			$extranetSiteId = (CModule::IncludeModule('extranet') ? CExtranet::GetExtranetSiteID() : false);
 		}
 
-		$authorUrl = str_replace(
-			array("#ID#", "#id#", "#USER_ID#", "#user_id#"),
-			array($res["ID"], $res["ID"], $res["AUTHOR"]["ID"], $res["AUTHOR"]["ID"]),
-			$arParams["AUTHOR_URL"]);
+		$authorUrl = (
+			$res["AUTHOR"]["ID"]
+				? str_replace(
+					array("#ID#", "#id#", "#USER_ID#", "#user_id#"),
+					array($res["ID"], $res["ID"], $res["AUTHOR"]["ID"], $res["AUTHOR"]["ID"]),
+					$arParams["AUTHOR_URL"]
+				)
+				: "javascript:void();"
+		);
 
 		$authorStyle = '';
 		$authorTooltipParams = array();
@@ -639,6 +648,8 @@ HTML;
 				$res["ID"],
 			"#FULL_ID#" =>
 				$arParams["ENTITY_XML_ID"]."-".$res["ID"],
+			"#CONTENT_ID#" =>
+				(!empty($arParams["RATING_TYPE_ID"]) ? $arParams["RATING_TYPE_ID"]."-".$res["ID"] : (!empty($arParams["CONTENT_TYPE_ID"]) ? $arParams["CONTENT_TYPE_ID"]."-".$res["ID"] : "")),
 			"#ENTITY_XML_ID#" =>
 				$arParams["ENTITY_XML_ID"],
 			"#NEW#" =>
@@ -853,33 +864,42 @@ HTML;
 
 	public function executeComponent()
 	{
-		$this->prepareParams($this->arParams, $this->arResult);
-		ob_start();
-
-		$this->includeComponentTemplate();
-
-		$output = ob_get_clean();
-		$json = false;
-
-		foreach (GetModuleEvents('main.post.list', 'OnCommentsDisplayTemplate', true) as $arEvent)
+		try
 		{
-			ExecuteModuleEventEx($arEvent, array(&$output, &$this->arParams, &$this->arResult));
-		}
-		$this->sendIntoPull($this->arParams, $this->arResult);
+			$this->prepareParams($this->arParams, $this->arResult);
+			ob_start();
 
-		if ($this->arParams["MODE"] == "PULL_MESSAGE")
+			$this->includeComponentTemplate();
+
+			$output = ob_get_clean();
+			$json = false;
+
+			foreach (GetModuleEvents('main.post.list', 'OnCommentsDisplayTemplate', true) as $arEvent)
+			{
+				ExecuteModuleEventEx($arEvent, array(&$output, &$this->arParams, &$this->arResult));
+			}
+			$this->sendIntoPull($this->arParams, $this->arResult);
+
+			if ($this->arParams["MODE"] == "PULL_MESSAGE")
+			{
+				$json = $this->parseHTML($output, "RECORD");
+			}
+			else if ($this->getMode() == "RECORD" || $this->getMode() == "LIST")
+			{
+				$json = $this->parseHTML($output, $this->getMode());
+				$this->sendJsonResponse($json);
+			}
+
+			$output .= $this->joinToPull();
+			return array("HTML" => $output, "JSON" => $json);
+		}
+		catch (\Exception $e)
 		{
-			$json = $this->parseHTML($output, "RECORD");
+			$this->sendJsonResponse(array(
+				"status" => "error",
+				"message" => $e->getMessage()
+			));
 		}
-		else if ($this->getMode() == "RECORD" || $this->getMode() == "LIST")
-		{
-			$json = $this->parseHTML($output, $this->getMode());
-			$this->sendJsonResponse($json);
-		}
-
-		$output .= $this->joinToPull();
-
-		return array("HTML" => $output, "JSON" => $json);
 	}
 
 	protected function sendJsonResponse($response)
@@ -964,8 +984,8 @@ HTML;
 			}
 
 			$JSResult += array(
-				'errorMessage' => $arParams["ERROR_MESSAGE"],
-				'okMessage' => $arParams["OK_MESSAGE"],
+				'errorMessage' => (isset($arParams["~ERROR_MESSAGE"]) ? $arParams["~ERROR_MESSAGE"] : (isset($arParams["ERROR_MESSAGE"]) ? $arParams["ERROR_MESSAGE"] : '')),
+				'okMessage' => (isset($arParams["~OK_MESSAGE"]) ? $arParams["~OK_MESSAGE"] : (isset($arParams["OK_MESSAGE"]) ? $arParams["OK_MESSAGE"] : '')),
 				'status' => "success",
 				'message' => $SHParser->getInnerHTML('<!--LOAD_SCRIPT-->', '<!--END_LOAD_SCRIPT-->').$message,
 				'messageBBCode' => $arParams["~RECORDS"][$record]["~POST_MESSAGE_TEXT"],

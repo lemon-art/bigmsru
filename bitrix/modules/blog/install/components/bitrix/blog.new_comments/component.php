@@ -152,6 +152,23 @@ else
 
 		$p = new blogTextParser(false, $arParams["PATH_TO_SMILE"]);
 		$itemCnt = 0;
+		
+//		collect last comments authors
+		$lastCommentsAuthorsIds = array();
+		$dbLastComments = CBlogComment::GetList(
+			$SORT,
+			$arFilter,
+			false,
+			$COUNT,
+			array('AUTHOR_ID', 'ID')
+		);
+		while($lastComment = $dbLastComments->Fetch())
+			if($lastComment['AUTHOR_ID'])
+				$lastCommentsAuthorsIds[$lastComment['AUTHOR_ID']] = $lastComment['AUTHOR_ID'];
+		
+		$blogUser = new \Bitrix\Blog\BlogUser($arParams["CACHE_TIME"]);
+		$commentsUsers = $blogUser->getUsers($lastCommentsAuthorsIds);
+		
 		while ($arComment = $dbComment->GetNext())
 		{
 			$arAllow = array("HTML" => "N", "ANCHOR" => "N", "BIU" => "N", "IMG" => "N", "QUOTE" => "N", "CODE" => "N", "FONT" => "N", "LIST" => "N", "SMILES" => "Y", "NL2BR" => "N", "VIDEO" => "N", "USER" => "N");
@@ -186,17 +203,31 @@ else
 			
 			if(IntVal($arComment["AUTHOR_ID"])>0)
 			{
-				$arComment["urlToAuthor"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_USER"], array("user_id" => $arComment["AUTHOR_ID"]));
-				$arComment["BlogUser"] = CBlogUser::GetByID($arComment["AUTHOR_ID"], BLOG_BY_USER_ID); 
-				$arComment["BlogUser"] = CBlogTools::htmlspecialcharsExArray($arComment["BlogUser"]);
-				$dbUser = CUser::GetByID($arComment["AUTHOR_ID"]);
-				$arComment["arUser"] = $dbUser->GetNext();
-				$arComment["AuthorName"] = CBlogUser::GetUserName($arComment["BlogUser"]["ALIAS"], $arComment["arUser"]["NAME"], $arComment["arUser"]["LAST_NAME"], $arComment["arUser"]["LOGIN"]);
-				$arComment["Blog"] = CBlog::GetByOwnerID(IntVal($arComment["AUTHOR_ID"]), $arParams["GROUP_ID"]);
-				if(!empty($arComment["Blog"]))
-					$arComment["urlToBlog"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_BLOG"], array("blog" => $arComment["Blog"]["URL"], "user_id" => $arComment["AUTHOR_ID"]));
-				else
-					$arComment["urlToBlog"] = $arComment["urlToAuthor"];
+				if(empty($arResult["USER_CACHE"][$arComment["AUTHOR_ID"]]))
+				{
+					$arUsrTmp = array();
+					$arUsrTmp["urlToAuthor"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_USER"], array("user_id" => $arComment["AUTHOR_ID"]));
+					$arUsrTmp["Blog"] = CBlog::GetByOwnerID(IntVal($arComment["AUTHOR_ID"]), $arParams["GROUP_ID"]);
+					if(!empty($arUsrTmp["Blog"]))
+						$arUsrTmp["urlToBlog"] = CComponentEngine::MakePathFromTemplate(
+							$arParams["PATH_TO_BLOG"],
+							array("blog" => $arUsrTmp["Blog"]["URL"], "user_id" => $arComment["AUTHOR_ID"])
+						);
+					else
+						$arUsrTmp["urlToBlog"] = $arUsrTmp["urlToAuthor"];
+//
+					$arResult["USER_CACHE"][$arComment["AUTHOR_ID"]] = $arUsrTmp;
+				}
+				$arComment["BlogUser"] = $commentsUsers[$arComment["AUTHOR_ID"]]["BlogUser"];
+				$arComment["arUser"] = $commentsUsers[$arComment["AUTHOR_ID"]]["arUser"];
+				$arComment["AuthorName"] = $commentsUsers[$arComment["AUTHOR_ID"]]["AUTHOR_NAME"];
+				$arComment["AVATAR_file"] = $commentsUsers[$arComment["AUTHOR_ID"]]["BlogUser"]["AVATAR_file"];
+				if ($arComment["AVATAR_file"] !== false)
+					$arComment["AVATAR_img"] = $commentsUsers[$arComment["AUTHOR_ID"]]["BlogUser"]["AVATAR_img"]['30_30'];
+//				from user cache
+				$arComment["Blog"] = $arResult["USER_CACHE"][$arComment["AUTHOR_ID"]]["Blog"];
+				$arComment["urlToAuthor"] = $arResult["USER_CACHE"][$arComment["AUTHOR_ID"]]["urlToAuthor"];
+				$arComment["urlToBlog"] = $arResult["USER_CACHE"][$arComment["AUTHOR_ID"]]["urlToBlog"];
 			}
 			else
 			{
@@ -214,18 +245,6 @@ else
 			else
 				$arComment["urlToComment"] .= "?";
 			$arComment["urlToComment"] .= $arParams["COMMENT_ID_VAR"]."=".$arComment["ID"]."#".$arComment["ID"];
-			
-			$arComment["AVATAR_file"] = CFile::GetFileArray($arComment["BlogUser"]["AVATAR"]);
-			if ($arComment["BlogUser"]["AVATAR"])
-			{
-				$arComment["Avatar_resized"] = CFile::ResizeImageGet(
-							$arComment["AVATAR_file"],
-							array("width" => 100, "height" => 100),
-							BX_RESIZE_IMAGE_EXACT,
-							false
-						);
-				$arComment["AVATAR_img"] = CFile::ShowImage($arComment["Avatar_resized"]["src"], 100, 100, "border=0 align='right'");
-			}
 
 			if(strlen($arComment["TITLE"])>0)
 				$arComment["TitleFormated"] = $p->convert($arComment["~TITLE"], false);
@@ -237,6 +256,8 @@ else
 			
 			$arResult[] = $arComment;
 		}
+		
+		unset($arResult["USER_CACHE"]);
 	}
 
 	if ($arParams["CACHE_TIME"] > 0)

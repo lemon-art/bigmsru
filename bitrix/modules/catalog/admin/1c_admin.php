@@ -238,7 +238,14 @@ if ($USER->CanDoOperation('catalog_read')) :
 		</tr>
 		<?
 		}
-
+		if (!$USER->CanDoOperation('edit_php'))
+		{
+			?><tr><td colspan="2"><?
+				echo BeginNote();
+				echo GetMessage('CAT_1C_SETTINGS_SAVE_DENIED');
+				echo EndNote();
+			?></td></tr><?
+		}
 		?>
 	<script type="text/javascript">
 	var controls = <?echo CUtil::PhpToJSObject($arOptionsDeps)?>;
@@ -291,4 +298,3 @@ if ($USER->CanDoOperation('catalog_read')) :
 	endif;
 
 endif;
-?>

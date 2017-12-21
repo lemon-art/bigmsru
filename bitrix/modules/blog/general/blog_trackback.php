@@ -139,6 +139,7 @@ class CAllBlogTrackback
 				else
 					$serverName = COption::GetOptionString("main", "server_name", "");
 			}
+			$serverName = \Bitrix\Main\Text\HtmlFilter::encode($serverName);
 
 			if (strlen($charset) <= 0)
 			{

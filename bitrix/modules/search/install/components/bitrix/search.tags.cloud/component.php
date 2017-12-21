@@ -15,25 +15,6 @@
 /** @var CCacheManager $CACHE_MANAGER */
 global $CACHE_MANAGER;
 
-if (!function_exists("__sortName"))
-{
-	function __sortName($this, $next)
-	{
-		if ($this["NAME_HTML"] != $next["NAME_HTML"])
-		{
-			$arSort = array($this["NAME_HTML"], $next["NAME_HTML"]);
-			sort($arSort);
-			if ($arSort[0] != $this["NAME_HTML"])
-				return 1;
-		}
-		elseif (intVal($this["CNT"]) < intVal($next["CNT"]))
-		{
-			return 1;
-		}
-		return -1;
-	}
-}
-
 if(!isset($arParams["CACHE_TIME"]))
 	$arParams["CACHE_TIME"] = 3600;
 
@@ -189,8 +170,14 @@ if ($this->StartResultCache(false, array($USER->GetGroups())))
 			} while ($res = $obSearch->getNext());
 		}
 	}
+
 	if ($arParams["SORT"] != "CNT")
-		uasort($arResult["SEARCH"], "__sortName");
+	{
+		\Bitrix\Main\Type\Collection::sortByColumn($arResult["SEARCH"], array(
+			"NAME_HTML" => SORT_ASC,
+			"CNT" => SORT_DESC,
+		));
+	}
 
 	$arResult["TAGS_CHAIN"] = array();
 	if ($arParams["~TAGS"])

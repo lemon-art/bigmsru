@@ -1,4 +1,6 @@
 <?
+// delete from updates
+//include("module_updater.php");
 
 CModule::AddAutoloadClasses(
 	"mobileapp",
@@ -32,6 +34,9 @@ CJSCore::RegisterExt('mdesigner', array(
 
 CJSCore::RegisterExt('mobile_fastclick', array(
 		'js'   => '/bitrix/js/mobileapp/fastclick.js',
+	));
+CJSCore::RegisterExt('mobile_gesture', array(
+		'js'   => '/bitrix/js/mobileapp/gesture.js',
 	));
 
 ?>

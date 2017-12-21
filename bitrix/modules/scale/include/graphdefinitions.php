@@ -22,7 +22,6 @@ $graphics = array(
 			"df",
 			"iostat",
 			"df_inode",
-			"diskstats_throughput",
 			"diskstats_throughput"
 		)
 	),

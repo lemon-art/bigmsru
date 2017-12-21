@@ -19,8 +19,10 @@ IncludeModuleLangFile(__FILE__);
  * @package usertype
  * @subpackage classes
  */
-class CUserTypeString
+class CUserTypeString extends \Bitrix\Main\UserField\TypeBase
 {
+	const USER_TYPE_ID = 'string';
+
 	/**
 	 * Обработчик события OnUserTypeBuildList.
 	 *
@@ -39,10 +41,22 @@ class CUserTypeString
 	function GetUserTypeDescription()
 	{
 		return array(
-			"USER_TYPE_ID" => "string",
-			"CLASS_NAME" => "CUserTypeString",
+			"USER_TYPE_ID" => static::USER_TYPE_ID,
+			"CLASS_NAME" => __CLASS__,
 			"DESCRIPTION" => GetMessage("USER_TYPE_STRING_DESCRIPTION"),
-			"BASE_TYPE" => "string",
+			"BASE_TYPE" => \CUserTypeManager::BASE_TYPE_STRING,
+			"EDIT_CALLBACK" => array(__CLASS__, 'GetPublicEdit'),
+			"VIEW_CALLBACK" => array(__CLASS__, 'GetPublicView'),
+			//Можно задать компонент для отображения значений свойства в публичной части.
+			//"VIEW_COMPONENT_NAME" => "my:system.field.view",
+			//"VIEW_COMPONENT_TEMPLATE" => "string",
+			//и для редактирования
+			//"EDIT_COMPONENT_NAME" => "my:system.field.view",
+			//"EDIT_COMPONENT_TEMPLATE" => "string",
+			// также можно задать callback для отображения значений
+			// "VIEW_CALLBACK" => callable
+			// и для редактирования
+			// "EDIT_CALLBACK" => callable
 		);
 	}
 
@@ -75,7 +89,7 @@ class CUserTypeString
 	 * Эта функция вызывается перед сохранением метаданных свойства в БД.
 	 *
 	 * <p>Она должна "очистить" массив с настройками экземпляра типа свойства.
-	 * Для того что бы случайно/намеренно никто не записал туда всякой фигни.</p>
+	 * Для того, чтобы случайно/намеренно никто не записал туда всякой фигни.</p>
 	 * @param array $arUserField Массив описывающий поле. <b>Внимание!</b> это описание поля еще не сохранено в БД!
 	 * @return array Массив который в дальнейшем будет сериализован и сохранен в БД.
 	 * @static
@@ -298,6 +312,15 @@ class CUserTypeString
 			'>';
 	}
 
+	function GetFilterData($arUserField, $arHtmlControl)
+	{
+		return array(
+			"id" => $arHtmlControl["ID"],
+			"name" => $arHtmlControl["NAME"],
+			"filterable" => ""
+		);
+	}
+
 	/**
 	 * Эта функция вызывается при выводе значения свойства в списке элементов.
 	 *
@@ -401,6 +424,207 @@ class CUserTypeString
 	}
 */
 	/**
+	 * Эта функция вызывается при выводе значений свойства в публичной части сайта.
+	 *
+	 * <p>Возвращает html.</p>
+	 * <p>Если класс не предоставляет такую функцию,
+	 * то менеджер типов вызовет компонент указанный в метаданных свойства или системный bitrix:system.field.view</p>
+	 * @param array $arUserField Массив описывающий поле.
+	 * @param array $arAdditionalParameters Дополнительные параметры (например context).
+	 * @return string HTML для вывода.
+	 * @static
+	 */
+
+	public static function GetPublicView($arUserField, $arAdditionalParameters = array())
+	{
+		$value = static::normalizeFieldValue($arUserField["VALUE"]);
+
+		$html = '';
+		$first = true;
+		foreach ($value as $res)
+		{
+			if (!$first)
+			{
+				$html .= static::getHelper()->getMultipleValuesSeparator();
+			}
+			$first = false;
+
+			$res = \Bitrix\Main\Text\HtmlFilter::encode($res);
+
+			if($arUserField['SETTINGS']['ROWS'] > 1 && strlen($res) > 0)
+			{
+				$res = nl2br($res);
+			}
+
+			if (strlen($arUserField['PROPERTY_VALUE_LINK']) > 0)
+			{
+				$res = '<a href="'.htmlspecialcharsbx(str_replace('#VALUE#', urlencode($res), $arUserField['PROPERTY_VALUE_LINK'])).'">'.$res.'</a>';
+			}
+
+			$html .= static::getHelper()->wrapSingleField($res);
+		}
+
+		static::initDisplay();
+
+		return static::getHelper()->wrapDisplayResult($html);
+	}
+
+	/**
+	 * Эта функция вызывается при редактировании значений свойства в публичной части сайта.
+	 *
+	 * <p>Возвращает html.</p>
+	 * <p>Если класс не предоставляет такую функцию,
+	 * то менеджер типов вызовет компонент указанный в метаданных свойства или системный bitrix:system.field.edit</p>
+	 * @param array $arUserField Массив описывающий поле.
+	 * @param array $arAdditionalParameters Дополнительные параметры (например context или bVarsFromForm).
+	 * @return string HTML для вывода.
+	 * @static
+	 */
+
+	public static function GetPublicEdit($arUserField, $arAdditionalParameters = array())
+	{
+		$fieldName = static::getFieldName($arUserField, $arAdditionalParameters);
+		$value = static::getFieldValue($arUserField, $arAdditionalParameters);
+
+		$html = '';
+
+		foreach ($value as $res)
+		{
+			$attrList = array();
+
+			if($arUserField["SETTINGS"]["MAX_LENGTH"] > 0)
+			{
+				$attrList['maxlength'] = intval($arUserField["SETTINGS"]["MAX_LENGTH"]);
+			}
+
+			if($arUserField["EDIT_IN_LIST"] != "Y")
+			{
+				$attrList['disabled'] = 'disabled';
+			}
+
+			if ($arUserField["SETTINGS"]["ROWS"] < 2)
+			{
+				if($arUserField["SETTINGS"]["SIZE"] > 0)
+				{
+					$attrList['size'] = intval($arUserField["SETTINGS"]["SIZE"]);
+				}
+			}
+			else
+			{
+				$attrList['cols'] = intval($arUserField["SETTINGS"]["SIZE"]);
+				$attrList['rows'] = intval($arUserField["SETTINGS"]["ROWS"]);
+			}
+
+			if(array_key_exists('attribute', $arAdditionalParameters))
+			{
+				$attrList = array_merge($attrList, $arAdditionalParameters['attribute']);
+			}
+
+			if(isset($attrList['class']) && is_array($attrList['class']))
+			{
+				$attrList['class'] = implode(' ', $attrList['class']);
+			}
+
+			$attrList['class'] = static::getHelper()->getCssClassName().(isset($attrList['class']) ? ' '.$attrList['class'] : '');
+
+			$attrList['name'] = $fieldName;
+			$attrList['tabindex'] = '0';
+
+			if($arUserField["SETTINGS"]["ROWS"] < 2)
+			{
+				$attrList['type'] = 'text';
+				$attrList['value'] = $res;
+
+				$html .= static::getHelper()->wrapSingleField('<input '.static::buildTagAttributes($attrList).'/>');
+			}
+			else
+			{
+				$html .= static::getHelper()->wrapSingleField('<textarea '.static::buildTagAttributes($attrList).'>'.htmlspecialcharsbx($res).'</textarea>');
+			}
+		}
+
+		if ($arUserField["MULTIPLE"] == "Y" && $arAdditionalParameters["SHOW_BUTTON"] != "N")
+		{
+			$html .= static::getHelper()->getCloneButton($fieldName);
+		}
+
+		static::initDisplay();
+
+		return static::getHelper()->wrapDisplayResult($html);
+	}
+
+
+/**
+	 * Можно Зарегистрировать обработчик события onBeforeGetPublicView и настроить отображение
+	 * путём манипуляции с метаданными пользовательского свойства.
+	 \Bitrix\Main\EventManager::getInstance()->addEventHandler(
+			'main',
+			"onBeforeGetPublicView",
+			array("CUserTypeString", "onBeforeGetPublicView")
+	);
+	 * Аналогично можно сделать и для редактирования: onBeforeGetPublicEdit (EDIT_COMPONENT_NAME и EDIT_COMPONENT_TEMPLATE)
+	 */
+/*
+	public static function onBeforeGetPublicView($event)
+	{
+		$params = $event->getParameters();
+		$arUserField = &$params[0];
+		$arAdditionalParameters = &$params[1];
+		if ($arUserField["USER_TYPE_ID"] == "string")
+		{
+			$arUserField["VIEW_COMPONENT_NAME"] = "my:system.field.view";
+			$arUserField["VIEW_COMPONENT_TEMPLATE"] = "string";
+		}
+	}
+*/
+
+	/**
+	 * Можно Зарегистрировать обработчик события onGetPublicView и показать свойство так, как вам нужно.
+	 \Bitrix\Main\EventManager::getInstance()->addEventHandler(
+			'main',
+			"onGetPublicView",
+			array("CUserTypeString", "onGetPublicView")
+	);
+	 * Аналогично можно сделать и для редактирования: onGetPublicEdit
+	 */
+/*
+	public static function onGetPublicView($event)
+	{
+		$params = $event->getParameters();
+		$arUserField = $params[0];
+		$arAdditionalParameters = $params[1];
+		if ($arUserField["USER_TYPE_ID"] == "string")
+		{
+			$html = "demo string";
+			return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::SUCCESS, $html);
+		}
+	}
+*/
+
+	/**
+	 * Можно Зарегистрировать обработчик события onAfterGetPublicView и модифицировать html перед его показом.
+	 \Bitrix\Main\EventManager::getInstance()->addEventHandler(
+			'main',
+			"onAfterGetPublicView",
+			array("CUserTypeString", "onAfterGetPublicView")
+	);
+	 * Аналогично можно сделать и для редактирования: onAfterGetPublicEdit
+	 */
+/*
+	public static function onAfterGetPublicView($event)
+	{
+		$params = $event->getParameters();
+		$arUserField = $params[0];
+		$arAdditionalParameters = $params[1];
+		$html = &$params[2];
+		if ($arUserField["USER_TYPE_ID"] == "string")
+		{
+			$html .= "!";
+		}
+	}
+*/
+
+	/**
 	 * Эта функция валидатор.
 	 *
 	 * <p>Вызывается из метода CheckFields объекта $USER_FIELD_MANAGER.</p>
@@ -411,38 +635,38 @@ class CUserTypeString
 	 * <li>на регулярное выражение (если задано в настройках).
 	 * </ul>
 	 * @param array $arUserField Массив описывающий поле.
-	 * @param array $value значение для проверки на валидность
+	 * @param string $value значение для проверки на валидность
 	 * @return array массив массивов ("id","text") ошибок.
 	 * @static
 	 */
 	function CheckFields($arUserField, $value)
 	{
 		$aMsg = array();
-		if(strlen($value)<$arUserField["SETTINGS"]["MIN_LENGTH"])
+		if($value <> '' && strlen($value) < $arUserField["SETTINGS"]["MIN_LENGTH"])
 		{
 			$aMsg[] = array(
 				"id" => $arUserField["FIELD_NAME"],
 				"text" => GetMessage("USER_TYPE_STRING_MIN_LEGTH_ERROR",
 					array(
-						"#FIELD_NAME#"=>$arUserField["EDIT_FORM_LABEL"],
+						"#FIELD_NAME#"=>($arUserField["EDIT_FORM_LABEL"] <> ''? $arUserField["EDIT_FORM_LABEL"] : $arUserField["FIELD_NAME"]),
 						"#MIN_LENGTH#"=>$arUserField["SETTINGS"]["MIN_LENGTH"]
 					)
 				),
 			);
 		}
-		if($arUserField["SETTINGS"]["MAX_LENGTH"]>0 && strlen($value)>$arUserField["SETTINGS"]["MAX_LENGTH"])
+		if($arUserField["SETTINGS"]["MAX_LENGTH"] > 0 && strlen($value) > $arUserField["SETTINGS"]["MAX_LENGTH"])
 		{
 			$aMsg[] = array(
 				"id" => $arUserField["FIELD_NAME"],
 				"text" => GetMessage("USER_TYPE_STRING_MAX_LEGTH_ERROR",
 					array(
-						"#FIELD_NAME#"=>$arUserField["EDIT_FORM_LABEL"],
+						"#FIELD_NAME#"=>($arUserField["EDIT_FORM_LABEL"] <> ''? $arUserField["EDIT_FORM_LABEL"] : $arUserField["FIELD_NAME"]),
 						"#MAX_LENGTH#"=>$arUserField["SETTINGS"]["MAX_LENGTH"]
 					)
 				),
 			);
 		}
-		if(strlen($arUserField["SETTINGS"]["REGEXP"])>0 && !preg_match($arUserField["SETTINGS"]["REGEXP"], $value))
+		if($arUserField["SETTINGS"]["REGEXP"] <> '' && !preg_match($arUserField["SETTINGS"]["REGEXP"], $value))
 		{
 			$aMsg[] = array(
 				"id" => $arUserField["FIELD_NAME"],
@@ -450,7 +674,7 @@ class CUserTypeString
 						$arUserField["ERROR_MESSAGE"]:
 						GetMessage("USER_TYPE_STRING_REGEXP_ERROR",
 						array(
-							"#FIELD_NAME#"=>$arUserField["EDIT_FORM_LABEL"],
+							"#FIELD_NAME#"=>($arUserField["EDIT_FORM_LABEL"] <> ''? $arUserField["EDIT_FORM_LABEL"] : $arUserField["FIELD_NAME"]),
 						)
 					)
 				),

@@ -51,14 +51,14 @@ if($saleModulePermissions == "W" && check_bitrix_sessid())
 				{
 					$glres = ExtraServices\Table::getList(array(
 						'filter' => array(
-							'DELIVERY_ID' => $fields["DELIVERY_ID"],
-							'CODE' => $fields["CODE"]
+							'=DELIVERY_ID' => $fields["DELIVERY_ID"],
+							'=CODE' => $fields["CODE"]
 						)
 					));
 
 					while($srv = $glres->fetch())
 					{
-						if($ID <=0)
+						if($ID <= 0)
 							$codeExist = true;
 						if($ID > 0 && $srv['ID'] != $ID)
 							$codeExist = true;
@@ -213,7 +213,10 @@ $context = new CAdminContextMenu($aMenu);
 $context->Show();
 
 if(strlen($strError) > 0)
-	CAdminMessage::ShowMessage(Array("DETAILS"=>$strError, "TYPE"=>"ERROR", "MESSAGE"=>Loc::getMessage("SALE_DSE_ERROR"), "HTML"=>true));
+{
+	$adminMessage = new CAdminMessage(Array("DETAILS"=>$strError, "TYPE"=>"ERROR", "MESSAGE"=>Loc::getMessage("SALE_DSE_ERROR"), "HTML"=>true));
+	echo $adminMessage->Show();
+}
 
 ?>
 <form method="POST" action="<?=$APPLICATION->GetCurPageParam()?>" name="form1" enctype="multipart/form-data">
@@ -240,7 +243,7 @@ $manager = new ExtraServices\Manager(array($fields), $deliveryService->getCurren
 			</select>
 		<?else:?>
 			<input type="text" name="CLASS_NAME_DISABLED" value="<?=$fields["CLASS_NAME"]::getClassTitle()?>" readonly>
-			<input type="hidden" name="CLASS_NAME" value="<?=$fields["CLASS_NAME"]?>">
+			<input type="hidden" name="CLASS_NAME" value="<?=htmlspecialcharsbx($fields["CLASS_NAME"])?>">
 		<?endif;?>
 	</td>
 </tr>
@@ -272,7 +275,7 @@ $manager = new ExtraServices\Manager(array($fields), $deliveryService->getCurren
 
 	<?if(isset($fields["CLASS_NAME"]) && strlen($fields["CLASS_NAME"]) > 0):?>
 		<tr>
-			<td><?=(is_callable($fields["CLASS_NAME"].'::getAdminParamsName') ? htmlspecialcharsbx($fields["CLASS_NAME"]::getAdminParamsName()) : Loc::getMessage("SALE_ESDE_FIELD_PARAMS"))?>:</td>
+			<td class="adm-detail-valign-top"><?=(is_callable($fields["CLASS_NAME"].'::getAdminParamsName') ? htmlspecialcharsbx($fields["CLASS_NAME"]::getAdminParamsName()) : Loc::getMessage("SALE_ESDE_FIELD_PARAMS"))?>:</td>
 			<td>
 				<?=$fields["CLASS_NAME"]::getAdminParamsControl("PARAMS", $fields, $currencyLang);?>
 			</td>

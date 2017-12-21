@@ -5,7 +5,7 @@
 
 class CAllForm extends CForm_old
 {
-	function err_mess()
+	public static function err_mess()
 	{
 		$module_id = "form";
 		@include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$module_id."/install/version.php");
@@ -14,7 +14,7 @@ class CAllForm extends CForm_old
 
 	// true - если текущий пользователь имеет полный доступ к модулю
 	// false - в противном случае
-	function IsAdmin()
+	public static function IsAdmin()
 	{
 		global $USER, $APPLICATION;
 		if (!is_object($USER)) $USER = new CUser;
@@ -24,7 +24,7 @@ class CAllForm extends CForm_old
 	}
 
 	// Функция возвращает массивы, содержащие данные по вопросам и полям формы, а также ответы и их значения.
-	function GetResultAnswerArray($WEB_FORM_ID, &$arrColumns, &$arrAnswers, &$arrAnswersSID, $arFilter=Array())
+	public static function GetResultAnswerArray($WEB_FORM_ID, &$arrColumns, &$arrAnswers, &$arrAnswersSID, $arFilter=Array())
 	{
 		$err_mess = (CAllForm::err_mess())."<br>Function: GetResultAnswerArray<br>Line: ";
 		global $DB, $strError;
@@ -113,7 +113,7 @@ class CAllForm extends CForm_old
 	}
 
 	// получаем массив почтовых шаблонов связанных с формой
-	function GetMailTemplateArray($FORM_ID)
+	public static function GetMailTemplateArray($FORM_ID)
 	{
 		$err_mess = (CAllForm::err_mess())."<br>Function: GetMailTemplateArray<br>Line: ";
 		global $DB, $USER, $strError;
@@ -135,7 +135,7 @@ class CAllForm extends CForm_old
 	}
 
 	// получаем массив сайтов связанных с формой
-	function GetSiteArray($FORM_ID)
+	public static function GetSiteArray($FORM_ID)
 	{
 		$err_mess = (CAllForm::err_mess())."<br>Function: GetSiteArray<br>Line: ";
 		global $DB, $USER, $strError;
@@ -157,9 +157,9 @@ class CAllForm extends CForm_old
 	}
 
 	// функция вызывает заданный обработчик до смены статуса
-	function ExecHandlerBeforeChangeStatus($RESULT_ID, $ACTION, $NEW_STATUS_ID=0)
+	public static function ExecHandlerBeforeChangeStatus($RESULT_ID, $ACTION, $NEW_STATUS_ID=0)
 	{
-		global $arrPREV_RESULT_STATUS, $DB, $MESS, $APPLICATION, $USER, $HTTP_POST_VARS, $HTTP_GET_VARS, $strError;
+		global $arrPREV_RESULT_STATUS, $DB, $MESS, $APPLICATION, $USER, $strError;
 		$err_mess = (CAllForm::err_mess())."<br>Function: ExecHandlerBeforeChangeStatus<br>Line: ";
 		$RESULT_ID = intval($RESULT_ID);
 		if ($RESULT_ID<=0) return;
@@ -203,9 +203,9 @@ class CAllForm extends CForm_old
 	}
 
 	// функция вызывает заданный обработчик после смены статуса
-	function ExecHandlerAfterChangeStatus($RESULT_ID, $ACTION)
+	public static function ExecHandlerAfterChangeStatus($RESULT_ID, $ACTION)
 	{
-		global $arrCURRENT_RESULT_STATUS, $arrPREV_RESULT_STATUS, $DB, $MESS, $APPLICATION, $USER, $HTTP_POST_VARS, $HTTP_GET_VARS, $strError;
+		global $arrCURRENT_RESULT_STATUS, $arrPREV_RESULT_STATUS, $DB, $MESS, $APPLICATION, $USER, $strError;
 		$err_mess = (CAllForm::err_mess())."<br>Function: ExecHandlerAfterChangeStatus<br>Line: ";
 		$RESULT_ID = intval($RESULT_ID);
 		if ($RESULT_ID<=0) return;
@@ -250,7 +250,7 @@ class CAllForm extends CForm_old
 	}
 
 	// права на веб-форму
-	function GetPermissionList($get_default="Y")
+	public static function GetPermissionList($get_default="Y")
 	{
 		global $MESS, $strError;
 		$ref_id = array(1,10,15,20,25,30);
@@ -277,7 +277,7 @@ class CAllForm extends CForm_old
 		return $arr;
 	}
 
-	function GetPermission($form_id, $arGroups=false, $get_from_database="")
+	public static function GetPermission($form_id, $arGroups=false, $get_from_database="")
 	{
 		global $DB, $USER, $strError;
 		$err_mess = (CAllForm::err_mess())."<br>Function: GetPermission<br>Line: ";
@@ -334,7 +334,7 @@ class CAllForm extends CForm_old
 		return $right;
 	}
 
-	function GetTemplateList($type="SHOW", $path="xxx", $WEB_FORM_ID=0)
+	public static function GetTemplateList($type="SHOW", $path="xxx", $WEB_FORM_ID=0)
 	{
 		$err_mess = (CAllForm::err_mess())."<br>Function: GetTemplateList<br>Line: ";
 		global $DB, $strError;
@@ -410,7 +410,7 @@ class CAllForm extends CForm_old
 		return $arr;
 	}
 
-	function GetMenuList($arFilter=Array(), $check_rights="Y")
+	public static function GetMenuList($arFilter=Array(), $check_rights="Y")
 	{
 		$err_mess = (CAllForm::err_mess())."<br>Function: GetMenuList<br>Line: ";
 		global $DB, $USER, $strError;
@@ -500,7 +500,7 @@ class CAllForm extends CForm_old
 		return $res;
 	}
 
-	function GetNextSort()
+	public static function GetNextSort()
 	{
 		global $DB, $strError;
 		$err_mess = (CAllForm::err_mess())."<br>Function: GetNextSort<br>Line: ";
@@ -510,12 +510,12 @@ class CAllForm extends CForm_old
 		return (intval($zr["MAX_SORT"])+100);
 	}
 
-	function ShowRequired($flag)
+	public static function ShowRequired($flag)
 	{
 		if ($flag=="Y") return "<font color='red'><span class='form-required starrequired'>*</span></font>";
 	}
 
-	function GetTextFilter($FID, $size="45", $field_text="class=\"inputtext\"", $field_checkbox="class=\"inputcheckbox\"")
+	public static function GetTextFilter($FID, $size="45", $field_text="class=\"inputtext\"", $field_checkbox="class=\"inputcheckbox\"")
 	{
 		$var = "find_".$FID;
 		$var_exec_match = "find_".$FID."_exact_match";
@@ -524,7 +524,7 @@ class CAllForm extends CForm_old
 		return '<input '.$field_text.' type="text" name="'.$var.'" size="'.$size.'" value="'.htmlspecialcharsbx(${$var}).'"><input '.$field_checkbox.' type="checkbox" value="Y" name="'.$var.'_exact_match" title="'.GetMessage("FORM_EXACT_MATCH").'" '.$checked.'>'.ShowFilterLogicHelp();
 	}
 
-	function GetDateFilter($FID, $form_name="form1", $show_select="Y", $field_select="class=\"inputselect\"", $field_input="class=\"inputtext\"")
+	public static function GetDateFilter($FID, $form_name="form1", $show_select="Y", $field_select="class=\"inputselect\"", $field_input="class=\"inputtext\"")
 	{
 		$var1 = "find_".$FID."_1";
 		$var2 = "find_".$FID."_2";
@@ -558,7 +558,7 @@ class CAllForm extends CForm_old
 			return CalendarPeriod($var1, htmlspecialcharsbx(${$var1}), $var2, htmlspecialcharsbx(${$var2}), $form_name, $show_select, $field_select, $field_input);
 	}
 
-	function GetNumberFilter($FID, $size="10", $field="class=\"inputtext\"")
+	public static function GetNumberFilter($FID, $size="10", $field="class=\"inputtext\"")
 	{
 		global $MESS;
 		$var1 = "find_".$FID."_1";
@@ -567,7 +567,7 @@ class CAllForm extends CForm_old
 		return '<input '.$field.' type="text" name="'.$var1.'" size="'.$size.'" value="'.htmlspecialcharsbx(${$var1}).'">&nbsp;'.GetMessage("FORM_TILL").'&nbsp;<input '.$field.' type="text" name="'.$var2.'" size="'.$size.'" value="'.htmlspecialcharsbx(${$var2}).'">';
 	}
 
-	function GetExistFlagFilter($FID, $field="class=\"inputcheckbox\"")
+	public static function GetExistFlagFilter($FID, $field="class=\"inputcheckbox\"")
 	{
 		global $MESS;
 		$var = "find_".$FID;
@@ -575,7 +575,7 @@ class CAllForm extends CForm_old
 		return InputType("checkbox", $var, "Y", ${$var}, false, "", $field);
 	}
 
-	function GetCrmFlagFilter($FID, $field="class=\"inputselect\"")
+	public static function GetCrmFlagFilter($FID, $field="class=\"inputselect\"")
 	{
 		$var = "find_".$FID;
 		global ${$var};
@@ -583,7 +583,7 @@ class CAllForm extends CForm_old
 		return SelectBoxFromArray($var, $arr, ${$var}, GetMessage("FORM_ALL"), $field);
 	}
 
-	function GetDropDownFilter($ID, $PARAMETER_NAME, $FID, $field="class=\"inputselect\"")
+	public static function GetDropDownFilter($ID, $PARAMETER_NAME, $FID, $field="class=\"inputselect\"")
 	{
 		$err_mess = (CAllForm::err_mess())."<br>Function: GetDropDownFilter<br>Line: ";
 		global $DB, $MESS, $strError;
@@ -617,7 +617,7 @@ class CAllForm extends CForm_old
 		return SelectBoxFromArray($var, $arr, ${$var}, GetMessage("FORM_ALL"), $field);
 	}
 
-	function GetTextValue($FIELD_NAME, $arAnswer, $arrVALUES=false)
+	public static function GetTextValue($FIELD_NAME, $arAnswer, $arrVALUES=false)
 	{
 		$fname = "form_text_".$FIELD_NAME;
 		if (is_array($arrVALUES) && isset($arrVALUES[$fname])) $value = $arrVALUES[$fname];
@@ -625,7 +625,7 @@ class CAllForm extends CForm_old
 		return $value;
 	}
 
-	function GetHiddenValue($FIELD_NAME, $arAnswer, $arrVALUES=false)
+	public static function GetHiddenValue($FIELD_NAME, $arAnswer, $arrVALUES=false)
 	{
 		$fname = "form_hidden_".$FIELD_NAME;
 		if (is_array($arrVALUES) && isset($arrVALUES[$fname])) $value = $arrVALUES[$fname];
@@ -633,7 +633,7 @@ class CAllForm extends CForm_old
 		return $value;
 	}
 
-	function GetPasswordValue($FIELD_NAME, $arAnswer, $arrVALUES=false)
+	public static function GetPasswordValue($FIELD_NAME, $arAnswer, $arrVALUES=false)
 	{
 		$fname = "form_password_".$FIELD_NAME;
 		if (is_array($arrVALUES) && isset($arrVALUES[$fname])) $value = $arrVALUES[$fname];
@@ -641,7 +641,7 @@ class CAllForm extends CForm_old
 		return $value;
 	}
 
-	function GetEmailValue($FIELD_NAME, $arAnswer, $arrVALUES=false)
+	public static function GetEmailValue($FIELD_NAME, $arAnswer, $arrVALUES=false)
 	{
 		$fname = "form_email_".$FIELD_NAME;
 		if (is_array($arrVALUES) && isset($arrVALUES[$fname])) $value = $arrVALUES[$fname];
@@ -649,7 +649,7 @@ class CAllForm extends CForm_old
 		return $value;
 	}
 
-	function GetUrlValue($FIELD_NAME, $arAnswer, $arrVALUES=false)
+	public static function GetUrlValue($FIELD_NAME, $arAnswer, $arrVALUES=false)
 	{
 		$fname = "form_url_".$FIELD_NAME;
 		if (is_array($arrVALUES) && isset($arrVALUES[$fname])) $value = $arrVALUES[$fname];
@@ -657,37 +657,37 @@ class CAllForm extends CForm_old
 		return $value;
 	}
 
-	function GetTextField($FIELD_NAME, $VALUE="", $SIZE="", $PARAM="")
+	public static function GetTextField($FIELD_NAME, $VALUE="", $SIZE="", $PARAM="")
 	{
 		if (strlen($PARAM)<=0) $PARAM = " class=\"inputtext\" ";
 		return "<input type=\"text\" ".$PARAM." name=\"form_text_".$FIELD_NAME."\" value=\"".htmlspecialcharsbx($VALUE)."\" size=\"".$SIZE."\" />";
 	}
 
-	function GetHiddenField($FIELD_NAME, $VALUE="", $PARAM="")
+	public static function GetHiddenField($FIELD_NAME, $VALUE="", $PARAM="")
 	{
 		return "<input type=\"hidden\" ".$PARAM." name=\"form_hidden_".$FIELD_NAME."\" value=\"".htmlspecialcharsbx($VALUE)."\" />";
 	}
 
 
-	function GetEmailField($FIELD_NAME, $VALUE="", $SIZE="", $PARAM="")
+	public static function GetEmailField($FIELD_NAME, $VALUE="", $SIZE="", $PARAM="")
 	{
 		if (strlen($PARAM)<=0) $PARAM = " class=\"inputtext\" ";
 		return "<input type=\"text\" ".$PARAM." name=\"form_email_".$FIELD_NAME."\" value=\"".htmlspecialcharsbx($VALUE)."\" size=\"".$SIZE."\" />";
 	}
 
-	function GetUrlField($FIELD_NAME, $VALUE="", $SIZE="", $PARAM="")
+	public static function GetUrlField($FIELD_NAME, $VALUE="", $SIZE="", $PARAM="")
 	{
 		if (strlen($PARAM)<=0) $PARAM = " class=\"inputtext\" ";
 		return "<input type=\"text\" ".$PARAM." name=\"form_url_".$FIELD_NAME."\" value=\"".htmlspecialcharsbx($VALUE)."\" size=\"".$SIZE."\" />";
 	}
 
-	function GetPasswordField($FIELD_NAME, $VALUE="", $SIZE="", $PARAM="")
+	public static function GetPasswordField($FIELD_NAME, $VALUE="", $SIZE="", $PARAM="")
 	{
 		if (strlen($PARAM)<=0) $PARAM = " class=\"inputtext\" ";
 		return "<input type=\"password\" ".$PARAM." name=\"form_password_".$FIELD_NAME."\" value=\"".htmlspecialcharsbx($VALUE)."\" size=\"".$SIZE."\" />";
 	}
 
-	function GetDropDownValue($FIELD_NAME, $arDropDown, $arrVALUES=false)
+	public static function GetDropDownValue($FIELD_NAME, $arDropDown, $arrVALUES=false)
 	{
 		$fname = "form_dropdown_".$FIELD_NAME;
 		if (is_array($arrVALUES) && isset($arrVALUES[$fname]))
@@ -712,13 +712,13 @@ class CAllForm extends CForm_old
 		return $value;
 	}
 
-	function GetDropDownField($FIELD_NAME, $arDropDown, $VALUE, $PARAM="")
+	public static function GetDropDownField($FIELD_NAME, $arDropDown, $VALUE, $PARAM="")
 	{
 		if (strlen($PARAM)<=0) $PARAM = " class=\"inputselect\" ";
 		return SelectBoxFromArray("form_dropdown_".$FIELD_NAME, $arDropDown, $VALUE, "", $PARAM);
 	}
 
-	function GetMultiSelectValue($FIELD_NAME, $arMultiSelect, $arrVALUES=false)
+	public static function GetMultiSelectValue($FIELD_NAME, $arMultiSelect, $arrVALUES=false)
 	{
 		$fname = "form_multiselect_".$FIELD_NAME;
 		if (is_array($arrVALUES) && isset($arrVALUES[$fname]))
@@ -740,13 +740,13 @@ class CAllForm extends CForm_old
 		return $value;
 	}
 
-	function GetMultiSelectField($FIELD_NAME, $arMultiSelect, $arSELECTED=array(), $HEIGHT="", $PARAM="")
+	public static function GetMultiSelectField($FIELD_NAME, $arMultiSelect, $arSELECTED=array(), $HEIGHT="", $PARAM="")
 	{
 		if (strlen($PARAM)<=0) $PARAM = " class=\"inputselect\" ";
 		return SelectBoxMFromArray("form_multiselect_".$FIELD_NAME."[]", $arMultiSelect, $arSELECTED, "", false, $HEIGHT, $PARAM);
 	}
 
-	function GetDateValue($FIELD_NAME, $arAnswer, $arrVALUES=false)
+	public static function GetDateValue($FIELD_NAME, $arAnswer, $arrVALUES=false)
 	{
 		$fname = "form_date_".$FIELD_NAME;
 		if (is_array($arrVALUES) && isset($arrVALUES[$fname])) $value = $arrVALUES[$fname];
@@ -759,7 +759,7 @@ class CAllForm extends CForm_old
 		return $value;
 	}
 
-	function GetDateField($FIELD_NAME, $FORM_NAME, $VALUE="", $FIELD_WIDTH="", $PARAM="")
+	public static function GetDateField($FIELD_NAME, $FORM_NAME, $VALUE="", $FIELD_WIDTH="", $PARAM="")
 	{
 		global $APPLICATION;
 		//if (strlen($PARAM)<=0) $PARAM = " class=\"inputtext\" ";
@@ -788,7 +788,7 @@ class CAllForm extends CForm_old
 		//return CalendarDate("form_date_".$FIELD_NAME, $VALUE, $FORM_NAME, $FIELD_WIDTH, $PARAM);
 	}
 
-	function GetCheckBoxValue($FIELD_NAME, $arAnswer, $arrVALUES=false)
+	public static function GetCheckBoxValue($FIELD_NAME, $arAnswer, $arrVALUES=false)
 	{
 		$fname = "form_checkbox_".$FIELD_NAME;
 
@@ -817,13 +817,13 @@ class CAllForm extends CForm_old
 		return $value;
 	}
 
-	function GetCheckBoxField($FIELD_NAME, $FIELD_ID, $VALUE="", $PARAM="")
+	public static function GetCheckBoxField($FIELD_NAME, $FIELD_ID, $VALUE="", $PARAM="")
 	{
 		if (strlen($PARAM)<=0) $PARAM = " class=\"inputcheckbox\" ";
 		return InputType("checkbox", "form_checkbox_".$FIELD_NAME."[]", $FIELD_ID, $VALUE, false, "", $PARAM);
 	}
 
-	function GetRadioValue($FIELD_NAME, $arAnswer, $arrVALUES=false)
+	public static function GetRadioValue($FIELD_NAME, $arAnswer, $arrVALUES=false)
 	{
 		$fname = "form_radio_".$FIELD_NAME;
 		if (is_array($arrVALUES) && isset($arrVALUES[$fname]))
@@ -838,14 +838,14 @@ class CAllForm extends CForm_old
 		return $value;
 	}
 
-	function GetRadioField($FIELD_NAME, $FIELD_ID, $VALUE="", $PARAM="")
+	public static function GetRadioField($FIELD_NAME, $FIELD_ID, $VALUE="", $PARAM="")
 	{
 		if (strlen($PARAM)<=0) $PARAM = " class=\"inputradio\" ";
 
 		return InputType("radio", "form_radio_".$FIELD_NAME, $FIELD_ID, $VALUE, false, "", $PARAM);
 	}
 
-	function GetTextAreaValue($FIELD_NAME, $arAnswer, $arrVALUES=false)
+	public static function GetTextAreaValue($FIELD_NAME, $arAnswer, $arrVALUES=false)
 	{
 		$fname = "form_textarea_".$FIELD_NAME;
 		if (is_array($arrVALUES) && isset($arrVALUES[$fname])) $value = $arrVALUES[$fname];
@@ -853,13 +853,13 @@ class CAllForm extends CForm_old
 		return $value;
 	}
 
-	function GetTextAreaField($FIELD_NAME, $WIDTH="", $HEIGHT="", $PARAM="", $VALUE="")
+	public static function GetTextAreaField($FIELD_NAME, $WIDTH="", $HEIGHT="", $PARAM="", $VALUE="")
 	{
 		if (strlen($PARAM)<=0) $PARAM = " class=\"inputtextarea\" ";
 		return "<textarea name=\"form_textarea_".$FIELD_NAME."\" cols=\"".$WIDTH."\" rows=\"".$HEIGHT."\" ".$PARAM.">".htmlspecialcharsbx($VALUE)."</textarea>";
 	}
 
-	function GetFileField($FIELD_NAME, $WIDTH="", $FILE_TYPE="IMAGE", $MAX_FILE_SIZE=0, $VALUE="", $PARAM_FILE="", $PARAM_CHECKBOX="")
+	public static function GetFileField($FIELD_NAME, $WIDTH="", $FILE_TYPE="IMAGE", $MAX_FILE_SIZE=0, $VALUE="", $PARAM_FILE="", $PARAM_CHECKBOX="")
 	{
 		global $USER;
 		if (!is_object($USER)) $USER = new CUser;
@@ -870,7 +870,7 @@ class CAllForm extends CForm_old
 	}
 
 	// возвращает массивы описывающие поля и вопросы формы
-	function GetDataByID($WEB_FORM_ID, &$arForm, &$arQuestions, &$arAnswers, &$arDropDown, &$arMultiSelect, $additional="N", $active="N")
+	public static function GetDataByID($WEB_FORM_ID, &$arForm, &$arQuestions, &$arAnswers, &$arDropDown, &$arMultiSelect, $additional="N", $active="N")
 	{
 		global $strError;
 		$WEB_FORM_ID = intval($WEB_FORM_ID);
@@ -942,7 +942,7 @@ class CAllForm extends CForm_old
 
 	}
 
-	function __check_PushError(&$container, $MESSAGE, $key = false)
+	public static function __check_PushError(&$container, $MESSAGE, $key = false)
 	{
 		if (is_array($container))
 		{
@@ -953,10 +953,10 @@ class CAllForm extends CForm_old
 	}
 
 	// check form field values for required fields, date format validation, file type validation, additional validators
-	function Check($WEB_FORM_ID, $arrVALUES=false, $RESULT_ID=false, $CHECK_RIGHTS="Y", $RETURN_ARRAY="N")
+	public static function Check($WEB_FORM_ID, $arrVALUES=false, $RESULT_ID=false, $CHECK_RIGHTS="Y", $RETURN_ARRAY="N")
 	{
 		$err_mess = (CAllForm::err_mess())."<br>Function: Check<br>Line: ";
-		global $DB, $APPLICATION, $USER, $_REQUEST, $HTTP_POST_VARS, $HTTP_GET_VARS, $HTTP_POST_FILES;
+		global $DB, $APPLICATION, $USER;
 		if ($arrVALUES===false) $arrVALUES = $_REQUEST;
 
 		$RESULT_ID = intval($RESULT_ID);
@@ -1149,7 +1149,7 @@ class CAllForm extends CForm_old
 											$fname = "form_".$FIELD_TYPE."_".$arAnswer["ID"];
 											$fname_del = $arrVALUES["form_".$FIELD_TYPE."_".$arAnswer["ID"]."_del"];
 											$ANSWER_ID = intval($arAnswer["ID"]);
-											$arIMAGE = isset($arrVALUES[$fname]) ? $arrVALUES[$fname] : $HTTP_POST_FILES[$fname];
+											$arIMAGE = isset($arrVALUES[$fname]) ? $arrVALUES[$fname] : $_FILES[$fname];
 											if (is_array($arIMAGE) && strlen($arIMAGE["tmp_name"])>0)
 											{
 												$arIMAGE["MODULE_ID"] = "form";
@@ -1185,7 +1185,7 @@ class CAllForm extends CForm_old
 
 											$fname = "form_".$FIELD_TYPE."_".$arAnswer["ID"];
 											$fname_del = $arrVALUES["form_".$FIELD_TYPE."_".$arAnswer["ID"]."_del"];
-											$arFILE = isset($arrVALUES[$fname]) ? $arrVALUES[$fname] : $HTTP_POST_FILES[$fname];
+											$arFILE = isset($arrVALUES[$fname]) ? $arrVALUES[$fname] : $_FILES[$fname];
 											if (is_array($arFILE) && strlen($arFILE["tmp_name"])>0)
 											{
 												$arAnswerValues[] = $arFILE;
@@ -1308,7 +1308,7 @@ class CAllForm extends CForm_old
 	}
 
 	// проверка формы
-	function CheckFields($arFields, $FORM_ID, $CHECK_RIGHTS="Y")
+	public static function CheckFields($arFields, $FORM_ID, $CHECK_RIGHTS="Y")
 	{
 		$err_mess = (CAllForm::err_mess())."<br>Function: CheckFields<br>Line: ";
 		global $DB, $strError, $APPLICATION, $USER;
@@ -1375,7 +1375,7 @@ class CAllForm extends CForm_old
 	}
 
 	// добавление/обновление формы
-	function Set($arFields, $FORM_ID=false, $CHECK_RIGHTS="Y")
+	public static function Set($arFields, $FORM_ID=false, $CHECK_RIGHTS="Y")
 	{
 		$err_mess = (CAllForm::err_mess())."<br>Function: Set<br>Line: ";
 		global $DB, $USER, $strError, $APPLICATION;
@@ -1602,7 +1602,7 @@ class CAllForm extends CForm_old
 	}
 
 	// копирует веб-форму
-	function Copy($ID, $CHECK_RIGHTS="Y")
+	public static function Copy($ID, $CHECK_RIGHTS="Y")
 	{
 		global $DB, $APPLICATION, $strError;
 		$err_mess = (CAllForm::err_mess())."<br>Function: Copy<br>Line: ";
@@ -1691,7 +1691,7 @@ class CAllForm extends CForm_old
 	}
 
 	// delete web-form
-	function Delete($ID, $CHECK_RIGHTS="Y")
+	public static function Delete($ID, $CHECK_RIGHTS="Y")
 	{
 		global $DB, $strError;
 		$err_mess = (CAllForm::err_mess())."<br>Function: Delete<br>Line: ";
@@ -1757,7 +1757,7 @@ class CAllForm extends CForm_old
 	}
 
 	// удаляем результаты формы
-	function Reset($ID, $CHECK_RIGHTS="Y")
+	public static function Reset($ID, $CHECK_RIGHTS="Y")
 	{
 		global $DB, $strError;
 		$err_mess = (CAllForm::err_mess())."<br>Function: Reset<br>Line: ";
@@ -1781,7 +1781,7 @@ class CAllForm extends CForm_old
 	}
 
 	// создает тип почтового события и шаблон на языке формы
-	function SetMailTemplate($WEB_FORM_ID, $ADD_NEW_TEMPLATE="Y", $old_SID="", $bReturnFullInfo = false)
+	public static function SetMailTemplate($WEB_FORM_ID, $ADD_NEW_TEMPLATE="Y", $old_SID="", $bReturnFullInfo = false)
 	{
 		global $DB, $MESS, $strError;
 		$err_mess = (CAllForm::err_mess())."<br>Function: SetMailTemplates<br>Line: ";
@@ -1920,8 +1920,10 @@ http://#SERVER_NAME#/bitrix/admin/form_result_view.php?lang=".$arrSiteLang[$sid]
 		return $arrReturn;
 	}
 
-	function GetBySID($SID)
-	{ return CForm::GetByID($SID, "Y"); }
+	public static function GetBySID($SID)
+	{
+		return CForm::GetByID($SID, "Y");
+	}
 
 	/**
 	 * Check whether current field is on template
@@ -1930,7 +1932,7 @@ http://#SERVER_NAME#/bitrix/admin/form_result_view.php?lang=".$arrSiteLang[$sid]
 	 * @param string $tpl
 	 * @return bool
 	 */
-	function isFieldInTemplate($FIELD_SID, $tpl)
+	public static function isFieldInTemplate($FIELD_SID, $tpl)
 	{
 		$check_str1 = '$FORM->ShowInput(\''.$FIELD_SID.'\')';
 		$check_str2 = '$FORM->ShowInput("'.$FIELD_SID.'")';
@@ -1946,7 +1948,7 @@ http://#SERVER_NAME#/bitrix/admin/form_result_view.php?lang=".$arrSiteLang[$sid]
 	 * @param string $tpl
 	 * @return bool
 	 */
-	function isCAPTCHAInTemplate($tpl)
+	public static function isCAPTCHAInTemplate($tpl)
 	{
 		$check_str = '$FORM->ShowCaptcha';
 
@@ -1954,7 +1956,7 @@ http://#SERVER_NAME#/bitrix/admin/form_result_view.php?lang=".$arrSiteLang[$sid]
 
 	}
 
-	function GetByID_admin($WEB_FORM_ID, $current_section = false)
+	public static function GetByID_admin($WEB_FORM_ID, $current_section = false)
 	{
 		$WEB_FORM_ID = intval($WEB_FORM_ID);
 		if ($WEB_FORM_ID <= 0)

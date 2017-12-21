@@ -15,6 +15,7 @@ use	Bitrix\Sale\Internals\Input,
 	Bitrix\Sale\Internals\OrderPropsValueTable,
 	Bitrix\Sale\Internals\OrderPropsVariantTable,
 	Bitrix\Main\Entity,
+	Bitrix\Main\Event,
 	Bitrix\Main\SystemException,
 	Bitrix\Main\Localization\Loc;
 use Bitrix\Sale\Internals\OrderPropsRelationTable;
@@ -30,7 +31,7 @@ class PropertyValue
 
 	public static function create(PropertyValueCollection $collection, array $property = array())
 	{
-		$propertyValue = new static($property);
+		$propertyValue = static::createPropertyValueObject($property);
 		$propertyValue->setCollection($collection);
 		return $propertyValue;
 	}
@@ -65,6 +66,11 @@ class PropertyValue
 				'NAME' => $property['NAME'],
 				'CODE' => $property['CODE']
 			);
+		}
+
+		if (!isset($value['VALUE']) && !empty($property['DEFAULT_VALUE']))
+		{
+			$value['VALUE'] = $property['DEFAULT_VALUE'];
 		}
 
 		if (!empty($relation))
@@ -104,6 +110,11 @@ class PropertyValue
 
 		if ($this->property['TYPE'] == "STRING")
 		{
+			if ($this->property['IS_EMAIL'] === "Y" && !empty($value))
+			{
+				$value = trim((string)$value);
+			}
+
 			if (Input\StringInput::isMultiple($value))
 			{
 				$fields = $this->getFields();
@@ -203,6 +214,8 @@ class PropertyValue
 		$result = new Result();
 		$value = self::getValueForDB($this->fields->get('VALUE'));
 
+		$eventName = static::getEntityEventName();
+
 		if ($valueId = $this->getId())
 		{
 			if ($value != $this->savedValue)
@@ -239,6 +252,16 @@ class PropertyValue
 			}
 		}
 
+		if ($this->isChanged() && $eventName)
+		{
+			/** @var Event $event */
+			$event = new Event('sale', 'On'.$eventName.'EntitySaved', array(
+				'ENTITY' => $this,
+				'VALUES' => $this->fields->getOriginalValues(),
+			));
+			$event->send();
+		}
+
 		return $result;
 	}
 
@@ -248,10 +271,11 @@ class PropertyValue
 		$property = $this->property;
 
 		$key = isset($property["ID"]) ? $property["ID"] : "n".$this->getId();
-		$value = isset($post['PROPERTIES'][$key]) ? $post['PROPERTIES'][$key] : null;
 
-		if (isset($post['PROPERTIES'][$key]))
-			$this->setValue($value);
+		if (array_key_exists($key, $post['PROPERTIES']))
+		{
+			$this->setValue($post['PROPERTIES'][$key]);
+		}
 
 		return $result;
 	}
@@ -262,9 +286,24 @@ class PropertyValue
 		$result = new Result();
 		$property = $this->getProperty();
 
+		if ($property['TYPE'] == "STRING" && ((int)$property['MAXLENGTH'] <= 0))
+		{
+			$property['MAXLENGTH'] = 500;
+		}
 		$error = Input\Manager::getError($property, $value);
 
-		if (!is_array($value) && strval(trim($value)) != "" && $property['IS_EMAIL'] == 'Y' && !check_email($value, true)) // TODO EMAIL TYPE
+		if (!is_array($error))
+			$error = array($error);
+
+		foreach ($error as &$message)
+		{
+			$message = Loc::getMessage(
+				"SALE_PROPERTY_ERROR",
+				array("#PROPERTY_NAME#" => $property['NAME'], "#ERROR_MESSAGE#" => $message)
+			);
+		}
+
+		if (!is_array($value) && $property['IS_EMAIL'] == 'Y' && trim($value) !== '' && !check_email(trim($value), true))
 		{
 			$error['EMAIL'] = str_replace(
 				array("#EMAIL#", "#NAME#"),
@@ -282,7 +321,8 @@ class PropertyValue
 					if (isset($errorsList[$property['ID']]) && in_array($errorMsg, $errorsList[$property['ID']]))
 						continue;
 
-					$result->addError(new ResultError($property['NAME'].' '.$errorMsg, "PROPERTIES[".$key."]"));
+					$result->addError(new ResultError($errorMsg, "PROPERTIES[$key]"));
+					$result->addError(new ResultWarning($errorMsg, "PROPERTIES[$key]"));
 
 					$errorsList[$property['ID']][] = $errorMsg;
 				}
@@ -292,7 +332,8 @@ class PropertyValue
 				if (isset($errorsList[$property['ID']]) && in_array($e, $errorsList[$property['ID']]))
 					continue;
 
-				$result->addError(new ResultError($property['NAME'].' '.$e, "PROPERTIES[$key]"));
+				$result->addError(new ResultError($e, "PROPERTIES[$key]"));
+				$result->addError(new ResultWarning($e, "PROPERTIES[$key]"));
 
 				$errorsList[$property['ID']][] = $e;
 			}
@@ -427,12 +468,17 @@ class PropertyValue
 
 	function getRelations()
 	{
-		return $this->property['RELATIONS'];
+		return $this->property['RELATION'];
 	}
 
 	function getDescription()
 	{
 		return $this->property['DESCRIPTION'];
+	}
+
+	function getType()
+	{
+		return $this->property['TYPE'];
 	}
 
 	function isRequired()
@@ -445,6 +491,38 @@ class PropertyValue
 		return $this->property['UTIL'] == 'Y';
 	}
 
+	/**
+	 * @internal
+	 *
+	 * Delete order properties.
+	 * 
+	 * @param $idOrder
+	 * @return Result
+	 * @throws \Bitrix\Main\ObjectNotFoundException
+	 */
+	public static function deleteNoDemand($idOrder)
+	{
+		$result = new Result();
+		
+		$propertiesDataList = Internals\OrderPropsValueTable::getList(
+			array(
+				"filter" => array("=ORDER_ID" => $idOrder),
+				"select" => array("ID")
+			)	
+		);
+		
+		while ($property = $propertiesDataList->fetch())
+		{
+			$r = Internals\OrderPropsValueTable::delete($property['ID']);
+			if (!$r->isSuccess())
+			{
+				$result->addErrors($r->getErrors());
+			}
+		}
+		
+		return $result;
+	}
+	
 	public static function getMeaningfulValues($personTypeId, $request)
 	{
 		$personTypeId = intval($personTypeId);
@@ -481,6 +559,20 @@ class PropertyValue
 		}
 
 		return $result;
+	}
+
+	/**
+	 * @param array|null $property
+	 * @param array|null $value
+	 * @param array|null $relation
+	 * @return PropertyValue
+	 */
+	protected static function createPropertyValueObject(array $property = null, array $value = null, array $relation = null)
+	{
+		$registry = Registry::getInstance(Registry::REGISTRY_TYPE_ORDER);
+		$propertyValueClassName = $registry->getPropertyValueClassName();
+
+		return new $propertyValueClassName($property, $value, $relation);
 	}
 
 	public static function loadForOrder(Order $order)
@@ -564,14 +656,14 @@ class PropertyValue
 				$fields = null;
 			}
 			if (isset($propRelation[$id]))
-				$objects[] = new static($property, $fields, $propRelation[$id]);
+				$objects[] = static::createPropertyValueObject($property, $fields, $propRelation[$id]);
 			else
-				$objects[] = new static($property, $fields);
+				$objects[] = static::createPropertyValueObject($property, $fields);
 		}
 
 		foreach ($propertyValues as $propertyValue)
 		{
-			$objects[] = new static(null, $propertyValue);
+			$objects[] = static::createPropertyValueObject(null, $propertyValue);
 		}
 
 		return $objects;
@@ -584,6 +676,7 @@ class PropertyValue
 		$result = OrderPropsVariantTable::getList(array(
 			'select' => array('VALUE', 'NAME'),
 			'filter' => array('ORDER_PROPS_ID' => $propertyId),
+			'order' => array('SORT' => 'ASC')
 		));
 
 		while ($row = $result->fetch())

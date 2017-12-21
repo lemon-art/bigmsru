@@ -251,7 +251,55 @@ if(!$bReadOnly && check_bitrix_sessid())
 {
 	$arImageCombinationResult = $arPropertyValueCombinationResult = array();
 	if (isset($_FILES['PROP']) && is_array($_FILES['PROP']))
+	{
 		CFile::ConvertFilesToPost($_FILES['PROP'], $arImageCombinationResult);
+		// this code for fill description
+		if (!empty($arImageCombinationResult) && is_array($arImageCombinationResult))
+		{
+			$fileDescription = array();
+			if (!empty($_POST['DESCRIPTION_PROP']) && is_array($_POST['DESCRIPTION_PROP']))
+				$fileDescription = $_POST['DESCRIPTION_PROP'];
+			elseif (!empty($_POST['PROP_descr']) && is_array($_POST['PROP_descr']))
+				$fileDescription = $_POST['PROP_descr'];
+			if (!empty($fileDescription))
+			{
+				foreach ($arImageCombinationResult as $fieldCode => $fieldValues)
+				{
+					if (empty($fieldValues) || !is_array($fieldValues))
+						continue;
+					if (empty($fileDescription[$fieldCode]))
+						continue;
+					foreach ($fieldValues as $valueCode => $valueData)
+					{
+						if (empty($valueData) || !is_array($valueData))
+							continue;
+						if (!isset($fileDescription[$fieldCode][$valueCode]))
+							continue;
+						if (array_key_exists('tmp_name', $valueData))
+						{
+							$arImageCombinationResult[$fieldCode][$valueCode]['description'] = $fileDescription[$fieldCode][$valueCode];
+						}
+						else
+						{
+							foreach ($valueData as $valueIndex => $value)
+							{
+								if (empty($value) || !is_array($value))
+									continue;
+								if (!isset($fileDescription[$fieldCode][$valueCode][$valueIndex]))
+									continue;
+								if (!array_key_exists('tmp_name', $value))
+									continue;
+								$arImageCombinationResult[$fieldCode][$valueCode][$valueIndex]['description'] = $fileDescription[$fieldCode][$valueCode][$valueIndex];
+							}
+							unset($valueIndex, $value);
+						}
+					}
+					unset($valueCode, $valueData);
+				}
+				unset($fieldCode, $fieldValues);
+			}
+		}
+	}
 
 	if (isset($_POST["PROP"]) && is_array($_POST["PROP"]))
 	{
@@ -806,26 +854,6 @@ else
 		</div>
 	</td>
 </tr>
-	<?
-	$properties = CIBlockProperty::GetList(Array("SORT" => "ASC", "NAME" => "ASC"), Array("ACTIVE"=>"Y", "PROPERTY_TYPE"=>'F', "MULTIPLE" => 'Y', "CHECK_PERMISSIONS"=>"N"));
-	if($prop_fields = $properties->Fetch())
-	{
-		echo '<tr><td colspan="2"><div style="display: none;">';
-		$prop_fields["VALUE"] = array();
-		$prop_fields["~VALUE"] = array();
-		_ShowPropertyField('PROP['.$prop_fields["ID"].']', $prop_fields, $prop_fields["VALUE"], false, false, 50000, 'iblock_generator_form');
-		echo '</div></td></tr>';
-	}
-	$properties = CIBlockProperty::GetList(Array("SORT" => "ASC", "NAME" => "ASC"), Array("ACTIVE"=>"Y", "PROPERTY_TYPE"=>'F', "MULTIPLE" => 'N', "CHECK_PERMISSIONS"=>"N"));
-	if($prop_fields = $properties->Fetch())
-	{
-		echo '<tr><td colspan="2"><div style="display: none;">';
-		$prop_fields["VALUE"] = array();
-		$prop_fields["~VALUE"] = array();
-		_ShowPropertyField('PROP['.$prop_fields["ID"].']', $prop_fields, $prop_fields["VALUE"], false, false, 50000, 'iblock_generator_form');
-		echo '</div></td></tr>';
-	}
-	?>
 	<?
 	$tabControl->EndTab();
 	$tabControl->End();

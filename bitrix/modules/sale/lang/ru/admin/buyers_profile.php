@@ -160,4 +160,34 @@ $MESS["SOB_SHIPMENTS_DEDUCTED"] = "Отгружена";
 $MESS["SOB_SHIPMENTS_MARKED"] = "Проблемный";
 $MESS["SOB_SHIPMENTS_STATUS"] = "Статус";
 
+$MESS["CS_TAB_TITLE"] = "Подписки";
+$MESS["CS_TAB_DESC"] = "Подписки на товары";
+
+$MESS["CS_USER_CONTACT"] = "Контакт пользователя";
+$MESS["CS_CONTACT_TYPE"] = "Тип контакта";
+$MESS["CS_USER"] = "Пользователь";
+$MESS["CS_DATE_FROM"] = "Дата подписки";
+$MESS["CS_DATE_TO"] = "Дата окончания подписки";
+$MESS["CS_SITE_ID"] = "Сайт ID";
+$MESS["CS_ITEM_ID"] = "ID товара";
+$MESS["CS_ACTIVE"] = "Активность";
+$MESS["CS_PAGES"] = "страница";
+$MESS["CS_PRODUCT_NAME"] = "Название товара";
+
+$MESS["CS_ACTION_DELETE"] = "удалить";
+$MESS["CS_ACTION_ACTIVATE"] = "активировать";
+$MESS["CS_ACTION_DEACTIVATE"] = "деактивировать";
+$MESS["CS_ACTION_DELETE_CONFIRM"] = "Будет удалена вся информация, связанная с этой записью! Продолжить?";
+
+$MESS["CS_FILTER_ID"] = "ID";
+$MESS["CS_FILTER_USER_ID"] = "Пользователь";
+$MESS["CS_FILTER_USER_CONTACT"] = "Контакт пользователя";
+$MESS["CS_FILTER_ITEM_ID"] = "ID товара";
+$MESS["CS_FILTER_DATE_FROM"] = "Дата подписки";
+$MESS["CS_FILTER_DATE_TO"] = "Дата окончания подписки";
+$MESS["CS_FILTER_CONTACT_TYPE"] = "Тип контакта";
+$MESS["CS_FILTER_ACTIVE"] = "Активность";
+$MESS["CS_FILTER_YES"] = "Да";
+$MESS["CS_FILTER_NO"] = "Нет";
+$MESS["CS_FILTER_ANY"] = "(любой)";
 ?>

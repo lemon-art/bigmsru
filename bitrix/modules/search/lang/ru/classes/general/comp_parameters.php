@@ -14,4 +14,5 @@ $MESS["SEARCH_CP_INTRANET_USERS"] = "Пользователи";
 $MESS["SEARCH_CP_SOCIALNETWORK_GROUPS"] = "Группы социальной сети";
 $MESS["SEARCH_CP_SOCIALNETWORK_USER"] = "Пользователь социальной сети";
 $MESS["SEARCH_CP_CRM"] = "CRM";
+$MESS["SEARCH_CP_DISK"] = "Файлы диска";
 ?>

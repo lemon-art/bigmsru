@@ -702,9 +702,9 @@ BXMediaLib.prototype =
 			_this = this,
 			postData =
 			{
-				name: D.pName.value,
-				desc: D.pDesc.value,
-				keywords: D.pKeys.value,
+				name: encodeURIComponent(D.pName.value),
+				desc: encodeURIComponent(D.pDesc.value),
+				keywords: encodeURIComponent(D.pKeys.value),
 				parent: D.pParent.value,
 				type: D.typeId
 			};
@@ -732,10 +732,10 @@ BXMediaLib.prototype =
 					var oCol =
 					{
 						id: window.bx_req_res.id,
-						name: postData.name,
-						desc: postData.desc,
+						name: D.pName.value,
+						desc: D.pDesc.value,
 						date: '',
-						keywords: postData.keywords,
+						keywords: D.pKeys.value,
 						parent: postData.parent,
 						access: window.bx_req_res.access,
 						type: D.typeId
@@ -935,7 +935,8 @@ BXMediaLib.prototype =
 		};
 
 		D.pWnd.style.width = D.width + 'px';
-		D.pWnd.style.height = D.height + 'px';
+		D.pWnd.style.height = 'auto';
+		D.pWnd.style.minHeight = '10px';
 		this.EditCollDialog = D;
 	},
 

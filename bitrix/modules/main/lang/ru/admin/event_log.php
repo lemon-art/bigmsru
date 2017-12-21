@@ -37,8 +37,8 @@ $MESS["MAIN_EVENTLOG_TASK"] = "Изменен уровень доступа";
 $MESS["MAIN_EVENTLOG_IBLOCK"] = "Инфоблок";
 $MESS["MAIN_EVENTLOG_IBLOCK_DELETE"] = "Удален";
 $MESS["MAIN_ALL"] = "(все)";
-$MESS["MAIN_EVENTLOG_MP_MODULE_INSTALLED"] = "Решение Marketplace установленно";
-$MESS["MAIN_EVENTLOG_MP_MODULE_UNINSTALLED"] = "Решение Marketplace удалено";
-$MESS["MAIN_EVENTLOG_MP_MODULE_DELETED"] = "Решение Marketplace стерто";
-$MESS["MAIN_EVENTLOG_MP_MODULE_DOWNLOADED"] = "Решение Marketplace скачано";
+$MESS["MAIN_EVENTLOG_MP_MODULE_INSTALLED"] = "Решение Маркетплейс установленно";
+$MESS["MAIN_EVENTLOG_MP_MODULE_UNINSTALLED"] = "Решение Маркетплейс удалено";
+$MESS["MAIN_EVENTLOG_MP_MODULE_DELETED"] = "Решение Маркетплейс стерто";
+$MESS["MAIN_EVENTLOG_MP_MODULE_DOWNLOADED"] = "Решение Маркетплейс скачано";
 ?>

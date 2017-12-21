@@ -47,7 +47,9 @@ class intaro_retailcrm extends CModule
     //var $CRM_CATALOG_IBLOCKS = 'catalog_base_iblocks';
     var $CRM_ORDER_NUMBERS = 'order_numbers';
     var $CRM_CANSEL_ORDER = 'cansel_order';
-    
+    var $CRM_CURRENCY = 'currency';
+    var $CRM_ADDRESS_OPTIONS = 'address_options';
+
     var $CRM_INVENTORIES_UPLOAD = 'inventories_upload';
     var $CRM_STORES = 'stores';
     var $CRM_SHOPS = 'shops';
@@ -285,6 +287,8 @@ class intaro_retailcrm extends CModule
                 foreach ($arResult['arSites'] as $site) {
                     if ($_POST['sites-id-' . $site['LID']] && !empty($_POST['sites-id-' . $site['LID']])) {
                         $siteCode[$site['LID']] = htmlspecialchars(trim($_POST['sites-id-' . $site['LID']]));
+                    } else {
+                        $siteCode[$site['LID']] = null;
                     }
                 }
                 if (count($arResult['arSites']) != count($siteCode)) {
@@ -333,6 +337,7 @@ class intaro_retailcrm extends CModule
                 $this->RETAIL_CRM_API = new \RetailCrm\ApiClient($api_host, $api_key);
                 COption::SetOptionString($this->MODULE_ID, $this->CRM_API_HOST_OPTION, $api_host);
                 COption::SetOptionString($this->MODULE_ID, $this->CRM_API_KEY_OPTION, $api_key);
+                COption::SetOptionString($this->MODULE_ID, $this->CRM_SITES_LIST, serialize(array()));
             }
             
             //prepare crm lists
@@ -349,7 +354,15 @@ class intaro_retailcrm extends CModule
                     'intaro.retailcrm/install/index.php', 'RetailCrm\ApiClient::*List::CurlException',
                     $e->getCode() . ': ' . $e->getMessage()
                 );
+            } catch (\InvalidArgumentException $e) {
+                $arResult['errCode'] = 'ERR_METHOD_NOT_FOUND';
+                $APPLICATION->IncludeAdminFile(
+                    GetMessage('MODULE_INSTALL_TITLE'), $this->INSTALL_PATH . '/step1.php'
+                );
+                
+                return;
             }
+
             $delivTypes = array();
             foreach ($arResult['deliveryTypesList'] as $delivType) {
                 if ($delivType['active'] === true) {
@@ -813,7 +826,9 @@ class intaro_retailcrm extends CModule
             RegisterModuleDependences("main", "OnAfterUserUpdate", $this->MODULE_ID, "RetailCrmEvent", "OnAfterUserUpdate");
             RegisterModuleDependences("sale", "OnSaleOrderEntitySaved", $this->MODULE_ID, "RetailCrmEvent", "orderSave");
             RegisterModuleDependences("sale", "OnSaleOrderEntityDelete", $this->MODULE_ID, "RetailCrmEvent", "orderDelete");
-            
+            RegisterModuleDependences("sale", "OnSalePaymentEntitySaved", $this->MODULE_ID, "RetailCrmEvent", "paymentSave");
+            RegisterModuleDependences("sale", "OnSalePaymentEntityDeleted", $this->MODULE_ID, "RetailCrmEvent", "paymentDelete");
+
             COption::SetOptionString($this->MODULE_ID, $this->CRM_CATALOG_BASE_PRICE, htmlspecialchars(trim($_POST['price-types'])));            
             COption::SetOptionString($this->MODULE_ID, $this->CRM_INVENTORIES_UPLOAD, 'N');
             COption::SetOptionString($this->MODULE_ID, $this->CRM_PRICES_UPLOAD, 'N');
@@ -988,6 +1003,8 @@ class intaro_retailcrm extends CModule
         COption::RemoveOption($this->MODULE_ID, $this->CRM_CUSTOMER_HISTORY);
         COption::RemoveOption($this->MODULE_ID, $this->CRM_ORDER_HISTORY);
         COption::RemoveOption($this->MODULE_ID, $this->CRM_CATALOG_BASE_PRICE);
+        COption::RemoveOption($this->MODULE_ID, $this->CRM_CURRENCY);
+        COption::RemoveOption($this->MODULE_ID, $this->CRM_ADDRESS_OPTIONS);
 
         COption::RemoveOption($this->MODULE_ID, $this->CRM_ORDER_NUMBERS);
         COption::RemoveOption($this->MODULE_ID, $this->CRM_CANSEL_ORDER);
@@ -1012,14 +1029,14 @@ class intaro_retailcrm extends CModule
         COption::RemoveOption($this->MODULE_ID, $this->HISTORY_TIME);
 
         UnRegisterModuleDependences("sale", "OnOrderUpdate", $this->MODULE_ID, "RetailCrmEvent", "onUpdateOrder");
-        //UnRegisterModuleDependences("sale", "OnBeforeOrderAdd", $this->MODULE_ID, "RetailCrmEvent", "onBeforeOrderAdd");
-        //UnRegisterModuleDependences("sale", "OnOrderSave", $this->MODULE_ID, "RetailCrmEvent", "OnOrderSave");
         UnRegisterModuleDependences("main", "OnAfterUserUpdate", $this->MODULE_ID, "RetailCrmEvent", "OnAfterUserUpdate");
         UnRegisterModuleDependences("sale", "OnSaleOrderEntitySaved", $this->MODULE_ID, "RetailCrmEvent", "orderSave");
         UnRegisterModuleDependences("sale", "OnSaleOrderEntityDelete", $this->MODULE_ID, "RetailCrmEvent", "orderDelete");
         UnRegisterModuleDependences("main", "OnBeforeProlog", $this->MODULE_ID, "RetailCrmCollector", "add");
         UnRegisterModuleDependences("main", "OnBeforeProlog", $this->MODULE_ID, "RetailCrmUa", "add");
-        
+        UnRegisterModuleDependences("sale", "OnSalePaymentEntitySaved", $this->MODULE_ID, "RetailCrmEvent", "paymentSave");
+        UnRegisterModuleDependences("sale", "OnSalePaymentEntityDeleted", $this->MODULE_ID, "RetailCrmEvent", "paymentDelete");
+
         if (CModule::IncludeModule("catalog")) {
             if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/bitrix/php_interface/include/catalog_export/' . $this->RETAIL_CRM_EXPORT . '_run.php')) {
                 $dbProfile = CCatalogExport::GetList(array(), array("FILE_NAME" => $this->RETAIL_CRM_EXPORT));

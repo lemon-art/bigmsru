@@ -60,6 +60,7 @@ elseif (intval($arResult["FILE"]["MESSAGE_ID"]) > 0)
 	if (IsModuleInstalled('meeting'))
 	{
 		$forumId = COption::GetOptionInt('meeting', 'comments_forum_id', 0, SITE_ID);
+		$forumId = ($forumId > 0 ? $forumId : COption::GetOptionInt('meeting', 'comments_forum_id', 0));
 		if ($arResult['FORUM']['ID'] == $forumId && CModule::IncludeModule('meeting'))
 		{
 			$meetingID = false;

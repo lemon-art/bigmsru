@@ -39,12 +39,15 @@ class HttpHeaders
 	/**
 	 * Sets a header value.
 	 * @param string $name
-	 * @param string $value
+	 * @param string|null $value
 	 */
 	public function set($name, $value)
 	{
 		$name = str_replace(array("\r", "\n"), "", $name);
-		$value = str_replace(array("\r", "\n"), "", $value);
+		if($value !== null)
+		{
+			$value = str_replace(array("\r", "\n"), "", $value);
+		}
 		$nameLower = strtolower($name);
 
 		$this->headers[$nameLower] = array(
@@ -79,6 +82,7 @@ class HttpHeaders
 	 */
 	public function clear()
 	{
+		unset($this->headers);
 		$this->headers = array();
 	}
 
@@ -185,7 +189,11 @@ class HttpHeaders
 				}
 				elseif(preg_match('/^filename="(.+)"$/', $contentElement, $matches))
 				{
-					$filename = $matches[3];
+					$filename = $matches[1];
+				}
+				elseif(preg_match('/^filename=(.+)$/', $contentElement, $matches))
+				{
+					$filename = $matches[1];
 				}
 			}
 

@@ -4,6 +4,9 @@ if (!$this->__component->__parent || empty($this->__component->__parent->__name)
 	$GLOBALS['APPLICATION']->SetAdditionalCSS('/bitrix/components/bitrix/blog/templates/.default/style.css');
 	$GLOBALS['APPLICATION']->SetAdditionalCSS('/bitrix/components/bitrix/blog/templates/.default/themes/blue/style.css');
 endif;
+
+CUtil::InitJSCore(array("ajax"));
+
 ?>
 #BLOG_COMMENTS_BEGIN#
 <div class="blog-comments">
@@ -29,17 +32,12 @@ else
 {
 	$APPLICATION->RestartBuffer();
 	?><script>window.BX = top.BX;
-		<?if($arResult["use_captcha"] === true)
+		<?
+		if($arResult["use_captcha"]===true)
 		{
 			?>
-				var cc;
-				if(document.cookie.indexOf('<?echo session_name()?>'+'=') == -1)
-					cc = Math.random();
-				else
-					cc ='<?=$arResult["CaptchaCode"]?>';
-
-				BX('captcha').src='/bitrix/tools/captcha.php?captcha_code='+cc;
-				BX('captcha_code').value = cc;
+				BX('captcha').src='/bitrix/tools/captcha.php?captcha_code=' + '<?=$arResult["CaptchaCode"]?>';
+				BX('captcha_code').value = '<?=$arResult["CaptchaCode"]?>';
 				BX('captcha_word').value = "";
 			<?
 		}
@@ -156,10 +154,14 @@ else
 						<div class="blog-comment-field blog-comment-field-captcha">
 							<div class="blog-comment-field-captcha-label">
 								<label for="captcha_code"><?=GetMessage("B_B_MS_CAPTCHA_SYM")?></label><span class="blog-required-field">*</span><br>
-								<input type="hidden" name="captcha_code" id="captcha_code" value="<?=$arResult["CaptchaCode"]?>">
+								<input type="hidden" name="captcha_code" id="captcha_code" value="">
 								<input type="text" size="30" name="captcha_word" id="captcha_word" value=""  tabindex="7">
 								</div>
-							<div class="blog-comment-field-captcha-image"><div id="div_captcha"></div></div>
+							<div class="blog-comment-field-captcha-image">
+								<div id="div_captcha">
+									<img src="" width="180" height="40" id="captcha" style="display:none;">
+								</div>
+							</div>
 						</div>
 						<?
 					}
@@ -175,15 +177,6 @@ else
 			</div>
 			</div>
 			<?
-			if($arResult["use_captcha"] === true)
-			{
-				?>
-				<div id="captcha_del">
-				<img src="/bitrix/tools/captcha.php?captcha_code=<?= $arResult["CaptchaCode"]?>" width="180" height="40" id="captcha" style="display:none;">
-				<script>setTimeout(function(){BX('captcha_code').value = '<?=$arResult["CaptchaCode"]?>'}, 200);</script>
-				</div>
-				<?
-			}
 		}
 
 		$prevTab = 0;

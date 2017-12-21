@@ -97,6 +97,7 @@ div.condition-container span.control-string
 .condition-list-wrap {
 	display: inline-block;
 	vertical-align: top;
+	padding-top: 2px;
 }
 
 .condition-item {
@@ -112,16 +113,12 @@ div.condition-container span.control-string
 }
 
 .condition-item-text {
-	border-bottom: 1px dashed #afafb0;
+	border-bottom: 1px dashed #000;
 	cursor: pointer;
 	display: inline-block;
 	line-height: 17px;
 	vertical-align: middle;
 	font-size: 13px;
-}
-
-.condition-item-text:hover {
-	border-bottom-color: #000;
 }
 
 .condition-item-del {
@@ -218,17 +215,18 @@ div.condition-container div.condition-container div.condition-simple-control
 
 div.condition-simple-control a,
 div.condition-simple-control a:link,
+div.condition-simple-control a:visited,
+div.condition-simple-control a,
+div.condition-simple-control a:link,
 div.condition-simple-control a:visited
 {
 	color: #000000; text-decoration: none; cursor: pointer; border-bottom: 1px dashed #000000;
 }
 
-div.condition-simple-control a:hover
-{
-	color: #2c4b90; text-decoration: none; cursor: pointer; border-bottom: 1px solid transparent;
-}
-
-div.condition-simple-control a:active
+div.condition-simple-control a:hover,
+div.condition-simple-control a:active,
+.condition-item-text:hover,
+.condition-item-text:active
 {
 	color: #2c4b90; text-decoration: none; cursor: pointer; border-bottom: 1px solid transparent;
 }
@@ -308,17 +306,17 @@ div.condition-logic
 	position: absolute;
 	left: -60px;
 	bottom: -20px;
-	width: 45px;
+	width: 55px;
 	height: 30px;
-	border-radius: 10px;
-	color: #ffffff;
-	font-weight: bold;
+	border-radius: 4px;
+	color: #fff !important;
+	font-weight: bold !important;
 	border: 0 none transparent;
-	line-height: 30px;
-	white-space: nowrap;
-	padding: 0 20px 0 10px;
+	line-height: 30px !important;
+	white-space: nowrap !important;
+	padding: 0 10px 0 5px;
 	cursor: pointer;
-	text-align: right;
+	text-align: center !important;
 }
 
 div.condition-logic-and

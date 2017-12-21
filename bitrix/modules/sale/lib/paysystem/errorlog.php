@@ -2,7 +2,6 @@
 
 namespace Bitrix\Sale\PaySystem;
 
-use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Type\DateTime;
 use Bitrix\Sale\Internals\PaySystemErrLogTable;
 
@@ -16,7 +15,7 @@ class ErrorLog
 	 */
 	public static function add(array $fields)
 	{
-		self::prepareParams($fields);
+		$fields = self::prepareParams($fields);
 
 		if (self::DEBUG_MODE)
 			self::addToFile($fields);
@@ -26,23 +25,23 @@ class ErrorLog
 
 	/**
 	 * @param array $fields
+	 * @return bool|int
 	 */
 	private static function addToFile(array $fields)
 	{
-		file_put_contents($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/sale/payment_log.txt', self::convertArrayToString($fields), FILE_APPEND);
+		return file_put_contents($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/sale/payment_log.txt', self::convertArrayToString($fields), FILE_APPEND);
 	}
 
 	/**
 	 * @param array $fields
-	 * @throws \Exception
+	 * @return bool
 	 */
 	private static function addToDb(array $fields)
 	{
 		$fields['DATE_INSERT'] = new DateTime();
 		$result = PaySystemErrLogTable::add($fields);
 
-		if (!$result->isSuccess())
-			throw new \Exception();
+		return $result->isSuccess();
 	}
 
 	/**

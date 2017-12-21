@@ -17,8 +17,21 @@ $arParams["AVATAR_SIZE"] = intval($_REQUEST["AVATAR_SIZE"]);
 $arParams["AVATAR_SIZE"] = ($arParams["AVATAR_SIZE"] > 0 ? $arParams["AVATAR_SIZE"] : 42);
 $arParams["NAME_TEMPLATE"] = (!!$_REQUEST["NAME_TEMPLATE"] ? $_REQUEST["NAME_TEMPLATE"] : CSite::GetNameFormat());
 $arParams["SHOW_LOGIN"] = ($_REQUEST["SHOW_LOGIN"] == "Y" ? "Y" : "N");
-$sign = (new \Bitrix\Main\Security\Sign\Signer());
-$arParams["SIGN"] = (is_string($_REQUEST["sign"]) ? $sign->unsign($_REQUEST["sign"], "main.post.list") : null);
+global $USER;
+
+$arParams["SIGN"] = null;
+if (is_string($_REQUEST["sign"]) && !empty($_REQUEST["sign"]))
+{
+	try
+	{
+		$sign = (new \Bitrix\Main\Security\Sign\Signer());
+		$arParams["SIGN"] = $sign->unsign($_REQUEST["sign"], "main.post.list");
+	}
+	catch (Exception $e)
+	{
+		$arParams["SIGN"] = null;
+	}
+}
 
 if (!is_array($_SESSION["UC_LAST_ACTIVITY"]))
 	$_SESSION["UC_LAST_ACTIVITY"] = array(
@@ -28,7 +41,7 @@ if (!is_array($_SESSION["UC_LAST_ACTIVITY"]))
 
 if ( check_bitrix_sessid() &&
 	$_REQUEST["MODE"] == "PUSH&PULL" &&
-	$GLOBALS["USER"]->IsAuthorized() &&
+	$USER->IsAuthorized() &&
 	is_string($arParams["SIGN"]) &&
 	$arParams["SIGN"] == $_REQUEST["ENTITY_XML_ID"] &&
 	(
@@ -37,10 +50,12 @@ if ( check_bitrix_sessid() &&
 	) &&
 	CModule::IncludeModule("pull") && CPullOptions::GetNginxStatus())
 {
+	$request = \Bitrix\Main\Context::getCurrent()->getRequest();
+
 	$_SESSION["UC_ACTIVITY"]["TIME"] = time();
 	$_SESSION["UC_ACTIVITY"]["ENTITY_XML_ID"] = $_REQUEST["ENTITY_XML_ID"];
 
-	$dbUser = CUser::GetList(($sort_by = Array('ID'=>'desc')), ($dummy=''), Array("ID" => $GLOBALS["USER"]->GetId()),
+	$dbUser = CUser::GetList(($sort_by = Array('ID'=>'desc')), ($dummy=''), Array("ID" => $USER->GetId()),
 		Array("FIELDS" => Array("ID", "LAST_NAME", "NAME", "SECOND_NAME", "LOGIN", "PERSONAL_PHOTO", "PERSONAL_GENDER")));
 	$arUser = array();
 	if($dbUser && ($arUser = $dbUser->GetNext()) && (intval($arUser["PERSONAL_PHOTO"]) > 0))
@@ -68,33 +83,33 @@ if ( check_bitrix_sessid() &&
 		),
 		($arParams["SHOW_LOGIN"] != "N" ? true : false),
 		false);
-	CPullWatch::AddToStack('UNICOMMENTS'.$_REQUEST["ENTITY_XML_ID"],
-		Array(
+	\CPullWatch::AddToStack('UNICOMMENTS'.$_REQUEST["ENTITY_XML_ID"],
+		array(
 			'module_id' => 'unicomments',
 			'command' => 'answer',
 			'expiry' => 60,
-			'params' => Array(
-				"USER_ID" => $GLOBALS["USER"]->GetId(),
+			'params' => (array(
+				"USER_ID" => $USER->GetId(),
 				"ENTITY_XML_ID" => $_REQUEST["ENTITY_XML_ID"],
 				"TS" => time(),
 				"NAME" => $arUserInfo["NAME_FORMATED"],
 				"AVATAR" => $arUserInfo["PERSONAL_PHOTO_resized_30"]["src"]
-			)
+			) + ($request->getPost("COMMENT_EXEMPLAR_ID") === null ? array() : array("COMMENT_EXEMPLAR_ID" => $request->getPost("COMMENT_EXEMPLAR_ID"))))
 		)
 	);
 
-	CPullWatch::AddToStack('UNICOMMENTSEXTENDED'.$_REQUEST["ENTITY_XML_ID"],
-		Array(
+	\CPullWatch::AddToStack('UNICOMMENTSEXTENDED'.$_REQUEST["ENTITY_XML_ID"],
+		array(
 			'module_id' => 'unicomments',
 			'command' => 'answer',
 			'expiry' => 60,
-			'params' => Array(
-				"USER_ID" => $GLOBALS["USER"]->GetId(),
+			'params' => (array(
+				"USER_ID" => $USER->GetId(),
 				"ENTITY_XML_ID" => $_REQUEST["ENTITY_XML_ID"],
 				"TS" => time(),
 				"NAME" => $arUserInfo["NAME_FORMATED"],
 				"AVATAR" => $arUserInfo["PERSONAL_PHOTO_resized_30"]["src"]
-			)
+			) + ($request->getPost("COMMENT_EXEMPLAR_ID") === null ? array() : array("COMMENT_EXEMPLAR_ID" => $request->getPost("COMMENT_EXEMPLAR_ID"))))
 		)
 	);
 

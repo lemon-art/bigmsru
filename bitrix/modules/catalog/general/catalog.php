@@ -17,6 +17,8 @@ class CAllCatalog
 		$arMsg = array();
 		$boolResult = true;
 
+		if (array_key_exists('OFFERS', $arFields))
+			unset($arFields['OFFERS']);
 		$ID = (int)$ID;
 		$arCatalog = false;
 		if (0 < $ID)
@@ -382,7 +384,6 @@ class CAllCatalog
 
 		$strDBType = strtoupper($DB->type);
 		$oracleEdition = ('ORACLE' == $strDBType);
-		$highEdition = ($oracleEdition || 'MSSQL' == $strDBType);
 
 		$arGroupByFunct = array(
 			"COUNT" => true,
@@ -452,10 +453,9 @@ class CAllCatalog
 					{
 						case 'datetime':
 						case 'date':
-							if ($highEdition && isset($arOrder[$fieldKey]))
-							{
+							if (isset($arOrder[$fieldKey]))
 								$sqlSelect[] = $fieldDescr['FIELD'].' as '.$fieldKey.'_X1';
-							}
+
 							$sqlSelect[] = $DB->DateToCharFunction(
 								$fieldDescr['FIELD'],
 								('datetime' == $fieldDescr['TYPE'] ? 'FULL' : 'SHORT')
@@ -489,10 +489,9 @@ class CAllCatalog
 							{
 								case 'datetime':
 								case 'date':
-									if ($highEdition && isset($arOrder[$val]))
-									{
+									if (isset($arOrder[$val]))
 										$sqlSelect[] = $arFields[$val]['FIELD'].' as '.$val.'_X1';
-									}
+
 									$sqlSelect[] = $DB->DateToCharFunction(
 										$arFields[$val]['FIELD'],
 										('datetime' == $arFields[$val]['TYPE'] ? 'FULL' : 'SHORT')
@@ -560,60 +559,72 @@ class CAllCatalog
 						}
 						else
 						{
-							if ($arFields[$key]["TYPE"] == "int")
+							if ($arFields[$key]['TYPE'] == 'int')
 							{
-								array_walk($vals, create_function("&\$item", "\$item=(int)\$item;"));
-								$vals = array_unique($vals);
-								$val = implode(",", $vals);
-
-								if (empty($vals))
-									$arSqlSearch_tmp[] = "(1 = 2)";
+								$clearVals = array();
+								foreach ($vals as $item)
+								{
+									$item = (int)$item;
+									$clearVals[$item] = $item;
+								}
+								unset($item);
+								if (empty($clearVals))
+									$arSqlSearch_tmp[] = '(1 = 2)';
 								else
-									$arSqlSearch_tmp[] = (($strNegative == "Y") ? " NOT " : "")."(".$arFields[$key]["FIELD"]." IN (".$val."))";
+									$arSqlSearch_tmp[] = ($strNegative == 'Y' ? ' NOT ' : '').'('.$arFields[$key]['FIELD'].' IN ('.implode(',', $clearVals).'))';
+								unset($clearVals);
 							}
-							elseif ($arFields[$key]["TYPE"] == "double")
+							elseif ($arFields[$key]['TYPE'] == 'double')
 							{
-								array_walk($vals, create_function("&\$item", "\$item=(float)\$item;"));
-								$vals = array_unique($vals);
-								$val = implode(",", $vals);
-
-								if (empty($vals))
-									$arSqlSearch_tmp[] = "(1 = 2)";
+								$clearVals = array();
+								foreach ($vals as $item)
+									$clearVals[] = (float)$item;
+								unset($item);
+								if (empty($clearVals))
+								{
+									$arSqlSearch_tmp[] = '(1 = 2)';
+								}
 								else
-									$arSqlSearch_tmp[] = (($strNegative == "Y") ? " NOT " : "")."(".$arFields[$key]["FIELD"]." ".$strOperation." (".$val."))";
+								{
+									$clearVals = array_unique($clearVals);
+									$arSqlSearch_tmp[] = ($strNegative == 'Y' ? ' NOT ' : '').'('.$arFields[$key]['FIELD'].' IN ('.implode(',', $clearVals).'))';
+								}
+								unset($clearVals);
 							}
-							elseif ($arFields[$key]["TYPE"] == "string" || $arFields[$key]["TYPE"] == "char")
+							elseif ($arFields[$key]['TYPE'] == 'string' || $arFields[$key]['TYPE'] == 'char')
 							{
-								array_walk($vals, create_function("&\$item", "\$item=\"'\".\$GLOBALS[\"DB\"]->ForSql(\$item).\"'\";"));
-								$vals = array_unique($vals);
-								$val = implode(",", $vals);
-
-								if (empty($vals))
-									$arSqlSearch_tmp[] = "(1 = 2)";
+								$clearVals = array();
+								foreach ($vals as $item)
+									$clearVals[] = "'".$DB->ForSql($item)."'";
+								unset($item);
+								if (empty($clearVals))
+								{
+									$arSqlSearch_tmp[] = '(1 = 2)';
+								}
 								else
-									$arSqlSearch_tmp[] = (($strNegative == "Y") ? " NOT " : "")."(".$arFields[$key]["FIELD"]." ".$strOperation." (".$val."))";
+								{
+									$clearVals = array_unique($clearVals);
+									$arSqlSearch_tmp[] = (($strNegative == 'Y') ? ' NOT ' : '').'('.$arFields[$key]['FIELD'].' '.$strOperation.' ('.implode(',', $clearVals).'))';
+								}
+								unset($clearVals);
 							}
-							elseif ($arFields[$key]["TYPE"] == "datetime")
+							elseif ($arFields[$key]['TYPE'] == 'datetime' || $arFields[$key]['TYPE'] == 'date')
 							{
-								array_walk($vals, create_function("&\$item", "\$item=\"'\".\$GLOBALS[\"DB\"]->CharToDateFunction(\$GLOBALS[\"DB\"]->ForSql(\$item), \"FULL\").\"'\";"));
-								$vals = array_unique($vals);
-								$val = implode(",", $vals);
-
-								if (empty($vals))
-									$arSqlSearch_tmp[] = "1 = 2";
+								$valueFormat = ($arFields[$key]['TYPE'] == 'datetime' ?  'FULL' : 'SHORT');
+								$clearVals = array();
+								foreach ($vals as $item)
+									$clearVals[] = "'".$DB->CharToDateFunction($DB->ForSql($item), $valueFormat)."'";
+								unset($item);
+								if (empty($clearVals))
+								{
+									$arSqlSearch_tmp[] = '(1 = 2)';
+								}
 								else
-									$arSqlSearch_tmp[] = ($strNegative=="Y"?" NOT ":"")."(".$arFields[$key]["FIELD"]." ".$strOperation." (".$val."))";
-							}
-							elseif ($arFields[$key]["TYPE"] == "date")
-							{
-								array_walk($vals, create_function("&\$item", "\$item=\"'\".\$GLOBALS[\"DB\"]->CharToDateFunction(\$GLOBALS[\"DB\"]->ForSql(\$item), \"SHORT\").\"'\";"));
-								$vals = array_unique($vals);
-								$val = implode(",", $vals);
-
-								if (empty($vals))
-									$arSqlSearch_tmp[] = "1 = 2";
-								else
-									$arSqlSearch_tmp[] = ($strNegative=="Y"?" NOT ":"")."(".$arFields[$key]["FIELD"]." ".$strOperation." (".$val."))";
+								{
+									$clearVals = array_unique($clearVals);
+									$arSqlSearch_tmp[] = ($strNegative == 'Y'? ' NOT ' : '').'('.$arFields[$key]['FIELD'].' '.$strOperation.' ('.implode(',', $clearVals).'))';
+								}
+								unset($clearVals, $valueFormat);
 							}
 						}
 					}
@@ -795,7 +806,6 @@ class CAllCatalog
 
 		$strDBType = strtoupper($DB->type);
 		$oracleEdition = ('ORACLE' == $strDBType);
-		$highEdition = ($oracleEdition || 'MSSQL' == $strDBType);
 
 		$arGroupByFunct = array(
 			"COUNT" => true,
@@ -871,14 +881,14 @@ class CAllCatalog
 
 					if ($arFields[$arFieldsKeys[$i]]["TYPE"] == "datetime")
 					{
-						if ($highEdition && isset($arOrder[$arFieldsKeys[$i]]))
+						if (isset($arOrder[$arFieldsKeys[$i]]))
 							$strSqlSelect .= $arFields[$arFieldsKeys[$i]]["FIELD"]." as ".$arFieldsKeys[$i]."_X1, ";
 
 						$strSqlSelect .= $DB->DateToCharFunction($arFields[$arFieldsKeys[$i]]["FIELD"], "FULL")." as ".$arFieldsKeys[$i];
 					}
 					elseif ($arFields[$arFieldsKeys[$i]]["TYPE"] == "date")
 					{
-						if ($highEdition && isset($arOrder[$arFieldsKeys[$i]]))
+						if (isset($arOrder[$arFieldsKeys[$i]]))
 							$strSqlSelect .= $arFields[$arFieldsKeys[$i]]["FIELD"]." as ".$arFieldsKeys[$i]."_X1, ";
 
 						$strSqlSelect .= $DB->DateToCharFunction($arFields[$arFieldsKeys[$i]]["FIELD"], "SHORT")." as ".$arFieldsKeys[$i];
@@ -916,14 +926,14 @@ class CAllCatalog
 						{
 							if ($arFields[$val]["TYPE"] == "datetime")
 							{
-								if ($highEdition && isset($arOrder[$val]))
+								if (isset($arOrder[$val]))
 									$strSqlSelect .= $arFields[$val]["FIELD"]." as ".$val."_X1, ";
 
 								$strSqlSelect .= $DB->DateToCharFunction($arFields[$val]["FIELD"], "FULL")." as ".$val;
 							}
 							elseif ($arFields[$val]["TYPE"] == "date")
 							{
-								if ($highEdition && isset($arOrder[$val]))
+								if (isset($arOrder[$val]))
 									$strSqlSelect .= $arFields[$val]["FIELD"]." as ".$val."_X1, ";
 
 								$strSqlSelect .= $DB->DateToCharFunction($arFields[$val]["FIELD"], "SHORT")." as ".$val;
@@ -1178,8 +1188,6 @@ class CAllCatalog
 	{
 		global $DB;
 
-		if (array_key_exists('OFFERS', $arFields))
-			unset($arFields['OFFERS']);
 		if (!CCatalog::CheckFields("ADD", $arFields, 0))
 			return false;
 
@@ -1197,8 +1205,6 @@ class CAllCatalog
 	{
 		global $DB;
 		$ID = (int)$ID;
-		if (array_key_exists('OFFERS', $arFields))
-			unset($arFields['OFFERS']);
 
 		if (!CCatalog::CheckFields("UPDATE", $arFields, $ID))
 			return false;
@@ -1580,6 +1586,7 @@ class CAllCatalog
 
 	/*
 	 * @deprecated deprecated since catalog 10.0.3
+	 * @internal
 	 */
 	public static function GetCatalogFieldsList()
 	{

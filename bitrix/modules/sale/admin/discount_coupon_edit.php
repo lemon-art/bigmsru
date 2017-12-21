@@ -479,7 +479,7 @@ else
 	{
 		$discountName = '<a href="sale_discount_edit.php?lang='.LANGUAGE_ID.'&ID='.$coupon['DISCOUNT_ID'].'">['.$coupon['DISCOUNT_ID'].']</a>';
 		if ($coupon['DISCOUNT_NAME'] !== '')
-			$discountName .= ' '.$coupon['DISCOUNT_NAME'];
+			$discountName .= ' '.htmlspecialcharsbx($coupon['DISCOUNT_NAME']);
 		$discountName .= '<input type="hidden" name="DISCOUNT_ID" value="'.$coupon['DISCOUNT_ID'].'">';
 		$control->AddViewField('DISCOUNT_ID', Loc::getMessage('BX_SALE_DISCOUNT_COUPON_FIELD_DISCOUNT'), $discountName, true);
 	}

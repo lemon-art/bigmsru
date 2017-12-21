@@ -42,6 +42,12 @@ if (!empty($arResult["MESSAGES"]))
 				"RECIPIENT_ID" => $arParams["RECIPIENT_ID"],
 				"SITE_ID" => $forumSiteId
 			));
+
+		if (isset($comment["PROPS"]["UF_FORUM_MES_URL_PRV"]))
+		{
+			unset($comment["PROPS"]["UF_FORUM_MES_URL_PRV"]);
+		}
+
 		$res = array(
 			"ID" => $comment["ID"],
 			"APPROVED" => $comment["APPROVED"],

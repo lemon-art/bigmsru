@@ -79,6 +79,8 @@ if (!empty($arResult["ELEMENTS"]) && CModule::IncludeModule("iblock"))
 		}
 	}
 
+	$useCatalogTab = (string)\Bitrix\Main\Config\Option::get('catalog', 'show_catalog_tab_with_offers') == 'Y';
+
 	$obParser = new CTextParser;
 
 	if (is_array($arParams["PRICE_CODE"]))
@@ -103,14 +105,19 @@ if (!empty($arResult["ELEMENTS"]) && CModule::IncludeModule("iblock"))
 	);
 	foreach($arResult["PRICES"] as $value)
 	{
+		if (!$value['CAN_VIEW'] && !$value['CAN_BUY'])
+			continue;
 		$arSelect[] = $value["SELECT"];
 		$arFilter["CATALOG_SHOP_QUANTITY_".$value["ID"]] = 1;
 	}
 	$arFilter["=ID"] = $arResult["ELEMENTS"];
+	$arResult["ELEMENTS"] = array();
 	$rsElements = CIBlockElement::GetList(array(), $arFilter, false, false, $arSelect);
 	while($arElement = $rsElements->Fetch())
 	{
-		$arElement["PRICES"] = CIBlockPriceTools::GetItemPrices($arElement["IBLOCK_ID"], $arResult["PRICES"], $arElement, $arParams['PRICE_VAT_INCLUDE'], $arConvertParams);
+		$arElement["PRICES"] = array();
+		if ($arElement["CATALOG_TYPE"] != \Bitrix\Catalog\ProductTable::TYPE_SKU || $useCatalogTab)
+			$arElement["PRICES"] = CIBlockPriceTools::GetItemPrices($arElement["IBLOCK_ID"], $arResult["PRICES"], $arElement, $arParams['PRICE_VAT_INCLUDE'], $arConvertParams);
 		if($arParams["PREVIEW_TRUNCATE_LEN"] > 0)
 			$arElement["PREVIEW_TEXT"] = $obParser->html_cut($arElement["PREVIEW_TEXT"], $arParams["PREVIEW_TRUNCATE_LEN"]);
 
@@ -140,5 +147,3 @@ foreach($arResult["SEARCH"] as $i=>$arItem)
 
 	$arResult["SEARCH"][$i]["ICON"] = true;
 }
-
-?>

@@ -232,4 +232,34 @@ class DateTime extends Date
 		$d->value->setTimestamp($timestamp);
 		return $d;
 	}
+
+	/**
+	 * Creates DateTime object from string.
+	 * NULL will be returned on failure.
+	 * @param string $timeString Full formatted time.
+	 * @param string $format PHP datetime format. If not specified, the format is got from the current culture.
+	 * @return DateTime|null
+	 */
+	public static function tryParse($timeString, $format = null)
+	{
+		if($timeString === '')
+		{
+			return null;
+		}
+
+		if ($format === null)
+		{
+			$format = static::getFormat();
+		}
+
+		try
+		{
+			$time = new DateTime($timeString, $format);
+		}
+		catch(Main\ObjectException $e)
+		{
+			$time = null;
+		}
+		return $time;
+	}
 }

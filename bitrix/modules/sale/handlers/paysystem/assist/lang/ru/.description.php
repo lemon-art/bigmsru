@@ -3,6 +3,7 @@ $MESS['SALE_HPS_ASSIST'] = 'Ассист';
 $MESS["SALE_HPS_ASSIST_SHOP_IDP"]="Код магазина";
 $MESS["SALE_HPS_ASSIST_SHOP_LOGIN"]="Логин";
 $MESS["SALE_HPS_ASSIST_SHOP_PASSWORD"]="Пароль";
+$MESS["SALE_HPS_ASSIST_SERVER_URL"]="Доменное имя, полученное от сотрудников службы поддержки ASSIST";
 $MESS["SALE_HPS_ASSIST_FIRST_NAME"]="Имя покупателя";
 $MESS["SALE_HPS_ASSIST_LAST_NAME"]="Фамилия покупателя";
 $MESS["SALE_HPS_ASSIST_ASSIST_DELAY"]="Механизм работы";

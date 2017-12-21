@@ -93,6 +93,7 @@
 				if (BX(being))
 				{
 					res.thumbNode = node = BX(being);
+					node.setAttribute("bx-bxu-item-id", res.id);
 				}
 				else
 				{
@@ -281,7 +282,9 @@
 		},
 		onbxdraghout : function(currentNode, x, y) {
 		},
-		onbxdestdraghover : function() {
+		onbxdestdraghover : function(currentNode) {
+			if (!currentNode || !currentNode.hasAttribute("bx-bxu-item-id") || !this.items.hasItem(currentNode.getAttribute("bx-bxu-item-id")))
+				return;
 			var item = BX.proxy_context;
 			BX.addClass(item, "bx-drag-over");
 			return true;
@@ -296,84 +299,84 @@
 			BX.removeClass(item, "bx-drag-over");
 			if(item == currentNode || !BX.hasClass(currentNode, "bx-drag-draggable"))
 				return true;
+			var id = currentNode.getAttribute("bx-bxu-item-id");
+			if (!this.items.hasItem(id))
+				return;
+
+			var obj = item.parentNode,
+				n = obj.childNodes.length,
+				act, it, buff;
+
+			for (var j=0; j<n; j++)
+			{
+				if (obj.childNodes[j] == item)
+					item.number = j;
+				else if (obj.childNodes[j] == currentNode)
+					currentNode.number = j;
+
+				if (currentNode.number > 0 && item.number > 0)
+					break;
+			}
+
+			if (this.itForUpload.hasItem(id))
+			{
+				act = (item.number <= currentNode.number ? "beforeItem" : (
+					item.nextSibling ? "afterItem" : "inTheEnd"));
+				it = null;
+				if (act != "inTheEnd")
+				{
+					for (j = item.number + (act == "beforeItem" ? 0 : 1); j < n; j++)
+					{
+						if (this.itForUpload.hasItem(obj.childNodes[j].getAttribute("bx-bxu-item-id")))
+						{
+							it = obj.childNodes[j].getAttribute("bx-bxu-item-id");
+							break;
+						}
+					}
+					if (it === null)
+						act = "inTheEnd";
+				}
+				buff = this.itForUpload.removeItem(currentNode.getAttribute("bx-bxu-item-id"));
+				if (act != "inTheEnd")
+					this.itForUpload.insertBeforeItem(buff.id, buff, it);
+				else
+					this.itForUpload.setItem(buff.id, buff);
+			}
+
+			act = (item.number <= currentNode.number ? "beforeItem" : (
+				item.nextSibling ? "afterItem" : "inTheEnd"));
+			it = null;
+			if (act != "inTheEnd")
+			{
+				for (j = item.number + (act == "beforeItem" ? 0 : 1); j < n; j++)
+				{
+					if (this.items.hasItem(obj.childNodes[j].getAttribute("bx-bxu-item-id")))
+					{
+						it = obj.childNodes[j].getAttribute("bx-bxu-item-id");
+						break;
+					}
+				}
+				if (it === null)
+					act = "inTheEnd";
+			}
+			buff = this.items.removeItem(currentNode.getAttribute("bx-bxu-item-id"));
+			if (act != "inTheEnd")
+				this.items.insertBeforeItem(buff.id, buff, it);
+			else
+				this.items.setItem(buff.id, buff);
+
+			currentNode.parentNode.removeChild(currentNode);
+			if (item.number <= currentNode.number)
+			{
+				item.parentNode.insertBefore(currentNode, item);
+			}
+			else if (item.nextSibling)
+			{
+				item.parentNode.insertBefore(currentNode, item.nextSibling);
+			}
 			else
 			{
-				var obj = item.parentNode,
-					n = obj.childNodes.length;
-
-				for (var j=0; j<n; j++)
-				{
-					if (obj.childNodes[j] == item)
-						item.number = j;
-					else if (obj.childNodes[j] == currentNode)
-						currentNode.number = j;
-
-					if (currentNode.number > 0 && item.number > 0)
-						break;
-				}
-				var id = currentNode.getAttribute("bx-bxu-item-id");
-				if (this.itForUpload.hasItem(id))
-				{
-					var act = (item.number <= currentNode.number ? "beforeItem" : (
-						item.nextSibling ? "afterItem" : "inTheEnd")), it = null;
-					if (act != "inTheEnd")
-					{
-						for (j = item.number + (act == "beforeItem" ? 0 : 1); j < n; j++)
-						{
-							if (this.itForUpload.hasItem(obj.childNodes[j].getAttribute("bx-bxu-item-id")))
-							{
-								it = obj.childNodes[j].getAttribute("bx-bxu-item-id");
-								break;
-							}
-						}
-						if (it === null)
-							act = "inTheEnd";
-					}
-					var buff = this.itForUpload.removeItem(currentNode.getAttribute("bx-bxu-item-id"));
-					if (act != "inTheEnd")
-						this.itForUpload.insertBeforeItem(buff.id, buff, it);
-					else
-						this.itForUpload.setItem(buff.id, buff);
-				}
-
-				if (this.items.hasItem(id))
-				{
-					var act = (item.number <= currentNode.number ? "beforeItem" : (
-						item.nextSibling ? "afterItem" : "inTheEnd")), it = null;
-					if (act != "inTheEnd")
-					{
-						for (j = item.number + (act == "beforeItem" ? 0 : 1); j < n; j++)
-						{
-							if (this.items.hasItem(obj.childNodes[j].getAttribute("bx-bxu-item-id")))
-							{
-								it = obj.childNodes[j].getAttribute("bx-bxu-item-id");
-								break;
-							}
-						}
-						if (it === null)
-							act = "inTheEnd";
-					}
-					var buff = this.items.removeItem(currentNode.getAttribute("bx-bxu-item-id"));
-					if (act != "inTheEnd")
-						this.items.insertBeforeItem(buff.id, buff, it);
-					else
-						this.items.setItem(buff.id, buff);
-				}
-
-				currentNode.parentNode.removeChild(currentNode);
-				if (item.number <= currentNode.number)
-				{
-					item.parentNode.insertBefore(currentNode, item);
-				}
-				else if (item.nextSibling)
-				{
-					item.parentNode.insertBefore(currentNode, item.nextSibling);
-				}
-				else
-				{
-					item.parentNode.appendChild(currentNode);
-				}
-
+				item.parentNode.appendChild(currentNode);
 			}
 			BX.onCustomEvent(item, "onFileOrderIsChanged", [item.id, item, this.caller]);
 			BX.onCustomEvent(this.uploader, "onQueueIsChanged", [this, "sort", item.id, item]);

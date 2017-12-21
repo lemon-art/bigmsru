@@ -214,7 +214,7 @@
 	right:10px;
 	bottom:0;
 	left:59%;
-	z-index:900;
+	z-index:400;
 }
 @media (max-width:640px){
 	.bx-touch .bx_slider_section .bx_slider_content_container{

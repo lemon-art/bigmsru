@@ -78,6 +78,12 @@ class CAjax
 								$bSrcFound = true;
 							}
 						}
+						elseif (preg_match("#/bitrix/modules#", $sSrcFile))
+						{
+							$sRealDocRoot = substr($sSrcFile, 0, strpos($sSrcFile, "/bitrix/modules/"));
+							$sSrcFile = substr($sSrcFile, strlen($sRealDocRoot));
+							$bSrcFound = true;
+						}
 					}
 				}
 			}

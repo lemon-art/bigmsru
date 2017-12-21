@@ -14,4 +14,6 @@ $MESS["SBB_BDELETE"] = "Видалити";
 $MESS["SBB_BDELAY"] = "Відкласти";
 $MESS["SBB_BWEIGHT"] = "Вага";
 $MESS["SBB_BDISCOUNT"] = "Знижка";
+$MESS["SBB_BSUM"] = "Сума";
+$MESS["SBBS_USER_ID"] = "Код користувача";
 ?>

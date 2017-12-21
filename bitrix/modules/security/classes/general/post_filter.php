@@ -181,41 +181,47 @@ class CSecurityXSSDetect
 	/**
 	 * @param string $string
 	 * @param array $searches
-	 * @return bool
+	 * @return null|string
 	 */
-	protected static function isFoundInString($string, $searches)
+	protected function findInArray($string, $searches)
 	{
-		foreach($searches as $search)
+		foreach($searches as $i => $search)
 		{
-			$pos = static::fastStrpos($string, $search);
+			$pos = static::fastStrpos($string, $search["value"]);
+			if ($pos !== false)
+			{
+				$prevChar = static::fastSubstr($string, $pos - 1, 1);
+				$isFound = ($prevChar !== '\\');
+				if ($isFound && preg_match("/^[a-zA-Z_]/", $search["value"]))
+				{
+					$isFound = preg_match("/^[a-zA-Z_]/", $prevChar) <= 0;
+				}
+			}
 
-			$isFound = (
-				$pos !== false
-				&& (static::fastSubstr($string, $pos - 1, 1) !== '\\')
-			);
-
-			if($isFound)
-				return true;
+			if ($isFound)
+				return $i;
 		}
-		return false;
+		return null;
 	}
 
 	/**
 	 * @param string $body
-	 * @return bool
+	 * @return array|false
 	 */
 	protected function isDangerBody($body)
 	{
-		if (self::isFoundInString($body, $this->quotedSearches))
+		$search = $this->findInArray($body, $this->quotedSearches);
+		if ($search !== null)
 		{
-			return true;
+			return $this->quotedSearches[$search];
 		}
 		else if (!empty($this->searches))
 		{
 			$bodyWithoutQuotes = $this->removeQuotedStrings($body, false);
-			if (self::isFoundInString($bodyWithoutQuotes, $this->searches))
+			$search = $this->findInArray($bodyWithoutQuotes, $this->searches);
+			if ($search !== null)
 			{
-				return true;
+				return $this->searches[$search];
 			}
 		}
 
@@ -228,12 +234,13 @@ class CSecurityXSSDetect
 	 */
 	protected function getFilteredScriptBody($body)
 	{
-		if($this->isDangerBody($body))
+		if($var = $this->isDangerBody($body))
 		{
-//                if($this->mIsLogNeeded)
-//			      {
-//                    $this->logVariable($var_name, $value, $str);
-//                }
+			if($this->doLog)
+			{
+				$this->logVariable($var["name"], $var["value"], $str);
+			}
+
 			if($this->action !== "none")
 			{
 				$body = self::SCRIPT_MARK;
@@ -280,6 +287,8 @@ class CSecurityXSSDetect
 		if(preg_match("/^(?P<quot>[\"']?)[^`,;+\-*\/\{\}\[\]\(\)&\\|=\\\\]*(?P=quot)\$/D", $value))
 			return; //there is no potantially dangerous code
 		if(preg_match("/^[,0-9_-]*\$/D", $value))
+			return; //there is no potantially dangerous code
+		if(preg_match("/^[0-9 \n\r\t\\[\\]]*\$/D", $value))
 			return; //there is no potantially dangerous code
 
 		$this->variables->addVariable($name, str_replace(chr(0), "", $value));

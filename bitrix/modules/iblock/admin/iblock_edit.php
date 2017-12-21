@@ -251,14 +251,6 @@ function GetPropertyInfo($strPrefix, $ID, $boolUnpack = true, $arHiddenPropField
 				$arResult['SMART_FILTER'] = ('Y' == $arResult['SMART_FILTER'] ? 'Y' : 'N');
 				$arResult['DISPLAY_TYPE'] = substr($arResult['DISPLAY_TYPE'], 0, 1);
 				$arResult['DISPLAY_EXPANDED'] = ('Y' == $arResult['DISPLAY_EXPANDED'] ? 'Y' : 'N');
-				$arResult['FILTER_HINT'] = trim($arResult['FILTER_HINT']);
-				if ($arResult['FILTER_HINT'])
-				{
-					$TextParser = new CBXSanitizer();
-					$TextParser->SetLevel(CBXSanitizer::SECURE_LEVEL_LOW);
-					$TextParser->ApplyHtmlSpecChars(false);
-					$arResult['FILTER_HINT'] = $TextParser->SanitizeHtml($arResult['FILTER_HINT']);
-				}
 				$arResult['MULTIPLE_CNT'] = intval($arResult['MULTIPLE_CNT']);
 				if (0 >= $arResult['MULTIPLE_CNT'])
 					$arResult['MULTIPLE_CNT'] = $arDefPropInfo['MULTIPLE_CNT'];
@@ -352,7 +344,7 @@ function __AddPropCellName($intOFPropID,$strPrefix,$arPropInfo)
 {
 	ob_start();
 	?><input type="text" size="25" maxlength="255" name="<?echo $strPrefix.$intOFPropID?>_NAME" id="<?echo $strPrefix.$intOFPropID?>_NAME" value="<?echo $arPropInfo['NAME']?>"><?
-	?><input type="hidden" name="<? echo $strPrefix.$intOFPropID?>_PROPINFO" id="<? echo $strPrefix.$intOFPropID?>_PROPINFO" value="<? echo $arPropInfo['PROPINFO']; ?>"><?
+	?><input type="hidden" name="<? echo $strPrefix.$intOFPropID?>_PROPINFO" id="<? echo $strPrefix.$intOFPropID?>_PROPINFO" value="<?=htmlspecialcharsbx($arPropInfo['PROPINFO']); ?>"><?
 	$strResult = ob_get_contents();
 	ob_end_clean();
 	return $strResult;
@@ -360,7 +352,11 @@ function __AddPropCellName($intOFPropID,$strPrefix,$arPropInfo)
 
 function __AddPropCellType($intOFPropID,$strPrefix,$arPropInfo)
 {
+	static $baseTypeList = null;
 	static $arUserTypeList = null;
+	
+	if ($baseTypeList === null)
+		$baseTypeList = Iblock\Helpers\Admin\Property::getBaseTypeList(true);
 	if ($arUserTypeList === null)
 	{
 		$arUserTypeList = CIBlockProperty::GetUserType();
@@ -373,14 +369,13 @@ function __AddPropCellType($intOFPropID,$strPrefix,$arPropInfo)
 	{
 		?><optgroup label="<? echo GetMessage('IB_E_PROP_BASE_TYPE_GROUP'); ?>"><?
 	}
-	?>
-	<option value="S" <?if($arPropInfo['PROPERTY_TYPE']=="S" && !$arPropInfo['USER_TYPE'])echo " selected"?>><?echo GetMessage("IB_E_PROP_TYPE_S")?></option>
-	<option value="N" <?if($arPropInfo['PROPERTY_TYPE']=="N" && !$arPropInfo['USER_TYPE'])echo " selected"?>><?echo GetMessage("IB_E_PROP_TYPE_N")?></option>
-	<option value="L" <?if($arPropInfo['PROPERTY_TYPE']=="L" && !$arPropInfo['USER_TYPE'])echo " selected"?>><?echo GetMessage("IB_E_PROP_TYPE_L")?></option>
-	<option value="F" <?if($arPropInfo['PROPERTY_TYPE']=="F" && !$arPropInfo['USER_TYPE'])echo " selected"?>><?echo GetMessage("IB_E_PROP_TYPE_F")?></option>
-	<option value="G" <?if($arPropInfo['PROPERTY_TYPE']=="G" && !$arPropInfo['USER_TYPE'])echo " selected"?>><?echo GetMessage("IB_E_PROP_TYPE_G")?></option>
-	<option value="E" <?if($arPropInfo['PROPERTY_TYPE']=="E" && !$arPropInfo['USER_TYPE'])echo " selected"?>><?echo GetMessage("IB_E_PROP_TYPE_E")?></option>
-	<?
+	foreach ($baseTypeList as $typeId => $typeTitle)
+	{
+		?><option value="<?=$typeId; ?>" <?=($arPropInfo['PROPERTY_TYPE'] == $typeId && !$arPropInfo['USER_TYPE'] ? ' selected' : '');?>><?=htmlspecialcharsbx($typeTitle); ?></option><?
+	}
+	unset($typeTitle);
+	unset($typeId);
+
 	if ($boolUserPropExist)
 	{
 		?></optgroup><optgroup label="<? echo GetMessage('IB_E_PROP_USER_TYPE_GROUP'); ?>"><?
@@ -405,8 +400,8 @@ function __AddPropCellActive($intOFPropID,$strPrefix,$arPropInfo)
 {
 	ob_start();
 	?><input type="hidden" name="<?echo $strPrefix.$intOFPropID?>_ACTIVE" id="<?echo $strPrefix.$intOFPropID?>_ACTIVE_N" value="N">
-	<input type="checkbox" name="<?echo $strPrefix.$intOFPropID?>_ACTIVE" id="<?echo $strPrefix.$intOFPropID?>_ACTIVE_Y" value="Y"<?if ($arPropInfo['ACTIVE']=="Y") echo " checked"; ?>>
-	<?
+	<input type="checkbox" name="<?echo $strPrefix.$intOFPropID?>_ACTIVE" id="<?echo $strPrefix.$intOFPropID?>_ACTIVE_Y" value="Y"<?
+	if ($arPropInfo['ACTIVE']=="Y") echo " checked"; ?> title="<?=htmlspecialcharsbx(GetMessage("IB_E_PROP_ACTIVE_SHORT")); ?>"><?
 	$strResult = ob_get_contents();
 	ob_end_clean();
 	return $strResult;
@@ -416,7 +411,8 @@ function __AddPropCellMulti($intOFPropID,$strPrefix,$arPropInfo)
 {
 	ob_start();
 	?><input type="hidden" name="<?echo $strPrefix.$intOFPropID?>_MULTIPLE" id="<?echo $strPrefix.$intOFPropID?>_MULTIPLE_N" value="N">
-	<input type="checkbox" name="<?echo $strPrefix.$intOFPropID?>_MULTIPLE" id="<?echo $strPrefix.$intOFPropID?>_MULTIPLE_Y" value="Y"<?if($arPropInfo['MULTIPLE']=="Y")echo " checked"?>>
+	<input type="checkbox" name="<?echo $strPrefix.$intOFPropID?>_MULTIPLE" id="<?echo $strPrefix.$intOFPropID?>_MULTIPLE_Y" value="Y"<?
+	if($arPropInfo['MULTIPLE']=="Y")echo " checked"?> title="<?=htmlspecialcharsbx(GetMessage("IB_E_PROP_MULT_SHORT")); ?>">
 	<?
 	$strResult = ob_get_contents();
 	ob_end_clean();
@@ -427,7 +423,8 @@ function __AddPropCellReq($intOFPropID,$strPrefix,$arPropInfo)
 {
 	ob_start();
 	?><input type="hidden" name="<?echo $strPrefix.$intOFPropID?>_IS_REQUIRED" id="<?echo $strPrefix.$intOFPropID?>_IS_REQUIRED_N" value="N">
-	<input type="checkbox" name="<?echo $strPrefix.$intOFPropID?>_IS_REQUIRED" id="<?echo $strPrefix.$intOFPropID?>_IS_REQUIRED_Y" value="Y"<?if($arPropInfo['IS_REQUIRED']=="Y")echo " checked"?>><?
+	<input type="checkbox" name="<?echo $strPrefix.$intOFPropID?>_IS_REQUIRED" id="<?echo $strPrefix.$intOFPropID?>_IS_REQUIRED_Y" value="Y"<?
+	if($arPropInfo['IS_REQUIRED']=="Y")echo " checked"?> title="<?=htmlspecialcharsbx(GetMessage("IB_E_PROP_REQIRED_SHORT")); ?>"><?
 	$strResult = ob_get_contents();
 	ob_end_clean();
 	return $strResult;
@@ -537,7 +534,7 @@ if(
 		"INDEX_ELEMENT"=>$INDEX_ELEMENT,
 		"IBLOCK_TYPE_ID"=>$type,
 		"LID"=>$LID,
-		"SORT"=>$SORT,
+		"SORT"=>$_POST['SORT'],
 		"PICTURE"=>$arPICTURE,
 		"DESCRIPTION"=>$DESCRIPTION,
 		"DESCRIPTION_TYPE"=>$DESCRIPTION_TYPE,
@@ -4477,7 +4474,7 @@ if ($bCatalog)
 			*/
 			?>
 			<div id="offers_add_info" style="display: <? echo (CATALOG_NEW_OFFERS_IBLOCK_NEED == $str_OF_IBLOCK_ID ? 'display' : 'none'); ?>; width: 100%; text-align: center;"><table style="margin: auto;"><tbody>
-			<tr><td style="text-align: right; width: 25%;" class="field-name"><? echo GetMessage('IB_E_OF_PR_TITLE'); ?>:</td><td style="text-align: left; width: 75%;"><input type="text" name="OF_IBLOCK_NAME" value="<? echo $str_OF_IBLOCK_NAME;?>" style="width: 100%;" /></td></tr>
+			<tr><td style="text-align: right; width: 25%;" class="field-name"><? echo GetMessage('IB_E_OF_PR_TITLE'); ?>:</td><td style="text-align: left; width: 75%;"><input type="text" name="OF_IBLOCK_NAME" value="<?=htmlspecialcharsbx($str_OF_IBLOCK_NAME);?>" style="width: 100%;" /></td></tr>
 			<tr><td style="text-align: left; width: 100%;" colspan="2" class="field-name"><input type="radio" value="N" id="OF_CREATE_IBLOCK_TYPE_ID_N" name="OF_CREATE_IBLOCK_TYPE_ID" <? echo ('N' == $str_OF_CREATE_IBLOCK_TYPE_ID ? 'checked="checked"' : '')?> onclick="change_offers_ibtype(this);"><label for="CREATE_OFFERS_TYPE_N"><? echo GetMessage('IB_E_OF_PR_OLD_IBTYPE');?></label></td></tr>
 			<tr><td style="text-align: right; width: 25%;" class="field-name"><? echo GetMessage('IB_E_OF_PR_OFFERS_TYPE'); ?>:</td><td style="text-align: left; width: 75%;"><? echo SelectBoxFromArray('OF_IBLOCK_TYPE_ID',array('REFERENCE' => $arIBlockTypeNameList,'REFERENCE_ID' => $arIBlockTypeIDList),$str_OF_IBLOCK_TYPE_ID,'',('N' == $str_OF_CREATE_IBLOCK_TYPE_ID ? '' : 'disabled="disabled"')); ?></td></tr>
 			<tr><td style="text-align: left; width: 100%;" colspan="2" class="field-name"><input type="radio" value="Y" id="OF_CREATE_IBLOCK_TYPE_ID_Y" name="OF_CREATE_IBLOCK_TYPE_ID" <? echo ('Y' == $str_OF_CREATE_IBLOCK_TYPE_ID ? 'checked="checked"' : '')?> onclick="change_offers_ibtype(this);"><label for="CREATE_OFFERS_TYPE_Y"><? echo GetMessage('IB_E_OF_PR_OFFERS_NEW_IBTYPE');?></label></td></tr>

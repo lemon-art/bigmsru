@@ -253,21 +253,21 @@ $oFilter = new CAdminFilter(
 <tr>
 	<td><? echo "ID" ?>:</td>
 	<td>
-		<input type="text" name="find_id_start" size="10" value="<?echo htmlspecialcharsex($find_id_start)?>">
+		<input type="text" name="find_id_start" size="10" value="<?=htmlspecialcharsbx($find_id_start); ?>">
 			...
-		<input type="text" name="find_id_end" size="10" value="<?echo htmlspecialcharsex($find_id_end)?>">
+		<input type="text" name="find_id_end" size="10" value="<?=htmlspecialcharsbx($find_id_end); ?>">
 	</td>
 </tr>
 <tr>
 	<td><? echo GetMessage("EXTRA_NAME")?>:</td>
-	<td><input type="text" name="find_name" size="47" value="<?echo htmlspecialcharsbx($find_name)?>"></td>
+	<td><input type="text" name="find_name" size="47" value="<?=htmlspecialcharsbx($find_name); ?>"></td>
 </tr>
 <tr>
 	<td><? echo GetMessage("EXTRA_PERCENTAGE")?>:</td>
 	<td>
-		<input type="text" name="find_perc_start" value="<?echo htmlspecialcharsex($find_perc_start)?>" size="15">
+		<input type="text" name="find_perc_start" value="<?=htmlspecialcharsbx($find_perc_start); ?>" size="15">
 			...
-		<input type="text" name="find_perc_end" value="<?echo htmlspecialcharsex($find_perc_end)?>" size="15">
+		<input type="text" name="find_perc_end" value="<?=htmlspecialcharsbx($find_perc_end); ?>" size="15">
 	</td>
 </tr>
 <?

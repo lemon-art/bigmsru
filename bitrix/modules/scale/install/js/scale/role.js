@@ -19,6 +19,7 @@
 		this.showMenu = true;
 		this.showMenuClose = false;
 		this.type = null;
+		this.state = null;
 		this.color = BX.Scale.rolesList[this.id].COLOR || "invisible";
 		this.noActions = false;
 
@@ -43,6 +44,9 @@
 
 			if(params.noActions && params.noActions === true)
 				this.noActions = true;
+
+			if(params.state)
+				this.state = params.state;
 		}
 
 		if(this.showLoadBar)
@@ -106,15 +110,37 @@
 			if(BX.Scale.rolesList[this.id])
 			{
 				var role = BX.Scale.rolesList[this.id],
-					type = this.type || "notype";
+					type = this.type || "notype",
+					actionId;
 
 				if(role.ROLE_ACTIONS && role.ROLE_ACTIONS[type])
 				{
-					for(var actionId in role.ROLE_ACTIONS[type])
+					for(actionId in role.ROLE_ACTIONS[type])
 					{
+						if(!role.ROLE_ACTIONS[type].hasOwnProperty(actionId))
+							continue;
+
 						if(!result[role.ROLE_ACTIONS[type][actionId]] && BX.Scale.actionsCollection.getObject(role.ROLE_ACTIONS[type][actionId]))
 						{
 							result[role.ROLE_ACTIONS[type][actionId]] = true;
+						}
+					}
+				}
+
+				
+				if(this.state && role.STATE_ACTIONS && role.STATE_ACTIONS[this.state])
+				{
+					for(actionId in role.STATE_ACTIONS[this.state])
+					{
+						if(!role.STATE_ACTIONS[this.state].hasOwnProperty(actionId))
+							continue;
+
+						if(this.id == 'mysql' && this.type == 'master' && role.STATE_ACTIONS[this.state][actionId] == 'MYSQL_STOP')
+							continue;
+
+						if(!result[role.STATE_ACTIONS[this.state][actionId]] && BX.Scale.actionsCollection.getObject(role.STATE_ACTIONS[this.state][actionId]))
+						{
+							result[role.STATE_ACTIONS[this.state][actionId]] = true;
 						}
 					}
 				}
@@ -176,6 +202,18 @@
 				BX.addClass(name, "adm-scale-item-name");
 				name.innerHTML = BX.Scale.rolesList[this.id].NAME;
 				item.appendChild(name);
+
+				if(this.state)
+				{
+					item.appendChild(
+						BX.create(
+							"span",
+							{
+								html: this.state,
+								props:{
+									className:'adm-scale-item-role-state'
+					}}));
+				}
 
 				if(this.showMenu === true && this.actionsIds)
 				{

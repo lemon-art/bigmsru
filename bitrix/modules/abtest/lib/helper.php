@@ -124,7 +124,8 @@ class Helper
 		{
 			$activeTest = Helper::getActiveTest();
 
-			if ($USER->canDoOperation('view_other_settings') && !empty($_SESSION['ABTEST_MODE']))
+			$isAbtestAdmin = is_object($USER) && $USER->canDoOperation('view_other_settings');
+			if ($isAbtestAdmin && !empty($_SESSION['ABTEST_MODE']))
 			{
 				if ($_SESSION['ABTEST_MODE'] == 'reset')
 				{

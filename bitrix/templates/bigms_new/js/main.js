@@ -9,11 +9,13 @@ $(document).ready(function() {
   mainOwl.owlCarousel({
     items: 1,
     autoplayHoverPause: true,
-    dotsContainer: '.slider-nav',
+    //dotsContainer: '.slider-nav',
     autoplay: true,
+
+	animateOut: 'fadeOut',
     autoplayTimeout: 5000,
     autoplayHoverPause: true,
-    loop: false,
+    loop: true,
   });
   $('.slider-nav__item').click(function () {
     mainOwl.trigger('to.owl.carousel', [$(this).index(), 300]);

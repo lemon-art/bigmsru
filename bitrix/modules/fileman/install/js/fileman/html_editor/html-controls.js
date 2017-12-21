@@ -354,6 +354,13 @@ function __run()
 				left = pos.left - this.pValuesCont.offsetWidth / 2 + this.pCont.offsetWidth / 2 + this.posOffset.left,
 				top = pos.bottom + this.posOffset.top;
 
+			if (left < 0)
+			{
+				var corner = this.pValuesCont.getElementsByClassName("bxhtmled-popup-corner")[0];
+				corner.style.transform = "translateX(" + left + "px)";
+				left = 0;
+			}
+
 			BX.bind(window, "keydown", BX.proxy(this.OnKeyDown, this));
 			BX.addClass(this.pCont, this.activeClassName);
 			pOverlay.onclick = function(){_this.Close()};
@@ -3775,8 +3782,7 @@ function __run()
 			}
 		}
 
-		this.pSrc.value = params.src || '';
-
+		this.pSrc.value = this.editor.util.spaceUrlDecode(params.src || '');
 		if (this.pTitle)
 			this.pTitle.value = params.title || '';
 
@@ -4210,7 +4216,6 @@ function __run()
 		}
 
 		var
-			_this = this,
 			r,
 			cont = BX.create('DIV');
 
@@ -4471,7 +4476,8 @@ function __run()
 		else
 		{
 			// 1. Detect type
-			var href = values.href || '';
+
+			var href = this.editor.util.spaceUrlDecode(values.href || '');
 
 			if (this.editor.bbCode)
 			{
@@ -4933,6 +4939,11 @@ function __run()
 		BX.bind(this.pSource, 'mouseup', BX.delegate(this.VideoSourceChanged, this));
 		BX.bind(this.pSource, 'keyup', BX.delegate(this.VideoSourceChanged, this));
 
+		this.pErrorRow = pTableWrap.insertRow(-1);
+		this.pErrorRow.style.display = 'none';
+		c = BX.adjust(this.pErrorRow.insertCell(-1), {props:{className: 'bxhtmled-video-error-cell'}, attrs: {colSpan: 2}});
+		this.pError = c.appendChild(BX.create('SPAN', {props: {className: 'bxhtmled-video-error'}}));
+
 		r = pTableWrap.insertRow(-1);
 		c = BX.adjust(r.insertCell(-1), {props:{className: 'bxhtmled-video-params-wrap'}, attrs: {colSpan: 2}});
 		var pParTbl = c.appendChild(BX.create('TABLE', {props: {className: 'bxhtmled-dialog-tbl bxhtmled-video-dialog-tbl'}}));
@@ -5021,7 +5032,7 @@ function __run()
 						_this.StopWaiting();
 						if (res.error !== '')
 						{
-							_this.ShowVideoParams(false);
+							_this.ShowVideoParams(false, res.error);
 						}
 					}
 				}
@@ -5070,13 +5081,20 @@ function __run()
 		}
 	};
 
-	VideoDialog.prototype.ShowVideoParams = function(data)
+	VideoDialog.prototype.ShowVideoParams = function(data, error)
 	{
 		this.data = data || {};
+		this.pErrorRow.style.display = 'none';
 		BX.removeClass(this.pCont, 'bxhtmled-video-local');
 		if (data === false || typeof data != 'object')
 		{
 			BX.addClass(this.pCont, 'bxhtmled-video-empty');
+
+			if (error)
+			{
+				this.pErrorRow.style.display = '';
+				this.pError.innerHTML = BX.util.htmlspecialchars(error);
+			}
 		}
 		else if (data.local && !this.bEdit)
 		{

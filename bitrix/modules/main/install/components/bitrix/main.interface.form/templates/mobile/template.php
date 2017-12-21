@@ -224,21 +224,27 @@ array_unshift($tab["fields"], array(
 							switch($field["type"])
 							{
 								case 'custom':
-									$className = "custom";
+								case 'label':
+									//html allowed
+									$className = $field["type"];
 									$html = $val;
-								break;
+									break;
+								case 'label':
+									$className = "label";
+									$html = $val;
+									break;
 								case 'text':
 									$placeholder = htmlspecialcharsbx($field["placeholder"] ?: $field["name"]);
 									$val = htmlspecialcharsbx($val);
 									$className = "text";
 									if ($arParams["RESTRICTED_MODE"])
 									{
-										$html = "<input type='hidden' data-bx-type='text' placeholder=\"{$placeholder}\" name=\"{$field["id"]}\" id=\"{$field["~id"]}\" $params value=\"$val\" />".
-										"<span id=\"{$field["~id"]}_target\" class=\"text\">".($val==""?"<span class='placeholder'>".$placeholder."</span>" : $val)."</span>";
+										$html = "<input type=\"hidden\" data-bx-type=\"text\" placeholder=\"{$placeholder}\" name=\"{$field["id"]}\" id=\"{$field["~id"]}\" $params value=\"$val\" />".
+										"<span id=\"{$field["~id"]}_target\" class=\"text\">".($val==""?"<span class=\"placeholder\">".$placeholder."</span>" : $val)."</span>";
 									}
 									else
 									{
-										$html = "<input class='mobile-grid-data-text' type='text' placeholder=\"{$placeholder}\" name=\"{$field["id"]}\" id=\"{$field["~id"]}\" $params value=\"$val\" />";
+										$html = "<input class=\"mobile-grid-data-text\" type=\"text\" placeholder=\"{$placeholder}\" name=\"{$field["id"]}\" id=\"{$field["~id"]}\" $params value=\"$val\" />";
 									}
 									$jsObjects[] = $field["~id"];
 									break;
@@ -246,8 +252,8 @@ array_unshift($tab["fields"], array(
 									$className = "number";
 									$valFrom = $field["item"]["from"];
 									$valTo = $field["item"]["to"];
-									$html = "<input type='text' class='mobile-grid-data-text' name='".$field["id"]."_from' id=\"{$field["~id"]}\" value='".htmlspecialcharsbx($valFrom)."' style='border-bottom: 1px solid #dee0e3;' placeholder='".GetMessage('interface_form_from')."'>
-											<input type='text' class='mobile-grid-data-text' name='".$field["id"]."_to' value='".htmlspecialcharsbx($valTo)."' placeholder='".GetMessage('interface_form_to')."'>";
+									$html = "<input type=\"text\" class=\"mobile-grid-data-text\" name=\"".$field["id"]."_from\" id=\"{$field["~id"]}\" value=\"".htmlspecialcharsbx($valFrom)."\" style=\"border-bottom: 1px solid #dee0e3;\" placeholder=\"".GetMessage("interface_form_from")."\">
+											<input type=\"text\" class=\"mobile-grid-data-text\" name=\"".$field["id"]."_to\" value=\"".htmlspecialcharsbx($valTo)."\" placeholder=\"".GetMessage("interface_form_to")."\">";
 									break;
 								case 'textarea':
 									$placeholder = htmlspecialcharsbx($field["placeholder"] ?: $field["name"]);
@@ -526,7 +532,17 @@ array_unshift($tab["fields"], array(
 									$val = (is_array($val) ? $val : array($val));
 									$uploadedFile =  preg_replace("/[\n\t]+/", "", $uploadedFile);
 									ob_start();
-									?><div id="file-placeholder-<?=$field["~id"]?>"><?
+									?><input type="hidden" <?
+										?>name="<?=$field["id"]?>" <?
+										?>value="0" <?
+										?>id="<?=$field["~id"]?>" <?
+										?>data-bx-type="<?=$field["type"]?>" <?
+										?>data-bx-extension="<?=$field["ext"]?>" <?
+										?>data-bx-url="<?=$field["url"]?>" <?
+										?>data-bx-name="<?=$field["id"]?>" <?
+										?>data-bx-max="<?=$field["maxCount"]?>" <?
+									?> /><?
+								?><div id="file-placeholder-<?=$field["~id"]?>"><?
 									foreach ($val as $f)
 									{
 										$f = (is_array($f) ? $f : CFile::GetFileArray($f));
@@ -554,19 +570,9 @@ array_unshift($tab["fields"], array(
 										}
 									}
 									?></div>
-									<?if (!$arParams["RESTRICTED_MODE"]):?>
 									<div class="mobile-grid-button file" id="file-eventnode-<?=$field["~id"]?>"><?
 											?><?=($field["maxCount"] != 1 ? GetMessage("interface_form_add") : GetMessage("interface_form_change"))?><?
 										?><input class="mobile-grid-button-file" type="file" id="<?=$field["~id"]?>_file" size="1" <?if ($field["maxCount"] != 1){?>multiple="multiple" <?}?>/></div>
-									<input type="hidden" <?
-										?>id="<?=$field["~id"]?>" <?
-										?>data-bx-type="<?=$field["type"]?>" <?
-										?>data-bx-extension="<?=$field["ext"]?>" <?
-										?>data-bx-url="<?=$field["url"]?>" <?
-										?>data-bx-name="<?=$field["id"]?>" <?
-										?>data-bx-max="<?=$field["maxCount"]?>" <?
-									?> />
-									<?endif?>
 								<?
 									$html = ob_get_clean();
 									$jsObjects[] = $field["~id"];
@@ -591,8 +597,8 @@ array_unshift($tab["fields"], array(
 									$jsObjects[] = $field["~id"];
 									break;
 								default:
-									$className = "label";
-									$html = $val;
+									$className = "text";
+									$html = htmlspecialcharsbx($val);
 								break;
 							}
 							if ($html === '')

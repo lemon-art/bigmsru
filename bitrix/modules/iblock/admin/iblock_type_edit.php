@@ -33,7 +33,7 @@ $aTabs[] = array(
 $tabControl = new CAdminTabControl("tabControl", $aTabs);
 
 $bVarsFromForm = false;
-if($REQUEST_METHOD=="POST" && strlen($Update)>0 && check_bitrix_sessid())
+if($_SERVER["REQUEST_METHOD"] == "POST" && strlen($Update)>0 && check_bitrix_sessid())
 {
 	$arFields = Array();
 	if(strlen($ID)<=0)
@@ -42,7 +42,7 @@ if($REQUEST_METHOD=="POST" && strlen($Update)>0 && check_bitrix_sessid())
 	$arFields["EDIT_FILE_AFTER"] = $EDIT_FILE_AFTER;
 	$arFields["IN_RSS"] = $IN_RSS;
 	$arFields["SECTIONS"] = $SECTIONS;
-	$arFields["SORT"] = $SORT;
+	$arFields["SORT"] = $_POST['SORT'];
 	$arFields["LANG"] = Array();
 	foreach($arIBTLang as $ar)
 		$arFields["LANG"][$ar["LID"]] = $LANG_FIELDS[$ar["LID"]];

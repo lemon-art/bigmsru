@@ -192,7 +192,7 @@ elseif ($action == 'show_list')
 		{
 			$arFilter['CLOSED'] = 'N';
 		}
-		
+
 		if ($arFilterParams['colors'] != 'all')
 			$arFilter['COLORS'] = $arFilterParams['colors'];
 	}
@@ -237,7 +237,7 @@ elseif ($action == 'show_list')
 		CSticker::SetFilterParams($arFilterParams);
 	}
 
-	
+
 	// Get stickers list
 	$dbStickers = CSticker::GetList(
 		array(
@@ -270,7 +270,7 @@ elseif ($action == 'show_list')
 	$count = intVal($dbStickers->SelectedRowsCount());
 
 	$arPages = CSticker::GetPagesList($_REQUEST['site_id']);
-	
+
 	$bReadonly = !CSticker::CanDoOperation('sticker_edit');
 ?>
 
@@ -307,7 +307,7 @@ elseif ($action == 'show_list')
 				<td>
 					<div class="bxstl-fil-cont">
 						<select id="bxstl_fil_page_sel"  style="width: 200px;">
-							<option value="<?= $curPage?>"> <?= GetMessage('FMST_LIST_CURRENT')?> </option>
+							<option value="<?= htmlspecialcharsbx($curPage)?>"> <?= GetMessage('FMST_LIST_CURRENT')?> </option>
 							<option value="all"> <?= GetMessage('FMST_LIST_ALL_PAGES')?> </option>
 							<? for ($i = 0, $l = count($arPages); $i < $l; $i++):
 								if ($arPages[$i]['PAGE_URL'] == $curPage)
@@ -340,7 +340,7 @@ elseif ($action == 'show_list')
 			<? while($arRes = $dbStickers->Fetch()): ?>
 			<?
 			$arRes['PAGE_URL'] = str_replace('%20', ' ', $arRes['PAGE_URL']);
-			$html = CSticker::BBParseToHTML($arRes['CONTENT'], true);
+			$html = strip_tags($arRes['CONTENT']);
 			$colorClass = isset($colorSchemes[$arRes['COLOR']]) ? $colorSchemes[$arRes['COLOR']] : $colorSchemes[0];
 			$date = CSticker::GetUsableDate($arRes['DATE_UPDATE2']);
 			$url = $arRes['PAGE_URL']."?show_sticker=".intVal($arRes['ID']);

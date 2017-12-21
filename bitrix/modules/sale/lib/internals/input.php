@@ -2,9 +2,12 @@
 
 namespace Bitrix\Sale\Internals\Input;
 
+use Bitrix\Main\Event;
 use	Bitrix\Main\EventManager,
 	Bitrix\Main\SystemException,
 	Bitrix\Main\Localization\Loc;
+use Bitrix\Main\EventResult;
+use Bitrix\Sale\ResultError;
 
 Loc::loadMessages(__FILE__);
 
@@ -257,8 +260,26 @@ class Manager
 	{
 		static::$initialized = true;
 
-		foreach (EventManager::getInstance()->findEventHandlers('sale', 'registerInputTypes') as $handler)
-			ExecuteModuleEventEx($handler); // TODO modern api
+		/** @var Event $event */
+		$event = new Event('sale', 'registerInputTypes', static::$types);
+		$event->send();
+
+		if ($event->getResults())
+		{
+			foreach($event->getResults() as $eventResult)
+			{
+				if ($eventResult->getType() != EventResult::SUCCESS)
+					continue;
+
+				if ($params = $eventResult->getParameters())
+				{
+					if(!empty($params) && is_array($params))
+					{
+						static::$types = array_merge(static::$types, $params);
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -301,7 +322,7 @@ abstract class Base
 	{
 		if (static::isMultiple($value))
 		{
-			return array_filter($value); // TODO maybe??
+			return array_diff($value, array("", NULL, false));
 		}
 		else
 		{
@@ -648,7 +669,7 @@ class StringInput extends Base // String reserved in php 7
 		{
 			$attributes = static::extractAttributes($input,
 				array('DISABLED'=>'', 'READONLY'=>'', 'AUTOFOCUS'=>'', 'REQUIRED'=>'', 'AUTOCOMPLETE'=>'on'),
-				array('FORM'=>1, 'MAXLENGTH'=>1, 'PLACEHOLDER'=>1, 'DIRNAME'=>1, 'SIZE'=>1, 'LIST'=>1, 'PATTERN'=>1));
+				array('FORM'=>1, 'MAXLENGTH'=>1, 'PLACEHOLDER'=>1, 'DIRNAME'=>1, 'SIZE'=>1, 'LIST'=>1));
 
 			return '<input type="text" name="'.$name.'" value="'.htmlspecialcharsbx($value).'"'.$attributes.'>';
 		}
@@ -994,7 +1015,7 @@ class Enum extends Base
 				? str_replace(
 					array('{GROUP}', '{OPTIONS}'),
 					array(
-						htmlspecialcharsbx($key),
+						htmlspecialcharsEx($key),
 						self::getEditOptionsHtml($value, $selected, $selector, $group, $option),
 					),
 					$group
@@ -1002,9 +1023,9 @@ class Enum extends Base
 				: str_replace(
 					array('{VALUE}', '{SELECTED}', '{TEXT}'),
 					array(
-						htmlspecialcharsbx($key),
+						htmlspecialcharsEx($key),
 						isset($selected[$key]) ? $selector : '',
-						htmlspecialcharsbx($value) ?: htmlspecialcharsbx($key),
+						htmlspecialcharsEx($value) ?: htmlspecialcharsEx($key),
 					),
 					$option
 				);
@@ -1198,7 +1219,14 @@ class File extends Base
 		{
 			$attributes = ' href="'.htmlspecialcharsbx($src).'" title="'.htmlspecialcharsbx(Loc::getMessage('INPUT_FILE_DOWNLOAD')).'"';
 
-			$content = \CFile::IsImage($src, $value['CONTENT_TYPE']) && $value['FILE_SIZE'] < 100000
+			if (\CFile::IsImage($src, $value['CONTENT_TYPE']) && $value['FILE_SIZE'] > 100000)
+			{
+				$previewImage = \CFile::ResizeImageGet($value['ID'], array(200,200), BX_RESIZE_IMAGE_PROPORTIONAL);
+				if (is_array($previewImage))
+					$src = $previewImage['src'];
+			}
+
+			$content = \CFile::IsImage($value['SRC'], $value['CONTENT_TYPE'])
 				? '<img src="'.$src.'" border="0" alt="" style="max-height:100px; max-width:100px">'
 				: $value['ORIGINAL_NAME'];
 		}
@@ -1486,8 +1514,8 @@ class Location extends Base
 
 		if ($onChange = $input['ONCHANGE'])
 		{
-			$functionName = $selector.'OnLocationChange';
-			$html .= "<script>function $functionName (this){ $onChange }</script>";
+			$functionName = 'OnLocationChange'.$selector;
+			$html .= "<script>function $functionName (){ $onChange }; BX.proxy($functionName, this);</script>";
 			$input['JS_CALLBACK'] = $functionName;
 		}
 		else
@@ -1502,7 +1530,12 @@ class Location extends Base
 
 			$index = -1;
 
-			foreach (static::asMultiple($value) as $value)
+			$values = static::asMultiple($value);
+			if (empty($value))
+			{
+				$values = array(null);
+			}
+			foreach ($values as $value)
 				$html .= $startTag
 					.static::getEditHtmlSingle($name.'['.(++$index).']', $input, $value)
 					.$endTag;

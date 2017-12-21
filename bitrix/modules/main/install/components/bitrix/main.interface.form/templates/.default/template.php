@@ -141,6 +141,9 @@ if($field["type"] == 'section'):
 <?
 else:
 	$val = (isset($field["value"])? $field["value"] : $arParams["~DATA"][$field["id"]]);
+	$valEncoded = '';
+	if(!is_array($val))
+		$valEncoded = htmlspecialcharsbx(htmlspecialcharsback($val));
 
 	//default attributes
 	if(!is_array($field["params"]))
@@ -193,7 +196,7 @@ else:
 			break;
 		case 'textarea':
 ?>
-<textarea name="<?=$field["id"]?>"<?=$params?>><?=$val?></textarea>
+<textarea name="<?=$field["id"]?>"<?=$params?>><?=$valEncoded?></textarea>
 <?
 			break;
 		case 'list':
@@ -245,7 +248,7 @@ else:
 			break;
 		default:
 ?>
-<input type="text" name="<?=$field["id"]?>" value="<?=$val?>"<?=$params?>>
+<input type="text" name="<?=$field["id"]?>" value="<?=$valEncoded?>"<?=$params?>>
 <?
 			break;
 	endswitch;

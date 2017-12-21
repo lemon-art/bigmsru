@@ -50,19 +50,19 @@ $currentUser = $engine->getCurrentUser();
 $bNeedAuth = !is_array($currentUser);
 
 //get string of campaign CURRENCY name
-//todo: del debug - after update socialservices to 17.0.0 delete this statement
-$socservissesVersion = Main\ModuleManager::getVersion('socialservices');
-$socservissesVersion = explode('.',$socservissesVersion);
-$socservissesVersion = $socservissesVersion[0];
-if(!$bNeedAuth && $socservissesVersion >= 17)
+try
 {
 	$clientsSettings = $engine->getClientsSettings();
 	$clientCurrency = current($clientsSettings);
 	$clientCurrency = ', '.Loc::getMessage('SEO_YANDEX_CURRENCY__'.$clientCurrency['Currency']);
 }
-else
+catch(Engine\YandexDirectException $e)
 {
-	$clientCurrency = '';
+	$seoproxyAuthError = new CAdminMessage(array(
+		"TYPE" => "ERROR",
+		"MESSAGE" => Loc::getMessage('SEO_YANDEX_SEOPROXY_AUTH_ERROR'),
+		"DETAILS" => $e->getMessage(),
+	));
 }
 
 
@@ -444,7 +444,7 @@ else
 			"ONCLICK" => "updateCampaign(this)",
 			"TITLE" => GetMessage("SEO_CAMPAIGN_LIST_UPDATE_TITLE")
 		),
-		 array(
+		array(
 			"ICON" => "btn_archive",
 			"TEXT" => GetMessage("SEO_LIST_INACTIVE"),
 			"LINK" => "seo_search_yandex_direct.php?lang=".LANGUAGE_ID."&archive=1",
@@ -517,6 +517,9 @@ function updateCampaign(btn, campaignId)
 </script>
 <?
 require_once("tab/seo_search_yandex_direct_auth.php");
+
+if(isset($seoproxyAuthError))
+	echo $seoproxyAuthError->Show();
 
 $adminList->DisplayList();
 

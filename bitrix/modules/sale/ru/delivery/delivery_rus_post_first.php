@@ -50,6 +50,7 @@ class CDeliveryRusPostFirst
 			'DESCRIPTION_INNER' => GetMessage('SALE_DH_RPF_DESCR').' <a href="http://www.russianpost.ru/rp/servise/ru/home/postuslug/1class">http://www.russianpost.ru/rp/servise/ru/home/postuslug/1class</a>',
 			'BASE_CURRENCY' => 'RUB',
 			'HANDLER' => __FILE__,
+			
 			/* Handler methods */
 			'DBGETSETTINGS' => array('CDeliveryRusPostFirst', 'GetSettings'),
 			'DBSETSETTINGS' => array('CDeliveryRusPostFirst', 'SetSettings'),
@@ -57,6 +58,8 @@ class CDeliveryRusPostFirst
 			'GETFEATURES' => array('CDeliveryRusPostFirst', 'GetFeatures'),
 			'COMPABILITY' => array('CDeliveryRusPostFirst', 'Compability'),
 			'CALCULATOR' => array('CDeliveryRusPostFirst', 'Calculate'),
+			'DEPRECATED' => 'Y',
+			"GET_ADMIN_MESSAGE" => array("CDeliveryRUSSIANPOST", "getAdminMessage"),
 			"TRACKING_CLASS_NAME" => '\Bitrix\Sale\Delivery\Tracking\RusPost',
 
 			/* List of delivery profiles */
@@ -423,6 +426,21 @@ class CDeliveryRusPostFirst
 		}
 
 		return isset($data[$regionLangName]) ? $data[$regionLangName] : "";
+	}
+
+	public function getAdminMessage()
+	{
+		return array(
+			'MESSAGE' => GetMessage(
+				'SALE_DH_RPF_DEPRECATED_MESSAGE',
+				array(
+					'#A1#' => '<a href="/bitrix/admin/sale_delivery_service_edit.php?lang='.LANGUAGE_ID.'&PARENT_ID=0&CLASS_NAME=%5CSale%5CHandlers%5CDelivery%5CAdditionalHandler&SERVICE_TYPE=RUSPOST">',
+					'#A2#' => '</a>'
+				)
+			),
+			"TYPE" => "ERROR",
+			"HTML" => true
+		);
 	}
 }
 

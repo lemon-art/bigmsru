@@ -198,7 +198,7 @@ if ($arSelectFieldsMap['NAME_LID'])
 	while ($arPriceLang = $rsPriceLangs->Fetch())
 	{
 		$arLangList[$arPriceLang['LID']] = true;
-		$arLangDefList[$arPriceLang['LID']] = str_replace('#LANG#', htmlspecialcharsex($arPriceLang['NAME']), GetMessage('BT_CAT_GROUP_ADM_LANG_MESS'));
+		$arLangDefList[$arPriceLang['LID']] = str_replace('#LANG#', htmlspecialcharsbx($arPriceLang['NAME']), GetMessage('BT_CAT_GROUP_ADM_LANG_MESS'));
 	}
 	unset($arPriceLang, $rsPriceLangs);
 	unset($order1, $by1);
@@ -259,7 +259,7 @@ while ($arRes = $dbResultList->Fetch())
 	else
 	{
 		if ($arSelectFieldsMap['NAME'])
-			$row->AddViewField("NAME", '<a href="/bitrix/admin/cat_group_edit.php?lang='.LANGUAGE_ID.'&ID='.$arRes["ID"].'&'.GetFilterParams("filter_").'">'.htmlspecialcharsex($arRes['NAME']).'</a>');
+			$row->AddViewField("NAME", '<a href="/bitrix/admin/cat_group_edit.php?lang='.LANGUAGE_ID.'&ID='.$arRes["ID"].'&'.GetFilterParams("filter_").'">'.htmlspecialcharsbx($arRes['NAME']).'</a>');
 		if ($arSelectFieldsMap['SORT'])
 			$row->AddInputField('SORT', false);
 		if ($arSelectFieldsMap['XML_ID'])
@@ -308,7 +308,7 @@ if ($arSelectFieldsMap['NAME_LID'])
 			$arLang['CATALOG_GROUP_ID'] = (int)$arLang['CATALOG_GROUP_ID'];
 			if (isset($arLangList[$arLang['LID']]))
 			{
-				$arLangResult[$arLang['CATALOG_GROUP_ID']][$arLang['LID']] = str_replace('#VALUE#', htmlspecialcharsex($arLang["NAME"]), $arLangResult[$arLang['CATALOG_GROUP_ID']][$arLang['LID']]);
+				$arLangResult[$arLang['CATALOG_GROUP_ID']][$arLang['LID']] = str_replace('#VALUE#', htmlspecialcharsbx($arLang["NAME"]), $arLangResult[$arLang['CATALOG_GROUP_ID']][$arLang['LID']]);
 			}
 		}
 

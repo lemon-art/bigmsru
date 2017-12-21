@@ -5,7 +5,8 @@
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/currency/prolog.php");
 $CURRENCY_RIGHT = $APPLICATION->GetGroupRight("currency");
-if ($CURRENCY_RIGHT=="D") $APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
+if ($CURRENCY_RIGHT=="D")
+	$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
 CModule::IncludeModule('currency');
 IncludeModuleLangFile(__FILE__);
 
@@ -13,7 +14,7 @@ $errorMessage = array();
 
 $ID = '';
 if (isset($_REQUEST['ID']))
-	$ID = (string)$_REQUEST['ID'];
+	$ID = trim((string)$_REQUEST['ID']);
 
 $aTabs = array(
 	array("DIV" => "edit1", "TAB" => GetMessage("currency_curr"), "ICON"=>"", "TITLE"=>GetMessage("currency_curr_settings")),
@@ -64,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $CURRENCY_RIGHT=="W" && !empty($_POS
 	}
 	$strAction = ($ID ? 'UPDATE' : 'ADD');
 	$langSettings = array();
-	foreach ($langID as &$oneLang)
+	foreach ($langID as $oneLang)
 	{
 		if (isset($_POST['LANG_'.$oneLang]))
 			$langSettings[$oneLang] = $_POST['LANG_'.$oneLang];
@@ -142,13 +143,13 @@ if ($ID != '')
 		$by = 'currency';
 		$order = 'asc';
 		$langIterator = CCurrencyLang::GetList($by, $order, $ID);
-		while ($lang = $langIterator->Fetch())
+		while ($language = $langIterator->Fetch())
 		{
-			$lang['THOUSANDS_SEP'] = (string)$lang['THOUSANDS_SEP'];
-			$lang['THOUSANDS_VARIANT'] = (string)$lang['THOUSANDS_VARIANT'];
-			$currencyLangs[$lang['LID']] = $lang;
+			$language['THOUSANDS_SEP'] = (string)$language['THOUSANDS_SEP'];
+			$language['THOUSANDS_VARIANT'] = (string)$language['THOUSANDS_VARIANT'];
+			$currencyLangs[$language['LID']] = $language;
 		}
-		unset($lang, $langIterator, $order, $by);
+		unset($language, $langIterator, $order, $by);
 	}
 }
 
@@ -233,7 +234,7 @@ function setThousandsVariant(lang)
 <form method="post" action="<?$APPLICATION->GetCurPage()?>" name="form1">
 <? echo bitrix_sessid_post(); ?>
 <?echo GetFilterHiddens("filter_");?>
-<input type="hidden" name="ID" value="<?echo $ID?>">
+<input type="hidden" name="ID" value="<?=htmlspecialcharsbx($ID); ?>">
 <input type="hidden" name="Update" value="Y">
 <input type="hidden" name="from" value="<?echo htmlspecialcharsbx($from)?>">
 <input type="hidden" name="BASE" value="<?echo htmlspecialcharsbx($currency['BASE']); ?>">
@@ -251,7 +252,7 @@ $tabControl->Begin();?>
 		<?if (!$ID):?>
 			<input type="text" value="<?echo htmlspecialcharsbx($currency['CURRENCY']);?>" size="3" name="CURRENCY" maxlength="3">
 		<?else:?>
-			<?=$ID; ?>
+			<?=htmlspecialcharsbx($ID); ?>
 		<? endif?>
 		</td>
 	</tr>
@@ -284,18 +285,20 @@ $tabControl->Begin();?>
 		</td>
 	</tr>
 <?$tabControl->BeginNextTab();
-	foreach ($currencyLangs as $lang => $settings)
+	foreach ($currencyLangs as $languageId => $settings)
 	{
-		?><tr class="heading"><td colspan="2"><?=htmlspecialcharsbx($langList[$lang]); ?></td></tr>
+		$fieldPrefix = 'LANG_'.htmlspecialcharsbx($languageId);
+		$scriptLanguageId = CUtil::JSEscape(htmlspecialcharsbx($languageId));
+		?><tr class="heading"><td colspan="2"><?=htmlspecialcharsbx($langList[$languageId]); ?></td></tr>
 		<tr>
 			<td width="40%"><?echo GetMessage("CURRENCY_FULL_NAME")?>:</td>
-			<td width="60%"><input title="<?echo GetMessage("CURRENCY_FULL_NAME_DESC")?>" type="text" maxlength="50" size="15" name="LANG_<? echo $lang; ?>[FULL_NAME]" value="<?=htmlspecialcharsbx($settings['FULL_NAME']);?>"></td>
+			<td width="60%"><input title="<?=htmlspecialcharsbx(GetMessage("CURRENCY_FULL_NAME_DESC")); ?>" type="text" maxlength="50" size="15" name="<?=$fieldPrefix; ?>[FULL_NAME]" value="<?=htmlspecialcharsbx($settings['FULL_NAME']);?>"></td>
 		</tr>
 		<tr>
 			<td width="40%"><?echo GetMessage("CURRENCY_FORMAT_TEMPLATE")?>:</td>
 			<td width="60%">
-				<select name="format_<? echo $lang; ?>" onchange="setTemplate('<? echo $lang; ?>')">
-					<option value="">-<?echo GetMessage("CURRENCY_SELECT_TEMPLATE")?>-</option>
+				<select name="format_<?=htmlspecialcharsbx($languageId); ?>" onchange="setTemplate('<?=$scriptLanguageId; ?>')">
+					<option value="">-<?=htmlspecialcharsbx(GetMessage("CURRENCY_SELECT_TEMPLATE")); ?>-</option>
 					<?foreach ($arTemplates as $key => $ar):?>
 						<option value="<?=htmlspecialcharsbx($key); ?>"><?=htmlspecialcharsbx($ar["TEXT"]); ?></option>
 					<?endforeach?>
@@ -304,16 +307,16 @@ $tabControl->Begin();?>
 		</tr>
 		<tr class="adm-detail-required-field">
 			<td width="40%"><?echo GetMessage("CURRENCY_FORMAT_DESC")?>:</td>
-			<td width="60%"><input title="<?echo GetMessage("CURRENCY_FORMAT_DESC")?>" type="text" maxlength="50" size="10" name="LANG_<? echo $lang; ?>[FORMAT_STRING]" value="<?=htmlspecialcharsbx($settings['FORMAT_STRING']); ?>"></td>
+			<td width="60%"><input title="<?=htmlspecialcharsbx(GetMessage("CURRENCY_FORMAT_DESC")); ?>" type="text" maxlength="50" size="10" name="<?=$fieldPrefix; ?>[FORMAT_STRING]" value="<?=htmlspecialcharsbx($settings['FORMAT_STRING']); ?>"></td>
 		</tr>
 		<tr>
 			<td width="40%"><?echo GetMessage("CURRENCY_DEC_POINT_DESC")?>:</td>
-			<td width="60%"><input title="<?echo GetMessage("CURRENCY_DEC_POINT_DESC")?>" type="text" maxlength="5" size="5" name="LANG_<? echo $lang; ?>[DEC_POINT]" value="<?=htmlspecialcharsbx($settings['DEC_POINT']); ?>"></td>
+			<td width="60%"><input title="<?=htmlspecialcharsbx(GetMessage("CURRENCY_DEC_POINT_DESC")); ?>" type="text" maxlength="5" size="5" name="<?=$fieldPrefix; ?>[DEC_POINT]" value="<?=htmlspecialcharsbx($settings['DEC_POINT']); ?>"></td>
 		</tr>
 		<tr>
 			<td width="40%"><?echo GetMessage("THOU_SEP_DESC")?>:</td>
 			<td width="60%">
-				<select name="LANG_<? echo $lang; ?>[THOUSANDS_VARIANT]" onchange="setThousandsVariant('<? echo $lang; ?>')">
+				<select name="<?=$fieldPrefix; ?>[THOUSANDS_VARIANT]" onchange="setThousandsVariant('<?=$scriptLanguageId; ?>')">
 				<?
 				foreach ($separatorList as $separatorID => $separatorTitle)
 				{
@@ -323,23 +326,24 @@ $tabControl->Begin();?>
 				}
 				unset($separatorID, $separatorTitle);
 				?>
-				<option value=""<? echo ($settings['THOUSANDS_SEP'] !== '' ? ' selected' : '');?>><?=GetMessage("CURRENCY_THOUSANDS_VARIANT_O")?></option>
+				<option value=""<? echo ($settings['THOUSANDS_SEP'] !== '' ? ' selected' : '');?>><?=htmlspecialcharsbx(GetMessage("CURRENCY_THOUSANDS_VARIANT_O")); ?></option>
 				</select>
-				<input title="<?echo GetMessage("THOU_SEP_DESC")?>" type="text" maxlength="5" size="5" name="LANG_<? echo $lang; ?>[THOUSANDS_SEP]" value="<?=htmlspecialcharsbx($settings['THOUSANDS_SEP']);?>">
+				<input title="<?=htmlspecialcharsbx(GetMessage("THOU_SEP_DESC")); ?>" type="text" maxlength="5" size="5" name="<?=$fieldPrefix; ?>[THOUSANDS_SEP]" value="<?=htmlspecialcharsbx($settings['THOUSANDS_SEP']);?>">
 			</td>
 		</tr>
 		<tr>
 			<td width="40%"><?echo GetMessage("DECIMALS_DESC")?>: <span class="required" style="vertical-align: super; font-size: smaller;">2</span></td>
-			<td width="60%"><input title="<?echo GetMessage("DECIMALS_DESC")?>" type="text" maxlength="5" size="5" name="LANG_<? echo $lang; ?>[DECIMALS]" value="<?=htmlspecialcharsbx($settings['DECIMALS']);?>"></td>
+			<td width="60%"><input title="<?=htmlspecialcharsbx(GetMessage("DECIMALS_DESC")); ?>" type="text" maxlength="5" size="5" name="<?=$fieldPrefix; ?>[DECIMALS]" value="<?=htmlspecialcharsbx($settings['DECIMALS']);?>"></td>
 		</tr>
 		<tr>
 			<td width="40%"><? echo GetMessage('HIDE_ZERO_DECIMALS'); ?>: <span class="required" style="vertical-align: super; font-size: smaller;">3</span></td>
 			<td width="60%">
-				<input type="hidden" name="LANG_<? echo $lang; ?>[HIDE_ZERO]" value="N">
-				<input type="checkbox" name="LANG_<? echo $lang; ?>[HIDE_ZERO]" value="Y" <? echo ($settings['HIDE_ZERO'] == 'Y' ? 'checked' : ''); ?>>
+				<input type="hidden" name="<?=$fieldPrefix; ?>[HIDE_ZERO]" value="N">
+				<input type="checkbox" name="<?=$fieldPrefix; ?>[HIDE_ZERO]" value="Y" <? echo ($settings['HIDE_ZERO'] == 'Y' ? 'checked' : ''); ?>>
 			</td>
 		</tr>
 		<?
+		unset($scriptLanguageId, $fieldPrefix);
 	}
 $tabControl->EndTab();
 $tabControl->Buttons(array("disabled" => $CURRENCY_RIGHT < "W", "back_url" =>"/bitrix/admin/currencies.php?lang=".LANGUAGE_ID));
@@ -362,13 +366,13 @@ echo EndNote();
 <script type="text/javascript">
 BX.ready(function(){
 <?
-foreach ($langID as &$lang)
+foreach ($langID as $index)
 {
-	?>setThousandsVariant('<? echo $lang; ?>');
+	?>setThousandsVariant('<?=CUtil::JSEscape(htmlspecialcharsbx($index)); ?>');
 	<?
 }
-unset($lang);
+unset($index);
 ?>
 });
 </script>
-<?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");?>
+<?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");

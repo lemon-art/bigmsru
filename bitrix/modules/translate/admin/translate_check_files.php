@@ -33,17 +33,17 @@ $IS_LANG_DIR = is_lang_dir($path);
 if (!$IS_LANG_DIR)
 	$strError = GetMessage('TR_NO_LANG_DIR');
 
+$aTabs = array(
+	array("DIV" => "edit1", "TAB" => GetMessage("TRANS_TITLE"), "ICON" => "translate_edit", "TITLE" => GetMessage("TRANS_TITLE_TITLE")),
+);
+$tabControl = new CAdminTabControl("tabControl", $aTabs);
+
+$chain = "";
+$arPath = array();
+
 if($strError == "")
 {
-
-	$aTabs = array(
-		array("DIV" => "edit1", "TAB" => GetMessage("TRANS_TITLE"), "ICON" => "translate_edit", "TITLE" => GetMessage("TRANS_TITLE_TITLE")),
-	);
-	$tabControl = new CAdminTabControl("tabControl", $aTabs);
-
 	//a way to get back
-	$chain = "";
-	$arPath = array();
 	$arSlash = explode("/",$path);
 	if (is_array($arSlash))
 	{
@@ -61,13 +61,14 @@ if($strError == "")
 			$i++;
 			if ($i==1)
 			{
-				$chain .= "<a href=\"translate_list.php?lang=".LANGUAGE_ID."&path=/"."&".bitrix_sessid_get()."\" title=\"".GetMessage("TRANS_CHAIN_FOLDER_ROOT")."\">..</a> / ";
+				$chain .= '/ ';
 			}
 			else
 			{
 				$arPath[] = htmlspecialcharsbx($dir);
-				if ($i>2) $chain .= " / ";
-				$chain .= "<a href=\"translate_list.php?lang=".LANGUAGE_ID."&path="."/".implode("/",$arPath)."/"."&".bitrix_sessid_get()."\" title=\"".GetMessage("TRANS_CHAIN_FOLDER")."\">".htmlspecialcharsbx($dir)."</a>";
+				if ($i>2)
+					$chain .= " / ";
+				$chain .= '<a href="translate_list.php?lang='.LANGUAGE_ID."&path="."/".implode('/',$arPath)."/".'" title="'.GetMessage("TRANS_CHAIN_FOLDER").'">'.htmlspecialcharsbx($dir).'</a>';
 			}
 		}
 	}
@@ -100,7 +101,7 @@ $aMenu = array();
 
 $aMenu[] = Array(
 	"TEXT"	=> GetMessage("TRANS_LIST"),
-	"LINK"	=> "/bitrix/admin/translate_list.php?lang=".LANGUAGE_ID."&path=/".implode("/",$arPath)."/"."&".bitrix_sessid_get(),
+	"LINK"	=> "/bitrix/admin/translate_list.php?lang=".LANGUAGE_ID."&path=/".implode("/",$arPath)."/",
 	"TITLE"	=> GetMessage("TRANS_LIST_TITLE"),
 	"ICON"	=> "btn_list"
 	);
@@ -113,7 +114,7 @@ $context->Show();
 
 $_corrupt = false;
 $_strMess = '';
-foreach ($arDirFiles as  $_file)
+foreach ($arDirFiles as $_file)
 {
 	$_content = $APPLICATION->GetFileContent(CSite::GetSiteDocRoot(false).$_file);
 	$_len = strlen($_content);

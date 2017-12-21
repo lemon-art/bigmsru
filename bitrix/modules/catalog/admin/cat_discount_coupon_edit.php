@@ -217,7 +217,7 @@ $tabControl->BeginNextFormTab();
 			<td width="60%"><?
 				if (isset($arDiscountList[$arCoupon['DISCOUNT_ID']]))
 				{
-					echo htmlspecialcharsex($arDiscountList[$arCoupon['DISCOUNT_ID']]);
+					echo htmlspecialcharsbx($arDiscountList[$arCoupon['DISCOUNT_ID']]);
 				}
 			?></td>
 			</tr><?

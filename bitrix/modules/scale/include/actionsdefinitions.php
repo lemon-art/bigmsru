@@ -45,8 +45,7 @@ $actionsDefinitions = array(
 		"ACTIONS" => array(
 			"GET_CURRENT_KEY",
 			"COPY_KEY_TO_SERVER",
-			"ADD_SERVER",
-			"MONITORING_UPDATE"
+			"ADD_SERVER"
 		),
 		"PAGE_REFRESH" => "Y"
 	),
@@ -95,7 +94,6 @@ $actionsDefinitions = array(
 		"NAME" => Loc::getMessage("SCALE_ADEF_CREATE_PULL"),
 		"PAGE_REFRESH" => "Y"
 	),
-
 
 	"DEL_SERVER" => array(
 		"START_COMMAND_TEMPLATE" => "sudo -u root /opt/webdir/bin/wrapper_ansible_conf -a del -H ##SERVER_PARAMS:hostname## -i ##SERVER_PARAMS:ip## -o json",
@@ -204,6 +202,36 @@ $actionsDefinitions = array(
 		)
 	),
 
+	"MYSQL_STOP" => array(
+		"START_COMMAND_TEMPLATE" => "sudo -u root /opt/webdir/bin/bx-mysql -a stop_service -s ##SERVER_PARAMS:hostname## -o json",
+		"NAME" => Loc::getMessage("SCALE_ADEF_SERVICE_STOP"),
+		"ASYNC" => "Y",
+		"PAGE_REFRESH" => "Y"
+	),
+
+	"MYSQL_START" => array(
+		"START_COMMAND_TEMPLATE" => "sudo -u root /opt/webdir/bin/bx-mysql -a start_service -s ##SERVER_PARAMS:hostname## -o json",
+		"NAME" => Loc::getMessage("SCALE_ADEF_SERVICE_START"),
+		"ASYNC" => "Y",
+		"PAGE_REFRESH" => "Y"
+	),
+
+	"MYSQL_CHANGE_PASS" => array(
+		"START_COMMAND_TEMPLATE" => "sudo -u root /opt/webdir/bin/bx-mysql -a change_password -s ##SERVER_PARAMS:hostname## --password_file ##USER_PARAMS:NEW_PASSWD## -o json",
+		"NAME" => Loc::getMessage("SCALE_ADEF_CHANGE_PASS"),
+		"ASYNC" => "Y",
+		"PAGE_REFRESH" => "Y",
+		"USER_PARAMS" => array(
+			"NEW_PASSWD" => array(
+				"NAME" => Loc::getMessage("SCALE_ADEF_CHPASS_UP_NEW_PASS"),
+				"TYPE" => "PASSWORD",
+				"REQUIRED" => "Y",
+				"THROUGH_FILE" => "Y",
+				"VERIFY_TWICE" => "Y"
+			)
+		)
+	),
+
 	"MEMCACHED_ADD_ROLE" => array(
 		"START_COMMAND_TEMPLATE" => "sudo -u root /opt/webdir/bin/bx-mc -o json -a create -s ##SERVER_PARAMS:hostname##",
 		"NAME" => Loc::getMessage("SCALE_ADEF_MEMCACHED_ADD_ROLE"),
@@ -222,13 +250,18 @@ $actionsDefinitions = array(
 		"START_COMMAND_TEMPLATE" => "sudo -u root /opt/webdir/bin/bx-sites -o json -a email".
 			" --smtphost=##USER_PARAMS:SMTP_HOST##".
 			" --smtpport=##USER_PARAMS:SMTP_PORT##".
-			" --smtpuser='##USER_PARAMS:SMTP_USER##'".
 			" --email='##USER_PARAMS:EMAIL##'".
 			" --site='##USER_PARAMS:SITE_NAME_CONF##'".
 			" ##USER_PARAMS:SMTPTLS##".
-			" --password=##USER_PARAMS:USER_PASSWORD## ",
+			"--8<--AUTH_BEGIN----".  //--- cut in modifier if don't need authentication (USE_AUTH != 'Y')---
+			" --password=##USER_PARAMS:USER_PASSWORD## ".
+			" --smtpuser='##USER_PARAMS:SMTP_USER##'".
+			"----AUTH_END--8<--", //----8<-------------------------------------
 		"NAME" => Loc::getMessage("SCALE_ADEF_SET_EMAIL"),
 		"PAGE_REFRESH" => "Y",
+		"MODIFYERS" => array(
+			"\\Bitrix\\Scale\\ActionModifyer::emailSettingsModifier",
+		),
 		"USER_PARAMS" => array(
 			"SITE_NAME" => array(
 				"NAME" => Loc::getMessage("SCALE_ADEF_SET_EMAIL_SITE"),
@@ -246,15 +279,6 @@ $actionsDefinitions = array(
 				"NAME" => Loc::getMessage("SCALE_ADEF_SET_EMAIL_SMTP_PORT"),
 				"TYPE" => "STRING"
 			),
-			"SMTP_USER" => array(
-				"NAME" => Loc::getMessage("SCALE_ADEF_SET_EMAIL_SMTP_USER"),
-				"TYPE" => "STRING",
-			),
-			"USER_PASSWORD" => array(
-				"NAME" => Loc::getMessage("SCALE_ADEF_SET_EMAIL_USER_PASSWORD"),
-				"TYPE" => "PASSWORD",
-				"VERIFY_TWICE" => "Y"
-			),
 			"EMAIL" => array(
 				"NAME" => Loc::getMessage("SCALE_ADEF_SET_EMAIL_EMAIL"),
 				"TYPE" => "STRING",
@@ -264,6 +288,21 @@ $actionsDefinitions = array(
 				"TYPE" => "CHECKBOX",
 				"CHECKED" => "N",
 				"STRING" => "--smtptls"
+			),
+			"USE_AUTH" => array(
+				"NAME" => Loc::getMessage("SCALE_ADEF_SET_EMAIL_USE_AUTH"),
+				"TYPE" => "CHECKBOX",
+				"CHECKED" => "N",
+				"STRING" => "Y"
+			),
+			"SMTP_USER" => array(
+				"NAME" => Loc::getMessage("SCALE_ADEF_SET_EMAIL_SMTP_USER"),
+				"TYPE" => "STRING",
+			),
+			"USER_PASSWORD" => array(
+				"NAME" => Loc::getMessage("SCALE_ADEF_SET_EMAIL_USER_PASSWORD"),
+				"TYPE" => "PASSWORD",
+				"VERIFY_TWICE" => "Y"
 			)
 		)
 	),
@@ -312,6 +351,20 @@ $actionsDefinitions = array(
 		"NAME" => Loc::getMessage("SCALE_ADEF_BVM_UPDATE")
 	),
 
+	"UPDATE_SYSTEM" => array(
+		"START_COMMAND_TEMPLATE" => "sudo -u root /opt/webdir/bin/wrapper_ansible_conf -a bx_upgrade -H ##SERVER_PARAMS:hostname## -o json",
+		"ASYNC" => "Y",
+		"PAGE_REFRESH" => "Y",
+		"NAME" => Loc::getMessage("SCALE_ADEF_SYSTEM_UPDATE")
+	),
+
+	"UPDATE_ALL_SYSTEMS" => array(
+		"START_COMMAND_TEMPLATE" => "sudo -u root /opt/webdir/bin/wrapper_ansible_conf -a bx_upgrade -o json",
+		"ASYNC" => "Y",
+		"PAGE_REFRESH" => "Y",
+		"NAME" => Loc::getMessage("SCALE_ADEF_SYSTEM_UPDATE_ALL")
+	),
+
 	"CHANGE_PASSWD_BITRIX" => array(
 		"START_COMMAND_TEMPLATE" => "sudo -u root /opt/webdir/bin/wrapper_ansible_conf -a bx_passwd -u bitrix -H ##SERVER_PARAMS:hostname## -P ##USER_PARAMS:NEW_PASSWD## -o json",
 		"NAME" => Loc::getMessage("SCALE_ADEF_CHANGE_PASSWD_BITRIX"),
@@ -325,28 +378,69 @@ $actionsDefinitions = array(
 		)
 	),
 
-	"SITE_ADD" => array(
-		"NAME" => Loc::getMessage("SCALE_ADEF_SITE_ADD"),
+	"SITE_CREATE_LINK" => array(
+		"NAME" => Loc::getMessage('SCALE_ADEF_SITE_CREATE_LINK'),
 		"START_COMMAND_TEMPLATE" => "sudo -u root /opt/webdir/bin/bx-sites".
 			" -o json".
 			" -a create".
 			" -s ##USER_PARAMS:SITE_NAME##".
 			" -t link".
-			" --kernel_site ##CODE_PARAMS:KERNEL_SITE##".
-			" --kernel_root ##CODE_PARAMS:KERNEL_ROOT##".
-/*			" -d ##USER_PARAMS:DB_NAME##".
-			" -u ##USER_PARAMS:DB_USERNAME##".
-			" -p ##USER_PARAMS:DB_USERPASS##".*/
+			" --kernel_site ##USER_PARAMS:KERNEL_SITE##".
+			" --kernel_root ##MODIFYER:KERNEL_ROOT##".
 			" -r ##USER_PARAMS:SITE_PATH##",
 		"ASYNC" => "Y",
 		"PAGE_REFRESH" => "Y",
 		"USER_PARAMS" => array(
 			"SITE_NAME" => array(
-				"NAME" => Loc::getMessage("SCALE_ADEF_SITE_ADD_NAME"),
+				"NAME" => Loc::getMessage("SCALE_ADEF_SITE_ID"),
+				"PATTERN" => "[a-zA-Z0-9\\.\\-_]",
+				"TITLE" => Loc::getMessage('SCALE_ADEF_SITE_TITLE'),
 				"TYPE" => "STRING",
 				"REQUIRED" => "Y"
 			),
-/*			"DB_NAME" => array(
+			"SITE_PATH" => array(
+				"NAME" => Loc::getMessage("SCALE_ADEF_SITE_ADD_SITE_PATH"),
+				"TYPE" => "STRING"
+			),
+			"KERNEL_SITE" => array(
+				"NAME" => Loc::getMessage('SCALE_ADEF_SITE_ADD_SITE_KERNEL'),
+				"TYPE" => "DROPDOWN",
+				"VALUES" => \Bitrix\Scale\SitesData::getKernelsList()
+			)
+		),
+		"MODIFYERS" => array(
+			"\\Bitrix\\Scale\\ActionModifyer::siteCreateLinkModifier"
+		)
+	),
+
+	"SITE_CREATE_KERNEL" => array(
+		"NAME" => Loc::getMessage('SCALE_ADEF_SITE_CREATE_KERNEL'),
+		"START_COMMAND_TEMPLATE" => "sudo -u root /opt/webdir/bin/bx-sites".
+			" -o json".
+			" -a create".
+			" -s ##USER_PARAMS:SITE_NAME##".
+			" -t ##USER_PARAMS:TYPE##".
+			" -d ##USER_PARAMS:DB_NAME##".
+			" -u ##USER_PARAMS:DB_USERNAME##".
+			" -p ##USER_PARAMS:DB_USERPASS##".
+			" -r ##USER_PARAMS:SITE_PATH##".
+			" --charset ##USER_PARAMS:CHARSET##",
+		"ASYNC" => "Y",
+		"PAGE_REFRESH" => "Y",
+		"USER_PARAMS" => array(
+			"SITE_NAME" => array(
+				"NAME" => Loc::getMessage("SCALE_ADEF_SITE_ID"),
+				"PATTERN" => "[a-zA-Z0-9\\.\\-_]",
+				"TITLE" => Loc::getMessage('SCALE_ADEF_SITE_TITLE'),
+				"TYPE" => "STRING",
+				"REQUIRED" => "Y"
+			),
+			"TYPE" => array(
+				"NAME" => Loc::getMessage('SCALE_ADEF_SITE_TYPE'),
+				"TYPE" => "DROPDOWN",
+				"VALUES" => array('kernel' => 'kernel', 'ext_kernel' => 'ext_kernel')
+			),
+			"DB_NAME" => array(
 				"NAME" => Loc::getMessage("SCALE_ADEF_SITE_ADD_DB_NAME"),
 				"TYPE" => "STRING"
 			),
@@ -357,16 +451,16 @@ $actionsDefinitions = array(
 			"DB_USERPASS" => array(
 				"NAME" => Loc::getMessage("SCALE_ADEF_SITE_ADD_DB_USERPASS"),
 				"TYPE" => "PASSWORD",
-				"VERIFY_TWICE" => "Y"
-			),*/
+			),
 			"SITE_PATH" => array(
 				"NAME" => Loc::getMessage("SCALE_ADEF_SITE_ADD_SITE_PATH"),
 				"TYPE" => "STRING"
+			),
+			"CHARSET" => array(
+				"NAME" => Loc::getMessage('SCALE_ADEF_SITE_CHARSET'),
+				"TYPE" => "DROPDOWN",
+				"VALUES" => array('utf-8' => 'utf-8', 'windows-1251' => 'windows-1251')
 			)
-		),
-		"CODE_PARAMS" => array(
-			"KERNEL_ROOT" => 'return \Bitrix\Scale\SitesData::getKernelRoot();',
-			"KERNEL_SITE" => 'return \Bitrix\Scale\SitesData::getKernelSite();',
 		)
 	),
 
@@ -379,14 +473,14 @@ $actionsDefinitions = array(
 
 	"APACHE_ADD_ROLE" => array(
 		"NAME" => Loc::getMessage("SCALE_ADEF_APACHE_ADD_ROLE"),
-		"START_COMMAND_TEMPLATE" => "sudo -u root /opt/webdir/bin/bx-sites -H ##SERVER_PARAMS:hostname## -a web --enable  -o json",
+		"START_COMMAND_TEMPLATE" => "sudo -u root /opt/webdir/bin/bx-sites -H ##SERVER_PARAMS:hostname## -a create_web -o json",
 		"ASYNC" => "Y",
 		"PAGE_REFRESH" => "Y"
 	),
 
 	"APACHE_DEL_ROLE" => array(
 		"NAME" => Loc::getMessage("SCALE_ADEF_APACHE_DEL_ROLE"),
-		"START_COMMAND_TEMPLATE" => "sudo -u root /opt/webdir/bin/bx-sites -H ##SERVER_PARAMS:hostname## -a web --disable  -o json",
+		"START_COMMAND_TEMPLATE" => "sudo -u root /opt/webdir/bin/bx-sites -H ##SERVER_PARAMS:hostname## -a delete_web  -o json",
 		"ASYNC" => "Y",
 		"PAGE_REFRESH" => "Y"
 	),
@@ -430,6 +524,75 @@ $actionsDefinitions = array(
 				"VALUES" => \Bitrix\Scale\Helper::getNetworkInterfaces()
 			)
 		)
+	),
+
+	"CERTIFICATE_LETS_ENCRYPT_CONF" => array(
+		"START_COMMAND_TEMPLATE" => "sudo -u root /opt/webdir/bin/bx-sites -a configure_le --site \"##USER_PARAMS:SITE_NAME_CONF##\" --email \"##USER_PARAMS:EMAIL##\" --dns \"##USER_PARAMS:DNS##\" -o json",
+		"NAME" => Loc::getMessage("SCALE_ADEF_CERTIFICATE_LETS_ENCRYPT_CONF"),
+		"PAGE_REFRESH" => "Y",
+		"ASYNC" => "Y",
+		"USER_PARAMS" => array(
+			"SITE_NAME_CONF" => array(
+				"NAME" => Loc::getMessage("SCALE_ADEF_SET_EMAIL_SITE_NAME_CONF"),
+				"TYPE" => "TEXT"
+			),
+			"EMAIL" => array(
+				"NAME" => Loc::getMessage("SCALE_ADEF_CERTIFICATE_LETS_ENCRYPT_CONF_EMAIL"),
+				"TYPE" => "STRING",
+			),
+			"DNS" => array(
+				"NAME" => Loc::getMessage("SCALE_ADEF_CERTIFICATE_LETS_ENCRYPT_CONF_DNS"),
+				"TYPE" => "STRING",
+			),
+		)
+	),
+	
+	"CERTIFICATE_SELF_CONF" => array(
+		"START_COMMAND_TEMPLATE" => "sudo -u root /opt/webdir/bin/bx-sites -a configure_cert --site \"##USER_PARAMS:SITE_NAME_CONF##\" --private_key \"##USER_PARAMS:PRIVATE_KEY_PATH##\" --certificate \"##USER_PARAMS:CERTIFICATE_PATH##\" --certificate_chain \"##USER_PARAMS:CERTIFICATE_CHAIN_PATH##\" -o json",
+		"NAME" => Loc::getMessage('SCALE_ADEF_CERTIFICATE_SELF_CONF'),
+		"PAGE_REFRESH" => "Y",
+		"ASYNC" => "Y",
+		"USER_PARAMS" => array(
+			"SITE_NAME_CONF" => array(
+				"NAME" => Loc::getMessage("SCALE_ADEF_SET_EMAIL_SITE_NAME_CONF"),
+				"TYPE" => "TEXT"
+			),
+			"PRIVATE_KEY_PATH" => array(
+				"NAME" => Loc::getMessage("SCALE_ADEF_CERTIFICATE_SELF_CONF_PRIVATE_KEY_PATH"),
+				"TYPE" => "REMOTE_AND_LOCAL_PATH"
+			),
+			"CERTIFICATE_PATH" => array(
+				"NAME" => Loc::getMessage("SCALE_ADEF_CERTIFICATE_SELF_CONF_CERT_PATH"),
+				"TYPE" => "REMOTE_AND_LOCAL_PATH",
+			),
+			"CERTIFICATE_CHAIN_PATH" => array(
+				"NAME" => Loc::getMessage("SCALE_ADEF_CERTIFICATE_SELF_CONF_CERT_CHAIN_PATH"),
+				"TYPE" => "REMOTE_AND_LOCAL_PATH",
+			)
+		)
+	),
+
+	"PUSH_ADD_ROLE" => array(
+		"NAME" => Loc::getMessage("SCALE_ADEF_PUSH_ADD_ROLE"),
+		"START_COMMAND_TEMPLATE" => "sudo -u root /opt/webdir/bin/bx-sites -H ##SERVER_PARAMS:hostname## -a push_configure_nodejs  -o json",
+		"ASYNC" => "Y",
+		"PAGE_REFRESH" => "Y"
+	),
+
+	"PUSH_DEL_ROLE" => array(
+		"NAME" => Loc::getMessage("SCALE_ADEF_PUSH_DEL_ROLE"),
+		"START_COMMAND_TEMPLATE" => "sudo -u root /opt/webdir/bin/bx-sites -H ##SERVER_PARAMS:hostname## -a push_remove_nodjs  -o json",
+		"ASYNC" => "Y",
+		"PAGE_REFRESH" => "Y"
+	),
+
+	//Fake actions for actions menu items on admin panel BX.Scale.AdminFrame.actionsMenuOpen()
+	"CERTIFICATES" => array(
+		"NAME" => Loc::getMessage("SCALE_ADEF_CERTIFICATE_SELF_CONF_CERT")
+	),
+
+	"SITE_CREATE" => array(
+		"NAME" => Loc::getMessage("SCALE_ADEF_SITE_CREATE")
 	)
 );
 ?>

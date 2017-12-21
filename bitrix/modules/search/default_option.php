@@ -1,7 +1,7 @@
 <?
 $search_default_option = array(
 	"include_mask" => "*.php;*.html;*.htm",
-	"exclude_mask" => "/bitrix/*;/404.php;/upload/*;*/.hg/*;*/.svn/*;*/.git/*;*/cgi-bin/*",
+	"exclude_mask" => "/bitrix/*;/404.php;/upload/*;*/.hg/*;*/.svn/*;*/.git/*;*/cgi-bin/*;/bitrix_personal/*;/local/*",
 	"max_file_size" => "",
 	"max_execution_time" => "20",
 	"use_stemming" => "Y",

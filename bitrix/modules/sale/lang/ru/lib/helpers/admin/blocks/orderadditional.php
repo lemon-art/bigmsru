@@ -9,3 +9,4 @@ $MESS['SALE_ORDER_ADDITIONAL_INFO_COMMENT_EDIT'] = 'Редактировать �
 $MESS['SALE_ORDER_ADDITIONAL_INFO_COMMENT_SAVE'] = 'Сохранить';
 $MESS['SALE_ORDER_ADDITIONAL_INFO_COMMENT_TITLE'] = 'Редактировать комментарий';
 $MESS['SALE_ORDER_ADDITIONAL_INFO_ADDITIONAL_INFO'] = 'Дополнительная информация';
+$MESS['SALE_ORDER_ADDITIONAL_INFO_COMPANY'] = 'Офис';

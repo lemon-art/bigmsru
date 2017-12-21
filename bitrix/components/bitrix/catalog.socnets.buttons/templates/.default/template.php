@@ -54,7 +54,7 @@ if ($arResult["TW_USE"])
 
 if ($arResult["VK_USE"])
 {
-	$APPLICATION->AddHeadString('<script type="text/javascript" src="//vk.com/js/api/share.js?86" charset="windows-1251"></script>');
+	$APPLICATION->AddHeadString('<script type="text/javascript" src="https://vk.com/js/api/share.js?93" charset="windows-1251"></script>');
 	?> <div class="catalog-sb-item vk" id="vk-shared-button-<?$this->randString()?>"></div><script type="text/javascript">
 	(function() {
 		var div = document.getElementById("vk-shared-button-<?$this->randString()?>");
@@ -62,9 +62,6 @@ if ($arResult["VK_USE"])
 				url: "<?=$arResult["URL_TO_LIKE"]?>"<?
 				if(strlen($arResult["TITLE"]) > 0 )
 					echo ','.PHP_EOL.'title: "'.$arResult["TITLE"].'"';
-
-				if(strlen($arResult["DESCRIPTION"]) > 0 )
-					echo ','.PHP_EOL.'description: "'.$arResult["DESCRIPTION"].'"';
 
 				if(strlen($arResult["IMAGE"]) > 0 )
 					echo ','.PHP_EOL.'image: "'.$arResult["IMAGE"].'"';?>

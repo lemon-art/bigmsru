@@ -17,7 +17,7 @@ $arComponentParameters = array(
 		),
 		"PATH_TO_ELEMENT" => array(
 			'PARENT' => 'STORE_SETTINGS',
-			'NAME' => GetMessage('STORE_PATH'),
+			'NAME' => GetMessage('STORE_PATH_EXT'),
 			"TYPE"		=> "STRING",
 			"DEFAULT"	=> "store/#store_id#",
 		),
@@ -30,5 +30,11 @@ $arComponentParameters = array(
 		),
 		"SET_TITLE" => array(),
 		"CACHE_TIME" => array("DEFAULT"=>36000000),
+		"TITLE" => array(
+			"PARENT" => "ADDITIONAL_SETTINGS",
+			"NAME" => GetMessage('BX_CATALOG_CSL_TITLE'),
+			"TYPE" => "STRING",
+			"DEFAULT_VALUE" => ""
+		)
 	)
 );

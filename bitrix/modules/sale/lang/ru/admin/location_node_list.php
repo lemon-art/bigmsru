@@ -14,4 +14,8 @@ $MESS["SALE_LOCATION_L_CONFIRM_DELETE_ITEM"] = "Вы уверены, что хо
 $MESS["SALE_LOCATION_L_ANY"] = "любой";
 $MESS["SALE_LOCATION_L_FROM_AND_TO"] = "от и до";
 $MESS["SALE_LOCATION_L_VIEW_CHILDREN"] = "Просмотреть дочерние местоположения";
+$MESS["SALE_LOCATION_L_LEVEL"] = "Уровень";
+$MESS["SALE_LOCATION_L_EDIT_CURRENT"] = "Редактировать текущее";
+$MESS["SALE_LOCATION_L_CURRENT"] = "только текущий";
+$MESS["SALE_LOCATION_L_CURRENT_AND_LOWER"] = "текущий и ниже";
 ?>

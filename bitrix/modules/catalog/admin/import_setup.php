@@ -4,17 +4,27 @@
 /** @global CUser $USER */
 use Bitrix\Main\Loader;
 define('NO_AGENT_CHECK', true);
-if (
-	isset($_REQUEST['ACTION']) && (string)$_REQUEST['ACTION'] == 'IMPORT'
-	&& isset($_REQUEST['CUR_FILE_POS']) && (int)$_REQUEST['CUR_FILE_POS'] > 0
-	&& (isset($_REQUEST['CUR_LOAD_SESS_ID']) && isset($_SESSION[$_REQUEST['CUR_LOAD_SESS_ID']])
-		&& (int)$_SESSION[$_REQUEST['CUR_LOAD_SESS_ID']] == (int)$_REQUEST['CUR_FILE_POS']
-	)
-)
+
+$executeImport = (isset($_REQUEST['ACTION']) && is_string($_REQUEST['ACTION']) && $_REQUEST['ACTION'] == 'IMPORT');
+$existActionFile = (isset($_REQUEST['ACT_FILE']) && is_string($_REQUEST['ACT_FILE']) && trim($_REQUEST['ACT_FILE']) !== '');
+$existImportSession = false;
+if (isset($_REQUEST['CUR_LOAD_SESS_ID']) && is_string($_REQUEST['CUR_LOAD_SESS_ID']))
+{
+	$importSessionId = trim($_REQUEST['CUR_LOAD_SESS_ID']);
+	$existImportSession = ($importSessionId !== '' && preg_match('/^CL\d+$/', $importSessionId));
+	unset($importSessionId);
+}
+$filePosition = 0;
+if (isset($_REQUEST['CUR_FILE_POS']) && is_string($_REQUEST['CUR_FILE_POS']))
+	$filePosition = (int)$_REQUEST['CUR_FILE_POS'];
+
+if ($executeImport && $existActionFile && $existImportSession && $filePosition > 0)
 {
 	define('NO_KEEP_STATISTIC', true);
 	define('STOP_STATISTICS', true);
 }
+unset($filePosition, $existImportSession, $existActionFile, $executeImport);
+
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/catalog/prolog.php");
 if (!($USER->CanDoOperation('catalog_read') || $USER->CanDoOperation('catalog_import_edit') || $USER->CanDoOperation('catalog_import_exec')))
@@ -154,21 +164,21 @@ if (($bCanEdit || $bCanExec) && check_bitrix_sessid())
 			if ($bCanExec && $_REQUEST["ACTION"]=="IMPORT")
 			{
 				$CUR_LOAD_SESS_ID = '';
-				if (isset($_REQUEST['CUR_LOAD_SESS_ID']))
+				if (isset($_REQUEST['CUR_LOAD_SESS_ID']) && is_string($_REQUEST['CUR_LOAD_SESS_ID']))
 				{
 					$CUR_LOAD_SESS_ID = trim($_REQUEST['CUR_LOAD_SESS_ID']);
 				}
-				if ('' != $CUR_LOAD_SESS_ID && 1 != preg_match('/^CL\d+$/',$CUR_LOAD_SESS_ID))
+				if ($CUR_LOAD_SESS_ID !== '' && !preg_match('/^CL\d+$/',$CUR_LOAD_SESS_ID))
 				{
 					$CUR_LOAD_SESS_ID = '';
 				}
 
 				$CUR_FILE_POS = 0;
-				if (isset($_REQUEST['CUR_FILE_POS']))
+				if (isset($_REQUEST['CUR_FILE_POS']) && is_string($_REQUEST['CUR_FILE_POS']))
 				{
 					$CUR_FILE_POS = (int)$_REQUEST['CUR_FILE_POS'];
 				}
-				if (0 > $CUR_FILE_POS)
+				if ($CUR_FILE_POS < 0)
 				{
 					$CUR_FILE_POS = 0;
 				}
@@ -1648,7 +1658,7 @@ echo BeginNote();
 		{
 			?>
 			<?echo GetMessage("CES_NOTES8");?><br>
-			<textarea name="crontasks" cols="70" rows="5" wrap="off" readonly>
+			<textarea name="crontasks" cols="70" rows="5" readonly>
 			<?
 			echo htmlspecialcharsbx(implode("\n", $arRetval))."\n";
 			?>
@@ -1656,10 +1666,10 @@ echo BeginNote();
 			<?
 		}
 		echo GetMessage("CES_NOTES10");?><br><br>
-		<?echo GetMessage("CES_NOTES11");?><br>
-		<?echo $_SERVER["DOCUMENT_ROOT"];?>/bitrix/php_interface/include/catalog_import/cron_frame.php<br>
-		<?echo GetMessage("CES_NOTES12");?>
-	<?endif;
+		<?=GetMessage("CES_NOTES11_EXT", array('#FILE#' => '/bitrix/php_interface/include/catalog_import/cron_frame.php'));?><br>
+		<?=GetMessage("CES_NOTES12_EXT");?><br>
+		<?=GetMessage('CES_NOTES13_EXT', array('#FOLDER#' => '/bitrix/modules/catalog/load_import/'));
+	endif;
 
 echo EndNote();
 

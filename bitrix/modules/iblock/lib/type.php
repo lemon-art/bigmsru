@@ -24,16 +24,6 @@ Loc::loadMessages(__FILE__);
 class TypeTable extends Entity\DataManager
 {
 	/**
-	 * Returns path to the file which contains definition of the class.
-	 *
-	 * @return string
-	 */
-	public static function getFilePath()
-	{
-		return __FILE__;
-	}
-
-	/**
 	 * Returns DB table name for entity
 	 *
 	 * @return string

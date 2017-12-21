@@ -43,7 +43,10 @@ div.Section1
 
 <p class=Normal style='line-height:133%'>Унифицированная форма<span lang=EN-US>
 N</span> ТОРГ-12 Утверждена постановлением Госкомстата России от 25 12.98 N 132</p>
-
+<?
+	$arCurFormat = CCurrencyLang::GetCurrencyFormat($arOrder["CURRENCY"]);
+	$currency = preg_replace('/(^|[^&])#/', '${1}', $arCurFormat['FORMAT_STRING']);
+?>
 <table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0
 style='width:832pt;margin-left:2.0pt;border-collapse:collapse'>
 <tr style='page-break-inside:avoid;height:10.0pt'>
@@ -353,7 +356,7 @@ border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowt
 padding:0cm 2.0pt 0cm 2.0pt;height:9.0pt'>
 <p class=Normal align=center style='margin:0cm;margin-bottom:.0001pt;
 text-align:center;line-height:normal'><span style='font-size:7.0pt'>Валюта:
-рубль</span></p>
+<?=ToLower($arCurFormat['FULL_NAME']);?></span></p>
 <p class=Normal align=center style='margin:0cm;margin-bottom:.0001pt;
 text-align:center;line-height:normal'><span style='font-size:7.0pt'>Дата
 курса: </span><span style='font-size:7.0pt'><a name=ТекстовоеПоле35></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
@@ -539,7 +542,7 @@ border-left:none;border-bottom:none;border-right:solid windowtext 1.0pt;
 padding:0cm 2.0pt 0cm 2.0pt;height:10.0pt'>
 <p class=Normal align=center style='margin-top:1.0pt;margin-right:0cm;
 margin-bottom:0cm;margin-left:0cm;margin-bottom:.0001pt;text-align:center;
-line-height:normal'>Цена, руб., коп.</p>
+line-height:normal'>Цена,<?=$currency;?></p>
 
 </td>
 <td rowspan=2 valign=top style='width:60.0pt;border-top:solid windowtext 1.0pt;
@@ -547,7 +550,7 @@ border-left:none;border-bottom:none;border-right:solid windowtext 1.0pt;
 padding:0cm 2.0pt 0cm 2.0pt;height:10.0pt'>
 <p class=Normal align=center style='margin-top:1.0pt;margin-right:0cm;
 margin-bottom:0cm;margin-left:0cm;margin-bottom:.0001pt;text-align:center;
-line-height:normal'>Сумма без учета НДС,  руб. коп.</p>
+line-height:normal'>Сумма без учета НДС,<?=$currency;?></p>
 
 </td>
 <td colspan=2 valign=top style='width:81.0pt;border:solid windowtext 1.0pt;
@@ -567,7 +570,7 @@ margin-bottom:0cm;margin-left:6.0pt;margin-bottom:.0001pt;text-align:center;
 line-height:normal'>Сумма с</p>
 <p class=Normal align=center style='margin-top:1.0pt;margin-right:0cm;
 margin-bottom:0cm;margin-left:0cm;margin-bottom:.0001pt;text-align:center;
-line-height:normal'>учетом НДС и  руб. коп.</p>
+line-height:normal'>учетом НДС<?=$currency;?></p>
 <p class=Normal align=center style='margin-top:1.0pt;margin-right:0cm;
 margin-bottom:0cm;margin-left:0cm;margin-bottom:.0001pt;text-align:center;
 line-height:normal'>&nbsp;</p>
@@ -627,7 +630,7 @@ margin-left:0cm;margin-bottom:.0001pt;line-height:normal'>&nbsp;</p>
 border-left:none;border-bottom:none;border-right:solid windowtext 1.0pt;
 padding:0cm 2.0pt 0cm 2.0pt;height:26.0pt'>
 <p class=Normal style='margin-top:2.0pt;margin-right:0cm;margin-bottom:0cm;
-margin-left:0cm;margin-bottom:.0001pt;line-height:normal'>сумма, руб, коп</p>
+margin-left:0cm;margin-bottom:.0001pt;line-height:normal'>сумма,<?=$currency;?></p>
 <p class=Normal style='margin-top:2.0pt;margin-right:0cm;margin-bottom:0cm;
 margin-left:0cm;margin-bottom:.0001pt;line-height:normal'>&nbsp;</p>
 </td>
@@ -917,7 +920,7 @@ text-align:center;line-height:normal'>&nbsp;</p>
 border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
 padding:0cm 2.0pt 0cm 2.0pt;height:9.0pt'>
 <p class=Normal align=center style='margin:0cm;margin-bottom:.0001pt;
-text-align:center;line-height:normal'><a name=ТекстовоеПоле54></a><?echo $taxRate."%"?></p>
+text-align:center;line-height:normal'><a name=ТекстовоеПоле54></a><?=($taxRate > 0 || count($arTaxList) > 0) ? $taxRate."%" : "Без НДС";?></p>
 <p class=Normal align=center style='margin:0cm;margin-bottom:.0001pt;
 text-align:center;line-height:normal'>&nbsp;</p>
 </td>
@@ -1061,7 +1064,7 @@ text-align:center;line-height:normal'>&nbsp;</p>
 border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
 padding:0cm 2.0pt 0cm 2.0pt;height:9.0pt'>
 <p class=Normal align=center style='margin:0cm;margin-bottom:.0001pt;
-text-align:center;line-height:normal'><a name=ТекстовоеПоле55></a><?echo $nds_pr."%"?></p>
+text-align:center;line-height:normal'><a name=ТекстовоеПоле55></a><?=($nds_pr > 0 || count($arTaxList) > 0) ? $nds_pr."%" : "Без НДС";?></p>
 <p class=Normal align=center style='margin:0cm;margin-bottom:.0001pt;
 text-align:center;line-height:normal'>&nbsp;</p>
 </td>

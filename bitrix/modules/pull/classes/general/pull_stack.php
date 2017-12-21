@@ -21,6 +21,12 @@ class CAllPullStack
 
 			$data = unserialize($arRes['MESSAGE']);
 			$data['id'] = $arRes['ID'];
+			$data['extra'] = Array(
+				'server_time' => date('c'),
+				'server_name' => COption::GetOptionString('main', 'server_name', $_SERVER['SERVER_NAME']),
+				'revision' => PULL_REVISION,
+				'revisionMobile' => PULL_MOBILE_REVISION,
+			);
 
 			$arMessage[] = $data;
 		}
@@ -43,22 +49,25 @@ class CAllPullStack
 		if (strlen($arParams['module_id']) > 0 || strlen($arParams['command']) > 0)
 		{
 			$arData = Array(
-				'module_id' => $arParams['module_id'],
+				'module_id' => strtolower($arParams['module_id']),
 				'command' => $arParams['command'],
 				'params' => is_array($arParams['params'])? $arParams['params']: Array(),
+				'extra' => Array(
+					'server_time' => date('c'),
+					'server_name' => COption::GetOptionString('main', 'server_name', $_SERVER['SERVER_NAME']),
+					'revision' => PULL_REVISION,
+					'revisionMobile' => PULL_MOBILE_REVISION,
+				)
 			);
 			if (CPullOptions::GetQueueServerStatus())
 			{
-				$command = Array('SERVER_TIME_WEB' => time(), 'SERVER_NAME' => COption::GetOptionString('main', 'server_name', $_SERVER['SERVER_NAME']), 'MESSAGE' => Array($arData), 'ERROR' => '');
 				if (!is_array($channelId) && CPullOptions::GetQueueServerVersion() == 1)
-					$command['CHANNEL_ID'] = $channelId;
-
-				$message = CUtil::PhpToJsObject($command);
-				if (!defined('BX_UTF') || !BX_UTF)
-					$message = $GLOBALS['APPLICATION']->ConvertCharset($message, SITE_CHARSET,'utf-8');
-
+				{
+					$arData['extra']['channel'] = $channelId;
+				}
+				
 				$options = isset($arParams['expiry']) ? array('expiry' => intval($arParams['expiry'])) : array();
-				$res = CPullChannel::Send($channelId, str_replace("\n", " ", $message), $options);
+				$res = CPullChannel::Send($channelId, \Bitrix\Pull\Common::jsonEncode($arData), $options);
 				$result = $res? true: false;
 			}
 			else

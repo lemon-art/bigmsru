@@ -54,12 +54,6 @@ class CImageUploader
 		$APPLICATION->AddHeadScript('/bitrix/image_uploader/aurigma.uploader.installationprogress.js');
 		$id = self::GetId();
 
-		$cookie = '';
-		foreach($_COOKIE as $key => $val)
-		{
-			$cookie .= $key.'='.$val.';';
-		}
-
 		if ($Params['showAddFileButton'] || $Params['showAddFolderButton']): ?>
 		<div class="bxiu-buttons">
 			<?if($Params['showAddFileButton']):?>
@@ -98,9 +92,7 @@ class CImageUploader
 				codeBase: '/bitrix/image_uploader/ImageUploader7.jar',
 				version: '7.0.38.0'
 			},
-			metadata: {
-				cookie: '<?= CUtil::JSEscape($cookie)?>'
-			},
+			metadata: {},
 			events:{
 				afterPackageUpload: [],
 				afterSendRequest: [],

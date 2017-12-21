@@ -19,4 +19,9 @@ $MESS["CATALOG_ERR_NO_IBLOCK_ELEMENT"] = "The information block element was not 
 $MESS["CATALOG_ERR_NO_SUBSCRIBE"] = "This product cannot be subscribed to.";
 $MESS["CATALOG_ERR_CANNOT_ADD_SKU"] = "You cannot add to cart a product that has multiple SKU's. Only a specific SKU can be added to cart.";
 $MESS["CATALOG_ERR_CANNOT_SUBSCRIBE_SKU"] = "You cannot subscribe to a product that has multiple SKU's. Only a specific SKU can be subscribed to.";
+$MESS["CATALOG_PRODUCT_PRICE_TYPE_NOT_FOUND"] = "Product price type was not found.";
+$MESS["CATALOG_ERR_PRODUCT_MEASURE_RATIO_NOT_FOUND"] = "Product unit of measurement was not found.";
+$MESS["CATALOG_ERR_PRODUCT_BAD_TYPE"] = "Incorrect product type.";
+$MESS["CATALOG_ERR_NO_PRODUCT_SET"] = "Bundle contents was not found.";
+$MESS["CATALOG_ERR_NO_PRODUCT_SET_ITEM"] = "Bundled products were not found.";
 ?>

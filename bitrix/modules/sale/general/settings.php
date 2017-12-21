@@ -38,10 +38,15 @@ class CSaleLang
 		return Bitrix\Sale\Internals\SiteCurrencyTable::getCurrency($siteId);
 	}
 
-	/*
-	* @deprecated deprecated since sale 15.0.0
-	* @see \Bitrix\Sale\Internals\SiteCurrencyTable::getSiteCurrency
-	*/
+	/**
+	 * Return site currency.
+	 *
+	 * @deprecated deprecated since sale 15.0.0
+	 * @see \Bitrix\Sale\Internals\SiteCurrencyTable::getSiteCurrency
+	 *
+	 * @param string $siteId        Site identifier.
+	 * @return string
+	 */
 	public static function GetLangCurrency($siteId)
 	{
 		return Sale\Internals\SiteCurrencyTable::getSiteCurrency($siteId);

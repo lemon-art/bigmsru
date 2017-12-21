@@ -61,14 +61,13 @@ class CIBlockPropertyTools
 		if ($iblockID <= 0 || $propertyCode === '')
 			return false;
 
-		$iblockIterator = Iblock\IblockTable::getList(array(
+		$iblock = Iblock\IblockTable::getList(array(
 			'select' => array('ID'),
 			'filter' => array('=ID' => $iblockID)
-		));
-		if (!($iblock = $iblockIterator->fetch()))
+		))->fetch();
+		if (empty($iblock))
 			return false;
 
-		unset($iblock, $iblockIterator);
 		$propertyDescription = static::getPropertyDescription($propertyCode, $propertyParams);
 		if ($propertyDescription === false)
 			return false;
@@ -95,14 +94,15 @@ class CIBlockPropertyTools
 		if ($propertyId > 0)
 			return $propertyId;
 		unset($propertyId);
-		$propertyResult = Iblock\PropertyTable::add($propertyDescription);
-		if ($propertyResult->isSuccess())
+		$propertyObject = new \CIBlockProperty;
+		$propertyId = (int)$propertyObject->Add($propertyDescription);
+		if ($propertyId > 0)
 		{
-			return $propertyResult->getId();
+			return $propertyId;
 		}
 		else
 		{
-			self::$errors = $propertyResult->getErrorMessages();
+			self::$errors[] = $propertyObject->LAST_ERROR;
 			return false;
 		}
 	}

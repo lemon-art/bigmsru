@@ -11,6 +11,9 @@ CModule::IncludeModule('seo');
 IncludeModuleLangFile($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/options.php");
 IncludeModuleLangFile(__FILE__);
 
+$seoRight = $APPLICATION->GetGroupRight($module_id);
+if ($seoRight>="R") :
+
 $arAllOptions = Array(
 	Array("property_window_title", GetMessage('SEO_OPT_PROP_WINDOW_TITLE'), array("text"), "title"),
 	Array("property_description", GetMessage('SEO_OPT_PROP_DESCRIPTION'), array("text"), "description"),
@@ -87,7 +90,7 @@ if (strlen($searchers) > 0 && CModule::IncludeModule('statistic'))
 	$arSearchersList = explode(',', $searchers);
 
 	$dbRes = CSearcher::GetList($by = 's_name', $order = 'asc', array('ID' => implode('|', $arSearchersList)), $is_filtered);
-	while ($arRes = $dbRes->Fetch())
+	while ($arRes = $dbRes->GetNext())
 	{
 		$arCurrentSearchers[$arRes['ID']] = $arRes['NAME'];
 	}
@@ -206,7 +209,9 @@ else
 
 $tabControl->BeginNextTab();
 
-require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/admin/group_rights2.php");
+//group_rights2 work some strange
+//require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/admin/group_rights2.php");
+require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/admin/group_rights.php");
 
 $tabControl->Buttons();?>
 <script language="JavaScript">
@@ -221,3 +226,5 @@ function confirmRestoreDefaults()
 <input type="submit" name="RestoreDefaults" title="<?echo GetMessage("MAIN_HINT_RESTORE_DEFAULTS")?>" OnClick="return confirmRestoreDefaults();" value="<?echo GetMessage("MAIN_RESTORE_DEFAULTS")?>">
 <?$tabControl->End();?>
 </form>
+
+<?endif;?>

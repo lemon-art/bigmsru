@@ -1,5 +1,5 @@
 .main-ui-pagination {
-	font-size: 12px;
+	font-size: 11px;
 	text-transform: uppercase;
 	display: table;
 	text-align: center;
@@ -52,7 +52,7 @@ a.main-ui-pagination-arrow.main-ui-pagination-prev::after {
 
 .main-ui-pagination-arrow.main-ui-pagination-prev::before {
 	left: -10px;
-	top: 1px;
+	top: 2px;
 	-webkit-transform: rotate(45deg);
 	-moz-transform: rotate(45deg);
 	-ms-transform: rotate(45deg);
@@ -62,7 +62,7 @@ a.main-ui-pagination-arrow.main-ui-pagination-prev::after {
 
 .main-ui-pagination-arrow.main-ui-pagination-prev::after {
 	left: -10px;
-	top: 5px;
+	top: 7px;
 	-webkit-transform: rotate(-45deg);
 	-moz-transform: rotate(-45deg);
 	-ms-transform: rotate(-45deg);
@@ -72,7 +72,7 @@ a.main-ui-pagination-arrow.main-ui-pagination-prev::after {
 
 .main-ui-pagination-arrow.main-ui-pagination-next::before {
 	right: -10px;
-	top: 1px;
+	top: 2px;
 	-webkit-transform: rotate(-45deg);
 	-moz-transform: rotate(-45deg);
 	-ms-transform: rotate(-45deg);
@@ -82,7 +82,7 @@ a.main-ui-pagination-arrow.main-ui-pagination-prev::after {
 
 .main-ui-pagination-arrow.main-ui-pagination-next::after {
 	right: -10px;
-	top: 5px;
+	top: 7px;
 	-webkit-transform: rotate(45deg);
 	-moz-transform: rotate(45deg);
 	-ms-transform: rotate(45deg);

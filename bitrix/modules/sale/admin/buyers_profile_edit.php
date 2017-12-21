@@ -1,6 +1,7 @@
 <?
+use Bitrix\Main\Loader;
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
-require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/include.php");
+Loader::includeModule('sale');
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/prolog.php");
 
 global $APPLICATION;
@@ -55,11 +56,31 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && $saleModulePermissions >= "U" && che
 	while ($arOrderProps = $dbProperties->Fetch())
 	{
 		$arOrderProps["ID"] = intval($arOrderProps["ID"]);
-		$curVal = trim($_REQUEST["CODE_".$arOrderProps["ID"]]);
 
-		if ($arOrderProps["TYPE"]=="LOCATION")
+		$curVal = $_REQUEST["CODE_".$arOrderProps["ID"]];
+
+		if ($arOrderProps['TYPE'] == "LOCATION")
 		{
-			$curVal = trim($_REQUEST["LOCATION_".$arOrderProps["ID"]]);
+			$changedLocation = array();
+			$locationResult = Bitrix\Sale\Location\LocationTable::getList(
+				array(
+					'filter' => array('=ID' => $_REQUEST["LOCATION_".$arOrderProps["ID"]]),
+					'select' => array('ID', 'CODE')
+				)
+			);
+
+			while ($location = $locationResult->fetch())
+			{
+				if ($arOrderProps['MULTIPLE'] === "Y")
+				{
+					$changedLocation[] = $location['CODE'];
+				}
+				else
+				{
+					$changedLocation = $location['CODE'];
+				}
+			}
+			$curVal = !empty($changedLocation) ? $changedLocation : "";
 		}
 
 		if ($arOrderProps["TYPE"] == "MULTISELECT")
@@ -75,10 +96,18 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && $saleModulePermissions >= "U" && che
 				}
 			}
 		}
+		elseif ($arOrderProps["MULTIPLE"] === "Y")
+		{
+			$curVal = serialize($curVal);
+		}
+		else
+		{
+			$curVal = trim($curVal);
+		}
 
 		if (
 			($arOrderProps["IS_LOCATION"]=="Y" || $arOrderProps["IS_LOCATION4TAX"]=="Y")
-			&& !strlen($curVal)
+			&& empty($_REQUEST["LOCATION_".$arOrderProps["ID"]])
 			||
 			($arOrderProps["IS_ZIP"] == "Y" && strlen($curVal) <= 0)
 			||
@@ -87,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && $saleModulePermissions >= "U" && che
 			||
 			$arOrderProps["REQUIED"]=="Y"
 			&& $arOrderProps["TYPE"]=="LOCATION"
-			&& !strlen($curVal)
+			&& empty($_REQUEST["LOCATION_".$arOrderProps["ID"]])
 			||
 			$arOrderProps["REQUIED"]=="Y"
 			&& ($arOrderProps["TYPE"]=="TEXT" || $arOrderProps["TYPE"]=="TEXTAREA" || $arOrderProps["TYPE"]=="RADIO" || $arOrderProps["TYPE"]=="SELECT")
@@ -187,7 +216,7 @@ if(!empty($arProfile) && !empty($arUser))
 
 	$arFilterProps = array("PERSON_TYPE_ID" => $PERSON_TYPE, "ACTIVE" => "Y", "USER_PROPS" => "Y", "UTIL" => "N");
 
-	$tabControl->AddViewField("CODE_USER", GetMessage("BUYER_PE_USER").":", "[<a href=\"/bitrix/admin/user_edit.php?ID=".$arUser["ID"]."&lang=".LANGUAGE_ID."\">".$arUser["ID"]."</a>] (".$arUser["LOGIN"].") ".$userFIO);
+	$tabControl->AddViewField("CODE_USER", GetMessage("BUYER_PE_USER").":", "[<a href=\"/bitrix/admin/user_edit.php?ID=".$arUser["ID"]."&lang=".LANGUAGE_ID."\">".$arUser["ID"]."</a>] (".htmlspecialcharsEx($arUser["LOGIN"]).") ".htmlspecialcharsEx($userFIO));
 	$tabControl->AddEditField("CODE_PROFILE_NAME", GetMessage("BUYER_PE_PROFILE_NAME").":", false, array("size"=>30, "maxlength"=>255), htmlspecialcharsEx($profileName));
 
 	$propertyGroupID = "";
@@ -198,14 +227,13 @@ if(!empty($arProfile) && !empty($arUser))
 			false,
 			array("*")
 	);
-	$userProfile = CSaleOrderUserProps::DoLoadProfiles($USER_ID, $PERSON_TYPE);
 
+	$userPropertyValues = Bitrix\Sale\OrderUserProperties::getProfileValues((int)$ID);
 	$curVal = "";
 	while ($arProperties = $dbProperties->Fetch())
 	{
 		$arProperties["ID"] = intval($arProperties["ID"]);
-		$curVal = $userProfile[$ID]["VALUES"][$arProperties["ID"]];
-		$fieldValue = (($curVal!="") ? $curVal : $arProperties["DEFAULT_VALUE"]);
+		$fieldValue = $userPropertyValues[$arProperties["ID"]];
 
 		if (intval($arProperties["PROPS_GROUP_ID"]) != $propertyGroupID)
 			$tabControl->AddSection("SECTION_".$arProperties["PROPS_GROUP_ID"], $arProperties["GROUP_NAME"]);
@@ -217,7 +245,27 @@ if(!empty($arProfile) && !empty($arUser))
 		/*fields*/
 		if ($arProperties["TYPE"] == "TEXT")
 		{
-			$tabControl->AddEditField("CODE_".$arProperties["ID"], $arProperties["NAME"].":", $shure, array("size"=>30, "maxlength"=>255), $fieldValue);
+			if ($arProperties["MULTIPLE"] == "Y")
+			{
+				$key = 0;
+				$fieldName = htmlspecialcharsbx($arProperties["NAME"]);
+				if (is_array($fieldValue))
+				{
+					foreach ($fieldValue as $key => $value)
+					{
+						$tabControl->AddEditField("CODE_".$arProperties["ID"]."[".$key."]", $fieldName, $shure, array("size"=>30, "maxlength"=>255), htmlspecialcharsbx($value));
+						$fieldName = false;
+					}
+					$key++;
+				}
+				$tabControl->AddEditField("CODE_".$arProperties["ID"]."[".$key."]", $fieldName, $shure, array("size"=>30, "maxlength"=>255), '');
+
+				unset($fieldName);
+			}
+			else
+			{
+				$tabControl->AddEditField("CODE_".$arProperties["ID"], $arProperties["NAME"].":", $shure, array("size"=>30, "maxlength"=>255), htmlspecialcharsbx($fieldValue));
+			}
 		}
 		elseif ($arProperties["TYPE"] == "CHECKBOX")
 		{
@@ -270,14 +318,21 @@ if(!empty($arProfile) && !empty($arUser))
 				<td width="60%">
 					<select multiple size="5" name="<?echo "CODE_".$arProperties["ID"];?>[]">
 					<?
-					if (strlen($fieldValue) > 0)
+					if (is_array($fieldValue))
 					{
-						$curVal = explode(",", $fieldValue);
+						$arCurVal = $fieldValue;
+					}
+					else
+					{
+						if (strlen($fieldValue) > 0)
+						{
+							$curVal = explode(",", $fieldValue);
 
-						$arCurVal = array();
-						$curValCount = count($curVal);
-						for ($i = 0; $i < $curValCount; $i++)
-							$arCurVal[$i] = trim($curVal[$i]);
+							$arCurVal = array();
+							$curValCount = count($curVal);
+							for ($i = 0; $i < $curValCount; $i++)
+								$arCurVal[$i] = trim($curVal[$i]);
+						}
 					}
 
 					$dbVariants = CSaleOrderPropsVariant::GetList(
@@ -307,7 +362,7 @@ if(!empty($arProfile) && !empty($arUser))
 		}
 
 		elseif ($arProperties["TYPE"] == "TEXTAREA")
-			$tabControl->AddTextField("CODE_".$arProperties["ID"],$arProperties["NAME"].":", $fieldValue, array("cols" => "30", "rows" => "5"), $shure);
+			$tabControl->AddTextField("CODE_".$arProperties["ID"],$arProperties["NAME"].":", htmlspecialcharsbx($fieldValue), array("cols" => "30", "rows" => "5"), $shure);
 
 		elseif ($arProperties["TYPE"] == "RADIO")
 		{
@@ -333,7 +388,7 @@ if(!empty($arProfile) && !empty($arUser))
 				if ($arVariants["VALUE"] == $fieldValue)
 					$selected .= " checked";
 			?>
-				<input <?echo $selected?> id="radio_<?echo $arVariants["ID"];?>" type="radio" name="CODE_<?echo $arProperties["ID"];?>" value="<?echo htmlspecialcharsex($arVariants["VALUE"]);?>" />
+				<input <?echo $selected?> id="radio_<?echo $arVariants["ID"];?>" type="radio" name="CODE_<?echo $arProperties["ID"];?>" value="<?echo htmlspecialcharsbx($arVariants["VALUE"]);?>" />
 				<label for="radio_<?echo $arVariants["ID"];?>"><?echo htmlspecialcharsEx($arVariants["NAME"])?></label><br />
 			<?
 			}
@@ -345,30 +400,55 @@ if(!empty($arProfile) && !empty($arUser))
 		}
 		elseif ($arProperties["TYPE"] == "LOCATION")
 		{
+			$changedLocation = array();
+
+			$locationResult = Bitrix\Sale\Location\LocationTable::getList(
+				array(
+					'filter' => array('CODE' => $fieldValue),
+					'select' => array('ID', 'CODE')
+				)
+			);
+
+			while ($location = $locationResult->fetch())
+			{
+				$changedLocation[] = $location['ID'];
+			}
+
+			if (!empty($changedLocation))
+				$fieldValue = $changedLocation;
+			else
+				$fieldValue = array("");
+
 			$tabControl->BeginCustomField("CODE_".$arProperties["ID"], $arProperties["NAME"], $shure);
 		?>
 			<tr<? ($shure) ? " class=\"adm-detail-required-field\"" : "" ?>>
-				<td width="40%">
-					<?echo htmlspecialcharsEx($arProperties["NAME"]);?>:
+				<td width="40%" style="vertical-align: top;padding-top: 10px;">
+					<?echo htmlspecialcharsbx($arProperties["NAME"]);?>:
 				</td>
 				<td width="60%">
 					<?
+					$locationId = "LOCATION_".$arProperties["ID"];
+					if ($arProperties["MULTIPLE"] === "Y")
+					{
+						$locationId .= "[]";
+					}
+					$firstFieldValue = array_shift($fieldValue);
 					CSaleLocation::proxySaleAjaxLocationsComponent(
 						array(
 							"SITE_ID" => $LID,
 							"AJAX_CALL" => "N",
 							"COUNTRY_INPUT_NAME" => "COUNTRY_".$arProperties["ID"],
 							"REGION_INPUT_NAME" => "REGION_".$arProperties["ID"],
-							"CITY_INPUT_NAME" => "LOCATION_".$arProperties["ID"],
+							"CITY_INPUT_NAME" => $locationId,
 							"CITY_OUT_LOCATION" => "Y",
 							"ALLOW_EMPTY_CITY" => "Y",
-							"LOCATION_VALUE" => $fieldValue,
+							"LOCATION_VALUE" => $firstFieldValue,
 							"COUNTRY" => "",
 							"ONCITYCHANGE" => "",
 							"PUBLIC" => "N",
 						),
 						array(
-							"ID" => $fieldValue,
+							"ID" => $firstFieldValue,
 							"CODE" => "",
 							"PROVIDE_LINK_BY" => "id",
 						)
@@ -377,6 +457,39 @@ if(!empty($arProfile) && !empty($arUser))
 				</td>
 			</tr>
 		<?
+			if (is_array($fieldValue) && !empty($fieldValue))
+			{
+				$fieldValue[] = "";
+				foreach ($fieldValue as $value)
+				{
+					?>
+					<tr><td width="40%"></td><td width="60%">
+						<?
+							CSaleLocation::proxySaleAjaxLocationsComponent(
+								array(
+									"SITE_ID" => $LID,
+									"AJAX_CALL" => "N",
+									"COUNTRY_INPUT_NAME" => "COUNTRY_".$arProperties["ID"],
+									"REGION_INPUT_NAME" => "REGION_".$arProperties["ID"],
+									"CITY_INPUT_NAME" => $locationId,
+									"CITY_OUT_LOCATION" => "Y",
+									"ALLOW_EMPTY_CITY" => "Y",
+									"LOCATION_VALUE" => $value,
+									"COUNTRY" => "",
+									"ONCITYCHANGE" => "",
+									"PUBLIC" => "N",
+								),
+								array(
+									"ID" => $value,
+									"CODE" => "",
+									"PROVIDE_LINK_BY" => "id",
+								)
+							);
+						?>
+						</td></tr>
+					<?
+				}
+			}
 			$tabControl->EndCustomField("CODE_".$arProperties["ID"]);
 		}
 	}

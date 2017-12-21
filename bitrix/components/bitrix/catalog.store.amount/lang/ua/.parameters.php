@@ -34,4 +34,7 @@ $MESS["CP_CSA_PARAM_COORDINATES"] = "Координати";
 $MESS["CP_CSA_PARAM_EMAIL"] = "Email";
 $MESS["CP_CSA_PARAM_PHONE"] = "Номер телефону";
 $MESS["CP_CSA_PARAM_FIELDS"] = "Поля";
+$MESS["CP_CSA_PARAM_IBLOCK_TYPE"] = "Тип інфоблока";
+$MESS["CP_CSA_PARAM_IBLOCK_ID"] = "Інфоблок";
+$MESS["CP_CSA_PARAM_OFFER_ID"] = "Торгова пропозиція";
 ?>

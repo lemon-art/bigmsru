@@ -44,7 +44,6 @@ class Logger
 	 */
 	public function addRecord($level, $type, $itemId, $description)
 	{
-
 		if($this->logLevel < $level || $level == static::LOG_LEVEL_DISABLE)
 			return false;
 

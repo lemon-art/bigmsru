@@ -4,7 +4,7 @@ foreach ($arResult["VALUE"] as $key => $res):
 	if (!$first):
 		?><span class="fields separator"></span><?
 	else:
-		$first = false;	
+		$first = false;
 	endif;
 
 	if (StrLen($arParams['arUserField']['PROPERTY_VALUE_LINK']) > 0)

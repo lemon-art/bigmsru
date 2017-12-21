@@ -363,7 +363,6 @@ BXSticker.prototype = {
 		pWin.Get().style.left = oSticker.left + 'px';
 		pWin.Get().style.top = oSticker.top + 'px';
 
-		this.SupaFlySticker(ind);
 		this.AdjustShadow(ind);
 
 		// Set unselectable elements
@@ -1539,7 +1538,6 @@ BXSticker.prototype = {
 				height: oMarker.height
 			};
 
-			this.InitMagicAdjust(oMarker.StickerInd);
 		}
 
 		if (oSt.obj.marker && (oSt.obj.marker.adjust || (oSt.obj.marker.width && oSt.obj.marker.height && oSt.obj.marker.top && oSt.obj.marker.left)))
@@ -1604,50 +1602,6 @@ BXSticker.prototype = {
 			oSt.pMarker.style.height = oSt.obj.marker.height + "px";
 			oSt.pMarker.style.top = oSt.obj.marker.top + "px";
 			oSt.pMarker.style.left = oSt.obj.marker.left + "px";
-		}
-	},
-
-	InitMagicAdjust: function(ind)
-	{
-		return;
-
-		if (!this.magicNodes)
-		{
-			var arLinks = document.getElementsByTagName('A');
-			var i, len, el, nodes = [], w, h, t, l;
-
-			len = arLinks.length;
-
-			for (i = 0; i < len; i++)
-			{
-				if (arLinks[i].offsetWidth > 0)
-				{
-					var pos = BX.pos(arLinks[i]);
-					nodes.push({el: arLinks[i], pos: pos});
-				}
-			}
-
-			this.magicNodes = {
-				nodes: nodes
-			};
-		}
-
-		//return;
-		var
-			node,
-			oSt = this.arStickers[ind],
-			mTop = oSt.obj.marker.top,
-			mLeft = oSt.obj.marker.left,
-			mWidth = oSt.obj.marker.width,
-			mHeight = oSt.obj.marker.height,
-			mRight = mLeft + mWidth,
-			mBottom = mTop + mHeight;
-
-		len = this.magicNodes.nodes.length;
-		for (i = 0; i < len; i++)
-		{
-			node = this.magicNodes.nodes[i];
-
 		}
 	},
 
@@ -2061,46 +2015,6 @@ BXSticker.prototype = {
 			if (oSt && oSt.bColSelShowed)
 				this.ShowColorSelector(ind); // Hide
 		}
-	},
-
-	SupaFlySticker: function()
-	{
-		return;
-		var windowSize = BX.GetWindowInnerSize();
-
-		var
-			st_w = 350, // Sticker width
-			st_h = 200, // sticker height
-			st_left = 1125, // sticker left
-			st_top = 100, // Sticker top
-			st_x = Math.round(st_left + st_w / 2), // Sticker center X
-			st_y = Math.round(st_top + st_h / 2), // Sticker center Y
-			win_w = windowSize.innerWidth,
-			win_h = windowSize.innerHeight,
-			x0 = Math.round(win_w / 2),
-			y0 = Math.round(win_h / 2);
-
-		// A * x + B * y + C = 0
-		var A = y0 - st_y;
-		var B = st_x - x0;
-		var C = (x0 * st_y) - (y0 * st_x);
-
-		//Center
-		var div = document.body.appendChild(BX.create("DIV", {style: {background: "#00f", position: "absolute", width: "5px", height: "5px", zIndex: 2000}}));
-		div.style.left = x0 + "px";
-		div.style.top = y0 + "px";
-
-		//Center
-		var div = document.body.appendChild(BX.create("DIV", {style: {background: "#0f0", position: "absolute", width: "5px", height: "5px", zIndex: 2000}}));
-		div.style.left = st_x + "px";
-		div.style.top = st_y + "px";
-
-		var start_y = 0;
-		var start_x = - (C + B * start_y) / A;
-
-		var div = document.body.appendChild(BX.create("DIV", {style: {background: "red", position: "absolute", width: "10px", height: "10px", zIndex: 2000}}));
-		div.style.left = start_x + "px";
-		div.style.top = start_y + "px";
 	},
 
 	Hightlight: function(ind, bOver)

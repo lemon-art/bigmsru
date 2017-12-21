@@ -10,7 +10,7 @@ $arTypesEx = CIBlockParameters::GetIBlockTypes(array("-"=>" "));
 $arIBlocks=array();
 $db_iblock = CIBlock::GetList(array("SORT"=>"ASC"), array("SITE_ID"=>$_REQUEST["site"], "TYPE" => ($arCurrentValues["IBLOCK_TYPE"]!="-"?$arCurrentValues["IBLOCK_TYPE"]:"")));
 while($arRes = $db_iblock->Fetch())
-	$arIBlocks[$arRes["ID"]] = $arRes["NAME"];
+	$arIBlocks[$arRes["ID"]] = "[".$arRes["ID"]."] ".$arRes["NAME"];
 
 $arSorts = array("ASC"=>GetMessage("T_IBLOCK_DESC_ASC"), "DESC"=>GetMessage("T_IBLOCK_DESC_DESC"));
 $arSortFields = array(
@@ -187,6 +187,12 @@ $arComponentParameters = array(
 			"NAME" => GetMessage("CP_BNL_INCLUDE_SUBSECTIONS"),
 			"TYPE" => "CHECKBOX",
 			"DEFAULT" => "Y",
+		),
+		"STRICT_SECTION_CHECK" => array(
+			"PARENT" => "ADDITIONAL_SETTINGS",
+			"NAME" => GetMessage("CP_BNL_STRICT_SECTION_CHECK"),
+			"TYPE" => "CHECKBOX",
+			"DEFAULT" => "N",
 		),
 		"CACHE_TIME"  =>  array("DEFAULT"=>36000000),
 		"CACHE_FILTER" => array(

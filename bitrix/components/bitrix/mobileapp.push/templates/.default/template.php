@@ -1,4 +1,4 @@
-<?if(!Defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
+<?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 
 $arItems = array();
 $arTmp = array();
@@ -85,7 +85,7 @@ $path = explode("/", $arResult["PATH"]);
 	});
 
 	var jsParams = {
-		path: "<?=$arResult["PATH"]?>",
+		path: "<?=CUtil::JSEscape($arResult["PATH"])?>",
 		ajaxUrl: "<?=$arResult['AJAX_URL']?>"
 	};
 

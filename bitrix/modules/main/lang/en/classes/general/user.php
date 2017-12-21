@@ -60,4 +60,11 @@ $MESS["MAIN_SEND_PASS_CONFIRM"] = "You have not yet confirmed your registration.
 $MESS["USER_LOGIN_OTP_ERROR"] = "One-time password are disabled.";
 $MESS["USER_LOGIN_OTP_INCORRECT"] = "One-time password is incorrect.";
 $MESS["main_user_captcha_error"] = "CAPTCHA code is incorrect.";
+$MESS["USER_STATUS_ONLINE"] = "Online";
+$MESS["USER_STATUS_OFFLINE"] = "Offline";
+$MESS["USER_LAST_SEEN_TOMORROW"] = "tomorrow at #TIME#";
+$MESS["USER_LAST_SEEN_NOW"] = "just now";
+$MESS["USER_LAST_SEEN_TODAY"] = "today on #TIME#";
+$MESS["USER_LAST_SEEN_YESTERDAY"] = "yesterday at #TIME#";
+$MESS["USER_LAST_SEEN_MORE_YEAR"] = "more than a year ago";
 ?>

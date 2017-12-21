@@ -39,6 +39,8 @@ class CBitrixComponentTemplate
 
 	public $__bInited = false;
 	private $__view = array();
+
+	/** @var \Bitrix\Main\Composite\BufferArea[] */
 	private $frames = array();
 	private $frameMode = null;
 
@@ -215,8 +217,7 @@ class CBitrixComponentTemplate
 		if (!empty($this->frames))
 		{
 			$arReturn["frames"] = array();
-			/** @var \Bitrix\Main\Page\FrameHelper $frame */
-			foreach($this->frames as $frame)
+			foreach ($this->frames as $frame)
 			{
 				$arReturn["frames"][] = $frame->getCachedData();
 			}
@@ -274,9 +275,13 @@ class CBitrixComponentTemplate
 
 			if (array_key_exists("frames", $arData) && is_array($arData["frames"]))
 			{
-				foreach($arData["frames"] as $frameState)
+				foreach ($arData["frames"] as $frameState)
 				{
-					\Bitrix\Main\Page\FrameStatic::applyCachedData($frameState);
+					$frame = \Bitrix\Main\Composite\StaticArea::applyCachedData($frameState);
+					if ($this->__component && $this->__component->__parent)
+					{
+						$this->__component->__parent->addChildFrame($frame);
+					}
 				}
 			}
 
@@ -287,7 +292,8 @@ class CBitrixComponentTemplate
 				if ($this->getFrameMode() === false)
 				{
 					$context = isset($arData["frameModeCtx"]) ? "(from component cache) ".$arData["frameModeCtx"] : "";
-					\Bitrix\Main\Data\StaticHtmlCache::applyComponentFrameMode($context);
+					$page = \Bitrix\Main\Composite\Page::getInstance();
+					$page->giveNegativeComponentVote($context);
 				}
 
 			}
@@ -713,16 +719,19 @@ class CBitrixComponentTemplate
 
 		include($_SERVER["DOCUMENT_ROOT"].$this->__file);
 
-		/** @var \Bitrix\Main\Page\FrameHelper $frame */
-		foreach($this->frames as $frame)
+		for ($i = count($this->frames) - 1; $i >= 0; $i--)
 		{
+			$frame = $this->frames[$i];
 			if ($frame->isStarted() && !$frame->isEnded())
+			{
 				$frame->end();
+			}
 		}
 
 		if (!$this->getFrameMode())
 		{
-			\Bitrix\Main\Data\StaticHtmlCache::applyComponentFrameMode($this->__file);
+			$page = \Bitrix\Main\Composite\Page::getInstance();
+			$page->giveNegativeComponentVote($this->__file);
 		}
 
 		$component_epilog = $this->__folder."/component_epilog.php";
@@ -1145,16 +1154,25 @@ class CBitrixComponentTemplate
 	 * @param string $id
 	 * @param bool $autoContainer
 	 *
-	 * @return Bitrix\Main\Page\FrameHelper
-	 * @see Bitrix\Main\Page\FrameHelper
+	 * @return Bitrix\Main\Composite\BufferArea
+	 * @see Bitrix\Main\Composite\BufferArea
 	 */
 	public function createFrame($id = null, $autoContainer = true)
 	{
 		$this->frameMode = true;
 		if ($id === null)
+		{
 			$id = $this->randString();
-		$frame = new Bitrix\Main\Page\FrameBuffered($id, $autoContainer);
-		array_unshift($this->frames, $frame);
+		}
+
+		$frame = new Bitrix\Main\Composite\BufferArea($id, $autoContainer);
+		$this->frames[] = $frame;
+
+		if ($this->__component && $this->__component->__parent)
+		{
+			$this->__component->__parent->addChildFrame($frame);
+		}
+
 		return $frame;
 	}
 

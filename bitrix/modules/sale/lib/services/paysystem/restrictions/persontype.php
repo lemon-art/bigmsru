@@ -5,6 +5,7 @@ namespace Bitrix\Sale\Services\PaySystem\Restrictions;
 use Bitrix\Main\Application;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Sale\Internals\CollectableEntity;
+use Bitrix\Sale\Internals\Entity;
 use Bitrix\Sale\Internals\PersonTypeTable;
 use Bitrix\Sale\Order;
 use Bitrix\Sale\PaymentCollection;
@@ -15,32 +16,42 @@ Loc::loadMessages(__FILE__);
 class PersonType extends Base\Restriction
 {
 	/**
-	 * @param $personTypeId
-	 * @param array $params
-	 * @param int $paymentId
+	 * @param $params
+	 * @param array $restrictionParams
+	 * @param int $serviceId
 	 * @return bool
 	 */
-	protected static function check($personTypeId, array $params, $paymentId = 0)
+	public static function check($params, array $restrictionParams, $serviceId = 0)
 	{
-		if (is_array($params) && isset($params['PERSON_TYPE_ID']))
+		if (is_array($restrictionParams) && isset($restrictionParams['PERSON_TYPE_ID']))
 		{
-			return in_array($personTypeId, $params['PERSON_TYPE_ID']);
+			return in_array($params, $restrictionParams['PERSON_TYPE_ID']);
 		}
 
 		return true;
 	}
 
 	/**
-	 * @param CollectableEntity $entity
+	 * @param Entity $entity
 	 * @return int
 	 */
-	public static function extractParams(CollectableEntity $entity)
+	public static function extractParams(Entity $entity)
 	{
-		/** @var PaymentCollection $collection */
-		$collection = $entity->getCollection();
+		if ($entity instanceof CollectableEntity)
+		{
+			/** @var PaymentCollection $collection */
+			$collection = $entity->getCollection();
 
-		/** @var Order $order */
-		$order = $collection->getOrder();
+			/** @var Order $order */
+			$order = $collection->getOrder();
+		}
+		elseif ($entity instanceof Order)
+		{
+			$order = $entity;
+		}
+
+		if (!$order)
+			return false;
 
 		$personTypeId = $order->getPersonTypeId();
 		return $personTypeId;
@@ -63,11 +74,11 @@ class PersonType extends Base\Restriction
 	}
 
 	/**
-	 * @param $paySystemId
+	 * @param $entityId
 	 * @return array
 	 * @throws \Bitrix\Main\ArgumentException
 	 */
-	public static function getParamsStructure($paySystemId = 0)
+	public static function getParamsStructure($entityId = 0)
 	{
 		$personTypeList = array();
 

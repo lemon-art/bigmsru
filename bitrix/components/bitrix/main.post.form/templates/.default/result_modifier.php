@@ -165,13 +165,22 @@ if (in_array("MentionUser", $arParams["BUTTONS"]))
 
 	$arParams["DESTINATION"]['LAST']['MENTION_USERS'] = array();
 
+	$limit = 20;
+	$mentionUserCounter = 0;
+
 	$arDestUser = Array();
 	foreach($arResult["MENTION_DEST_SORT"] as $code => $sortInfo)
 	{
+		if ($mentionUserCounter >=  $limit)
+		{
+			break;
+		}
+
 		if (preg_match('/^U(\d+)$/i', $code, $matches))
 		{
 			$arParams["DESTINATION"]['LAST']['MENTION_USERS'][$code] = $code;
 			$arDestUser[] = str_replace('U', '', $code);
+			$mentionUserCounter++;
 		}
 	}
 

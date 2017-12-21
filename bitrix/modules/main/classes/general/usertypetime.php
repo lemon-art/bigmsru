@@ -4,30 +4,30 @@ IncludeModuleLangFile(__FILE__);
 use Bitrix\Main;
 use Bitrix\Main\Type;
 
-class CUserTypeDateTime
+class CUserTypeDateTime extends Main\UserField\TypeBase
 {
+	const USER_TYPE_ID = 'datetime';
+
 	function GetUserTypeDescription()
 	{
 		return array(
-			"USER_TYPE_ID" => "datetime",
-			"CLASS_NAME" => "CUserTypeDateTime",
+			"USER_TYPE_ID" => static::USER_TYPE_ID,
+			"CLASS_NAME" => __CLASS__,
 			"DESCRIPTION" => GetMessage("USER_TYPE_DT_DESCRIPTION"),
-			"BASE_TYPE" => "datetime",
+			"BASE_TYPE" => \CUserTypeManager::BASE_TYPE_DATETIME,
+			"VIEW_CALLBACK" => array(__CLASS__, 'GetPublicView'),
+			"EDIT_CALLBACK" => array(__CLASS__, 'GetPublicEdit'),
 		);
 	}
 
 	function GetDBColumnType($arUserField)
 	{
 		global $DB;
-		switch(strtolower($DB->type))
+		if(strtolower($DB->type) == "oracle")
 		{
-			case "mysql":
-				return "datetime";
-			case "oracle":
-				return "date";
-			case "mssql":
-				return "datetime";
+			return "date";
 		}
+		return "datetime";
 	}
 
 	function PrepareSettings($arUserField)
@@ -44,8 +44,10 @@ class CUserTypeDateTime
 			else
 				$def = array("TYPE"=>"NONE","VALUE"=>"");
 		}
+
 		return array(
 			"DEFAULT_VALUE" => array("TYPE"=>$def["TYPE"], "VALUE"=>$def["VALUE"]),
+			"USE_SECOND" => $arUserField["SETTINGS"]["USE_SECOND"] === 'N' ? 'N' : 'Y',
 		);
 	}
 
@@ -74,6 +76,30 @@ class CUserTypeDateTime
 			</td>
 		</tr>
 		';
+
+		if($bVarsFromForm)
+		{
+			$value = $GLOBALS[$arHtmlControl["NAME"]]["USE_SECOND"] === 'N' ? 'N' : 'Y';
+		}
+		elseif(is_array($arUserField))
+		{
+			$value = $arUserField["SETTINGS"]["USE_SECOND"] === 'N' ? 'N' : 'Y';
+		}
+		else
+		{
+			$value = "Y";
+		}
+
+		$result .= '
+		<tr>
+			<td class="adm-detail-valign-top">'.GetMessage("USER_TYPE_DT_USE_SECOND").':</td>
+			<td>
+				<input type="hidden" name="'.$arHtmlControl["NAME"].'[USE_SECOND]" value="N" />
+				<label><input type="checkbox" value="Y" name="'.$arHtmlControl["NAME"].'[USE_SECOND]" '.($value === 'Y' ? ' checked="checked"' : '').' />&nbsp;'.GetMessage('MAIN_YES').'</label>
+			</td>
+		</tr>
+		';
+
 		return $result;
 	}
 
@@ -99,7 +125,12 @@ class CUserTypeDateTime
 
 	function GetFilterHTML($arUserField, $arHtmlControl)
 	{
-		return CAdminCalendar::CalendarDate($arHtmlControl["NAME"], $arHtmlControl["VALUE"], 20, true);
+		return CalendarPeriod(
+							$arHtmlControl['NAME'].'_from',
+							$GLOBALS[$arHtmlControl['NAME'].'_from'],
+							$arHtmlControl['NAME'].'_to',
+							$GLOBALS[$arHtmlControl['NAME'].'_to'],
+							'find_form', 'Y');
 	}
 
 	function GetAdminListViewHTML($arUserField, $arHtmlControl)
@@ -212,5 +243,122 @@ class CUserTypeDateTime
 
 		return $value;
 	}
+
+
+	public static function GetPublicView($arUserField, $arAdditionalParameters = array())
+	{
+		$value = static::normalizeFieldValue($arUserField["VALUE"]);
+
+		$html = '';
+		$first = true;
+
+		foreach($value as $res)
+		{
+			$res = \CDatabase::FormatDate($res, \CLang::GetDateFormat("FULL"), static::getFormat($res, $arUserField));
+
+			if(!$first)
+			{
+				$html .= static::getHelper()->getMultipleValuesSeparator();
+			}
+			$first = false;
+
+			if(strlen($arUserField['PROPERTY_VALUE_LINK']) > 0)
+			{
+				$res = '<a href="'.htmlspecialcharsbx(str_replace('#VALUE#', urlencode($res), $arUserField['PROPERTY_VALUE_LINK'])).'">'.$res.'</a>';
+			}
+
+			$html .= static::getHelper()->wrapSingleField($res);
+		}
+
+		return static::getHelper()->wrapDisplayResult($html);
+	}
+
+
+	public static function GetPublicEdit($arUserField, $arAdditionalParameters = array())
+	{
+		$fieldName = static::getFieldName($arUserField, $arAdditionalParameters);
+		$value = static::getFieldValue($arUserField, $arAdditionalParameters);
+
+		$html = '';
+
+		$first = true;
+		foreach($value as $res)
+		{
+			$tag = '';
+
+			if(!$first)
+			{
+				$html .= static::getHelper()->getMultipleValuesSeparator();
+			}
+			$first = false;
+
+			$attrList = array();
+
+			if(array_key_exists('attribute', $arAdditionalParameters))
+			{
+				$attrList = array_merge($attrList, $arAdditionalParameters['attribute']);
+			}
+
+			if($arUserField["EDIT_IN_LIST"] != "Y")
+			{
+				$attrList['disabled'] = 'disabled';
+			}
+			else
+			{
+				$attrList['onclick'] = 'BX.calendar({node: this, field: this, bTime: true, bSetFocus: false, bUseSecond: '.($arUserField['SETTINGS']['USE_SECOND'] === 'N' ? 'false' : 'true').'})';
+			}
+
+			if(isset($attrList['class']) && is_array($attrList['class']))
+			{
+				$attrList['class'] = implode(' ', $attrList['class']);
+			}
+
+			$attrList['name'] = $fieldName;
+
+			$attrList['type'] = 'text';
+			$attrList['tabindex'] = '0';
+			$attrList['value'] = \CDatabase::FormatDate($res, \CLang::GetDateFormat("FULL"), static::getFormat($res, $arUserField));
+
+			$tag .= '<input '.static::buildTagAttributes($attrList).'/>';
+			$tag .= '<i '.static::buildTagAttributes(array(
+					'class' => static::getHelper()->getCssClassName().' icon',
+					'onclick' => 'BX.calendar({node: this.previousSibling, field: this.previousSibling, bTime: true, bSetFocus: false, bUseSecond: '.($arUserField['SETTINGS']['USE_SECOND'] === 'N' ? 'false' : 'true').'});',
+				)).'></i>';
+
+			$html .= static::getHelper()->wrapSingleField($tag);
+		}
+
+		if($arUserField["MULTIPLE"] == "Y" && $arAdditionalParameters["SHOW_BUTTON"] != "N")
+		{
+			$html .= static::getHelper()->getCloneButton($fieldName);
+		}
+
+		static::initDisplay(array('date'));
+
+		return static::getHelper()->wrapDisplayResult($html);
+
+	}
+
+	protected static function getFormat($value, $arUserField)
+	{
+		$format = CLang::GetDateFormat("FULL");
+
+		if($arUserField['SETTINGS']['USE_SECOND'] === 'N' && MakeTimeStamp($value) % 60 <= 0)
+		{
+			$format = str_replace(':SS', '', $format);
+		}
+
+		return $format;
+	}
+
+	/**
+	 * @param array $arUserField
+	 * @param string $fieldName
+	 * @return string
+	 */
+	public static function FormatField(array $arUserField, $fieldName)
+	{
+		global $DB;
+		return $DB->DateToCharFunction($fieldName, "FULL");
+	}
 }
-?>

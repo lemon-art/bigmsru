@@ -68,16 +68,16 @@ class iblock extends CModule
 		RegisterModuleDependences("perfmon", "OnGetTableSchema", "iblock", "iblock", "OnGetTableSchema");
 		RegisterModuleDependences("sender", "OnConnectorList", "iblock", "\\Bitrix\\Iblock\\SenderEventHandler", "onConnectorListIblock");
 
-		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_Date_GetUserTypeDescription", 10);
-		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_DateTime_GetUserTypeDescription", 20);
-		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_XmlID_GetUserTypeDescription", 30);
-		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_FileMan_GetUserTypeDescription", 40);
-		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_HTML_GetUserTypeDescription", 50);
-		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_ElementList_GetUserTypeDescription", 60);
-		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_Sequence_GetUserTypeDescription", 70);
-		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_ElementAutoComplete_GetUserTypeDescription", 80);
-		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_SKU_GetUserTypeDescription", 90);
-		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_SectionAutoComplete_GetUserTypeDescription", 100);
+		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertyDate", "GetUserTypeDescription", 10);
+		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertyDateTime", "GetUserTypeDescription", 20);
+		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertyXmlID", "GetUserTypeDescription", 30);
+		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertyFileMan", "GetUserTypeDescription", 40);
+		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertyHTML", "GetUserTypeDescription", 50);
+		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertyElementList", "GetUserTypeDescription", 60);
+		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertySequence", "GetUserTypeDescription", 70);
+		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertyElementAutoComplete", "GetUserTypeDescription", 80);
+		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertySKU", "GetUserTypeDescription", 90);
+		RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertySectionAutoComplete", "GetUserTypeDescription", 100);
 
 		$this->InstallTasks();
 
@@ -151,16 +151,16 @@ class iblock extends CModule
 		UnRegisterModuleDependences("perfmon", "OnGetTableSchema", "iblock", "iblock", "OnGetTableSchema");
 		UnRegisterModuleDependences("sender", "OnConnectorList", "iblock", "\\Bitrix\\Iblock\\SenderEventHandler", "onConnectorListIblock");
 
-		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_Date_GetUserTypeDescription");
-		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_DateTime_GetUserTypeDescription");
-		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_XmlID_GetUserTypeDescription");
-		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_FileMan_GetUserTypeDescription");
-		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_HTML_GetUserTypeDescription");
-		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_ElementList_GetUserTypeDescription");
-		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_Sequence_GetUserTypeDescription");
-		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_ElementAutoComplete_GetUserTypeDescription");
-		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_SKU_GetUserTypeDescription");
-		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockProperty", "_SectionAutoComplete_GetUserTypeDescription");
+		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertyDate", "GetUserTypeDescription");
+		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertyDateTime", "GetUserTypeDescription");
+		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertyXmlID", "GetUserTypeDescription");
+		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertyFileMan", "GetUserTypeDescription");
+		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertyHTML", "GetUserTypeDescription");
+		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertyElementList", "GetUserTypeDescription");
+		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertySequence", "GetUserTypeDescription");
+		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertyElementAutoComplete", "GetUserTypeDescription");
+		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertySKU", "GetUserTypeDescription");
+		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", "iblock", "CIBlockPropertySectionAutoComplete", "GetUserTypeDescription");
 
 		UnRegisterModule("iblock");
 

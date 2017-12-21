@@ -438,8 +438,8 @@ class CSaleBasket extends CAllSaleBasket
 		$isOrderConverted = \Bitrix\Main\Config\Option::get("main", "~sale_converted_15", 'N');
 
 		CSaleBasket::Init();
-		if (!CSaleBasket::CheckFields("ADD", $arFields))
-			return false;
+//		if (!CSaleBasket::CheckFields("ADD", $arFields))
+//			return false;
 
 		if ($isOrderConverted != "Y")
 		{
@@ -796,7 +796,7 @@ class CSaleBasket extends CAllSaleBasket
 		if ($FUSER_ID <= 0)
 			return false;
 
-		$arFilter = array("FUSER_ID" => $FUSER_ID);
+		$arFilter = array("FUSER_ID" => $FUSER_ID, 'SET_PARENT_ID' => false);
 		if (!$bIncOrdered)
 			$arFilter["ORDER_ID"] = "NULL";
 

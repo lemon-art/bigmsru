@@ -15,7 +15,7 @@ Loc::loadMessages(__FILE__);
 
 Loader::IncludeModule('conversion');
 
-if ($APPLICATION->GetGroupRight('conversion') < 'W')
+if ($APPLICATION->GetGroupRight('conversion') < 'R')
 	$APPLICATION->AuthForm(Loc::getMessage('ACCESS_DENIED'));
 
 $userOptions = CUserOptions::GetOption('conversion', 'filter', array());
@@ -182,7 +182,7 @@ function conversion_renderRate(array $rate, array $rateType)
 					?>
 					<span class="stat-item-block-title"><?=Loc::getMessage('CONVERSION_SALE_RATE_SUM')?></span>
 					<span class="stat-item-block-digit"><?=number_format($rate['SUM'])?>
-						<span><?=isset($rateType['UNITS']['SUM']) ? $rateType['UNITS']['SUM'] : ''?></span>
+						<span><? if (isset($rateType['UNITS']['SUM'])) echo htmlspecialcharsbx($rateType['UNITS']['SUM']); ?></span>
 					</span>
 					<?
 				}
@@ -193,7 +193,7 @@ function conversion_renderRate(array $rate, array $rateType)
 		<div class="stat-item-block">
 			<span class="stat-item-block-inner">
 				<span class="stat-item-block-title"><?=Loc::getMessage('CONVERSION_SALE_RATE_QUANTITY')?></span>
-				<span class="stat-item-block-digit"><?=isset($rate['QUANTITY']) ? $rate['QUANTITY'] : $rate['NUMERATOR']?></span>
+				<span class="stat-item-block-digit"><?=(isset($rate['QUANTITY']) ? $rate['QUANTITY'] : $rate['NUMERATOR']) ?></span>
 			</span>
 		</div>
 	</div>

@@ -34,14 +34,59 @@ $backUrl = $request->get('backurl');
 if($orderId <= 0 || !($saleOrder = Bitrix\Sale\Order::load($orderId)))
 	LocalRedirect("/bitrix/admin/sale_order.php?lang=".$lang.GetFilterParams("filter_", false));
 
+$allowedOrderStatusesView = \Bitrix\Sale\OrderStatus::getStatusesUserCanDoOperations($USER->GetID(), array('view'));
+$allowedOrderStatusesUpdate = \Bitrix\Sale\OrderStatus::getStatusesUserCanDoOperations($USER->GetID(), array('update'));
+
+$allowUpdate = $allowDelete = in_array($saleOrder->getField("STATUS_ID"), $allowedOrderStatusesUpdate);
+$allowView = in_array($saleOrder->getField("STATUS_ID"), $allowedOrderStatusesView);
+
+
 $payment = null;
 $errors = array();
 $fields = array();
 
-if ($request->get('delete') == 'Y' && check_bitrix_sessid())
+if ($paymentId > 0)
 {
 	$paymentCollection = $saleOrder->getPaymentCollection();
 	$payment = $paymentCollection->getItemById($paymentId);
+
+	if (!$payment)
+		LocalRedirect("/bitrix/admin/sale_order.php?lang=".LANGUAGE_ID.GetFilterParams("filter_", false));
+}
+
+$isUserResponsible = false;
+$isAllowCompany = false;
+
+if ($saleModulePermissions == 'P')
+{
+	$userCompanyList = \Bitrix\Sale\Services\Company\Manager::getUserCompanyList($USER->GetID());
+
+	if ($saleOrder->getField('RESPONSIBLE_ID') == $USER->GetID()
+		|| ($payment && $payment->getField('RESPONSIBLE_ID') == $USER->GetID()))
+	{
+		$isUserResponsible = true;
+	}
+
+	if ((in_array($saleOrder->getField('COMPANY_ID'), $userCompanyList)
+		|| ($payment && in_array($payment->getField('COMPANY_ID'), $userCompanyList))))
+	{
+		$isAllowCompany = true;
+	}
+
+	if (!$isUserResponsible && !$isAllowCompany)
+	{
+		LocalRedirect("/bitrix/admin/sale_order.php?lang=".LANGUAGE_ID.GetFilterParams("filter_", false));
+	}
+}
+
+if ($request->get('delete') == 'Y' && check_bitrix_sessid())
+{
+	if(!$allowDelete)
+	{
+		LocalRedirect('/bitrix/admin/sale_order_payment.php?lang='.$lang.GetFilterParams('filter_', false));
+	}
+
+
 	if ($payment)
 	{
 		$delResult = $payment->delete();
@@ -70,6 +115,18 @@ if ($request->get('delete') == 'Y' && check_bitrix_sessid())
 
 if ($request->isPost() && check_bitrix_sessid() && $request->get('update'))
 {
+	if(!$allowUpdate)
+	{
+		if (isset($_POST["apply"]))
+		{
+			LocalRedirect("/bitrix/admin/sale_order_payment_edit.php?lang=".$lang."&order_id=".$orderId."&payment_id=".$paymentId."&backurl=".urlencode($backUrl).GetFilterParams("filter_", false));
+		}
+		else
+		{
+			LocalRedirect('/bitrix/admin/sale_order_payment.php?lang='.$lang.GetFilterParams('filter_', false));
+		}
+	}
+
 	/**
 	 * @var $result \Bitrix\Main\Entity\Result;
 	 */
@@ -105,14 +162,18 @@ if ($request->isPost() && check_bitrix_sessid() && $request->get('update'))
 }
 else
 {
-	if ($paymentId > 0)
-		$payment = $saleOrder->getPaymentCollection()->getItemById($paymentId);
-	else
+	if ($paymentId == 0)
+	{
 		$payment = $saleOrder->getPaymentCollection()->createItem();
+	}
 
 	if (!$payment)
 		LocalRedirect("/bitrix/admin/sale_order_payment.php?lang=".$lang.GetFilterParams("filter_", false));
 }
+
+if ((!$allowView && !$allowUpdate) || Order::isLocked($orderId))
+	LocalRedirect('/bitrix/admin/sale_order_payment.php?lang=' . $lang . GetFilterParams('filter_', false));
+
 
 $companyParams = array(
 	'select' => array('ID', 'NAME')
@@ -127,9 +188,9 @@ $APPLICATION->SetTitle($title);
 
 if ($paymentId > 0)
 {
-	global $entity;
+	global $historyEntity;
 
-	$entity = array(
+	$historyEntity = array(
 		'ENTITY' => 'PAYMENT',
 		'ENTITY_ID' => $paymentId
 	);
@@ -153,12 +214,15 @@ $aMenu[] = array(
 );
 if (!$new)
 {
-	$aMenu[] = array(
-		"TEXT" => Loc::getMessage("SOPE_PAYMENT_DELETE"),
-		"TITLE" => Loc::getMessage("SOPE_PAYMENT_DELETE_TITLE"),
-		"LINK" => "javascript:void(0)",
-		"ONCLICK" => "if(confirm('".Loc::getMessage('SOPE_PAYMENT_DELETE_MESSAGE')."')) window.location.href='/bitrix/admin/sale_order_payment_edit.php?order_id=".$orderId."&payment_id=".$paymentId."&delete=Y&".bitrix_sessid_get()."&lang=".LANGUAGE_ID.GetFilterParams("filter_")."'"
-	);
+	if ($allowDelete)
+	{
+		$aMenu[] = array(
+			"TEXT" => Loc::getMessage("SOPE_PAYMENT_DELETE"),
+			"TITLE" => Loc::getMessage("SOPE_PAYMENT_DELETE_TITLE"),
+			"LINK" => "javascript:void(0)",
+			"ONCLICK" => "if(confirm('".Loc::getMessage('SOPE_PAYMENT_DELETE_MESSAGE')."')) window.location.href='/bitrix/admin/sale_order_payment_edit.php?order_id=".$orderId."&payment_id=".$paymentId."&delete=Y&".bitrix_sessid_get()."&lang=".LANGUAGE_ID.GetFilterParams("filter_")."'"
+		);
+	}
 }
 
 $aMenu[] = array(
@@ -293,6 +357,7 @@ endif;
 
 $tabControl->Buttons(
 	array(
+		"disabled" => !$allowUpdate,
 		"back_url" => $backUrl
 	)
 );

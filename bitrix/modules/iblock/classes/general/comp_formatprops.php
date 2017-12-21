@@ -181,12 +181,11 @@ class CIBlockFormatProperties
 		switch($format)
 		{
 		case "SHORT":
-			return FormatDate($DB->dateFormatToPHP(FORMAT_DATE), $timestamp);
+			return FormatDate($DB->DateFormatToPHP(FORMAT_DATE), $timestamp);
 		case "FULL":
-			return FormatDate($DB->dateFormatToPHP(FORMAT_DATETIME), $timestamp);
+			return FormatDate($DB->DateFormatToPHP(FORMAT_DATETIME), $timestamp);
 		default:
 			return FormatDate($format, $timestamp);
 		}
 	}
 }
-?>

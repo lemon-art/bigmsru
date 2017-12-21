@@ -612,7 +612,7 @@ class CAllForumNew
 	{
 		global $DB, $CACHE_MANAGER, $aForumPermissions;
 		$ID = intVal($ID);
-		if (is_integer($arUserGroups))
+		if (is_integer($arUserGroups) || is_null($arUserGroups))
 		{
 			global $USER;
 			$arUserGroups = ($USER->getId() == $arUserGroups ? $USER->GetUserGroupArray() : CUser::GetUserGroup($arUserGroups));
@@ -640,7 +640,7 @@ class CAllForumNew
 			else
 			{
 				$strSql = "SELECT MAX(FP.PERMISSION) as P FROM b_forum_perms FP ".
-					"WHERE FP.FORUM_ID=".$ID." AND FP.GROUP_ID IN (".implode(",", $arUserGroups).")";
+					"WHERE FP.FORUM_ID=".$ID." AND FP.GROUP_ID IN (".(implode(",", $arUserGroups) ?: 2).")";
 				$res = $DB->Query($strSql, false, "File: ".__FILE__."<br>Line: ".__LINE__);
 				if ($r = $res->Fetch())
 					$GLOBALS["FORUM_CACHE"]["FORUM"][$ID]["PERMISSION"][$key] = $r["P"];
@@ -1853,27 +1853,48 @@ class CAllForumNew
 		return $DB->Query($strSql, false, "File: ".__FILE__."<br>Line: ".__LINE__);
 	}
 
+	/**
+	 * Replace path to forum message link.
+	 * @param string|null $strPath
+	 * @param array $arVals
+	 * @return string|array
+	 */
 	public static function PreparePath2Message($strPath, $arVals = array())
 	{
+		if (!is_array($arVals))
+		{
+			$arVals = array();
+		}
+
 		$pattern = array(
-			"#MESSAGE_ID#" => $arVals["MESSAGE_ID"],
-			"#MID#" => $arVals["MESSAGE_ID"],
-			"#TOPIC_ID#" => $arVals["TOPIC_ID"],
-			"#TID#" => $arVals["TOPIC_ID"],
-			"#TITLE_SEO#" => $arVals["TITLE_SEO"],
-			"#FORUM_ID#" => $arVals["FORUM_ID"],
-			"#FID#" => $arVals["FORUM_ID"],
-			"#PARAM1#" => $arVals["PARAM1"],
-			"#PARAM2#" => $arVals["PARAM2"],
-			"#SOCNET_GROUP_ID#" => $arVals["SOCNET_GROUP_ID"],
-			"#OWNER_ID#" => $arVals["OWNER_ID"]
+			'#MESSAGE_ID#' => $arVals['MESSAGE_ID'],
+			'#MID#' => $arVals['MESSAGE_ID'],
+			'#TOPIC_ID#' => $arVals['TOPIC_ID'],
+			'#TID#' => $arVals['TOPIC_ID'],
+			'#TITLE_SEO#' => $arVals['TITLE_SEO'],
+			'#FORUM_ID#' => $arVals['FORUM_ID'],
+			'#FID#' => $arVals['FORUM_ID'],
+			'#PARAM1#' => $arVals['PARAM1'],
+			'#PARAM2#' => $arVals['PARAM2'],
+			'#SOCNET_GROUP_ID#' => $arVals['SOCNET_GROUP_ID'],
+			'#OWNER_ID#' => $arVals['OWNER_ID']
 		);
 		if ($strPath === NULL)
+		{
 			return array_keys($pattern);
-		else if (strlen($strPath)<=0)
-			return "";
-		$pattern["//"] = "/";
-		return str_replace(array_keys($pattern), array_values($pattern), $strPath);
+		}
+		$strPath = trim($strPath);
+		if ($strPath == '')
+		{
+			return '';
+		}
+		$strPath = preg_replace('/([^:])(\/{2,})/', '$1/', $strPath);
+		$strPath = str_replace(
+						array_keys($pattern),
+						array_values($pattern),
+						$strPath
+					);
+		return $strPath;
 	}
 
 	//---------------> Forum actions
@@ -1893,6 +1914,11 @@ class CAllForumNew
 	public static function OnPanelCreate() // out-of-date function
 	{
 		return false;
+	}
+
+	public static function OnReindex($NS = array(), $oCallback = NULL, $callback_method = "")
+	{
+		return CForumNew::reindex($NS, $oCallback, $callback_method);
 	}
 
 	public static function ShowPanel($FID, $TID=0, $bGetIcons=false)

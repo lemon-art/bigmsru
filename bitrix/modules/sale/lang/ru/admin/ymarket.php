@@ -68,4 +68,27 @@ $MESS["SALE_YM_ORDER_PROPS_ZIP"] = "Индекс";
 $MESS["SALE_YM_ORDER_PROPS_CITY"] = "Город";
 $MESS["SALE_YM_ORDER_PROPS_LOCATION"] = "Местоположение";
 $MESS["SALE_YM_ORDER_PROPS_ADDRESS"] = "Адрес";
+$MESS["SALE_YM_ACCEPT_OLD_PRICE"] = "Если цена товара изменилась с момента запроса цены до момента оформления заказа";
+$MESS["SALE_YM_ACCEPT_OLD_PRICE_N"] = "Не оформлять заказ";
+$MESS["SALE_YM_ACCEPT_OLD_PRICE_Y"] = "Оформлять заказ со старой ценой";
+$MESS["SALE_YM_PERIOD"] = "Сроки доставки по умолчанию (в днях)";
+$MESS["SALE_YM_PERIOD_NOTE"] = "Для обработчиков службы доставки, которые не возвращают информацию о сроках доставки";
+$MESS["SALE_YM_DLV_PS_YANDEX"] = "Предоплата Яндексу";
+$MESS["SALE_YM_DLV_PS_SHOP_PREPAID"] = "Предоплата магазину";
+$MESS["SALE_YM_DLV_PS_CARD_ON_DELIVERY"] = "Карта при получении";
+$MESS["SALE_YM_DLV_PS_CASH_ON_DELIVERY"] = "Наличные при получении";
+$MESS["SALE_YM_DLV_PS_METHODS_AVAILABLE"] = "Доступные методы оплаты";
+$MESS["SALE_YM_SITE"] = "Сайт";
+$MESS["SALE_YM_TAB_MAIN"] = "Основные";
+$MESS["SALE_YM_TAB_MAIN_TITLE"] = "Основные настройки";
+$MESS["SALE_YM_TAB_PAY"] = "Способы оплаты";
+$MESS["SALE_YM_TAB_PAY_TITLE"] = "Настройка соответствий способов оплаты";
+$MESS["SALE_YM_TAB_DLV"] = "Службы доставки";
+$MESS["SALE_YM_TAB_DLV_TITLE"] = "Настройка соответствий служб доставок";
+$MESS["SALE_YM_TAB_STATUS"] = "Статусы";
+$MESS["SALE_YM_TAB_STATUS_TITLE"] = "Настройка соответствий статусов";
+$MESS["SALE_YM_TAB_PROPS"] = "Свойства заказа";
+$MESS["SALE_YM_TAB_PROPS_TITLE"] = "Настройка соответствий свойств заказа";
+$MESS["SALE_YM_DELIVERY_NOTE"] = "<b>Внимание!</b> На то чтобы вернуть ответ при запросе информации о товарах, службах доставок, способах оплаты, магазину отводится не более <b>5,5 секунд</b>. Соответственно при настройке служб доставок необходимо учитывать сколько времени необходимо на рассчёт стоимости доставки всеми используемыми здесь службами доставок.";
+
 ?>

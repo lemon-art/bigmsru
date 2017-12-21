@@ -255,6 +255,12 @@ class CJSPopup
 		if (!$back_url && is_set($_REQUEST, 'back_url'))
 			$back_url = $_REQUEST['back_url'];
 
+		if(substr($back_url, 0, 1) != "/" || substr($back_url, 1, 1) == "/")
+		{
+			//only local /url is allowed
+			$back_url = '';
+		}
+
 		echo '<script>';
 		echo 'top.'.$this->jsPopup.'.Close(); ';
 

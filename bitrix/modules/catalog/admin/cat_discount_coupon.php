@@ -473,8 +473,9 @@ $oFilter->Begin();
 				);
 				while ($arDiscountList = $dbDiscountList->Fetch())
 				{
-					?><option value="<? echo $arDiscountList["ID"] ?>"<?if ($filter_discount_id == $arDiscountList["ID"]) echo " selected";?>><? echo htmlspecialcharsbx("[".$arDiscountList["ID"]."] ".$arDiscountList["NAME"]." (".$arDiscountList["SITE_ID"].")") ?></option><?
+					?><option value="<? echo $arDiscountList["ID"] ?>"<?if ($filter_discount_id == $arDiscountList["ID"]) echo " selected";?>><? echo "[".$arDiscountList["ID"]."] ".htmlspecialcharsbx($arDiscountList["NAME"]." (".$arDiscountList["SITE_ID"].")") ?></option><?
 				}
+				unset($arDiscountList, $dbDiscountList);
 				?>
 			</select>
 		</td>

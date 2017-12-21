@@ -53,4 +53,7 @@ $MESS["USM_ONLINE_DEMO"] = "Online trial";
 $MESS["USM_MORE_MODULES"] = "Other solutions by this developer";
 $MESS["USM_COMMENTS"] = "Reviews";
 $MESS["USM_COMMENTS_ADD"] = "Add review";
+$MESS["USM_SORT_SORT"] = "rating";
+$MESS["USM_NOTIF_INST"] = "#USER# asks that you install the app <b><a href=\"/bitrix/admin/update_system_market.php?lang=#LANG#&module=#MODULE_CODE#\">#MODULE_NAME#</a></b> from Marketplace.";
+$MESS["USM_NOTIF_INST_OK"] = "Application installation request has been sent to the Administrator.";
 ?>

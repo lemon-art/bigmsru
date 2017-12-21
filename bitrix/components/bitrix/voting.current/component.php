@@ -3,6 +3,7 @@ if (!CModule::IncludeModule("vote")):
 	ShowError(GetMessage("VOTE_MODULE_IS_NOT_INSTALLED"));
 	return;
 endif;
+$this->setFrameMode(false);
 /********************************************************************
 				Input params
 ********************************************************************/

@@ -9,11 +9,13 @@ use Bitrix\Main\Localization\Loc;
  */
 
 if ($arParams["SET_TITLE"] == "Y")
+{
 	$APPLICATION->SetTitle(Loc::getMessage("SOA_ORDER_COMPLETE"));
+}
 ?>
 
 <? if (!empty($arResult["ORDER"])): ?>
-	
+
 	<table class="sale_order_full_table">
 		<tr>
 			<td>
@@ -33,76 +35,85 @@ if ($arParams["SET_TITLE"] == "Y")
 	</table>
 
 	<?
-	if (!empty($arResult["PAYMENT"]))
+	if ($arResult["ORDER"]["IS_ALLOW_PAY"] === 'Y')
 	{
-		foreach ($arResult["PAYMENT"] as $payment)
+		if (!empty($arResult["PAYMENT"]))
 		{
-			if ($payment["PAID"] != 'Y')
+			foreach ($arResult["PAYMENT"] as $payment)
 			{
-				if (!empty($arResult['PAY_SYSTEM_LIST'])
-					&& array_key_exists($payment["PAY_SYSTEM_ID"], $arResult['PAY_SYSTEM_LIST'])
-				)
+				if ($payment["PAID"] != 'Y')
 				{
-					$arPaySystem = $arResult['PAY_SYSTEM_LIST'][$payment["PAY_SYSTEM_ID"]];
-
-					if (empty($arPaySystem["ERROR"]))
+					if (!empty($arResult['PAY_SYSTEM_LIST'])
+						&& array_key_exists($payment["PAY_SYSTEM_ID"], $arResult['PAY_SYSTEM_LIST'])
+					)
 					{
-					?>
-						<br /><br />
+						$arPaySystem = $arResult['PAY_SYSTEM_LIST'][$payment["PAY_SYSTEM_ID"]];
 
-						<table class="sale_order_full_table">
-							<tr>
-								<td class="ps_logo">
-									<div class="pay_name"><?= Loc::getMessage("SOA_PAY") ?></div>
-									<?= CFile::ShowImage($arPaySystem["LOGOTIP"], 100, 100, "border=0\" style=\"width:100px\"", "", false) ?>
-									<div class="paysystem_name"><?= $arPaySystem["NAME"] ?></div>
-									<br/>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<? if (strlen($arPaySystem["ACTION_FILE"]) > 0 && $arPaySystem["NEW_WINDOW"] == "Y" && $arPaySystem["IS_CASH"] != "Y"): ?>
-										<?
-										$orderAccountNumber = urlencode(urlencode($arResult["ORDER"]["ACCOUNT_NUMBER"]));
-										$paymentAccountNumber = $payment["ACCOUNT_NUMBER"];
-										?>
-										<script>
-											window.open('<?=$arParams["PATH_TO_PAYMENT"]?>?ORDER_ID=<?=$orderAccountNumber?>&PAYMENT_ID=<?=$paymentAccountNumber?>');
-										</script>
+						if (empty($arPaySystem["ERROR"]))
+						{
+							?>
+							<br /><br />
+
+							<table class="sale_order_full_table">
+								<tr>
+									<td class="ps_logo">
+										<div class="pay_name"><?=Loc::getMessage("SOA_PAY") ?></div>
+										<?=CFile::ShowImage($arPaySystem["LOGOTIP"], 100, 100, "border=0\" style=\"width:100px\"", "", false) ?>
+										<div class="paysystem_name"><?=$arPaySystem["NAME"] ?></div>
+										<br/>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<? if (strlen($arPaySystem["ACTION_FILE"]) > 0 && $arPaySystem["NEW_WINDOW"] == "Y" && $arPaySystem["IS_CASH"] != "Y"): ?>
+											<?
+											$orderAccountNumber = urlencode(urlencode($arResult["ORDER"]["ACCOUNT_NUMBER"]));
+											$paymentAccountNumber = $payment["ACCOUNT_NUMBER"];
+											?>
+											<script>
+												window.open('<?=$arParams["PATH_TO_PAYMENT"]?>?ORDER_ID=<?=$orderAccountNumber?>&PAYMENT_ID=<?=$paymentAccountNumber?>');
+											</script>
 										<?=Loc::getMessage("SOA_PAY_LINK", array("#LINK#" => $arParams["PATH_TO_PAYMENT"]."?ORDER_ID=".$orderAccountNumber."&PAYMENT_ID=".$paymentAccountNumber))?>
 										<? if (CSalePdf::isPdfAvailable() && $arPaySystem['IS_AFFORD_PDF']): ?>
-											<br/>
+										<br/>
 											<?=Loc::getMessage("SOA_PAY_PDF", array("#LINK#" => $arParams["PATH_TO_PAYMENT"]."?ORDER_ID=".$orderAccountNumber."&pdf=1&DOWNLOAD=Y"))?>
 										<? endif ?>
-									<? else: ?>
-										<?=$arPaySystem["BUFFERED_OUTPUT"]?>
-									<? endif ?>
-								</td>
-							</tr>
-						</table>
-						
-					<?
+										<? else: ?>
+											<?=$arPaySystem["BUFFERED_OUTPUT"]?>
+										<? endif ?>
+									</td>
+								</tr>
+							</table>
+
+							<?
+						}
+						else
+						{
+							?>
+							<span style="color:red;"><?=Loc::getMessage("SOA_ORDER_PS_ERROR")?></span>
+							<?
+						}
 					}
 					else
 					{
-					?>
-						<span style="color:red;"><?= Loc::getMessage("SOA_ORDER_PS_ERROR")?></span>
-					<?
+						?>
+						<span style="color:red;"><?=Loc::getMessage("SOA_ORDER_PS_ERROR")?></span>
+						<?
 					}
-				}
-				else
-				{
-				?>
-					<span style="color:red;"><?= Loc::getMessage("SOA_ORDER_PS_ERROR")?></span>
-				<?
 				}
 			}
 		}
 	}
+	else
+	{
+		?>
+		<br /><strong><?=$arParams['MESS_PAY_SYSTEM_PAYABLE_ERROR']?></strong>
+		<?
+	}
 	?>
-	
+
 <? else: ?>
-	
+
 	<b><?=Loc::getMessage("SOA_ERROR_ORDER")?></b>
 	<br /><br />
 
@@ -114,5 +125,5 @@ if ($arParams["SET_TITLE"] == "Y")
 			</td>
 		</tr>
 	</table>
-	
+
 <? endif ?>

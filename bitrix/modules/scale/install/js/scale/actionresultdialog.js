@@ -36,24 +36,19 @@
 					actionResult = this.result.ACTION_RESULT[actId];
 
 				if(actionResult.ERROR)
-				{
 					message += actionResult.ERROR;
-				}
-				else if(actionResult.OUTPUT.DATA && actionResult.OUTPUT.DATA.message)
-				{
+				else if(actionResult.OUTPUT && actionResult.OUTPUT.DATA && actionResult.OUTPUT.DATA.message)
 					message = actionResult.OUTPUT.DATA.message;
-				}
 
 				result += "<tr>";
-
 				result += "<td>"+this.result.ACTION_RESULT[actId].NAME+"</td>";
 
 				if(actionResult.RESULT == "OK")
-					result += "<td><span style='color: green;'>OK</span></td>";
+					result += "<td style='text-align: center;'><span style='color: green;'>OK</span></td>";
 				else
-					result += "<td><span style='color: red;'>"+BX.message("SCALE_PANEL_JS_ERROR")+"</span></td>";
+					result += "<td style='text-align: center;'><span style='color: red;'>"+BX.message("SCALE_PANEL_JS_ERROR")+"</span></td>";
 
-				result += "<td>"+message+"</td>";
+				result += "<td><pre>"+BX.util.htmlspecialchars(message)+"</pre></td>";
 
 				result += "</tr>";
 			}
@@ -83,14 +78,14 @@
 		this.dialogWindow = new BX.CDialog({
 			title: BX.message("SCALE_PANEL_JS_ARD_RES"),
 			content: content,
-			resizable: false,
+			resizable: true,
 			height: 500,
-			width: 450,
+			width: 600,
 			buttons: [ btnClose ]
 		});
 
-		this.dialogWindow.adjustSizeEx();
 		this.dialogWindow.Show();
+		this.dialogWindow.adjustSizeEx();
 	};
 
 })(window);

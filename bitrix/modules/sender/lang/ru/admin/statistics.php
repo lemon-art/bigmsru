@@ -1,42 +1,29 @@
 <?
-$MESS["sender_stat_title"] = "Статистика";
-$MESS["sender_stat_flt_mailing"] = "Рассылка";
-$MESS["sender_stat_flt_mailing_chain"] = "Выпуск";
-$MESS["sender_stat_error_no_data"] = "Нет данных. Выпуск не отправлялся или отправка не завершена.";
+$MESS["SENDER_STATS_TITLE"] = "Старт";
+$MESS["SENDER_STATS_EFFICIENCY_TITLE"] = "Уровень эффективности";
+$MESS["SENDER_STATS_EFFICIENCY_LEVEL_1"] = "Плохо";
+$MESS["SENDER_STATS_EFFICIENCY_LEVEL_2"] = "Неплохо";
+$MESS["SENDER_STATS_EFFICIENCY_LEVEL_3"] = "Нормально";
+$MESS["SENDER_STATS_EFFICIENCY_LEVEL_4"] = "Хорошо";
+$MESS["SENDER_STATS_EFFICIENCY_LEVEL_5"] = "Отлично";
 
-$MESS["sender_stat_report"] = "Отчет о выпуске";
-$MESS["sender_stat_report_title"] = "Выпуск от";
-$MESS["sender_stat_report_subject"] = "Тема сообщения:";
-$MESS["sender_stat_report_date_create"] = "Создана:";
-$MESS["sender_stat_report_date_sent"] = "Время запуска:";
-$MESS["sender_stat_report_cnt_all"] = "Всего отправлено сообщений:";
-$MESS["sender_stat_report_cnt_in"] = "в том числе:";
-$MESS["sender_stat_report_cnt_read"] = "Число прочитанных:";
-$MESS["sender_stat_report_cnt_click"] = "Переходы по ссылке:";
-$MESS["sender_stat_report_cnt_error"] = "С ошибками:";
-$MESS["sender_stat_report_cnt_unsub"] = "Отписались от рассылки:";
+$MESS["SENDER_STATS_RECENT_POSTINGS"] = "Недавние выпуски";
+$MESS["SENDER_STATS_CREATE_NEW"] = "Создать новый выпуск";
 
-$MESS["sender_stat_graph"] = "Эффективность выпуска";
-$MESS["sender_stat_graph_all"] = "Всего писем отправлено";
-$MESS["sender_stat_graph_read"] = "Открыто писем";
-$MESS["sender_stat_graph_click"] = "Имеют переходы по ссылкам";
-$MESS["sender_stat_graph_unsub"] = "Отписались от писем";
-$MESS["sender_stat_graph_error"] = "Ошибок при отправке";
+$MESS["SENDER_STATS_FILTER_PERIOD_FOR"] = "за";
+$MESS["SENDER_STATS_FILTER_FROM_AUTHOR"] = "от";
 
-$MESS["sender_stat_graphperiod"] = "Эффективность периодических отправок выпуска";
-$MESS["sender_stat_graphperiod_all"] = "всего:";
-$MESS["sender_stat_graphperiod_action"] = "Действия получателей сообщений";
-$MESS["sender_stat_graphperiod_cnt_all"] = "Отправлено сообщений";
-$MESS["sender_stat_graphperiod_cnt_read"] = "Прочитали";
-$MESS["sender_stat_graphperiod_cnt_click"] = "Перешли по ссылкам";
-$MESS["sender_stat_graphperiod_cnt_unsub"] = "Отписались";
+$MESS["SENDER_STATS_COUNTER_SEND_ALL"] = "Всего отправлено писем";
+$MESS["SENDER_STATS_COUNTER_READ"] = "Прочитанных";
+$MESS["SENDER_STATS_COUNTER_CLICK"] = "Переходы";
+$MESS["SENDER_STATS_COUNTER_UNSUB"] = "Отписались";
+$MESS["SENDER_STATS_COUNTER_SUBS"] = "Подписались";
+$MESS["SENDER_STATS_COUNTER_POSTINGS"] = "Количество выпусков";
 
-$MESS["sender_stat_click_title"] = "Топ-15 переходов по ссылкам";
-$MESS["sender_stat_click_cnt"] = "Количество";
-$MESS["sender_stat_click_link"] = "Ссылка";
-$MESS["sender_stat_click_no_data"] = "Нет данных";
-
-$MESS["POST_U_YES"] = "Да";
-$MESS["POST_U_NO"] = "Нет";
-$MESS["MAIN_ALL"] = "(все)";
+$MESS["SENDER_STATS_CHART_EFFICIENCY"] = "Динамика эффективности";
+$MESS["SENDER_STATS_CHART_READ"] = "Прочтения";
+$MESS["SENDER_STATS_CHART_CLICK"] = "Клики";
+$MESS["SENDER_STATS_CHART_UNSUB"] = "Отписки";
+$MESS["SENDER_STATS_NO_DATA"] = "Нет данных";
+$MESS["SENDER_STATS_IN"] = "в";
 ?>

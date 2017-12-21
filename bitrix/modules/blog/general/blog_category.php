@@ -63,7 +63,7 @@ class CAllBlogCategory
 		return True;
 	}
 
-	function Delete($ID)
+	public static function Delete($ID)
 	{
 		global $DB;
 

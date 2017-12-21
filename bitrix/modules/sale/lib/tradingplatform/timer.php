@@ -15,7 +15,7 @@ class Timer
 	 * Constructor.
 	 * @param int $newTimeLimit Timelimit seconds.
 	 */
-	public function __construct($newTimeLimit = 0)
+	public function __construct($newTimeLimit = 0, $increaseTimeLimit = true)
 	{
 		$startTime = (int)time();
 		$currentTimeLimit = ini_get('max_execution_time');
@@ -26,8 +26,14 @@ class Timer
 			$timeLimit = $currentTimeLimit;
 
 		$this->timeLimit = $timeLimit;
-		$this->finishTime =  $startTime + (int)($timeLimit);
-		@set_time_limit($timeLimit);
+		if($increaseTimeLimit) {
+			$this->finishTime =  $startTime + (int)($timeLimit);
+			@set_time_limit($timeLimit);
+		}
+		else {
+			$this->finishTime =  $startTime + (int)($newTimeLimit);
+		}
+
 	}
 
 	/**

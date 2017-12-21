@@ -146,7 +146,7 @@ final class TaskEntity extends Entity
 	 */
 	public static function onMessageIsIndexed($id, array $message, array &$index)
 	{
-		if (!empty($message["PARAM1"]) || !empty($message["PARAM2"]))
+		if ($message["PARAM1"] == strtoupper(self::ENTITY_TYPE))
 			return false;
 
 		if (

@@ -252,6 +252,8 @@ class CIBlockProperty extends CAllIBlockProperty
 			$strType = "longtext";
 		else
 		{
+			if ($arFields["PROPERTY_TYPE"] === null)
+				$arFields["PROPERTY_TYPE"] = "S";
 			switch($arFields["PROPERTY_TYPE"])
 			{
 				case "S":

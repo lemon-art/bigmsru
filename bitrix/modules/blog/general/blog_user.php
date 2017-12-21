@@ -2,6 +2,8 @@
 IncludeModuleLangFile(__FILE__);
 $GLOBALS["BLOG_USER"] = Array();
 
+use Bitrix\Blog\BlogUser;
+
 class CAllBlogUser
 {
 	public static function IsLocked($userID)
@@ -559,53 +561,12 @@ class CAllBlogUser
 
 	public static function GetUserName($alias, $name, $lastName, $login, $secondName = "")
 	{
-		$result = "";
-
-		$canUseAlias = COption::GetOptionString("blog", "allow_alias", "Y");
-		if ($canUseAlias == "Y")
-			$result = $alias;
-
-		if (strlen($result) <= 0)
-		{
-			$result = CUser::FormatName(CSite::GetNameFormat(false), 
-				array("NAME" 		=> $name,
-					"LAST_NAME" 	=> $lastName,
-					"SECOND_NAME" 	=> $secondName,
-					"LOGIN"			=> $login), true, false);
-		}
-
-		return $result;
+		return BlogUser::GetUserName($alias, $name, $lastName, $login, $secondName);
 	}
 	
 	public static function GetUserNameEx($arUser, $arBlogUser, $arParams)
 	{
-		$result = "";
-		if (!$arParams["bSoNet"])
-		{
-			$canUseAlias = COption::GetOptionString("blog", "allow_alias", "Y");
-			if ($canUseAlias == "Y")
-				$result = $arBlogUser["ALIAS"];
-		}
-
-		if (strlen($result) <= 0)
-		{
-			$arParams["NAME_TEMPLATE"] = $arParams["NAME_TEMPLATE"] ? $arParams["NAME_TEMPLATE"] : CSite::GetNameFormat();
-			$arParams["NAME_TEMPLATE"] = str_replace(
-					array("#NOBR#", "#/NOBR#"), 
-					array("", ""), 
-					$arParams["NAME_TEMPLATE"]
-			);
-			$bUseLogin = $arParams["SHOW_LOGIN"] != "N" ? true : false;
-
-			$result = CUser::FormatName(
-						$arParams["NAME_TEMPLATE"], 
-						$arUser, 
-						$bUseLogin,
-						false
-					);
-		}
-
-		return $result;
+		return BlogUser::GetUserNameEx($arUser, $arBlogUser, $arParams);
 	}	
 
 	public static function PreparePath($userID = 0, $siteID = False, $is404 = True)

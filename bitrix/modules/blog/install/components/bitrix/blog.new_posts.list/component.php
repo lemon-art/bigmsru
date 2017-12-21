@@ -18,6 +18,9 @@ $arParams["MESSAGE_LENGTH"] = (IntVal($arParams["MESSAGE_LENGTH"])>0)?$arParams[
 $arParams["BLOG_URL"] = preg_replace("/[^a-zA-Z0-9_-]/is", "", Trim($arParams["BLOG_URL"]));
 $arParams["USE_SOCNET"] = ($arParams["USE_SOCNET"] == "Y") ? "Y" : "N";
 $arParams["NAV_TEMPLATE"] = (strlen($arParams["NAV_TEMPLATE"])>0 ? $arParams["NAV_TEMPLATE"] : "");
+
+CpageOption::SetOptionString("main", "nav_page_in_session", "N");
+
 if(!is_array($arParams["GROUP_ID"]))
 	$arParams["GROUP_ID"] = array($arParams["GROUP_ID"]);
 foreach($arParams["GROUP_ID"] as $k=>$v)
@@ -163,6 +166,11 @@ else
 		"imageWidth" => $arParams["IMAGE_MAX_WIDTH"],
 		"imageHeight" => $arParams["IMAGE_MAX_HEIGHT"],
 	);
+	
+//	get all Users for new posts
+	$blogUser = new \Bitrix\Blog\BlogUser($arParams["CACHE_TIME"]);
+	$blogUser->setBlogId($arPost["BLOG_ID"]);
+	$blogUsers = $blogUser->getUsers(\Bitrix\Blog\BlogUser::getPostAuthorsIdsByDbFilter($arFilter));
 
 	while ($arPost = $dbPosts->GetNext())
 	{
@@ -272,7 +280,17 @@ else
 			}
 			if (!empty($arTmp["POST_PROPERTIES"]["DATA"]))
 				$arTmp["POST_PROPERTIES"]["SHOW"] = "Y";
+			
+			
 		}
+		$arTmp["BlogUser"]["AVATAR_file"] = $blogUsers[$arTmp["AUTHOR_ID"]]["BlogUser"]["AVATAR_file"];
+		if($arTmp["BlogUser"]["AVATAR_file"] !== false)
+		{
+//			get only size for post
+			$arTmp["BlogUser"]["Avatar_resized"] = $blogUsers[$arTmp["AUTHOR_ID"]]["BlogUser"]["Avatar_resized"]["100_100"];
+			$arTmp["BlogUser"]["AVATAR_img"] = $blogUsers[$arTmp["AUTHOR_ID"]]["BlogUser"]["AVATAR_img"]["100_100"];
+		}
+		
 		$arResult["POSTS"][] = $arTmp;
 	}
 

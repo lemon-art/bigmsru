@@ -24,4 +24,5 @@ $MESS["CP_BND_SET_META_KEYWORDS"] = "Устанавливать ключевые
 $MESS["CP_BND_SET_META_DESCRIPTION"] = "Устанавливать описание страницы";
 $MESS["CP_BND_SET_CANONICAL_URL"] = "Устанавливать канонический URL";
 $MESS["CP_BND_SET_LAST_MODIFIED"] = "Устанавливать в заголовках ответа время модификации страницы";
+$MESS["CP_BND_STRICT_SECTION_CHECK"] = "Строгая проверка раздела для показа элемента";
 ?>

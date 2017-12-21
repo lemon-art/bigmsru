@@ -115,9 +115,9 @@ header("Pragma: no-cache");
 $text = "<"."?xml version=\"1.0\" encoding=\"windows-1251\"?".">\n";
 $text .= "<response performedDatetime=\"".$dateISO."\">";
 if(strlen($techMessage) > 0)
-	$text .= "<result code=\"".$code."\" action=\"".$action."\" shopId=\"".$shopId."\" invoiceId=\"".$invoiceId."\" techMessage=\"".$techMessage."\"/>";
+	$text .= "<result code=\"".$code."\" action=\"".htmlspecialcharsbx($action)."\" shopId=\"".$shopId."\" invoiceId=\"".htmlspecialcharsbx($invoiceId)."\" techMessage=\"".$techMessage."\"/>";
 else
-	$text .= "<result code=\"".$code."\" action=\"".$action."\" shopId=\"".$shopId."\" invoiceId=\"".$invoiceId."\"/>";
+	$text .= "<result code=\"".$code."\" action=\"".htmlspecialcharsbx($action)."\" shopId=\"".$shopId."\" invoiceId=\"".htmlspecialcharsbx($invoiceId)."\"/>";
 $text .= "</response>";
 echo $text;
 die();

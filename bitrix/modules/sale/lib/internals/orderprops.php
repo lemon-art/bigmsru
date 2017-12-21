@@ -170,7 +170,7 @@ class OrderPropsTable extends DataManager
 		$maxlength = 500;
 		$length = strlen(self::modifyValueForSave($value, $row));
 		return $length > $maxlength
-			? Loc::getMessage('SALE_ORDER_PROPS_DEFAULT_ERROR', array('#LENGTH#' => $length, '#MAXLENGTH#' => $maxlength))
+			? Loc::getMessage('SALE_ORDER_PROPS_DEFAULT_ERROR', array('#PROPERTY_NAME#'=> $row['NAME'],'#FIELD_LENGTH#' => $length, '#MAX_LENGTH#' => $maxlength))
 			: true;
 	}
 

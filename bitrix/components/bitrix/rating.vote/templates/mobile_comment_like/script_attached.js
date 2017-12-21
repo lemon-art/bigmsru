@@ -20,7 +20,7 @@
 			if (!this.box)
 				return false;
 
-			BX.addCustomEvent("onPull-main", BX.proxy(function(data) {
+			BXMobileApp.addCustomEvent("onPull-main", BX.proxy(function(data) {
 				if (data.command == 'rating_vote')
 				{
 					var p = data.params;
@@ -57,6 +57,48 @@
 				this.countText.innerHTML = counterValue + 1;
 				BX.addClass(this.box, 'post-comment-likes-liked');
 				BX.removeClass(this.box, 'post-comment-likes');
+
+				var likeNode = BX.clone(this.box);
+				var box = this.box;
+
+				BX.adjust(box.parentNode, { style: { position: 'relative' } });
+				BX.adjust(likeNode, {
+					attrs: {
+						id: 'bx-ilike-button-animation'
+					},
+					style: {
+						position: 'absolute',
+						minWidth: 0
+					} });
+				BX.adjust(box, { style: { visibility: 'hidden' } });
+
+				box.parentNode.insertBefore(likeNode, box);
+
+				new BX.easing({
+					duration: 120,
+					start: { scale: 100 },
+					finish: { scale: 130 },
+					transition : BX.easing.transitions.quad,
+					step: function(state) {
+						likeNode.style.transform = "scale(" + state.scale / 100 + ")";
+					},
+					complete: function() {
+						new BX.easing({
+							duration: 120,
+							start: { scale: 130 },
+							finish: { scale: 100 },
+							transition : BX.easing.transitions.quad,
+							step: function(state) {
+								likeNode.style.transform = "scale(" + state.scale / 100 + ")";
+							},
+							complete: function() {
+								likeNode.parentNode.removeChild(likeNode);
+								BX.adjust(box, { style: { visibility: 'visible' } });
+								BX.adjust(box.parentNode, { style: { position: 'static' } });
+							}
+						}).animate();
+					}
+				}).animate();
 			}
 			else
 			{
@@ -78,17 +120,17 @@
 		send : function(voteAction) {
 			var BMAjaxWrapper = new window.MobileAjaxWrapper();
 			BMAjaxWrapper.Wrap({
-				'type': 'json',
-				'method': 'POST',
-				'url': '/mobile/ajax.php?mobile_action=like',
-				'data': {
-					'RATING_VOTE': 'Y',
-					'RATING_VOTE_TYPE_ID': this.entityTypeId,
-					'RATING_VOTE_ENTITY_ID': this.entityId,
-					'RATING_VOTE_ACTION': (voteAction === true ? 'plus' : 'cancel'),
-					'sessid': BX.bitrix_sessid()
+				type: 'json',
+				method: 'POST',
+				url: '/mobile/ajax.php?mobile_action=like',
+				data: {
+					RATING_VOTE: 'Y',
+					RATING_VOTE_TYPE_ID: this.entityTypeId,
+					RATING_VOTE_ENTITY_ID: this.entityId,
+					RATING_VOTE_ACTION: (voteAction === true ? 'plus' : 'cancel'),
+					sessid: BX.bitrix_sessid()
 				},
-				'callback': BX.proxy(function(data) {
+				callback: BX.proxy(function(data) {
 					if (
 						typeof data != 'undefined'
 							&& typeof data.action != 'undefined'
@@ -101,7 +143,7 @@
 					else
 						this.vote(!voteAction);
 				}, this),
-				'callback_failure': BX.proxy(function() { this.vote(!voteAction); }, this)
+				callback_failure: BX.proxy(function() { this.vote(!voteAction); }, this)
 			});
 		},
 		someoneVote : function(vote, votes) {
@@ -117,9 +159,16 @@
 		},
 		list : function(e) {
 			if (window["app"])
+			{
+				var pathToUserProfile = (
+					BX.message('RVPathToUserProfile')
+						? BX.message('RVPathToUserProfile')
+						: BX.message('RVCPathToUserProfile')
+				);
+
 				window.app.openTable({
 					callback: function() {},
-					url: (BX.message('MobileSiteDir') ? BX.message('MobileSiteDir') : '/') + 'mobile/index.php?mobile_action=get_likes&RATING_VOTE_TYPE_ID=' + this.entityTypeId + '&RATING_VOTE_ENTITY_ID=' + this.entityId + '&URL=' + BX.message('RVCPathToUserProfile'),
+					url: (BX.message('MobileSiteDir') ? BX.message('MobileSiteDir') : '/') + 'mobile/index.php?mobile_action=get_likes&RATING_VOTE_TYPE_ID=' + this.entityTypeId + '&RATING_VOTE_ENTITY_ID=' + this.entityId + '&URL=' + pathToUserProfile,
 					markmode: false,
 					showtitle: false,
 					modal: false,
@@ -127,6 +176,7 @@
 					outsection: false,
 					cancelname: BX.message('RVCListBack')
 				});
+			}
 			return BX.PreventDefault(e);
 		}
 	};

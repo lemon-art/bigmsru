@@ -14,6 +14,8 @@ if (!Loader::includeModule('iblock'))
 $catalogIncluded = Loader::includeModule('catalog');
 $iblockExists = (!empty($arCurrentValues['IBLOCK_ID']) && (int)$arCurrentValues['IBLOCK_ID'] > 0);
 
+$compatibleMode = !(isset($arCurrentValues['COMPATIBLE_MODE']) && $arCurrentValues['COMPATIBLE_MODE'] === 'N');
+
 $arIBlockType = CIBlockParameters::GetIBlockTypes();
 
 $arIBlock = array();
@@ -34,7 +36,7 @@ $arProperty_F = array();
 if ($iblockExists)
 {
 	$propertyIterator = Iblock\PropertyTable::getList(array(
-		'select' => array('ID', 'IBLOCK_ID', 'NAME', 'CODE', 'PROPERTY_TYPE', 'MULTIPLE', 'LINK_IBLOCK_ID', 'USER_TYPE'),
+		'select' => array('ID', 'IBLOCK_ID', 'NAME', 'CODE', 'PROPERTY_TYPE', 'MULTIPLE', 'LINK_IBLOCK_ID', 'USER_TYPE', 'SORT'),
 		'filter' => array('=IBLOCK_ID' => $arCurrentValues['IBLOCK_ID'], '=ACTIVE' => 'Y'),
 		'order' => array('SORT' => 'ASC', 'NAME' => 'ASC')
 	));
@@ -84,7 +86,7 @@ $arProperty_LINK = array();
 if (!empty($arCurrentValues['LINK_IBLOCK_ID']) && (int)$arCurrentValues['LINK_IBLOCK_ID'] > 0)
 {
 	$propertyIterator = Iblock\PropertyTable::getList(array(
-		'select' => array('ID', 'IBLOCK_ID', 'NAME', 'CODE', 'PROPERTY_TYPE', 'MULTIPLE', 'LINK_IBLOCK_ID', 'USER_TYPE'),
+		'select' => array('ID', 'IBLOCK_ID', 'NAME', 'CODE', 'PROPERTY_TYPE', 'MULTIPLE', 'LINK_IBLOCK_ID', 'USER_TYPE', 'SORT'),
 		'filter' => array('=IBLOCK_ID' => $arCurrentValues['LINK_IBLOCK_ID'], '=PROPERTY_TYPE' => Iblock\PropertyTable::TYPE_ELEMENT, '=ACTIVE' => 'Y'),
 		'order' => array('SORT' => 'ASC', 'NAME' => 'ASC')
 	));
@@ -120,11 +122,11 @@ $arProperty_Offers = array();
 $arProperty_OffersWithoutFile = array();
 if ($catalogIncluded && $iblockExists)
 {
-	$offers = CCatalogSKU::GetInfoByProductIBlock($arCurrentValues['IBLOCK_ID']);
+	$offers = CCatalogSku::GetInfoByProductIBlock($arCurrentValues['IBLOCK_ID']);
 	if (!empty($offers))
 	{
 		$propertyIterator = Iblock\PropertyTable::getList(array(
-			'select' => array('ID', 'IBLOCK_ID', 'NAME', 'CODE', 'PROPERTY_TYPE', 'MULTIPLE', 'LINK_IBLOCK_ID', 'USER_TYPE'),
+			'select' => array('ID', 'IBLOCK_ID', 'NAME', 'CODE', 'PROPERTY_TYPE', 'MULTIPLE', 'LINK_IBLOCK_ID', 'USER_TYPE', 'SORT'),
 			'filter' => array('=IBLOCK_ID' => $offers['IBLOCK_ID'], '=ACTIVE' => 'Y', '!=ID' => $offers['SKU_PROPERTY_ID']),
 			'order' => array('SORT' => 'ASC', 'NAME' => 'ASC')
 		));
@@ -152,6 +154,8 @@ $arPrice = array();
 if ($catalogIncluded)
 {
 	$arSort = array_merge($arSort, CCatalogIBlockParameters::GetCatalogSortFields());
+	if (isset($arSort['CATALOG_AVAILABLE']))
+		unset($arSort['CATALOG_AVAILABLE']);
 	$arPrice = CCatalogIBlockParameters::getPriceTypesList();
 }
 else
@@ -184,6 +188,9 @@ $arComponentParameters = array(
 		"BASKET" => array(
 			"NAME" => GetMessage("IBLOCK_BASKET"),
 		),
+		"SEARCH_SETTINGS" => array(
+			"NAME" => GetMessage("T_IBLOCK_DESC_SEARCH_SETTINGS"),
+		),
 		"TOP_SETTINGS" => array(
 			"NAME" => GetMessage("T_IBLOCK_DESC_TOP_SETTINGS"),
 		),
@@ -214,12 +221,16 @@ $arComponentParameters = array(
 		"BIG_DATA_SETTINGS" => array(
 			"NAME" => GetMessage("CP_BC_GROUP_BIG_DATA_SETTINGS")
 		),
+		'ANALYTICS_SETTINGS' => array(
+			'NAME' => GetMessage('ANALYTICS_SETTINGS')
+		),
 		"EXTENDED_SETTINGS" => array(
 			"NAME" => GetMessage("IBLOCK_EXTENDED_SETTINGS"),
 			"SORT" => 10000
 		)
 	),
 	"PARAMETERS" => array(
+		"USER_CONSENT" => array(),
 		"VARIABLE_ALIASES" => array(
 			"ELEMENT_ID" => array(
 				"NAME" => GetMessage("CP_BC_VARIABLE_ALIASES_ELEMENT_ID"),
@@ -324,12 +335,14 @@ $arComponentParameters = array(
 			"PARENT" => "LIST_SETTINGS",
 			"NAME" => GetMessage("IBLOCK_PAGE_ELEMENT_COUNT"),
 			"TYPE" => "STRING",
+			'HIDDEN' => isset($templateProperties['LIST_PRODUCT_ROW_VARIANTS']) ? 'Y' : 'N',
 			"DEFAULT" => "30",
 		),
 		"LINE_ELEMENT_COUNT" => array(
 			"PARENT" => "LIST_SETTINGS",
 			"NAME" => GetMessage("IBLOCK_LINE_ELEMENT_COUNT"),
 			"TYPE" => "STRING",
+			'HIDDEN' => isset($templateProperties['LIST_PRODUCT_ROW_VARIANTS']) ? 'Y' : 'N',
 			"DEFAULT" => "3",
 		),
 		"ELEMENT_SORT_FIELD" => array(
@@ -369,9 +382,11 @@ $arComponentParameters = array(
 			"NAME" => GetMessage("IBLOCK_PROPERTY"),
 			"TYPE" => "LIST",
 			"MULTIPLE" => "Y",
+			'REFRESH' => isset($templateProperties['LIST_PROPERTY_CODE_MOBILE']) ? 'Y' : 'N',
 			"ADDITIONAL_VALUES" => "Y",
 			"VALUES" => $arProperty_LNS,
 		),
+		'LIST_PROPERTY_CODE_MOBILE' => array(),
 		"INCLUDE_SUBSECTIONS" => array(
 			"PARENT" => "LIST_SETTINGS",
 			"NAME" => GetMessage("CP_BC_INCLUDE_SUBSECTIONS"),
@@ -386,6 +401,12 @@ $arComponentParameters = array(
 		"USE_MAIN_ELEMENT_SECTION" => array(
 			"PARENT" => "ADDITIONAL_SETTINGS",
 			"NAME" => GetMessage("CP_BC_USE_MAIN_ELEMENT_SECTION"),
+			"TYPE" => "CHECKBOX",
+			"DEFAULT" => "N",
+		),
+		"DETAIL_STRICT_SECTION_CHECK" => array(
+			"PARENT" => "ADDITIONAL_SETTINGS",
+			"NAME" => GetMessage("CP_BC_DETAIL_STRICT_SECTION_CHECK"),
 			"TYPE" => "CHECKBOX",
 			"DEFAULT" => "N",
 		),
@@ -461,9 +482,9 @@ $arComponentParameters = array(
 		),
 		"SECTION_ID_VARIABLE" => array(
 			"PARENT" => "DETAIL_SETTINGS",
-			"NAME"		=> GetMessage("IBLOCK_SECTION_ID_VARIABLE"),
-			"TYPE"		=> "STRING",
-			"DEFAULT"	=> "SECTION_ID"
+			"NAME" => GetMessage("IBLOCK_SECTION_ID_VARIABLE"),
+			"TYPE" => "STRING",
+			"DEFAULT" => "SECTION_ID"
 		),
 		"DETAIL_CHECK_SECTION_ID_VARIABLE" => array(
 			"PARENT" => "DETAIL_SETTINGS",
@@ -530,8 +551,9 @@ $arComponentParameters = array(
 			"PARENT" => "PRICES",
 			"NAME" => GetMessage("IBLOCK_USE_PRICE_COUNT"),
 			"TYPE" => "CHECKBOX",
+			"REFRESH" => isset($templateProperties['USE_RATIO_IN_RANGES']) ? "Y" : "N",
 			"DEFAULT" => "N",
-			),
+		),
 		"SHOW_PRICE_COUNT" => array(
 			"PARENT" => "PRICES",
 			"NAME" => GetMessage("IBLOCK_SHOW_PRICE_COUNT"),
@@ -680,6 +702,13 @@ $arComponentParameters = array(
 			"DEFAULT" => "N",
 			"REFRESH" => "Y",
 		),
+		'COMPATIBLE_MODE' => array(
+			'PARENT' => 'EXTENDED_SETTINGS',
+			'NAME' => GetMessage('CP_BC_COMPATIBLE_MODE'),
+			'TYPE' => 'CHECKBOX',
+			'DEFAULT' => 'Y',
+			'REFRESH' => 'Y'
+		),
 		"USE_ELEMENT_COUNTER" => array(
 			"PARENT" => "EXTENDED_SETTINGS",
 			"NAME" => GetMessage('CP_BC_USE_ELEMENT_COUNTER'),
@@ -690,10 +719,22 @@ $arComponentParameters = array(
 			"PARENT" => "EXTENDED_SETTINGS",
 			"NAME" => GetMessage('CP_BC_DISABLE_INIT_JS_IN_COMPONENT'),
 			"TYPE" => "CHECKBOX",
-			"DEFAULT" => "N"
+			"DEFAULT" => "N",
+			"HIDDEN" => (!$compatibleMode ? 'Y' : 'N')
 		)
 	),
 );
+
+// hack for correct sort
+if (isset($templateProperties['LIST_PROPERTY_CODE_MOBILE']))
+{
+	$arComponentParameters['PARAMETERS']['LIST_PROPERTY_CODE_MOBILE'] = $templateProperties['LIST_PROPERTY_CODE_MOBILE'];
+	unset($templateProperties['LIST_PROPERTY_CODE_MOBILE']);
+}
+else
+{
+	unset($arComponentParameters['PARAMETERS']['LIST_PROPERTY_CODE_MOBILE']);
+}
 
 CIBlockParameters::AddPagerSettings(
 	$arComponentParameters,
@@ -792,47 +833,50 @@ if($arCurrentValues["USE_COMPARE"]=="Y")
 		"DEFAULT" => "asc",
 		"ADDITIONAL_VALUES" => "Y",
 	);
-	$arComponentParameters["PARAMETERS"]["DISPLAY_ELEMENT_SELECT_BOX"] = array(
-		"PARENT" => "COMPARE_SETTINGS",
-		"NAME"=>GetMessage("T_IBLOCK_DESC_ELEMENT_BOX"),
-		"TYPE"=>"CHECKBOX",
-		"DEFAULT"=>"N",
-		"REFRESH"=>"Y",
-	);
-	if($arCurrentValues["DISPLAY_ELEMENT_SELECT_BOX"]=="Y")
+	if ($compatibleMode)
 	{
-		$arComponentParameters["PARAMETERS"]["ELEMENT_SORT_FIELD_BOX"] = array(
+		$arComponentParameters["PARAMETERS"]["DISPLAY_ELEMENT_SELECT_BOX"] = array(
 			"PARENT" => "COMPARE_SETTINGS",
-			"NAME" => GetMessage("IBLOCK_ELEMENT_SORT_FIELD_BOX"),
-			"TYPE" => "LIST",
-			"VALUES" => $arSort,
-			"ADDITIONAL_VALUES" => "Y",
-			"DEFAULT" => "name",
+			"NAME" => GetMessage("T_IBLOCK_DESC_ELEMENT_BOX"),
+			"TYPE" => "CHECKBOX",
+			"DEFAULT" => "N",
+			"REFRESH" => "Y",
 		);
-		$arComponentParameters["PARAMETERS"]["ELEMENT_SORT_ORDER_BOX"] = array(
-			"PARENT" => "COMPARE_SETTINGS",
-			"NAME" => GetMessage("IBLOCK_ELEMENT_SORT_ORDER_BOX"),
-			"TYPE" => "LIST",
-			"VALUES" => $arAscDesc,
-			"DEFAULT" => "asc",
-			"ADDITIONAL_VALUES" => "Y",
-		);
-		$arComponentParameters["PARAMETERS"]["ELEMENT_SORT_FIELD_BOX2"] = array(
-			"PARENT" => "COMPARE_SETTINGS",
-			"NAME" => GetMessage("IBLOCK_ELEMENT_SORT_FIELD_BOX2"),
-			"TYPE" => "LIST",
-			"VALUES" => $arSort,
-			"ADDITIONAL_VALUES" => "Y",
-			"DEFAULT" => "id",
-		);
-		$arComponentParameters["PARAMETERS"]["ELEMENT_SORT_ORDER_BOX2"] = array(
-			"PARENT" => "COMPARE_SETTINGS",
-			"NAME" => GetMessage("IBLOCK_ELEMENT_SORT_ORDER_BOX2"),
-			"TYPE" => "LIST",
-			"VALUES" => $arAscDesc,
-			"DEFAULT" => "desc",
-			"ADDITIONAL_VALUES" => "Y",
-		);
+		if (isset($arCurrentValues["DISPLAY_ELEMENT_SELECT_BOX"]) && $arCurrentValues["DISPLAY_ELEMENT_SELECT_BOX"] == "Y")
+		{
+			$arComponentParameters["PARAMETERS"]["ELEMENT_SORT_FIELD_BOX"] = array(
+				"PARENT" => "COMPARE_SETTINGS",
+				"NAME" => GetMessage("IBLOCK_ELEMENT_SORT_FIELD_BOX"),
+				"TYPE" => "LIST",
+				"VALUES" => $arSort,
+				"ADDITIONAL_VALUES" => "Y",
+				"DEFAULT" => "name",
+			);
+			$arComponentParameters["PARAMETERS"]["ELEMENT_SORT_ORDER_BOX"] = array(
+				"PARENT" => "COMPARE_SETTINGS",
+				"NAME" => GetMessage("IBLOCK_ELEMENT_SORT_ORDER_BOX"),
+				"TYPE" => "LIST",
+				"VALUES" => $arAscDesc,
+				"DEFAULT" => "asc",
+				"ADDITIONAL_VALUES" => "Y",
+			);
+			$arComponentParameters["PARAMETERS"]["ELEMENT_SORT_FIELD_BOX2"] = array(
+				"PARENT" => "COMPARE_SETTINGS",
+				"NAME" => GetMessage("IBLOCK_ELEMENT_SORT_FIELD_BOX2"),
+				"TYPE" => "LIST",
+				"VALUES" => $arSort,
+				"ADDITIONAL_VALUES" => "Y",
+				"DEFAULT" => "id",
+			);
+			$arComponentParameters["PARAMETERS"]["ELEMENT_SORT_ORDER_BOX2"] = array(
+				"PARENT" => "COMPARE_SETTINGS",
+				"NAME" => GetMessage("IBLOCK_ELEMENT_SORT_ORDER_BOX2"),
+				"TYPE" => "LIST",
+				"VALUES" => $arAscDesc,
+				"DEFAULT" => "desc",
+				"ADDITIONAL_VALUES" => "Y",
+			);
+		}
 	}
 }
 
@@ -871,12 +915,14 @@ if($arCurrentValues["SHOW_TOP_ELEMENTS"]!="N")
 		"PARENT" => "TOP_SETTINGS",
 		"NAME" => GetMessage("CP_BC_TOP_ELEMENT_COUNT"),
 		"TYPE" => "STRING",
+		'HIDDEN' => isset($templateProperties['TOP_PRODUCT_ROW_VARIANTS']) ? 'Y' : 'N',
 		"DEFAULT" => "9",
 	);
 	$arComponentParameters["PARAMETERS"]["TOP_LINE_ELEMENT_COUNT"] = array(
 		"PARENT" => "TOP_SETTINGS",
 		"NAME" => GetMessage("IBLOCK_LINE_ELEMENT_COUNT"),
 		"TYPE" => "STRING",
+		'HIDDEN' => isset($templateProperties['TOP_PRODUCT_ROW_VARIANTS']) ? 'Y' : 'N',
 		"DEFAULT" => "3",
 	);
 	$arComponentParameters["PARAMETERS"]["TOP_ELEMENT_SORT_FIELD"] = array(
@@ -916,9 +962,17 @@ if($arCurrentValues["SHOW_TOP_ELEMENTS"]!="N")
 		"NAME" => GetMessage("BC_P_TOP_PROPERTY_CODE"),
 		"TYPE" => "LIST",
 		"MULTIPLE" => "Y",
+		'REFRESH' => isset($templateProperties['TOP_PROPERTY_CODE_MOBILE']) ? 'Y' : 'N',
 		"ADDITIONAL_VALUES" => "Y",
 		"VALUES" => $arProperty,
 	);
+
+	if (isset($templateProperties['TOP_PROPERTY_CODE_MOBILE']))
+	{
+		$arComponentParameters['PARAMETERS']['TOP_PROPERTY_CODE_MOBILE'] = $templateProperties['TOP_PROPERTY_CODE_MOBILE'];
+		unset($templateProperties['TOP_PROPERTY_CODE_MOBILE']);
+	}
+
 	if (!empty($offers))
 	{
 		$arComponentParameters["PARAMETERS"]["TOP_OFFERS_FIELD_CODE"] = CIBlockParameters::GetFieldCode(GetMessage("CP_BC_TOP_OFFERS_FIELD_CODE"), "TOP_SETTINGS");
@@ -946,100 +1000,112 @@ if($arCurrentValues["USE_FILTER"]=="Y")
 		"TYPE" => "STRING",
 		"DEFAULT" => "",
 	);
-	$arComponentParameters["PARAMETERS"]["FILTER_FIELD_CODE"] = CIBlockParameters::GetFieldCode(GetMessage("IBLOCK_FIELD"), "FILTER_SETTINGS");
-	$arComponentParameters["PARAMETERS"]["FILTER_PROPERTY_CODE"] = array(
-		"PARENT" => "FILTER_SETTINGS",
-		"NAME" => GetMessage("T_IBLOCK_PROPERTY"),
-		"TYPE" => "LIST",
-		"MULTIPLE" => "Y",
-		"VALUES" => $arProperty_LNS,
-		"ADDITIONAL_VALUES" => "Y",
-	);
-	$arComponentParameters["PARAMETERS"]["FILTER_PRICE_CODE"] = array(
+	if ($compatibleMode)
+	{
+		$arComponentParameters["PARAMETERS"]["FILTER_FIELD_CODE"] = CIBlockParameters::GetFieldCode(GetMessage("IBLOCK_FIELD"), "FILTER_SETTINGS");
+		$arComponentParameters["PARAMETERS"]["FILTER_PROPERTY_CODE"] = array(
+			"PARENT" => "FILTER_SETTINGS",
+			"NAME" => GetMessage("T_IBLOCK_PROPERTY"),
+			"TYPE" => "LIST",
+			"MULTIPLE" => "Y",
+			"VALUES" => $arProperty_LNS,
+			"ADDITIONAL_VALUES" => "Y",
+		);
+		$arComponentParameters["PARAMETERS"]["FILTER_PRICE_CODE"] = array(
 			"PARENT" => "FILTER_SETTINGS",
 			"NAME" => GetMessage("IBLOCK_PRICE_CODE"),
 			"TYPE" => "LIST",
 			"MULTIPLE" => "Y",
 			"VALUES" => $arPrice,
-	);
-	if(!empty($offers))
-	{
-		$arComponentParameters["PARAMETERS"]["FILTER_OFFERS_FIELD_CODE"] = CIBlockParameters::GetFieldCode(GetMessage("CP_BC_FILTER_OFFERS_FIELD_CODE"), "FILTER_SETTINGS");
-		$arComponentParameters["PARAMETERS"]["FILTER_OFFERS_PROPERTY_CODE"] = array(
-			"PARENT" => "FILTER_SETTINGS",
-			"NAME" => GetMessage("CP_BC_FILTER_OFFERS_PROPERTY_CODE"),
-			"TYPE" => "LIST",
-			"MULTIPLE" => "Y",
-			"VALUES" => $arProperty_OffersWithoutFile,
-			"ADDITIONAL_VALUES" => "Y",
 		);
+		if (!empty($offers))
+		{
+			$arComponentParameters["PARAMETERS"]["FILTER_OFFERS_FIELD_CODE"] = CIBlockParameters::GetFieldCode(GetMessage("CP_BC_FILTER_OFFERS_FIELD_CODE"), "FILTER_SETTINGS");
+			$arComponentParameters["PARAMETERS"]["FILTER_OFFERS_PROPERTY_CODE"] = array(
+				"PARENT" => "FILTER_SETTINGS",
+				"NAME" => GetMessage("CP_BC_FILTER_OFFERS_PROPERTY_CODE"),
+				"TYPE" => "LIST",
+				"MULTIPLE" => "Y",
+				"VALUES" => $arProperty_OffersWithoutFile,
+				"ADDITIONAL_VALUES" => "Y",
+			);
+		}
 	}
 }
 
-if (!ModuleManager::isModuleInstalled('forum'))
+if ($compatibleMode)
+{
+	if (!ModuleManager::isModuleInstalled('forum'))
+	{
+		unset($arComponentParameters["PARAMETERS"]["USE_REVIEW"]);
+		unset($arComponentParameters["GROUPS"]["REVIEW_SETTINGS"]);
+	}
+	elseif ($arCurrentValues["USE_REVIEW"] == "Y")
+	{
+		$arForumList = array();
+		if (Loader::includeModule("forum"))
+		{
+			$rsForum = CForumNew::GetList();
+			while ($arForum = $rsForum->Fetch())
+				$arForumList[$arForum["ID"]] = $arForum["NAME"];
+		}
+		$arComponentParameters["PARAMETERS"]["MESSAGES_PER_PAGE"] = array(
+			"PARENT" => "REVIEW_SETTINGS",
+			"NAME" => GetMessage("F_MESSAGES_PER_PAGE"),
+			"TYPE" => "STRING",
+			"DEFAULT" => (int)COption::GetOptionString("forum", "MESSAGES_PER_PAGE", "10")
+		);
+		$arComponentParameters["PARAMETERS"]["USE_CAPTCHA"] = array(
+			"PARENT" => "REVIEW_SETTINGS",
+			"NAME" => GetMessage("F_USE_CAPTCHA"),
+			"TYPE" => "CHECKBOX",
+			"DEFAULT" => "Y"
+		);
+		$arComponentParameters["PARAMETERS"]["REVIEW_AJAX_POST"] = array(
+			"PARENT" => "REVIEW_SETTINGS",
+			"NAME" => GetMessage("F_REVIEW_AJAX_POST"),
+			"TYPE" => "CHECKBOX",
+			"DEFAULT" => "Y"
+		);
+		$arComponentParameters["PARAMETERS"]["PATH_TO_SMILE"] = array(
+			"PARENT" => "REVIEW_SETTINGS",
+			"NAME" => GetMessage("F_PATH_TO_SMILE"),
+			"TYPE" => "STRING",
+			"DEFAULT" => "/bitrix/images/forum/smile/",
+		);
+		$arComponentParameters["PARAMETERS"]["FORUM_ID"] = array(
+			"PARENT" => "REVIEW_SETTINGS",
+			"NAME" => GetMessage("F_FORUM_ID"),
+			"TYPE" => "LIST",
+			"VALUES" => $arForumList,
+			"DEFAULT" => "",
+		);
+		$arComponentParameters["PARAMETERS"]["URL_TEMPLATES_READ"] = array(
+			"PARENT" => "REVIEW_SETTINGS",
+			"NAME" => GetMessage("F_READ_TEMPLATE"),
+			"TYPE" => "STRING",
+			"DEFAULT" => "",
+		);
+		$arComponentParameters["PARAMETERS"]["SHOW_LINK_TO_FORUM"] = array(
+			"PARENT" => "REVIEW_SETTINGS",
+			"NAME" => GetMessage("F_SHOW_LINK_TO_FORUM"),
+			"TYPE" => "CHECKBOX",
+			"DEFAULT" => "Y",
+		);
+	}
+}
+else
 {
 	unset($arComponentParameters["PARAMETERS"]["USE_REVIEW"]);
 	unset($arComponentParameters["GROUPS"]["REVIEW_SETTINGS"]);
 }
-elseif($arCurrentValues["USE_REVIEW"]=="Y")
-{
-	$arForumList = array();
-	if(Loader::includeModule("forum"))
-	{
-		$rsForum = CForumNew::GetList();
-		while($arForum=$rsForum->Fetch())
-			$arForumList[$arForum["ID"]]=$arForum["NAME"];
-	}
-	$arComponentParameters["PARAMETERS"]["MESSAGES_PER_PAGE"] = array(
-		"PARENT" => "REVIEW_SETTINGS",
-		"NAME" => GetMessage("F_MESSAGES_PER_PAGE"),
-		"TYPE" => "STRING",
-		"DEFAULT" => intVal(COption::GetOptionString("forum", "MESSAGES_PER_PAGE", "10"))
-	);
-	$arComponentParameters["PARAMETERS"]["USE_CAPTCHA"] = array(
-		"PARENT" => "REVIEW_SETTINGS",
-		"NAME" => GetMessage("F_USE_CAPTCHA"),
-		"TYPE" => "CHECKBOX",
-		"DEFAULT" => "Y"
-	);
-	$arComponentParameters["PARAMETERS"]["REVIEW_AJAX_POST"] = array(
-		"PARENT" => "REVIEW_SETTINGS",
-		"NAME" => GetMessage("F_REVIEW_AJAX_POST"),
-		"TYPE" => "CHECKBOX",
-		"DEFAULT" => "Y"
-	);
-	$arComponentParameters["PARAMETERS"]["PATH_TO_SMILE"] = array(
-		"PARENT" => "REVIEW_SETTINGS",
-		"NAME" => GetMessage("F_PATH_TO_SMILE"),
-		"TYPE" => "STRING",
-		"DEFAULT" => "/bitrix/images/forum/smile/",
-	);
-	$arComponentParameters["PARAMETERS"]["FORUM_ID"] = array(
-		"PARENT" => "REVIEW_SETTINGS",
-		"NAME" => GetMessage("F_FORUM_ID"),
-		"TYPE" => "LIST",
-		"VALUES" => $arForumList,
-		"DEFAULT" => "",
-	);
-	$arComponentParameters["PARAMETERS"]["URL_TEMPLATES_READ"] = array(
-		"PARENT" => "REVIEW_SETTINGS",
-		"NAME" => GetMessage("F_READ_TEMPLATE"),
-		"TYPE" => "STRING",
-		"DEFAULT" => "",
-	);
-	$arComponentParameters["PARAMETERS"]["SHOW_LINK_TO_FORUM"] = array(
-		"PARENT" => "REVIEW_SETTINGS",
-		"NAME" => GetMessage("F_SHOW_LINK_TO_FORUM"),
-		"TYPE" => "CHECKBOX",
-		"DEFAULT" => "Y",
-	);
-}
 
 if ($catalogIncluded && $arCurrentValues["USE_STORE"]=='Y')
 {
+	$arStore = array();
 	$storeIterator = CCatalogStore::GetList(
 		array(),
-		array('SHIPPING_CENTER' => 'Y'),
+		array('ISSUING_CENTER' => 'Y'),
 		false,
 		false,
 		array('ID', 'TITLE')
@@ -1058,7 +1124,8 @@ if ($catalogIncluded && $arCurrentValues["USE_STORE"]=='Y')
 		'NAME' => GetMessage('STORES'),
 		'TYPE' => 'LIST',
 		'MULTIPLE' => 'Y',
-		'VALUES' => $arStore
+		'VALUES' => $arStore,
+		'ADDITIONAL_VALUES' => 'Y'
 	);
 	$arComponentParameters["PARAMETERS"]['USE_MIN_AMOUNT'] = array(
 		'PARENT' => 'STORE_SETTINGS',
@@ -1081,7 +1148,7 @@ if ($catalogIncluded && $arCurrentValues["USE_STORE"]=='Y')
 		'TYPE'  => 'LIST',
 		'MULTIPLE' => 'Y',
 		'ADDITIONAL_VALUES' => 'Y',
-		'VALUES'    => Array(
+		'VALUES' => array(
 			'TITLE'  => GetMessage("STORE_TITLE"),
 			'ADDRESS'  => GetMessage("ADDRESS"),
 			'DESCRIPTION'  => GetMessage('DESCRIPTION'),
@@ -1095,11 +1162,11 @@ if ($catalogIncluded && $arCurrentValues["USE_STORE"]=='Y')
 	if ($arCurrentValues['USE_MIN_AMOUNT']!="N")
 	{
 		$arComponentParameters["PARAMETERS"]["MIN_AMOUNT"] = array(
-				"PARENT" => "STORE_SETTINGS",
-				"NAME"		=> GetMessage("MIN_AMOUNT"),
-				"TYPE"		=> "STRING",
-				"DEFAULT"	=> 10,
-			);
+			"PARENT" => "STORE_SETTINGS",
+			"NAME" => GetMessage("MIN_AMOUNT"),
+			"TYPE" => "STRING",
+			"DEFAULT" => 10,
+		);
 	}
 	$arComponentParameters["PARAMETERS"]['SHOW_EMPTY_STORE'] = array(
 		'PARENT' => 'STORE_SETTINGS',
@@ -1116,22 +1183,41 @@ if ($catalogIncluded && $arCurrentValues["USE_STORE"]=='Y')
 	$arComponentParameters["PARAMETERS"]['STORE_PATH'] = array(
 		'PARENT' => 'STORE_SETTINGS',
 		'NAME' => GetMessage('STORE_PATH'),
-		"TYPE"		=> "STRING",
-		"DEFAULT"	=> "/store/#store_id#",
+		"TYPE" => "STRING",
+		"DEFAULT" => "/store/#store_id#",
 	);
 	$arComponentParameters["PARAMETERS"]['MAIN_TITLE'] = array(
 		'PARENT' => 'STORE_SETTINGS',
 		'NAME' => GetMessage('MAIN_TITLE'),
-		"TYPE"		=> "STRING",
-		"DEFAULT"	=> GetMessage('MAIN_TITLE_VALUE'),
+		"TYPE" => "STRING",
+		"DEFAULT" => GetMessage('MAIN_TITLE_VALUE'),
 	);
 }
 
-if(!ModuleManager::isModuleInstalled("sale"))
+if (!ModuleManager::isModuleInstalled("sale") || isset($templateProperties['HIDE_USE_ALSO_BUY']))
 {
+	unset($templateProperties['HIDE_USE_ALSO_BUY']);
 	unset($arComponentParameters["PARAMETERS"]["USE_ALSO_BUY"]);
 	unset($arComponentParameters["GROUPS"]["ALSO_BUY_SETTINGS"]);
+}
+elseif ($arCurrentValues["USE_ALSO_BUY"] == "Y")
+{
+	$arComponentParameters["PARAMETERS"]["ALSO_BUY_ELEMENT_COUNT"] = array(
+		"PARENT" => "ALSO_BUY_SETTINGS",
+		"NAME"		=> GetMessage("T_IBLOCK_DESC_ALSO_BUY_ELEMENT_COUNT"),
+		"TYPE"		=> "STRING",
+		"DEFAULT"	=> 5
+	);
+	$arComponentParameters["PARAMETERS"]["ALSO_BUY_MIN_BUYES"] = array(
+		"PARENT" => "ALSO_BUY_SETTINGS",
+		"NAME"		=> GetMessage("T_IBLOCK_DESC_ALSO_BUY_MIN_BUYES"),
+		"TYPE"		=> "STRING",
+		"DEFAULT"	=> 1
+	);
+}
 
+if (!ModuleManager::isModuleInstalled("sale"))
+{
 	unset($arComponentParameters["PARAMETERS"]["USE_GIFTS_DETAIL"]);
 	unset($arComponentParameters["PARAMETERS"]["USE_GIFTS_SECTION"]);
 	unset($arComponentParameters["PARAMETERS"]["USE_GIFTS_MAIN_PR_SECTION_LIST"]);
@@ -1139,25 +1225,9 @@ if(!ModuleManager::isModuleInstalled("sale"))
 }
 else
 {
-	if($arCurrentValues["USE_ALSO_BUY"] == "Y")
-	{
-		$arComponentParameters["PARAMETERS"]["ALSO_BUY_ELEMENT_COUNT"] = array(
-				"PARENT" => "ALSO_BUY_SETTINGS",
-				"NAME"		=> GetMessage("T_IBLOCK_DESC_ALSO_BUY_ELEMENT_COUNT"),
-				"TYPE"		=> "STRING",
-				"DEFAULT"	=> 5
-			);
-		$arComponentParameters["PARAMETERS"]["ALSO_BUY_MIN_BUYES"] = array(
-				"PARENT" => "ALSO_BUY_SETTINGS",
-				"NAME"		=> GetMessage("T_IBLOCK_DESC_ALSO_BUY_MIN_BUYES"),
-				"TYPE"		=> "STRING",
-				"DEFAULT"	=> 1
-			);
-	}
-
 	$useGiftsDetail = $arCurrentValues["USE_GIFTS_DETAIL"] === null && $arComponentParameters['PARAMETERS']['USE_GIFTS_DETAIL']['DEFAULT'] == 'Y' || $arCurrentValues["USE_GIFTS_DETAIL"] == "Y";
-$useGiftsSection = $arCurrentValues["USE_GIFTS_SECTION"] === null && $arComponentParameters['PARAMETERS']['USE_GIFTS_SECTION']['DEFAULT'] == 'Y' || $arCurrentValues["USE_GIFTS_SECTION"] == "Y";
-$useGiftsMainPrSectionList = $arCurrentValues["USE_GIFTS_MAIN_PR_SECTION_LIST"] === null && $arComponentParameters['PARAMETERS']['USE_GIFTS_MAIN_PR_SECTION_LIST']['DEFAULT'] == 'Y' || $arCurrentValues["USE_GIFTS_MAIN_PR_SECTION_LIST"] == "Y";
+	$useGiftsSection = $arCurrentValues["USE_GIFTS_SECTION"] === null && $arComponentParameters['PARAMETERS']['USE_GIFTS_SECTION']['DEFAULT'] == 'Y' || $arCurrentValues["USE_GIFTS_SECTION"] == "Y";
+	$useGiftsMainPrSectionList = $arCurrentValues["USE_GIFTS_MAIN_PR_SECTION_LIST"] === null && $arComponentParameters['PARAMETERS']['USE_GIFTS_MAIN_PR_SECTION_LIST']['DEFAULT'] == 'Y' || $arCurrentValues["USE_GIFTS_MAIN_PR_SECTION_LIST"] == "Y";
 	if($useGiftsDetail || $useGiftsSection || $useGiftsMainPrSectionList)
 	{
 		if($useGiftsDetail)
@@ -1166,7 +1236,7 @@ $useGiftsMainPrSectionList = $arCurrentValues["USE_GIFTS_MAIN_PR_SECTION_LIST"] 
 				"PARENT" => "GIFTS_SETTINGS",
 				"NAME" => GetMessage("SGP_PAGE_ELEMENT_COUNT_DETAIL"),
 				"TYPE" => "STRING",
-				"DEFAULT" => "3",
+				"DEFAULT" => "4",
 			);
 			$arComponentParameters["PARAMETERS"]["GIFTS_DETAIL_HIDE_BLOCK_TITLE"] = array(
 				"PARENT" => "GIFTS_SETTINGS",
@@ -1193,7 +1263,7 @@ $useGiftsMainPrSectionList = $arCurrentValues["USE_GIFTS_MAIN_PR_SECTION_LIST"] 
 				"PARENT" => "GIFTS_SETTINGS",
 				"NAME" => GetMessage("SGP_PAGE_ELEMENT_COUNT_SECTION_LIST"),
 				"TYPE" => "STRING",
-				"DEFAULT" => "3",
+				"DEFAULT" => "4",
 			);
 			$arComponentParameters["PARAMETERS"]["GIFTS_SECTION_LIST_HIDE_BLOCK_TITLE"] = array(
 				"PARENT" => "GIFTS_SETTINGS",
@@ -1254,7 +1324,7 @@ $useGiftsMainPrSectionList = $arCurrentValues["USE_GIFTS_MAIN_PR_SECTION_LIST"] 
 				"PARENT" => "GIFTS_SETTINGS",
 				"NAME" => GetMessage("SGP_PAGE_ELEMENT_COUNT_MAIN_PR_DETAIL"),
 				"TYPE" => "STRING",
-				"DEFAULT" => "3",
+				"DEFAULT" => "4",
 			);
 			$arComponentParameters["PARAMETERS"]["GIFTS_MAIN_PRODUCT_DETAIL_HIDE_BLOCK_TITLE"] = array(
 				"PARENT" => "GIFTS_SETTINGS",
@@ -1276,7 +1346,7 @@ if ($catalogIncluded)
 {
 	$arComponentParameters["PARAMETERS"]['HIDE_NOT_AVAILABLE'] = array(
 		'PARENT' => 'DATA_SOURCE',
-		'NAME' => GetMessage('CP_BC_HIDE_NOT_AVAILABLE_EXT'),
+		'NAME' => GetMessage('CP_BC_HIDE_NOT_AVAILABLE'),
 		'TYPE' => 'LIST',
 		'DEFAULT' => 'N',
 		'VALUES' => array(
@@ -1286,7 +1356,17 @@ if ($catalogIncluded)
 		),
 		'ADDITIONAL_VALUES' => 'N'
 	);
-
+	$arComponentParameters['PARAMETERS']['HIDE_NOT_AVAILABLE_OFFERS'] = array(
+		'PARENT' => 'DATA_SOURCE',
+		'NAME' => GetMessage('CP_BC_HIDE_NOT_AVAILABLE_OFFERS'),
+		'TYPE' => 'LIST',
+		'DEFAULT' => 'N',
+		'VALUES' => array(
+			'Y' => GetMessage('CP_BC_HIDE_NOT_AVAILABLE_OFFERS_HIDE'),
+			'L' => GetMessage('CP_BC_HIDE_NOT_AVAILABLE_OFFERS_SUBSCRIBE'),
+			'N' => GetMessage('CP_BC_HIDE_NOT_AVAILABLE_OFFERS_SHOW')
+		)
+	);
 	$arComponentParameters["PARAMETERS"]['CONVERT_CURRENCY'] = array(
 		'PARENT' => 'PRICES',
 		'NAME' => GetMessage('CP_BC_CONVERT_CURRENCY'),
@@ -1311,7 +1391,8 @@ if ($catalogIncluded)
 		"PARENT" => "EXTENDED_SETTINGS",
 		"NAME" => GetMessage('CP_BC_DETAIL_SET_VIEWED_IN_COMPONENT'),
 		"TYPE" => "CHECKBOX",
-		"DEFAULT" => "N"
+		"DEFAULT" => "N",
+		"HIDDEN" => (!$compatibleMode ? 'Y' : 'N')
 	);
 }
 

@@ -262,9 +262,15 @@ if(!empty($arBlog) && $arBlog["ACTIVE"] == "Y")
 					{
 						$arPost["urlToEdit"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_POST_EDIT"], array("blog" => $arBlog["URL"], "post_id"=>$arPost["ID"], "user_id" => $arBlog["OWNER_ID"]));
 						if($arResult["PostPerm"] >= BLOG_PERMS_FULL)
-							$arPost["urlToDelete"] = htmlspecialcharsex($APPLICATION->GetCurPageParam("del_id=".$arPost["ID"].'&'.bitrix_sessid_get(), Array("del_id", "sessid", "success")));
+						{
+							$arPost["urlToDelete"] = urlencode($APPLICATION->GetCurPageParam("del_id=".$arPost["ID"].'&'.bitrix_sessid_get(), Array("del_id", "sessid", "success")));
+							$arPost["urlToDelete"] = htmlspecialcharsbx($arPost["urlToDelete"]);
+						}
 						if($arResult["PostPerm"] >= BLOG_PERMS_MODERATE)
-							$arPost["urlToShow"] = htmlspecialcharsex($APPLICATION->GetCurPageParam("show_id=".$arPost["ID"].'&'.bitrix_sessid_get(), Array("del_id", "sessid", "show_id", "success")));
+						{
+							$arPost["urlToShow"] = urlencode($APPLICATION->GetCurPageParam("show_id=".$arPost["ID"].'&'.bitrix_sessid_get(), Array("del_id", "sessid", "show_id", "success")));
+							$arPost["urlToShow"] = htmlspecialcharsbx($arPost["urlToShow"]);
+						}
 
 					}
 					if(strlen($arPost["CATEGORY_ID"])>0)

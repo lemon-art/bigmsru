@@ -3,23 +3,25 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/catalog/general/catalog.
 
 class CCatalog extends CAllCatalog
 {
-	function GetList($arOrder = array(), $arFilter = array(), $arGroupBy = false, $arNavStartParams = false, $arSelectFields = array())
+	/**
+	 * @param array $arOrder
+	 * @param array $arFilter
+	 * @param bool|array $arGroupBy
+	 * @param bool|array $arNavStartParams
+	 * @param array $arSelectFields
+	 * @return bool|CDBResult
+	 */
+	public static function GetList($arOrder = array(), $arFilter = array(), $arGroupBy = false, $arNavStartParams = false, $arSelectFields = array())
 	{
 		global $DB;
 
 		// For old-style execution
 		if (!is_array($arOrder) && !is_array($arFilter))
 		{
-			$arOrder = strval($arOrder);
-			$arFilter = strval($arFilter);
-			if ('' != $arOrder && '' != $arFilter)
-				$arOrder = array($arOrder => $arFilter);
-			else
-				$arOrder = array();
-			if (is_array($arGroupBy))
-				$arFilter = $arGroupBy;
-			else
-				$arFilter = array();
+			$arOrder = (string)$arOrder;
+			$arFilter = (string)$arFilter;
+			$arOrder = ($arOrder != '' && $arFilter != '' ? array($arOrder => $arFilter) : array());
+			$arFilter = (is_array($arGroupBy) ? $arGroupBy : array());
 			$arGroupBy = false;
 		}
 
@@ -52,10 +54,8 @@ class CCatalog extends CAllCatalog
 				$strSql .= " GROUP BY ".$arSqls["GROUPBY"];
 
 			$dbRes = $DB->Query($strSql, false, "File: ".__FILE__."<br>Line: ".__LINE__);
-			if ($arRes = $dbRes->Fetch())
-				return $arRes["CNT"];
-			else
-				return False;
+			$arRes = $dbRes->Fetch();
+			return (is_array($arRes) ? $arRes['CNT'] : false);
 		}
 
 		$strSql = "SELECT ".$arSqls["SELECT"]." FROM b_catalog_iblock CI ".$arSqls["FROM"];
@@ -68,11 +68,10 @@ class CCatalog extends CAllCatalog
 
 		$intTopCount = 0;
 		$boolNavStartParams = (!empty($arNavStartParams) && is_array($arNavStartParams));
-		if ($boolNavStartParams && array_key_exists('nTopCount', $arNavStartParams))
-		{
-			$intTopCount = intval($arNavStartParams["nTopCount"]);
-		}
-		if ($boolNavStartParams && 0 >= $intTopCount)
+		if ($boolNavStartParams && isset($arNavStartParams['nTopCount']))
+			$intTopCount = (int)$arNavStartParams['nTopCount'];
+
+		if ($boolNavStartParams && $intTopCount <= 0)
 		{
 			$strSql_tmp = "SELECT COUNT('x') as CNT FROM b_catalog_iblock CI ".$arSqls["FROM"];
 			if (!empty($arSqls["WHERE"]))
@@ -98,14 +97,12 @@ class CCatalog extends CAllCatalog
 		}
 		else
 		{
-			if ($boolNavStartParams && 0 < $intTopCount)
-			{
+			if ($boolNavStartParams && $intTopCount > 0)
 				$strSql .= " LIMIT ".$intTopCount;
-			}
+
 			$dbRes = $DB->Query($strSql, false, "File: ".__FILE__."<br>Line: ".__LINE__);
 		}
 
 		return $dbRes;
 	}
 }
-?>

@@ -174,6 +174,10 @@ BX.MSLEFT = 1;
 BX.MSMIDDLE = 2;
 BX.MSRIGHT = 4;
 
+BX.AM_PM_UPPER = 1;
+BX.AM_PM_LOWER = 2;
+BX.AM_PM_NONE = false;
+	
 BX.ext = function(ob)
 {
 	for (var i in ob)
@@ -221,6 +225,31 @@ BX.namespace = function(namespace)
 	}
 
 	return parent;
+};
+
+BX.getClass = function(fullClassName)
+{
+	if (!BX.type.isNotEmptyString(fullClassName))
+	{
+		return null;
+	}
+
+	var classFn = null;
+	var currentNamespace = window;
+	var namespaces = fullClassName.split(".");
+	for (var i = 0; i < namespaces.length; i++)
+	{
+		var namespace = namespaces[i];
+		if (!currentNamespace[namespace])
+		{
+			return null;
+		}
+
+		currentNamespace = currentNamespace[namespace];
+		classFn = currentNamespace;
+	}
+
+	return classFn;
 };
 
 BX.debug = function()
@@ -355,6 +384,17 @@ BX.adjust = function(elem, data)
 		}
 	}
 
+	if (data.dataset)
+	{
+		for (j in data.dataset)
+		{
+			if(data.dataset.hasOwnProperty(j))
+			{
+				elem.dataset[j] = data.dataset[j]
+			}
+		}
+	}
+
 	if (data.children && data.children.length > 0)
 	{
 		for (j=0,len=data.children.length; j<len; j++)
@@ -370,7 +410,7 @@ BX.adjust = function(elem, data)
 		BX.cleanNode(elem);
 		elem.appendChild((elem.ownerDocument || document).createTextNode(data.text));
 	}
-	else if (data.html)
+	else if (typeof data.html !== 'undefined')
 	{
 		elem.innerHTML = data.html;
 	}
@@ -1092,6 +1132,42 @@ BX.clone = function(obj, bCopyObj)
 	return _obj;
 };
 
+BX.getCaretPosition = function(node)
+{
+	var pos = 0;
+
+	if(node.selectionStart || node.selectionStart == 0)
+	{
+		pos = node.selectionStart;
+	}
+	else if(document.selection)
+	{
+		node.focus();
+		var selection = document.selection.createRange();
+		selection.moveStart('character', -node.value.length);
+		pos = selection.text.length;
+	}
+
+	return (pos);
+};
+
+BX.setCaretPosition = function(node, pos)
+{
+	if(node.setSelectionRange)
+	{
+		node.focus();
+		node.setSelectionRange(pos, pos);
+	}
+	else if(node.createTextRange)
+	{
+		var range = node.createTextRange();
+		range.collapse(true);
+		range.moveEnd('character', pos);
+		range.moveStart('character', pos);
+		range.select();
+	}
+};
+
 // access private. use BX.mergeEx instead.
 // todo: refactor BX.merge, make it work through BX.mergeEx
 BX.merge = function(){
@@ -1197,6 +1273,15 @@ BX.bind = function(el, evname, func)
 		BX.bind(el, "keyup", func);
 
 		return;
+	}
+	else if (evname === 'fullscreenchange')
+	{
+		if (document.cancelFullScreen)
+			BX.bind(el, "fullscreenchange", func);
+		else if (document.mozCancelFullScreen)
+			BX.bind(el, "mozfullscreenchange", func);
+		else if (document.webkitCancelFullScreen)
+			BX.bind(el, "webkitfullscreenchange", func);
 	}
 
 	if (el.addEventListener) // Gecko / W3C
@@ -1600,6 +1685,10 @@ BX.fixEventPageY = function(event)
 	return event;
 };
 
+/**
+ * @deprecated
+ * @see e.preventDefault()
+ */
 BX.PreventDefault = function(e)
 {
 	if(!e) e = window.event;
@@ -1638,6 +1727,7 @@ BX.eventCancelBubble = function(e)
 	BX.addCustomEvent(eventObject, eventName, eventHandler) - set custom event handler for particular object
 	BX.addCustomEvent(eventName, eventHandler) - set custom event handler for all objects
 */
+
 BX.addCustomEvent = function(eventObject, eventName, eventHandler)
 {
 	/* shift parameters for short version */
@@ -2007,6 +2097,15 @@ BX.browser = {
 		return rv;
 	},
 
+	DetectAndroidVersion: function ()
+	{
+		var re = new RegExp("Android ([0-9]+[\.0-9]*)");
+		if (re.exec(navigator.userAgent) != null)
+			return parseFloat( RegExp.$1 );
+		else
+			return 0;
+	},
+
 	IsDoctype: function(pDoc)
 	{
 		pDoc = pDoc || document;
@@ -2266,17 +2365,40 @@ BX.util = {
 
 		return first;
 	},
-	
-	array_flip: function ( object ) 
+
+	array_flip: function ( object )
 	{
 	    var newObject = {};
-		
-	    for (var key in object) 
+
+	    for (var key in object)
 		{
 	        newObject[object[key]] = key;
 	    }
-		
+
 	    return newObject;
+	},
+
+	array_diff: function(ar1, ar2, hash)
+	{
+		hash = BX.type.isFunction(hash) ? hash : null;
+		var i, length, v, h, map = {}, result = [];
+		for(i = 0, length = ar2.length; i < length; i++)
+		{
+			v = ar2[i];
+			h = hash ? hash(v) : v;
+			map[h] = true;
+		}
+
+		for(i = 0, length = ar1.length; i < length; i++)
+		{
+			v = ar1[i];
+			h = hash ? hash(v) : v;
+			if(typeof(map[h]) === "undefined")
+			{
+				result.push(v);
+			}
+		}
+		return result;
 	},
 
 	array_unique: function(ar)
@@ -2461,6 +2583,24 @@ BX.util = {
 			h = screen.height;
 		}
 		return window.open(url, '', 'status=no,scrollbars=yes,resizable=yes,width='+width+',height='+height+',top='+Math.floor((h - height)/2-14)+',left='+Math.floor((w - width)/2-5));
+	},
+
+	shuffle: function(array)
+	{
+		var temporaryValue, randomIndex;
+		var currentIndex = array.length;
+
+		while (0 !== currentIndex)
+		{
+			randomIndex = Math.floor(Math.random() * currentIndex);
+			currentIndex -= 1;
+
+			temporaryValue = array[currentIndex];
+			array[currentIndex] = array[randomIndex];
+			array[randomIndex] = temporaryValue;
+		}
+
+		return array;
 	},
 
 	// BX.util.objectSort(object, sortBy, sortDir) - Sort object by property
@@ -2710,10 +2850,13 @@ BX.util = {
 			var name = prefix !== "" ? (prefix + "[" + key + "]") : key;
 			if(BX.type.isArray(value))
 			{
+				var obj = {};
 				for(var i = 0; i < value.length; i++)
 				{
-					BX.util.addObjectToForm(value[i], form, (name + "[" + i.toString() + "]"));
+					obj[i] = value[i];
 				}
+
+				BX.util.addObjectToForm(obj, form, name);
 			}
 			else if(BX.type.isPlainObject(value))
 			{
@@ -2757,6 +2900,11 @@ BX.util = {
 		}
 
 		return enable;
+	},
+
+	escapeRegExp: function(str)
+	{
+		return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 	}
 };
 
@@ -2814,6 +2962,114 @@ BX.type = {
 		{
 		}
 		return typeof(key) === "undefined" || hasProp.call(item, key);
+	},
+	ensureInteger: function(value)
+	{
+		if(BX.type.isNumber(value))
+		{
+			return value;
+		}
+
+		value = parseInt(value);
+		return !isNaN(value) ? value : 0;
+	},
+	stringToInt: function(s)
+	{
+		var i = parseInt(s);
+		return !isNaN(i) ? i : 0;
+	}
+};
+
+BX.prop =
+{
+	get: function(object, key, defaultValue)
+	{
+		return object && object.hasOwnProperty(key) ? object[key] : defaultValue;
+	},
+	getObject: function(object, key, defaultValue)
+	{
+		return object && BX.type.isPlainObject(object[key]) ? object[key] : defaultValue;
+	},
+	getElementNode: function(object, key, defaultValue)
+	{
+		return object && BX.type.isElementNode(object[key]) ? object[key] : defaultValue;
+	},
+	getArray: function(object, key, defaultValue)
+	{
+		return object && BX.type.isArray(object[key]) ? object[key] : defaultValue;
+	},
+	getFunction: function(object, key, defaultValue)
+	{
+		return object && BX.type.isFunction(object[key]) ? object[key] : defaultValue;
+	},
+	getNumber: function(object, key, defaultValue)
+	{
+		if(!(object && object.hasOwnProperty(key)))
+		{
+			return defaultValue;
+		}
+
+		var value = object[key];
+		if(BX.type.isNumber(value))
+		{
+			return value;
+		}
+
+		value = parseFloat(value);
+		return !isNaN(value) ? value : defaultValue;
+	},
+	getInteger: function(object, key, defaultValue)
+	{
+		if(!(object && object.hasOwnProperty(key)))
+		{
+			return defaultValue;
+		}
+
+		var value = object[key];
+		if(BX.type.isNumber(value))
+		{
+			return value;
+		}
+
+		value = parseInt(value);
+		return !isNaN(value) ? value : defaultValue;
+	},
+	getBoolean: function(object, key, defaultValue)
+	{
+		if(!(object && object.hasOwnProperty(key)))
+		{
+			return defaultValue;
+		}
+
+		var value = object[key];
+		return (BX.type.isBoolean(value)
+			? value
+			: (BX.type.isString(value) ? (value.toLowerCase() === "true") : !!value)
+		);
+	},
+	getString: function(object, key, defaultValue)
+	{
+		if(!(object && object.hasOwnProperty(key)))
+		{
+			return defaultValue;
+		}
+
+		var value = object[key];
+		return BX.type.isString(value) ? value : (value ? value.toString() : '');
+	},
+	extractDate: function(datetime)
+	{
+		if(!BX.type.isDate(datetime))
+		{
+			datetime = new Date();
+		}
+
+		datetime.setHours(0);
+		datetime.setMinutes(0);
+		datetime.setSeconds(0);
+		datetime.setMilliseconds(0);
+
+		return datetime;
 	}
 };
 
@@ -3864,9 +4120,13 @@ BX.template = function(tpl, callback, bKillTpl)
 	});
 };
 
-BX.isAmPmMode = function()
+BX.isAmPmMode = function(returnConst)
 {
-	return (BX.message('FORMAT_DATETIME').match('T') != null);
+	if (returnConst === true)
+	{
+		return BX.message.AMPM_MODE;
+	}
+	return BX.message.AMPM_MODE !== false;
 };
 
 BX.formatDate = function(date, format)
@@ -4882,6 +5142,7 @@ function _checkNode(obj, params)
 				break;
 
 				case 'attr':
+				case 'attrs':
 				case 'attribute':
 					if (BX.type.isString(params[i]))
 					{
@@ -4923,6 +5184,7 @@ function _checkNode(obj, params)
 				break;
 
 				case 'property':
+				case 'props':
 					if (BX.type.isString(params[i]))
 					{
 						if (!obj[params[i]])
@@ -5622,6 +5884,27 @@ if(typeof(BX.Promise) === "undefined")
 
 		return this.next;
 	};
+
+	BX.Promise.prototype.catch = function(onRejected)
+	{
+		if(BX.type.isFunction(onRejected))
+		{
+			this.onRejected.push(onRejected);
+		}
+
+		if(this.next === null)
+		{
+			this.next = new BX.Promise(null, this.ctx);
+		}
+
+		if(this.state !== null) // if promise was already resolved, execute immediately
+		{
+			this.execute();
+		}
+
+		return this.next;
+	};
+
 	BX.Promise.prototype.setAutoResolve = function(way, ms)
 	{
 		this.timer = setTimeout(BX.delegate(function(){

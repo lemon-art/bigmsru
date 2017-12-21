@@ -206,7 +206,7 @@ class CCatalogMeasureResult extends CDBResult
 	function Fetch()
 	{
 		$res = parent::Fetch();
-		if (!empty($res))
+		if (!empty($res) && isset($res['CODE']))
 		{
 			if (array_key_exists('MEASURE_TITLE', $res) && $res["MEASURE_TITLE"] == '')
 			{

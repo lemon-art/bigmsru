@@ -47,32 +47,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && strlen($Print)>0 && check_bitrix_ses
 {
 	if(count($REPORT_ID) > 0)
 	{
-		$db_basket = CSaleBasket::GetList(array('ID' => 'ASC'), array("ORDER_ID"=>$ID));
-		$productCountInBasket = $db_basket->SelectedRowsCount();
-		$showAll = "N";
-		if ($productCountInBasket == count($BASKET_IDS))
-			$showAll = "Y";
-
-
-		if ($showAll == "N")
+		$sBasket = "";
+		$sQuantity = "";
+		$bFirst = True;
+		$countBasketId = count($BASKET_IDS);
+		for ($i = 0; $i < $countBasketId; $i++)
 		{
-			$sBasket = "";
-			$sQuantity = "";
-			$bFirst = True;
-			$countBasketId = count($BASKET_IDS);
-			for ($i = 0; $i < $countBasketId; $i++)
-			{
-				if (IntVal($BASKET_IDS[$i])<=0)
-					continue;
-				$sBasket .= ($bFirst? "": ",").IntVal($BASKET_IDS[$i]);
-				$sQuantity .= ($bFirst? "": ",").${"QUANTITY_".IntVal($BASKET_IDS[$i])};
-				$bFirst = false;
-			}
-
-			$urlParams = "BASKET_IDS=".urlencode($sBasket)."&QUANTITIES=".urlencode($sQuantity);
+			if (IntVal($BASKET_IDS[$i])<=0)
+				continue;
+			$sBasket .= ($bFirst? "": ",").IntVal($BASKET_IDS[$i]);
+			$sQuantity .= ($bFirst? "": ",").${"QUANTITY_".IntVal($BASKET_IDS[$i])};
+			$bFirst = false;
 		}
-		else
-			$urlParams = "SHOW_ALL=Y";
+
+		$urlParams = "BASKET_IDS=".urlencode($sBasket)."&QUANTITIES=".urlencode($sQuantity);
 
 		$PROPS_ENABLE = (!isset($_POST["PROPS_ENABLE"]) || $_POST["PROPS_ENABLE"] == N) ? "N" : "Y";
 

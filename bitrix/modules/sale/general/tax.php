@@ -44,8 +44,10 @@ class CAllSaleTax
 				$arOrder["TAX_LIST"] = array();
 
 				static $proxyOrderTaxList = array();
+
 				$proxyOrderTaxKey = $arOrder["SITE_ID"]."|".$arOrder["PERSON_TYPE_ID"]."|".$arOrder["TAX_LOCATION"];
-				if (!empty($proxyOrderTaxList[$proxyOrderTaxKey]) && is_array($proxyOrderTaxList[$proxyOrderTaxKey]))
+
+				if (isset($proxyOrderTaxList[$proxyOrderTaxKey]) && is_array($proxyOrderTaxList[$proxyOrderTaxKey]))
 				{
 					$arOrder["TAX_LIST"] = $proxyOrderTaxList[$proxyOrderTaxKey];
 				}
@@ -89,7 +91,7 @@ class CAllSaleTax
 				}
 			}
 
-			if (count($arOrder["TAX_LIST"]) > 0)
+			if (!empty($arOrder["TAX_LIST"]))
 			{
 				if (!empty($arOrder["BASKET_ITEMS"]) && is_array($arOrder["BASKET_ITEMS"]))
 				{

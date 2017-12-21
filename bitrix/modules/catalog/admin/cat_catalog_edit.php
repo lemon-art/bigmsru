@@ -235,7 +235,7 @@ $tabControl->BeginCustomField("SECTION_PROPERTY", GetMessage("CAT_CEDIT_SECTION_
 					<?if(!is_array($arLink) || $arLink["INHERITED"] == "N"):?>
 					<input type="hidden" name="SECTION_PROPERTY[<?echo $arProp["ID"]?>][SHOW]" id="hidden_SECTION_PROPERTY_<?echo $arProp["ID"]?>" value="<?echo is_array($arLink)? "Y": "N";?>">
 					<?endif?>
-					<?echo htmlspecialcharsex($arProp["NAME"])?>
+					<?echo htmlspecialcharsbx($arProp["NAME"])?>
 				</td>
 				<td align="left"><?
 					if($arProp['PROPERTY_TYPE'] == "S" && !$arProp['USER_TYPE'])
@@ -251,7 +251,7 @@ $tabControl->BeginCustomField("SECTION_PROPERTY", GetMessage("CAT_CEDIT_SECTION_
 					elseif($arProp['PROPERTY_TYPE'] == "E" && !$arProp['USER_TYPE'])
 						echo GetMessage("IBLOCK_PROP_E");
 					elseif($arProp['USER_TYPE'] && is_array($ar = CIBlockProperty::GetUserType($arProp['USER_TYPE'])))
-						echo htmlspecialcharsex($ar["DESCRIPTION"]);
+						echo htmlspecialcharsbx($ar["DESCRIPTION"]);
 					else
 						echo GetMessage("IBLOCK_PROP_S");
 				?></td>
@@ -308,14 +308,20 @@ $tabControl->BeginCustomField("SECTION_PROPERTY", GetMessage("CAT_CEDIT_SECTION_
 			</table>
 			<br>
 			<select id="shadow_SECTION_PROPERTY" style="display:none">
-			<?foreach($arShadow as $key => $value):?>
-				<option value="<?echo htmlspecialcharsex($key)?>"><?echo htmlspecialcharsbx($value)?></option>
-			<?endforeach?>
+			<?
+			foreach($arShadow as $key => $value)
+			{
+				?><option value="<?=htmlspecialcharsbx($key); ?>"><?=htmlspecialcharsbx($value);?></option><?
+			}
+			?>
 			</select>
 			<select id="select_SECTION_PROPERTY">
-			<?foreach($arHidden as $key => $value):?>
-				<option value="<?echo htmlspecialcharsex($key)?>"><?echo htmlspecialcharsbx($value)?></option>
-			<?endforeach?>
+			<?
+			foreach($arHidden as $key => $value)
+			{
+				?><option value="<?=htmlspecialcharsbx($key); ?>"><?=htmlspecialcharsbx($value); ?></option><?
+			}
+			?>
 			</select>
 			<input type="button" value="<?echo GetMessage("CAT_CEDIT_PROP_TABLE_ACTION_ADD")?>" onclick="addSectionProperty(<?echo $arIBlock["ID"];?>, 'select_SECTION_PROPERTY', 'shadow_SECTION_PROPERTY', 'table_SECTION_PROPERTY')">
 			<script>
@@ -522,7 +528,7 @@ $tabControl->BeginCustomField("SECTION_PROPERTY", GetMessage("CAT_CEDIT_SECTION_
 					<?if(!is_array($arLink) || $arLink["INHERITED"] == "N"):?>
 					<input type="hidden" name="SECTION_PROPERTY[<?echo $arProp["ID"]?>][SHOW]" id="hidden_SECTION_PROPERTY_<?echo $arProp["ID"]?>" value="<?echo is_array($arLink)? "Y": "N";?>">
 					<?endif?>
-					<?echo htmlspecialcharsex($arProp["NAME"])?>
+					<?echo htmlspecialcharsbx($arProp["NAME"])?>
 				</td>
 				<td align="left"><?
 					if($arProp['PROPERTY_TYPE'] == "S" && !$arProp['USER_TYPE'])
@@ -538,7 +544,7 @@ $tabControl->BeginCustomField("SECTION_PROPERTY", GetMessage("CAT_CEDIT_SECTION_
 					elseif($arProp['PROPERTY_TYPE'] == "E" && !$arProp['USER_TYPE'])
 						echo GetMessage("IBLOCK_PROP_E");
 					elseif($arProp['USER_TYPE'] && is_array($ar = CIBlockProperty::GetUserType($arProp['USER_TYPE'])))
-						echo htmlspecialcharsex($ar["DESCRIPTION"]);
+						echo htmlspecialcharsbx($ar["DESCRIPTION"]);
 					else
 						echo GetMessage("IBLOCK_PROP_S");
 				?></td>
@@ -595,14 +601,20 @@ $tabControl->BeginCustomField("SECTION_PROPERTY", GetMessage("CAT_CEDIT_SECTION_
 			</table>
 			<br>
 			<select id="shadow_SKU_SECTION_PROPERTY" style="display:none">
-			<?foreach($arShadow as $key => $value):?>
-				<option value="<?echo htmlspecialcharsex($key)?>"><?echo htmlspecialcharsbx($value)?></option>
-			<?endforeach?>
+			<?
+			foreach($arShadow as $key => $value)
+			{
+				?><option value="<?= htmlspecialcharsbx($key); ?>"><?= htmlspecialcharsbx($value); ?></option><?
+			}
+			?>
 			</select>
 			<select id="select_SKU_SECTION_PROPERTY">
-			<?foreach($arHidden as $key => $value):?>
-				<option value="<?echo htmlspecialcharsex($key)?>"><?echo htmlspecialcharsbx($value)?></option>
-			<?endforeach?>
+			<?
+			foreach($arHidden as $key => $value)
+			{
+				?><option value="<?= htmlspecialcharsbx($key); ?>"><?= htmlspecialcharsbx($value); ?></option><?
+			}
+			?>
 			</select>
 			<input type="button" value="<?echo GetMessage("CAT_CEDIT_PROP_TABLE_ACTION_ADD")?>" onclick="addSectionProperty(<?echo $arCatalog["IBLOCK_ID"];?>, 'select_SKU_SECTION_PROPERTY', 'shadow_SKU_SECTION_PROPERTY', 'table_SKU_SECTION_PROPERTY')">
 		</td></tr>

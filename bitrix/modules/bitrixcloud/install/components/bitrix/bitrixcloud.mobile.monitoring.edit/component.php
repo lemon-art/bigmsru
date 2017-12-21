@@ -106,9 +106,15 @@ if(isset($arResult["ACTION"]))
 
 		case 'edit':
 		default:
-
-
-			$arList = $monitoring->getList();
+			try
+			{
+				$arList = $monitoring->getList();
+			}
+			catch (Exception $e)
+			{
+				ShowError($e->getMessage());
+				return;
+			}
 
 			if (is_string($arList))
 			{

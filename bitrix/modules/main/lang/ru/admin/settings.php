@@ -14,4 +14,7 @@ $MESS ['MAIN_TAB_RIGHTS'] = "Доступ";
 $MESS ['MAIN_TAB_TITLE_RIGHTS'] = "Уровень доступа к модулю";
 $MESS ['MAIN_USER_GROUP_TITLE'] = "Просмотреть параметры группы пользователей";
 $MESS ['MAIN_ADMIN_SET_CONTROLLER_ALT'] = "Данное значение переопределяется Контроллером";
+$MESS ['MAIN_ADMIN_ADD_SITE_SELECTOR'] = "Настроить для другого сайта";
+$MESS ['MAIN_ADMIN_SITE_DEFAULT_VALUE_SELECT'] = "(Выберите сайт)";
+$MESS ['MAIN_ADMIN_SITE_ALL_SELECT'] = "Для всех сайтов";
 ?>

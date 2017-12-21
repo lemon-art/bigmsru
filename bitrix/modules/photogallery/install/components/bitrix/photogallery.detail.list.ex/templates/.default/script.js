@@ -2618,7 +2618,7 @@ BXTopSlider.prototype = {
 		this.pSliderContPos = BX.pos(this.pSliderCont);
 		this.wndSize = BX.GetWindowScrollPos();
 		this.startX = e.clientX + this.wndSize.scrollLeft;
-		this.startLeft = parseInt(this.pWnd.style.left) || 0;
+		this.selectorStartLeft = parseInt(this.pWnd.style.left) || 0;
 		this.minLeft = this.pSliderContPos.width - this.pObj.itemsCount * this.thumbContSize;
 
 		var _this = this;
@@ -2745,7 +2745,7 @@ BXTopSlider.prototype = {
 			var x = parseInt(e.clientX) + parseInt(this.wndSize.scrollLeft);
 			var offsetX = x - this.startX;
 
-			var newLeft = this.startLeft + offsetX;
+			var newLeft = this.selectorStartLeft + offsetX;
 			if (newLeft > this.extraSize)
 				newLeft = this.extraSize;
 			if (newLeft < this.minLeft - this.extraSize)

@@ -2244,7 +2244,7 @@ else
 									<tr>
 										<td class="head"><?=GetMessage('SOD_POPUP_NUMBER_DOC')?>:</td>
 										<td>
-											<input type="text" class="popup_input" id="FORM_DELIVERY_DOC_NUM" name="FORM_DELIVERY_DOC_NUM" value="<?= htmlspecialcharsEx($arOrder["DELIVERY_DOC_NUM"]) ?>" size="30" maxlength="20" class="typeinput">
+											<input type="text" class="popup_input" id="FORM_DELIVERY_DOC_NUM" name="FORM_DELIVERY_DOC_NUM" value="<?= htmlspecialcharsbx($arOrder["DELIVERY_DOC_NUM"]) ?>" size="30" maxlength="20" class="typeinput">
 										</td>
 									</tr>
 									<tr>
@@ -2778,7 +2778,7 @@ else
 									<tr>
 										<td class="head"><?=GetMessage('SOD_POPUP_PAY_NUMBER_DOC')?>:</td>
 										<td>
-											<input type="text" id="FORM_PAY_VOUCHER_NUM" class="popup_input" name="FORM_PAY_VOUCHER_NUM" value="<?= htmlspecialcharsEx($arOrder["PAY_VOUCHER_NUM"]) ?>" size="30" maxlength="20" class="typeinput">
+											<input type="text" id="FORM_PAY_VOUCHER_NUM" class="popup_input" name="FORM_PAY_VOUCHER_NUM" value="<?= htmlspecialcharsbx($arOrder["PAY_VOUCHER_NUM"]) ?>" size="30" maxlength="20" class="typeinput">
 										</td>
 									</tr>
 									<tr>

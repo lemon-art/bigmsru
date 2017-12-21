@@ -113,7 +113,6 @@ class CSiteCheckerTest
 			array('check_clone' => GetMessage('SC_T_CLONE')),
 
 			array('check_pcre_recursion' => GetMessage('SC_T_RECURSION')),
-			array('check_method_exists' => GetMessage('SC_T_METHOD_EXISTS')),
 
 			array('check_upload' => GetMessage('SC_T_UPLOAD')),
 			array('check_upload_big' => GetMessage('SC_T_UPLOAD_BIG')),
@@ -165,9 +164,18 @@ class CSiteCheckerTest
 					);
 				break;
 				case 3:
-				default:
 					$this->arTest = array(
 						array('check_mysql_table_structure' => GetMessage('SC_T_STRUCTURE')),
+					);
+				break;
+				case 4:
+					$this->arTest = array(
+						array('check_mbstring' => GetMessage('SC_T_MBSTRING')),
+					);
+				break;
+				default:
+					$this->arTest = array(
+						array('check_server_vars' => GetMessage('SC_T_SERVER')),
 					);
 				break;
 			}
@@ -293,13 +301,6 @@ class CSiteCheckerTest
 				if (!$this->fix_mode) // if we have a kernel
 				{
 					COption::SetOptionString('main', 'site_checker_success', $this->arTestVars['site_checker_success']);
-					CEventLog::Add(array(
-						"SEVERITY" => "WARNING",
-						"AUDIT_TYPE_ID" => $this->arTestVars['site_checker_success'] == 'Y' ? 'SITE_CHECKER_SUCCESS' : 'SITE_CHECKER_ERROR',
-						"MODULE_ID" => "main",
-						"ITEM_ID" => $_SERVER['DOCUMENT_ROOT'],
-						"DESCRIPTION" => '',
-					));
 					if ($this->arTestVars['site_checker_success'] == 'Y')
 						CAdminNotify::DeleteByTag('SITE_CHECKER');
 				}
@@ -424,7 +425,6 @@ class CSiteCheckerTest
 			'imagecreatetruecolor' => GetMessage("SC_MOD_GD"),
 			'imagecreatefromjpeg' => GetMessage("SC_MOD_GD_JPEG"),
 			'json_encode' => GetMessage("SC_MOD_JSON"),
-			'mcrypt_encrypt' => GetMessage("MAIN_SC_MCRYPT").' MCrypt',
 			'hash' => 'Hash',
 			'highlight_file' => 'PHP Syntax Highlight'
 		);
@@ -435,6 +435,10 @@ class CSiteCheckerTest
 			if (!function_exists($func))
 				$strError .= $desc."<br>";
 		}
+
+		if (!function_exists('mcrypt_encrypt') && !function_exists('openssl_encrypt'))
+			$strError .= GetMessage("MAIN_SC_MCRYPT").' OpenSSL';
+
 
 		if (defined('BX_UTF') && BX_UTF === true && !function_exists('mb_substr'))
 			$strError .= GetMessage("SC_MOD_MBSTRING")."<br>";
@@ -457,7 +461,6 @@ class CSiteCheckerTest
 		$arRequiredParams = array(
 			'safe_mode' => 0,
 			'file_uploads' => 1,
-//			'session.cookie_httponly' => 0, # 14.0.1:main/include.php:ini_set("session.cookie_httponly", "1");
 			'wincache.chkinterval' => 0,
 			'session.auto_start' => 0,
 			'magic_quotes_runtime' => 0,
@@ -465,8 +468,15 @@ class CSiteCheckerTest
 			'magic_quotes_gpc' => 0,
 			'arg_separator.output' => '&',
 			'register_globals' => 0,
-			'zend.multibyte' => 0
+			'zend.multibyte' => 0,
+			'opcache.revalidate_freq' => 0
 		);
+
+		if (extension_loaded('xcache'))
+		{
+			$arRequiredParams['xcache.cacher'] = 0;
+			$arRequiredParams['xcache.stat'] = 1;
+		}
 
 		foreach($arRequiredParams as $param => $val)
 		{
@@ -843,6 +853,15 @@ class CSiteCheckerTest
 				return $this->Result(false,GetMessage('SC_TMP_FOLDER_PERMS').' <i>('.htmlspecialcharsbx($sp).')</i>');
 		}
 
+		if (defined('BX_TEMPORARY_FILES_DIRECTORY'))
+		{
+			$sp = BX_TEMPORARY_FILES_DIRECTORY;
+			if (!file_exists($sp))
+				return $this->Result(false,GetMessage('SC_NO_TMP_FOLDER').' <i>(BX_TEMPORARY_FILES_DIRECTORY: '.htmlspecialcharsbx($sp).')</i>');
+			elseif (!is_writable($sp))
+				return $this->Result(false,GetMessage('SC_TMP_FOLDER_PERMS').' <i>(BX_TEMPORARY_FILES_DIRECTORY: '.htmlspecialcharsbx($sp).')</i>');
+		}
+
 		$binaryData = '';
 		for($i=40;$i<240;$i++)
 			$binaryData .= chr($i);
@@ -954,6 +973,8 @@ class CSiteCheckerTest
 		{
 			$ok = true;
 			$cur = ini_get('memory_limit');
+			if (preg_match('#([0-9]+) *G#i', $cur, $regs))
+				$cur = $regs[1] * 1024;
 			if ($cur > 0 && $cur < $last_success)
 			{
 				$res .= '<br> '.GetMessage('SC_MEMORY_CHANGED', array('#VAL0#' => $cur, '#VAL1#' => '512M'));
@@ -1013,6 +1034,26 @@ class CSiteCheckerTest
 
 	function check_mbstring()
 	{
+		$file = $_SERVER['DOCUMENT_ROOT'].'/bitrix/.settings.php';
+
+		if ($this->fix_mode)
+		{
+			if (!file_exists($file))
+			{
+				\Bitrix\Main\Config\Configuration::wnc();
+				bx_accelerator_reset();
+			}
+			return $this->Result(file_exists($file));
+		}
+
+		if (!file_exists($file))
+		{
+			$this->arTestVars['check_mbstring_fail'] = true;
+			$mode = 4;
+			$link = ' <a href="javascript:show_popup(\'' . GetMessageJS('SC_FIX_MBSTRING') . '\', \'?fix_mode='.$mode.'\', \'' . GetMessageJS('SC_FIX_MBSTRING_CONFIRM') . '\')">' . GetMessage('SC_FIX') . '</a>';
+			return $this->Result(false, GetMessage('SC_ERR_NO_SETTINGS').$link);
+		}
+
 		if (\Bitrix\Main\Config\Configuration::getValue("utf_mode") !== (defined('BX_UTF') && BX_UTF === true))
 		{
 			return $this->Result(false, GetMessage('MAIN_SC_MBSTRING_SETTIGNS_DIFFER'));
@@ -1186,29 +1227,43 @@ class CSiteCheckerTest
 
 	function check_pull_stream()
 	{
-		$id = 123;
-		$text = 'site_checker test message';
-
-		if (IsModuleInstalled('pull'))
+		if (IsModuleInstalled('xmpp') && CModule::IncludeModule('xmpp'))
 		{
-			if ((COption::GetOptionString('pull', 'nginx', 'N') == 'Y'))
+			$arMessage = array(
+				"query" => array(
+					"." => array("type" => "get"),
+					"common" => array("#" => ""),
+				),
+			);
+			$t = microtime(1);
+			$arResponce = CXMPPUtility::_SendToServer($arMessage, $errorNo, $errorStr);
+			if (microtime(1) - $t > 1)
+				return $this->Result(false, 'XMPP server has failed');
+		}
+
+
+		if (CModule::IncludeModule('pull'))
+		{
+			$text = md5(mt_rand(100000,999999));
+			$id = CPullChannel::SignChannel(md5($text));
+			if (CPullOptions::GetQueueServerStatus())
 			{
-				if (!$ar = parse_url(str_replace('#DOMAIN#', $this->host, COption::GetOptionString('pull', 'path_to_publish'))))
+				if (!$ar = parse_url(str_replace('#DOMAIN#', $this->host, CPullOptions::GetPublishUrl($id))))
 					return $this->Result(false, GetMessage("MAIN_SC_PATH_PUB"));
 
 				$pub_domain = $ar['host'];
 				$pub_host = ($ar['scheme'] == 'https' ? 'ssl://' : '').$pub_domain;
-				$pub = rtrim($ar['path'], '/').'/?CHANNEL_ID='.$id;
+				$pub = $ar['path'].'?'.$ar['query'];
 				$pub_port = $ar['port'];
 				if (!$pub_port)
 					$pub_port = $ar['scheme'] == 'https' ? 443 : 80;
 
-				if (!$ar = parse_url(str_replace('#DOMAIN#', $this->host, COption::GetOptionString('pull', 'path_to_listener'.($this->ssl ? '_secure' : '')))))
+				if (!$ar = parse_url(str_replace('#DOMAIN#', $this->host, $this->ssl ? CPullOptions::GetListenSecureUrl($id) : CPullOptions::GetListenUrl($id))))
 					return $this->Result(false, GetMessage("MAIN_SC_PATH_SUB"));
 
 				$sub_domain = $ar['host'];
 				$sub_host = ($ar['scheme'] == 'https' ? 'ssl://' : '').$sub_domain;
-				$sub = rtrim($ar['path'], '/').'/?CHANNEL_ID='.$id;
+				$sub = $ar['path'].'?'.$ar['query'];
 				$sub_port = $ar['port'];
 				if (!$sub_port)
 					$sub_port = $ar['scheme'] == 'https' ? 443 : 80;
@@ -1224,30 +1279,54 @@ class CSiteCheckerTest
 			$this->arTestVars['push_stream_fail'] = true;
 			return $this->Result(false, GetMessage("MAIN_NO_PULL"));
 		}
-		
-		// POST
-		if (!$res = $this->ConnectToHost($pub_host, $pub_port))
-		{
-			$this->arTestVars['push_stream_fail'] = true;
-			return $this->Result(false, GetMessage("MAIN_SC_NO_PUSH_STREAM_CONNECTION"));
-		}
+
+		$ver = CPullOptions::GetQueueServerVersion();
+		$bNodeJS = $ver > 2;
+		echo 'Server version: '.$ver.($bNodeJS ? ' (Bitrix Push server)' : ' (nginx-push-stream-module)')."\n";
+
 		$strRequest0 = 'POST '.$pub.' HTTP/1.0'."\r\n".
 			'Host: '.$pub_domain."\r\n".
 			'Content-Length: '.strlen($text)."\r\n".
 			"\r\n".
 			$text."\r\n";
-		$strRes0 = GetHttpResponse($res, $strRequest0, $strHeaders0);
+		$strRequest1 = 'GET '.$sub.' HTTP/1.0'."\r\n".
+			'If-Modified-Since: '.date('r', time() - 86400)."\r\n".
+			'Host: '.$sub_domain."\r\n\r\n";
+		$strRequest2 = 'DELETE '.$pub.' HTTP/1.0'."\r\n".
+			'Host: '.$sub_domain."\r\n\r\n";
 
-		// GET
-		if (!$res = $this->ConnectToHost($sub_host, $sub_port))
+		if (!$bNodeJS)
+		{
+			// POST - to create a channel
+			if (!$res0 = $this->ConnectToHost($pub_host, $pub_port))
+			{
+				$this->arTestVars['push_stream_fail'] = true;
+				return $this->Result(false, GetMessage("MAIN_SC_NO_PUSH_STREAM_CONNECTION"));
+			}
+			fwrite($res0, $strRequest0);
+			fclose($res0);
+		}
+
+		// GET - connection
+		if (!$res1 = $this->ConnectToHost($sub_host, $sub_port))
 		{
 			$this->arTestVars['push_stream_fail'] = true;
 			return $this->Result(false, GetMessage("MAIN_SC_NO_SUB_CONNECTION"));
 		}
-		$strRequest1 = 'GET '.$sub.' HTTP/1.0'."\r\n".
-			'If-Modified-Since: '.date('r', time() - 86400)."\r\n".
-			'Host: '.$sub_domain."\r\n\r\n";
-		$strRes1 = GetHttpResponse($res, $strRequest1, $strHeaders1);
+		fwrite($res1, $strRequest1);
+
+		// POST - message
+		if (!$res0 = $this->ConnectToHost($pub_host, $pub_port))
+		{
+			$this->arTestVars['push_stream_fail'] = true;
+			return $this->Result(false, GetMessage("MAIN_SC_NO_PUSH_STREAM_CONNECTION"));
+		}
+		fwrite($res0, $strRequest0);
+		$strRes0 = fgets($res0);
+		fclose($res0);
+
+		// GET - message
+		$strRes1 = fread($res1, 4096);
 
 		$retVal = true;
 		if (false === strpos($strRes1, $text))
@@ -1259,15 +1338,13 @@ class CSiteCheckerTest
 		}
 	
 		// DELETE
-		if (!$res = $this->ConnectToHost($pub_host, $pub_port))
+		if (!$res2 = $this->ConnectToHost($pub_host, $pub_port))
 		{
 			$this->arTestVars['push_stream_fail'] = true;
 			return $this->Result(false, GetMessage("MAIN_SC_NO_PUSH_STREAM_CONNECTION"));
 		}
-		$strRequest = 'DELETE '.$pub.' HTTP/1.0'."\r\n".
-			'Host: '.$sub_domain."\r\n\r\n";
-		fwrite($res, $strRequest);
-		fclose($res);
+		fwrite($res2, $strRequest2);
+		fclose($res2);
 
 		if ($retVal == true && COption::GetOptionString('main', 'session_expand', 'Y') <> 'N' && (!defined("BX_SKIP_SESSION_EXPAND") || BX_SKIP_SESSION_EXPAND === false))
 			return $this->Result(null, GetMessage('MAIN_SC_WARN_EXPAND_SESSION'));
@@ -1628,7 +1705,8 @@ class CSiteCheckerTest
 				'bitrix6setup.php',
 				'bitrix7setup.php',
 				'bitrix8setup.php',
-				'export_file.csv'
+				'export_file.csv',
+				'1c_bx_import.php'
 			) as $file)
 		{
 			if (file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$file))
@@ -2547,7 +2625,7 @@ class CSiteCheckerTest
 			if ($oTest->result === false)
 			{
 				$ar = Array(
-					"MESSAGE" => 
+					"MESSAGE" =>
 						(
 							IsModuleInstalled('intranet') ?
 							GetMessage("MAIN_SC_GOT_ERRORS", array('#LINK#' => "/bitrix/admin/site_checker.php?lang=".LANGUAGE_ID."&express_test=Y")) :
@@ -2558,7 +2636,6 @@ class CSiteCheckerTest
 					'TYPE' => 'ERROR'
 				);
 				CAdminNotify::Add($ar);
-
 				break;
 			}
 
@@ -2566,6 +2643,22 @@ class CSiteCheckerTest
 				break;
 			$step++;
 		}
+
+		$REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
+		$HTTP_USER_AGENT= $_SERVER['HTTP_USER_AGENT'];
+		$_SERVER['REMOTE_ADDR'] = '-';
+		$_SERVER['HTTP_USER_AGENT'] = '-';
+		CEventLog::Add(array(
+			"SEVERITY" => "WARNING",
+			"AUDIT_TYPE_ID" => $oTest->arTestVars['site_checker_success'] == 'Y' ? 'SITE_CHECKER_SUCCESS' : 'SITE_CHECKER_ERROR',
+			"MODULE_ID" => "main",
+			"ITEM_ID" => 'CSiteCheckerTest::CommonTest();',
+			"URL" => '-',
+			"DESCRIPTION" => '',
+		));
+		$_SERVER['REMOTE_ADDR'] = $REMOTE_ADDR;
+		$_SERVER['HTTP_USER_AGENT'] = $HTTP_USER_AGENT;
+
 		return "CSiteCheckerTest::CommonTest();";
 	}
 }
@@ -2783,6 +2876,23 @@ function InitPureDB()
 			if ($m = trim($module))
 				return file_exists($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/'.$m);
 			return false;
+		}
+	}
+	if (!function_exists('GetMessageJS'))
+	{
+		function GetMessageJS($name, $aReplace=false)
+		{
+			return GetMessage($name, $aReplace);
+		}
+	}
+	if (!function_exists('bx_accelerator_reset'))
+	{
+		function bx_accelerator_reset()
+		{
+			if(function_exists("accelerator_reset"))
+				accelerator_reset();
+			elseif(function_exists("wincache_refresh_if_changed"))
+				wincache_refresh_if_changed();
 		}
 	}
 	global $DB, $DBType, $DBDebug, $DBDebugToFile, $DBHost, $DBName, $DBLogin, $DBPassword;

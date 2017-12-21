@@ -1,5 +1,10 @@
 <?
-IncludeModuleLangFile(__FILE__);
+use	Bitrix\Sale\Internals\OrderTable,
+	Bitrix\Sale\Internals\OrderArchiveTable,
+	Bitrix\Sale\Compatible,
+	Bitrix\Main\Localization\Loc;
+
+Loc::loadMessages(__FILE__);
 
 $GLOBALS["SALE_PERSON_TYPE_LIST_CACHE"] = Array();
 
@@ -157,20 +162,26 @@ class CAllSalePersonType
 
 	function Delete($ID)
 	{
-		global $DB;
-		$ID = IntVal($ID);
+		global $DB, $APPLICATION;
 
-		$db_orders = CSaleOrder::GetList(
-				array("DATE_UPDATE" => "DESC"),
-				array("PERSON_TYPE_ID" => $ID),
-				false,
-				array("nTopCount" => 1),
-				array("ID")
-			);
-		if ($db_orders->Fetch())
+		$ID = (int)($ID);
+
+		if (OrderTable::getList(array(
+			'filter' => array('=PERSON_TYPE_ID' => $ID),
+			'limit' => 1
+		))->fetch())
 		{
-			$GLOBALS["APPLICATION"]->ThrowException(GetMessage("SKGP_ERROR_PERSON_HAS_ORDER").$ID, "ERROR_PERSON_HAS_ORDER");
-			return False;
+			$APPLICATION->ThrowException(Loc::getMessage("SKGP_ERROR_PERSON_HAS_ORDER").$ID, "ERROR_PERSON_HAS_ORDER");
+			return false;
+		}
+
+		if (OrderArchiveTable::getList(array(
+			'filter' => array('=PERSON_TYPE_ID' => $ID),
+			'limit' => 1
+		))->fetch())
+		{
+			$APPLICATION->ThrowException(Loc::getMessage("SKGP_ERROR_PERSON_HAS_ARCHIVE", array("#ID#" => $ID)), "ERROR_PERSON_HAS_ARCHIVED_ORDER");
+			return false;
 		}
 
 		$db_events = GetModuleEvents("sale", "OnBeforePersonTypeDelete");

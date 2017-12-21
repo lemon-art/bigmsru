@@ -13,4 +13,6 @@ $MESS["BLG_NS_MODERATE_POST"] = "New unmoderated post";
 $MESS["BLG_NS_MODERATE_COMMENT"] = "New unmoderated comment";
 $MESS["BLG_NS_PUBLISHED_POST"] = "Your post was published by the moderator";
 $MESS["BLG_NS_PUBLISHED_COMMENT"] = "Your comment was published by the moderator";
+$MESS["BLG_NS_IM_ANSWER_SUCCESS"] = "Comment has been published";
+$MESS["BLG_NS_IM_ANSWER_ERROR"] = "Error publishing comment";
 ?>

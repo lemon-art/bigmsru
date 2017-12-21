@@ -1,11 +1,17 @@
 <?
+/** @global \CMain $APPLICATION */
+use Bitrix\Main,
+	Bitrix\Main\Loader,
+	Bitrix\Catalog,
+	Bitrix\Iblock;
+
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
 
 $saleModulePermissions = $APPLICATION->GetGroupRight("sale");
 if ($saleModulePermissions < "W")
 	$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
 
-require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/include.php");
+Loader::includeModule('sale');
 IncludeModuleLangFile(__FILE__);
 //$APPLICATION->SetAdditionalCSS("/bitrix/js/intranet/intranet-common.css");
 
@@ -351,10 +357,71 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $do_create_link == "Y" && $saleModul
 		if ($createNewSaleUser)
 		{
 			$APPLICATION->SetGroupRight("sale", $groupId, "W", false);
-			//$APPLICATION->SetGroupRight("catalog", $groupId, "R", false);
 			CGroup::SetModulePermission($groupId, "catalog", CTask::GetIdByLetter("R", "catalog"));
-			//$APPLICATION->SetGroupRight("main", $groupId, "R", false);
 			CGroup::SetModulePermission($groupId, "main", CTask::GetIdByLetter("R", "main"));
+
+			if (Loader::includeModule('iblock') && Loader::includeModule('catalog'))
+			{
+				$catalogs = array();
+				$iterator = Catalog\CatalogIblockTable::getList(array(
+					'select' => array('IBLOCK_ID', 'PRODUCT_IBLOCK_ID')
+				));
+				while ($row = $iterator->fetch())
+				{
+					$row['IBLOCK_ID'] = (int)$row['IBLOCK_ID'];
+					$catalogs[$row['IBLOCK_ID']] = $row['IBLOCK_ID'];
+					$row['PRODUCT_IBLOCK_ID'] = (int)$row['PRODUCT_IBLOCK_ID'];
+					if ($row['PRODUCT_IBLOCK_ID'] > 0)
+						$catalogs[$row['PRODUCT_IBLOCK_ID']] = $row['PRODUCT_IBLOCK_ID'];
+				}
+				unset($row, $iterator);
+
+				if (!empty($catalogs))
+				{
+					$iblockObject = new \CIBlock();
+
+					$rightsId = null;
+					$row = Main\TaskTable::getList(array(
+						'select' => array('ID'),
+						'filter' => array('=LETTER' => 'S', '=MODULE_ID' => 'iblock', '=SYS' => 'Y')
+					))->fetch();
+					if (!empty($row))
+						$rightsId = $row['ID'];
+					unset($row);
+					$groupCode = 'G'.$groupId;
+
+					foreach ($catalogs as $id)
+					{
+						$rightsMode = \CIBlock::GetArrayByID($id, 'RIGHTS_MODE');
+						if ($rightsMode == Iblock\IblockTable::RIGHTS_SIMPLE)
+						{
+							$rights = \CIBlock::GetGroupPermissions($id);
+							$rights[$groupId] = 'S';
+							//TODO: change to static after iblock 17.5.1 will be stable
+							$iblockObject->SetPermission($id, $rights);
+						}
+						elseif ($rightsMode == Iblock\IblockTable::RIGHTS_EXTENDED && $rightsId !== null)
+						{
+							$rightsObject = new \CIBlockRights($id);
+							$rights = $rightsObject->GetRights();
+							$rights['n0'] = array(
+								'GROUP_CODE'  => $groupCode,
+        						'DO_INHERIT' => 'Y',
+        						'IS_INHERITED' => 'N',
+								'OVERWRITED' => 0,
+								'TASK_ID' => $rightsId,
+								'XML_ID' => null,
+								'ENTITY_TYPE' => 'iblock',
+								'ENTITY_ID' => $id
+							);
+							$rightsObject->SetRights($rights);
+						}
+					}
+					unset($rights, $id);
+					unset($iblockObject);
+				}
+				unset($catalogs);
+			}
 
 			$opt = COption::GetOptionString("sale", "1C_SALE_GROUP_PERMISSIONS", "");
 			$opt .= (($opt != "") ? "," : "").$groupId;

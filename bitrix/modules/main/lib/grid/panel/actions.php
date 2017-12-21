@@ -3,6 +3,10 @@
 namespace Bitrix\Main\Grid\Panel;
 
 
+/**
+ * Class Actions
+ * @package Bitrix\Main\Grid\Panel
+ */
 class Actions
 {
 	const CREATE = "CREATE";
@@ -15,7 +19,13 @@ class Actions
 	const INLINE_EDIT = "INLINE_EDIT";
 	const HIDE_ALL_EXPECT = "HIDE_ALL_EXPECT";
 	const SHOW_ALL = "SHOW_ALL";
+	const RESET_CONTROLS = "RESET_CONTROLS";
 
+
+	/**
+	 * Gets types list of actions
+	 * @return array
+	 */
 	public static function getList()
 	{
 		$reflection = new \ReflectionClass(__CLASS__);

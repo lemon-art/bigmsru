@@ -365,7 +365,7 @@ var FM_MESS = {0:0<?foreach($arLangMess as $m1 => $m2){echo ', '.$m1." : '".adds
 			</tr>
 			<tr title='<?= GetMessage("FM_UTIL_FILE_NAME_TITLE")?>'>
 				<td class="bxfm-d-label"><label for="bx_search_file"><?= GetMessage("FM_UTIL_FILE_NAME")?>:</label></td>
-				<td class="bxfm-d-value"><input id="bx_search_file" name="bx_search_file" value="<?= $defMask?>" style="width: 220px;" type="text"/></td>
+				<td class="bxfm-d-value"><input id="bx_search_file" name="bx_search_file" value="<?= htmlspecialcharsbx($defMask)?>" style="width: 220px;" type="text"/></td>
 			</tr>
 			<tr title="<?= GetMessage("FM_UTIL_PHRASE_TITLE")?>">
 				<td class="bxfm-d-label"><label for="bx_search_phrase"><?= GetMessage("FM_UTIL_PHRASE")?>:</label></td>

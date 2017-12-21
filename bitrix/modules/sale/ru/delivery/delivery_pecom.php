@@ -420,15 +420,27 @@ class CDeliveryPecom
 
 	function calculate($profile, $arConfig, $arOrder, $STEP, $TEMP = false)
 	{
-		$calc = new Calculator($arOrder, $arConfig, $profile);
-		$arResult = $calc->getPriceInfo();
+		$ttl = 604800; //week
+		$cacheId = "SaleDeliveryPecomCalc_".$profile."_".md5(serialize($arConfig))."_".md5(serialize($arOrder));
+		$cacheManager = \Bitrix\Main\Application::getInstance()->getManagedCache();
 
-		return $arResult;
+		if($cacheManager->read($ttl, $cacheId))
+		{
+			$result = $cacheManager->get($cacheId);
+		}
+		else
+		{
+			$calc = new Calculator($arOrder, $arConfig, $profile);
+			$result = $calc->getPriceInfo();
+			$cacheManager->set($cacheId, $result);
+		}
+
+		return $result;
 	}
 
 	function compability($arOrder, $arConfig)
 	{
-		$ttl = 2592000;
+		$ttl = 604800;
 		$cacheId = "SaleDeliveryPecomCompability".$arConfig["CITY_DELIVERY"]["VALUE"].$arOrder["LOCATION_TO"];
 		$arResult = array();
 

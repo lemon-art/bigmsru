@@ -59,7 +59,7 @@ class CSecurityFilePermissionsTest
 	 * @param array $params
 	 * @return array
 	 */
-	public function check($params = array())
+	public function check(array $params = array())
 	{
 		$this->initializeParams($params);
 		if(!self::isRunOnWin())

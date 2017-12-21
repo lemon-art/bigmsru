@@ -114,6 +114,27 @@
 	font-size:11px;
 }
 
+.bx_compare .table_compare table.compare-price tr td
+{
+	font-weight: normal;
+	background-color: transparent;
+}
+
+.bx_compare .table_compare table.compare-price tr td:first-child
+{
+	text-align: right;
+}
+
+.bx_compare .table_compare table.compare-price tr td:last-child
+{
+	text-align: left;
+}
+
+.bx_compare .table_compare table.compare-price tr td.simple:first-child
+{
+	text-align: left;
+}
+
 
 /*BTN*/
 

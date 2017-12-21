@@ -9,7 +9,7 @@ if (!CModule::IncludeModule("sale"))
 	return;
 }
 
-global $APPLICATION;
+global $APPLICATION, $USER;
 
 $APPLICATION->RestartBuffer();
 
@@ -17,38 +17,73 @@ $bUseAccountNumber = (COption::GetOptionString("sale", "account_number_template"
 
 $ORDER_ID = urldecode(urldecode($_REQUEST["ORDER_ID"]));
 $paymentId = isset($_REQUEST["PAYMENT_ID"]) ? $_REQUEST["PAYMENT_ID"] : '';
+$hash = isset($_REQUEST["HASH"]) ? $_REQUEST["HASH"] : null;
 
 $arOrder = false;
-if ($bUseAccountNumber)
+$checkedBySession = false;
+if (!$USER->IsAuthorized() && is_array($_SESSION['SALE_ORDER_ID']) && empty($hash))
 {
-	$dbOrder = CSaleOrder::GetList(
-		array("DATE_UPDATE" => "DESC"),
-		array(
-			"LID" => SITE_ID,
-			"USER_ID" => IntVal($GLOBALS["USER"]->GetID()),
-			"ACCOUNT_NUMBER" => $ORDER_ID
-		)
+	$realOrderId = 0;
+
+	if ($bUseAccountNumber)
+	{
+		$dbOrder = CSaleOrder::GetList(
+			array("DATE_UPDATE" => "DESC"),
+			array(
+				"LID" => SITE_ID,
+				"ACCOUNT_NUMBER" => $ORDER_ID
+			)
+		);
+		$arOrder = $dbOrder->GetNext();
+		if ($arOrder)
+			$realOrderId = intval($arOrder["ID"]);
+	}
+	else
+	{
+		$realOrderId = intval($ORDER_ID);
+	}
+
+	$checkedBySession = in_array($realOrderId, $_SESSION['SALE_ORDER_ID']);
+}
+
+if ($bUseAccountNumber && !$arOrder)
+{
+	$arFilter = array(
+		"LID" => SITE_ID,
+		"ACCOUNT_NUMBER" => $ORDER_ID
 	);
 
+	if (empty($hash))
+	{
+		$arFilter["USER_ID"] = intval($USER->GetID());
+	}
+
+	$dbOrder = CSaleOrder::GetList(
+		array("DATE_UPDATE" => "DESC"),
+		$arFilter
+	);
 	$arOrder = $dbOrder->GetNext();
 }
 
 if (!$arOrder)
 {
+	$arFilter = array(
+		"LID" => SITE_ID,
+		"ID" => $ORDER_ID
+	);
+	if (!$checkedBySession && empty($hash))
+		$arFilter["USER_ID"] = intval($USER->GetID());
+
 	$dbOrder = CSaleOrder::GetList(
 		array("DATE_UPDATE" => "DESC"),
-		array(
-			"LID" => SITE_ID,
-			"USER_ID" => IntVal($GLOBALS["USER"]->GetID()),
-			"ID" => $ORDER_ID
-		)
+		$arFilter
 	);
-
 	$arOrder = $dbOrder->GetNext();
 }
 
 if ($arOrder)
 {
+	/** @var \Bitrix\Sale\Payment|null $paymentItem */
 	$paymentItem = null;
 
 	/** @var \Bitrix\Sale\Order $order */
@@ -56,6 +91,15 @@ if ($arOrder)
 
 	if ($order)
 	{
+		$guestStatuses = \Bitrix\Main\Config\Option::get("sale", "allow_guest_order_view_status", "");
+		$guestStatuses = (strlen($guestStatuses) > 0) ?  unserialize($guestStatuses) : array();
+
+		if (!empty($hash) && ($order->getHash() !== $hash || !\Bitrix\Sale\Helpers\Order::isAllowGuestView($order)))
+		{
+			LocalRedirect('/');
+			return;
+		}
+
 		/** @var \Bitrix\Sale\PaymentCollection $paymentCollection */
 		$paymentCollection = $order->getPaymentCollection();
 
@@ -63,22 +107,10 @@ if ($arOrder)
 		{
 			if ($paymentId)
 			{
-				$params = array(
-					'select' => array('ID'),
-					'filter' => array(
-						'LOGIC' => 'OR',
-						'ID' => $paymentId,
-						'ACCOUNT_NUMBER' => $paymentId,
-					)
-				);
+				$data = \Bitrix\Sale\PaySystem\Manager::getIdsByPayment($paymentId);
 
-				$data = \Bitrix\Sale\Internals\PaymentTable::getRow($params);
-
-				if ($data !== null && $data['ID'] > 0)
-				{
-					/** @var \Bitrix\Sale\Payment $paymentItem */
-					$paymentItem = $paymentCollection->getItemById($data['ID']);
-				}
+				if ($data[1] > 0)
+					$paymentItem = $paymentCollection->getItemById($data[1]);
 			}
 
 			if ($paymentItem === null)
@@ -86,7 +118,7 @@ if ($arOrder)
 				/** @var \Bitrix\Sale\Payment $item */
 				foreach ($paymentCollection as $item)
 				{
-					if (!$item->isInner())
+					if (!$item->isInner() && !$item->isPaid())
 					{
 						$paymentItem = $item;
 						break;
@@ -101,7 +133,11 @@ if ($arOrder)
 				{
 					$context = \Bitrix\Main\Application::getInstance()->getContext();
 
-					$service->initiatePay($paymentItem, $context->getRequest());
+					$result = $service->initiatePay($paymentItem, $context->getRequest());
+					if (!$result->isSuccess())
+					{
+						echo implode('<br>', $result->getErrorMessages());
+					}
 
 					if($service->getField('ENCODING') != '')
 					{
@@ -120,4 +156,8 @@ if ($arOrder)
 			}
 		}
 	}
+}
+else
+{
+	ShowError(GetMessage('SOP_ORDER_NOT_FOUND'));
 }

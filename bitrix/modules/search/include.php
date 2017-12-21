@@ -28,6 +28,7 @@ CModule::AddAutoloadClasses(
 		"CSearchFullText" => "classes/general/full_text.php",
 		"CSearchSphinx" => "tools/sphinx.php",
 		"CSearchStemTable" => "tools/stemtable.php",
+		"CSearchMysql" => "tools/mysql.php",
 	)
 );
 

@@ -38,13 +38,7 @@ if($APPLICATION->GetGroupRight("blog") >= "R")
 				"url" => "blog_group.php?lang=".LANGUAGE_ID,
 				"more_url" => array("blog_group_edit.php"),
 				"title" => GetMessage("BLG_AM_GROUPS_ALT")
-			),
-			array(
-				"text" => GetMessage("BLOG_MENU_SMILES"),
-				"url" => "blog_smile.php?lang=".LANGUAGE_ID,
-				"more_url" => array("blog_smile_edit.php"),
-				"title" => GetMessage("BLOG_MENU_SMILES_ALT")
-			),
+			)
 		)
 	);
 

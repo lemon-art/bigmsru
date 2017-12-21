@@ -31,22 +31,22 @@ interface ICacheEngineStat
 class Cache
 {
 	/**
-	 * @var ICacheEngine | ICacheBackend
+	 * @var ICacheEngine | \ICacheBackend
 	 */
-	private $cacheEngine;
+	protected $cacheEngine;
 
-	private $content;
-	private $vars;
-	private $TTL;
-	private $uniqueString;
-	private $baseDir;
-	private $initDir;
-	private $filename;
-	private $isStarted = false;
+	protected $content;
+	protected $vars;
+	protected $TTL;
+	protected $uniqueString;
+	protected $baseDir;
+	protected $initDir;
+	protected $filename;
+	protected $isStarted = false;
 
-	private static $showCacheStat = false;
-	private static $clearCache = null;
-	private static $clearCacheSession = null;
+	protected static $showCacheStat = false;
+	protected static $clearCache = null;
+	protected static $clearCacheSession = null;
 
 	protected $forceRewriting = false;
 
@@ -126,7 +126,7 @@ class Cache
 
 	public static function getCacheEngineType()
 	{
-		$obj = self::createCacheEngine();
+		$obj = static::createCacheEngine();
 		$class = get_class($obj);
 		if (($pos = strrpos($class, "\\")) !== false)
 			$class = substr($class, $pos + 1);
@@ -359,7 +359,7 @@ class Cache
 		ob_end_flush();
 	}
 
-	function endDataCache($vars=false)
+	public function endDataCache($vars=false)
 	{
 		if (!$this->isStarted)
 			return;

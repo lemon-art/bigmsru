@@ -191,6 +191,7 @@
 						{
 							d.setHours(m[1]);
 							d.setMinutes(m[2]);
+							d.setSeconds(0);
 						}
 					}
 
@@ -747,18 +748,15 @@
 						BX.bind(del, "click", BX.delegate(function() { this.deleteFile(item); }, this));
 					}
 				},
-				deleteFile : function(item)
-				{
-					var node = this.agent.getItem(item.id);
-					if (node && (node = node.node) && node)
-						BX.hide(node);
+				deleteFile : function(item) {
+					item.deleteFile();
 					BX.onCustomEvent(this, "onChange", [this, this.node, {
 						action : "delete",
 						file : item.file,
 						node : null,
 						item : item
 					}]);
-					item.deleteFile();
+
 				}
 			};
 			return d;
@@ -916,12 +914,22 @@
 			this.save();
 			return false;
 		},
-		apply: function(obj, input) {
+		apply: function(obj, input, file) {
 			var res = {submit : true};
 			BX.onCustomEvent(this, 'onSubmitForm', [this, BX(this.formId), input, res]);
 			window.BXMobileApp.onCustomEvent('onSubmitForm', [this.gridId, this.formId, (input ? input.id : null)], true);
+
 			if (res.submit !== false)
+			{
+				if (obj.dialogName === "FileDialog" && file && file["action"] === "add")
+				{
+					BX.addCustomEvent(this, "onBeforeSubmitAjax", function(dm, options){
+						options["data"] = (options["data"] || {});
+						options["data"][obj.controlName] = file.file;
+					});
+				}
 				this.submit(true);
+			}
 		},
 		save: function() {
 			var res = {submit : true};

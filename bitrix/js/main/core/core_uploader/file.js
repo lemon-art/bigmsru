@@ -1,185 +1,524 @@
 ;(function(window){
 	if (window.BX["UploaderFile"])
 		return false;
-	var
-		BX = window.BX,
+	var getOrientation = (function(){
+		var exif = {
+			tags : {
+				// 0x0100 : "ImageWidth",
+				// 0x0101 : "ImageHeight",
+				// 0x8769 : "ExifIFDPointer",
+				// 0x8825 : "GPSInfoIFDPointer",
+				// 0xA005 : "InteroperabilityIFDPointer",
+				// 0x0102 : "BitsPerSample",
+				// 0x0103 : "Compression",
+				// 0x0106 : "PhotometricInterpretation",
+				0x0112 : "Orientation",
+				// 0x0115 : "SamplesPerPixel",
+				// 0x011C : "PlanarConfiguration",
+				// 0x0212 : "YCbCrSubSampling",
+				// 0x0213 : "YCbCrPositioning",
+				// 0x011A : "XResolution",
+				// 0x011B : "YResolution",
+				// 0x0128 : "ResolutionUnit",
+				// 0x0111 : "StripOffsets",
+				// 0x0116 : "RowsPerStrip",
+				// 0x0117 : "StripByteCounts",
+				// 0x0201 : "JPEGInterchangeFormat",
+				// 0x0202 : "JPEGInterchangeFormatLength",
+				// 0x012D : "TransferFunction",
+				// 0x013E : "WhitePoint",
+				// 0x013F : "PrimaryChromaticities",
+				// 0x0211 : "YCbCrCoefficients",
+				// 0x0214 : "ReferenceBlackWhite",
+				// 0x0132 : "DateTime",
+				// 0x010E : "ImageDescription",
+				// 0x010F : "Make",
+				// 0x0110 : "Model",
+				// 0x0131 : "Software",
+				// 0x013B : "Artist",
+				// 0x8298 : "Copyright"
+			},
+			getStringFromDB : function (buffer, start, length) {
+				var outstr = "", n;
+				for (n = start; n < start+length; n++) {
+					outstr += String.fromCharCode(buffer.getUint8(n));
+				}
+				return outstr;
+			},
+			readTags : function(file, tiffStart, dirStart, strings, bigEnd) {
+				var entries = file.getUint16(dirStart, !bigEnd),
+					tags = {},
+					entryOffset, tag,
+					i,
+					l = 0;
+				for (i in strings)
+				{
+					if (strings.hasOwnProperty(i))
+						l++;
+				}
+
+				for (i = 0; i < entries; i++)
+				{
+					entryOffset = dirStart + i*12 + 2;
+					tag = strings[file.getUint16(entryOffset, !bigEnd)];
+					tags[tag] = exif.readTagValue(file, entryOffset, tiffStart, dirStart, bigEnd);
+					l--;
+					if (l <= 0)
+						break;
+				}
+				return tags;
+			},
+			readTagValue : function(file, entryOffset, tiffStart, dirStart, bigEnd) {
+				var type = file.getUint16(entryOffset+2, !bigEnd),
+					numValues = file.getUint32(entryOffset+4, !bigEnd),
+					valueOffset = file.getUint32(entryOffset+8, !bigEnd) + tiffStart,
+					offset,
+					vals, val, n,
+					numerator, denominator;
+
+				switch (type)
+				{
+					case 1: // byte, 8-bit unsigned int
+					case 7: // undefined, 8-bit byte, value depending on field
+						if (numValues == 1) {
+							return file.getUint8(entryOffset + 8, !bigEnd);
+						} else {
+							offset = numValues > 4 ? valueOffset : (entryOffset + 8);
+							vals = [];
+							for (n=0;n<numValues;n++) {
+								vals[n] = file.getUint8(offset + n);
+							}
+							return vals;
+						}
+					case 2: // ascii, 8-bit byte
+						offset = numValues > 4 ? valueOffset : (entryOffset + 8);
+						return exif.getStringFromDB(file, offset, numValues-1);
+					case 3: // short, 16 bit int
+						if (numValues == 1) {
+							return file.getUint16(entryOffset + 8, !bigEnd);
+						} else {
+							offset = numValues > 2 ? valueOffset : (entryOffset + 8);
+							vals = [];
+							for (n=0;n<numValues;n++) {
+								vals[n] = file.getUint16(offset + 2*n, !bigEnd);
+							}
+							return vals;
+						}
+					case 4: // long, 32 bit int
+						if (numValues == 1) {
+							return file.getUint32(entryOffset + 8, !bigEnd);
+						} else {
+							vals = [];
+							for (n=0;n<numValues;n++) {
+								vals[n] = file.getUint32(valueOffset + 4*n, !bigEnd);
+							}
+							return vals;
+						}
+					case 5:    // rational = two long values, first is numerator, second is denominator
+						if (numValues == 1) {
+							numerator = file.getUint32(valueOffset, !bigEnd);
+							denominator = file.getUint32(valueOffset+4, !bigEnd);
+							val = new Number(numerator / denominator);
+							val.numerator = numerator;
+							val.denominator = denominator;
+							return val;
+						} else {
+							vals = [];
+							for (n=0;n<numValues;n++) {
+								numerator = file.getUint32(valueOffset + 8*n, !bigEnd);
+								denominator = file.getUint32(valueOffset+4 + 8*n, !bigEnd);
+								vals[n] = new Number(numerator / denominator);
+								vals[n].numerator = numerator;
+								vals[n].denominator = denominator;
+							}
+							return vals;
+						}
+					case 9: // slong, 32 bit signed int
+						if (numValues == 1) {
+							return file.getInt32(entryOffset + 8, !bigEnd);
+						} else {
+							vals = [];
+							for (n=0;n<numValues;n++) {
+								vals[n] = file.getInt32(valueOffset + 4*n, !bigEnd);
+							}
+							return vals;
+						}
+					case 10: // signed rational, two slongs, first is numerator, second is denominator
+						if (numValues == 1) {
+							return file.getInt32(valueOffset, !bigEnd) / file.getInt32(valueOffset+4, !bigEnd);
+						} else {
+							vals = [];
+							for (n=0;n<numValues;n++) {
+								vals[n] = file.getInt32(valueOffset + 8*n, !bigEnd) / file.getInt32(valueOffset+4 + 8*n, !bigEnd);
+							}
+							return vals;
+						}
+				}
+			},
+			readData : function (file, start) {
+				if (exif.getStringFromDB(file, start, 4) != "Exif")
+				{
+					return false;
+				}
+
+				var bigEnd,
+					tiffOffset = start + 6;
+
+				// test for TIFF validity and endianness
+				if (file.getUint16(tiffOffset) == 0x4949)
+				{
+					bigEnd = false;
+				}
+				else if (file.getUint16(tiffOffset) == 0x4D4D)
+				{
+					bigEnd = true;
+				}
+				else
+				{
+					return false;
+				}
+
+				if (file.getUint16(tiffOffset+2, !bigEnd) != 0x002A)
+				{
+					return false;
+				}
+
+				var firstIFDOffset = file.getUint32(tiffOffset + 4, !bigEnd);
+
+				if (firstIFDOffset < 0x00000008)
+				{
+					return false;
+				}
+
+				return exif.readTags(file, tiffOffset, tiffOffset + firstIFDOffset, exif.tags, bigEnd);
+			},
+			readBase64 : function (base64)
+			{
+				base64 = base64.replace(/^data\:([^\;]+)\;base64,/gmi, '');
+				var binary_string =  window.atob(base64), //decode base64
+					len = binary_string.length,
+					bytes = new Uint8Array(len);
+				for (var i = 0; i < len; i++) {
+					bytes[i] = binary_string.charCodeAt(i);
+				}
+				var dataView = new DataView(bytes.buffer);
+				if ((dataView.getUint8(0) != 0xFF) || (dataView.getUint8(1) != 0xD8))
+				{
+					return false; // not a valid jpeg
+				}
+
+				var offset = 2,
+					length = bytes.buffer.byteLength,
+					marker,
+					result = false;
+				while (offset < length)
+				{
+					if (dataView.getUint8(offset) != 0xFF) {
+						break; // not a valid marker, something is wrong
+					}
+
+					marker = dataView.getUint8(offset + 1);
+
+					// we could implement handling for other markers here,
+					// but we're only looking for 0xFFE1 for EXIF data
+
+					if (marker == 225)
+					{
+						result = exif.readData(dataView, offset + 4, dataView.getUint16(offset + 2) - 2);
+						break;
+					}
+					else
+					{
+						offset += 2 + dataView.getUint16(offset+2);
+					}
+				}
+				return result;
+			}
+		};
+		return function(base64){
+			if (BX.type.isString(base64))
+			{
+				try {
+					var tags = exif.readBase64(base64);
+					if(tags && tags["Orientation"])
+						return tags["Orientation"];
+				}
+				catch (e)
+				{
+				}
+			}
+			return false;
+		};
+	})(),
+		setOrientation = function(image, cnv, ctx, exifOrientation) {
+			var width = image.width,
+				height = image.height;
+			if ([5,6,7,8].indexOf(exifOrientation) >= 0)
+			{
+				width = image.height;
+				height = image.width;
+			}
+
+			BX.adjust(cnv, {props: {width: width, height: height}});
+
+			ctx.save();
+			switch(exifOrientation) {
+				case 2:
+					// $img.addClass('flip');
+					ctx.scale(-1, 1);
+					ctx.translate(-cnv.width, 0);
+					break;
+				case 3:
+					// $img.addClass('rotate-180');
+					ctx.translate(cnv.width, cnv.height);
+					ctx.rotate(Math.PI);
+					break;
+				case 4:
+					// $img.addClass('flip-and-rotate-180');
+					ctx.scale(-1, 1);
+					ctx.translate(0, cnv.height);
+					ctx.rotate(Math.PI);
+					break;
+				case 5:
+					// $img.addClass('flip-and-rotate-90');
+					ctx.scale(-1, 1);
+					ctx.translate(0, 0);
+					ctx.rotate(Math.PI / 2);
+					break;
+				case 6:
+					// $img.addClass('rotate-90');
+					ctx.translate(cnv.width, 0);
+					ctx.rotate(Math.PI / 2);
+					break;
+				case 7:
+					// $img.addClass('flip-and-rotate-90');
+					ctx.scale(-1, 1);
+					ctx.translate(-cnv.width, cnv.height);
+					ctx.rotate(Math.PI * 3 / 2);
+					break;
+				case 8:
+					// $img.addClass('rotate-270');
+					ctx.translate(0, cnv.height);
+					ctx.rotate(Math.PI * 3 / 2);
+					break;
+			}
+			ctx.drawImage(image, 0, 0);
+			ctx.restore();
+		};
+	var BX = window.BX,
 		statuses = { "new" : 0, ready : 1, preparing : 2, inprogress : 3, done : 4, failed : 5, stopped : 6, changed : 7, uploaded : 8},
-		cnvConstr = function(timelimit)
-		{
-			this.timeLimit = (typeof timelimit == "number" && timelimit > 0 ? timelimit : 50);
+		cnvConstr = (function(){
+			var cnvConstructor = function(timelimit) {
+				this.timeLimit = (typeof timelimit === "number" && timelimit > 0 ? timelimit : 50);
+				this.status = statuses.ready;
+				this.queue = new BX.UploaderUtils.Hash();
+				this.id = (new Date()).getTime();
+			};
+			cnvConstructor.prototype = {
+				counter : 0,
+				active : null,
+				image : null,
+				getImage : function() {
+					if (!this.image)
+						this.image = new Image();
+					return this.image;
+				},
+				canvas : null,
+				getCanvas : function() {
+					if (!this.canvas)
+					{
+						this.canvas = BX.create('CANVAS', {style : {display: "none"}});
+						document.body.appendChild(this.canvas);
+					}
+
+					return this.canvas;
+				},
+				context : null,
+				getContext : function() {
+					if (!this.context && this.getCanvas()["getContext"])
+						this.context = this.getCanvas().getContext('2d');
+					return this.context;
+				},
+				reader : null,
+				getReader : function() {
+					if (!this.reader && window["FileReader"])
+						this.reader = new FileReader();
+					return this.reader;
+				},
+				load : function(file, callback, id, callbackFail) {
+					if (this.active !== null || (this.getReader() && this.getReader().readyState == 1))
+						return;
+
+					this.counter++;
+					this.active = file;
+					var image = this.getImage();
+					BX.unbindAll(image);
+					image.onload = function(){};
+					image.onerror = function(){};
+
+					/* Almost all browsers cache images from local resource except of FF on 06.03.2017. It appears that
+					FF collect src and does not abort image uploading when src is changed. And we had a bug when in
+					onload event we got e.target.src of one element but source of image was from '/bitrix/images/1.gif'. */
+					// TODO check if chrome and other browsers cache local files for now. If it does not then delete next 2 strings
+					if (!BX.browser.IsFirefox())
+						image.src = '/bitrix/images/1.gif';
+
+					/** For Garbage collector */
+					this.onload = null;
+					delete this.onload;
+					this.onerror = null;
+					delete this.onerror;
+
+					this.onload = BX.delegate(function(e){
+						if (e && e.target && e.target.src && e.target.src.substr(-20) == "/bitrix/images/1.gif")
+							return;
+						if (!!callback)
+						{
+							try {
+								callback(BX.proxy_context, this.getCanvas(), this.getContext(), getOrientation((((e && e.target && e.target.src) ? e.target.src : (BX.proxy_context || null)))));
+							}
+							catch (e)
+							{
+								BX.debug(e);
+							}
+						}
+						if (!!id)
+						{
+							this.queue.removeItem(id);
+							setTimeout(BX.proxy(function() {
+								this.active = null;
+								this.exec();
+							}, this), this.timeLimit);
+						}
+						else
+							this.active = null;
+					}, this);
+					this.onerror = BX.delegate(function(){
+						if (!!callbackFail)
+						{
+							try
+							{
+								callbackFail(BX.proxy_context);
+							}
+							catch (e)
+							{
+								BX.debug(e);
+							}
+						}
+						if (!!id)
+						{
+							this.queue.removeItem(id);
+							setTimeout(BX.proxy(function() {
+								this.active = null;
+								this.exec();
+							}, this), this.timeLimit);
+						}
+						else
+							this.active = null;
+					}, this);
+
+					image.name = file.name;
+
+					image.onload = this.onload;
+					image.onerror = this.onerror;
+
+					var res = Object.prototype.toString.call(file);
+					if (file["tmp_url"])
+					{
+						image.src = file["tmp_url"] + (file["tmp_url"].indexOf("?") > 0 ? '&' : '?') + 'imageUploader' + this.id + this.counter;
+					}
+					else if (res !== '[object File]' && res !== '[object Blob]')
+					{
+						this.onerror(null);
+					}
+					else if (this.getReader() !== null)
+					{
+						this.__readerOnLoad = null;
+						delete this.__readerOnLoad;
+						this.__readerOnLoad = BX.delegate(function(e) {
+							this.__readerOnLoad = null;
+							delete this.__readerOnLoad;
+							image.src = e.target.result;
+						}, this);
+						this.getReader().onloadend = this.__readerOnLoad;
+						this.getReader().onerror = BX.proxy(function(e) { this.onerror(null); }, this);
+						this.getReader().readAsDataURL(file);
+					}
+					else if (window["URL"])
+					{
+						image.src = window["URL"]["createObjectURL"](file);
+					}
+				},
+				push : function(file, callback, failCallback) {
+					var id = BX.UploaderUtils.getId();
+					this.queue.setItem(id, [id, file, callback, failCallback]);
+					this.exec();
+				},
+				exec : function() {
+					var item = this.queue.getFirst();
+					if (!!item)
+						this.load(item[1], item[2], item[0], item[3]);
+				},
+				pack : function(fileType) {
+					return  BX.UploaderUtils.dataURLToBlob(this.getCanvas().toDataURL(fileType));
+				}
+			};
+			return cnvConstructor;
+		})();
+	BX.UploaderFileCnvConstr = cnvConstr;
+	BX.UploaderFileFileLoader = (function(){
+		var d = function(timelimit) {
+			this.timeLimit = (typeof timelimit === "number" && timelimit > 0 ? timelimit : 50);
 			this.status = statuses.ready;
 			this.queue = new BX.UploaderUtils.Hash();
+			this._exec = BX.delegate(this.exec, this);
 		};
-	cnvConstr.prototype = {
-		image : null,
-		getImage : function()
-		{
-			if (!this.image)
-				this.image = new Image();
-			return this.image;
-		},
-		canvas : null,
-		getCanvas : function()
-		{
-			if (!this.canvas)
-				this.canvas = BX.create('CANVAS');
-
-			return this.canvas;
-		},
-		context : null,
-		getContext : function()
-		{
-			if (!this.context && this.getCanvas()["getContext"])
-				this.context = this.getCanvas().getContext('2d');
-			return this.context;
-		},
-		reader : null,
-		getReader : function()
-		{
-			if (!this.reader && window["FileReader"])
-				this.reader = new FileReader();
-			return this.reader;
-		},
-		load : function(file, callback, id, callbackFail)
-		{
-			var image = this.getImage();
-
-			BX.unbindAll(image);
-			this.onload = null;
-			delete this.onload;
-			this.onerror = null;
-			delete this.onerror;
-			image.src = '/bitrix/images/1.gif';
-			this.onload = BX.delegate(function(){
-				if (!!callback)
-				{
-					try{
-						callback(BX.proxy_context, this.getCanvas(), this.getContext());
-					}
-					catch (e)
-					{
-						BX.debug(e);
-					}
-				}
-				if (!!id)
-				{
-					this.queue.removeItem(id);
-					setTimeout(BX.proxy(this.exec, this), this.timeLimit);
-				}
-			}, this);
-			this.onerror = BX.delegate(function(){
-				if (!!callbackFail)
-				{
-					try
-					{
-						callbackFail(BX.proxy_context);
-					}
-					catch (e)
-					{
-						BX.debug(e);
-					}
-				}
-				if (!!id)
-				{
-					this.queue.removeItem(id);
-					setTimeout(BX.proxy(this.exec, this), this.timeLimit);
-				}
-			}, this);
-			image.name = file.name;
-			BX.bind(image, 'load', this.onload);
-			BX.bind(image, 'error', this.onerror);
-
-			var res = Object.prototype.toString.call(file);
-			if (file["tmp_url"])
+		d.prototype = {
+			xhr : null,
+			goToNext : function(id)
 			{
-				image.src = file["tmp_url"];
-			}
-			else if (res !== '[object File]' && res !== '[object Blob]')
+				delete this.xhr;
+				this.xhr = null;
+				this.queue.removeItem(id);
+				this.status = statuses.ready;
+				setTimeout(this._exec, this.timeLimit);
+			},
+			load : function(id, path, onsuccess, onfailure)
 			{
-				this.onerror(null);
-			}
-			else if (!!window["URL"])
-			{
-				image.src = window["URL"]["createObjectURL"](file);
-			}
-			else if (this.getReader() !== null)
-			{
-				this.__readerOnLoad = BX.delegate(function(e) {
-					image.src = e.target.result;
-					this.__readerOnLoad = null;
-					delete this.__readerOnLoad;
-				}, this);
-				this.getReader().onload = this.__readerOnLoad;
-				this.getReader().readAsDataURL(file);
-			}
-		},
-		push : function(file, callback, failCallback)
-		{
-			var id = BX.UploaderUtils.getId();
-			this.queue.setItem(id, [id, file, callback, failCallback]);
-			this.exec();
-		},
-		exec : function()
-		{
-			var item = this.queue.getFirst();
-			if (!!item)
-				this.load(item[1], item[2], item[0], item[3]);
-		}
-	};
-	BX.UploaderFileCnvConstr = cnvConstr;
-	var fileLoader = function(timelimit)
-	{
-		this.timeLimit = (typeof timelimit == "number" && timelimit > 0 ? timelimit : 50);
-		this.status = statuses.ready;
-		this.queue = new BX.UploaderUtils.Hash();
-		this._exec = BX.delegate(this.exec, this);
-	};
-	fileLoader.prototype = {
-		xhr : null,
-		goToNext : function(id)
-		{
-			delete this.xhr;
-			this.xhr = null;
-			this.queue.removeItem(id);
-			this.status = statuses.ready;
-			setTimeout(this._exec, this.timeLimit);
-		},
-		load : function(id, path, onsuccess, onfailure)
-		{
-			if (this.status != statuses.ready)
-				return;
-			this.status = statuses.inprogress;
-			var _this = this;
-			this.xhr = BX.ajax({
-				'method': 'GET',
-				'data' : '',
-				'url': path,
-				'onsuccess': function(blob){if (blob === null){onfailure(blob);} else {onsuccess(blob);} _this.goToNext(id);},
-				'onfailure': function(blob){onfailure(blob); _this.goToNext(id);},
-				'start': false,
-				'preparePost':false,
-				'processData':false
-			});
-			this.xhr.withCredentials = true;
-			this.xhr.responseType = 'blob';
+				if (this.status != statuses.ready)
+					return;
+				this.status = statuses.inprogress;
+				var _this = this;
+				this.xhr = BX.ajax({
+					'method': 'GET',
+					'data' : '',
+					'url': path,
+					'onsuccess': function(blob){if (blob === null){onfailure(blob);} else {onsuccess(blob);} _this.goToNext(id);},
+					'onfailure': function(blob){onfailure(blob); _this.goToNext(id);},
+					'start': false,
+					'preparePost':false,
+					'processData':false
+				});
+				this.xhr.withCredentials = true;
+				this.xhr.responseType = 'blob';
 
-
-			this.xhr.send();
-		},
-		push : function(path, onsuccess, onfailure)
-		{
-			var id = BX.UploaderUtils.getId();
-			this.queue.setItem(id, [id, path, onsuccess, onfailure]);
-			this.exec();
-		},
-		exec : function()
-		{
-			var item = this.queue.getFirst();
-			if (!!item)
-				this.load(item[0], item[1], item[2], item[3]);
-		}
-	};
-	BX.UploaderFileFileLoader = fileLoader();
+				this.xhr.send();
+			},
+			push : function(path, onsuccess, onfailure)
+			{
+				var id = BX.UploaderUtils.getId();
+				this.queue.setItem(id, [id, path, onsuccess, onfailure]);
+				this.exec();
+			},
+			exec : function()
+			{
+				var item = this.queue.getFirst();
+				if (!!item)
+					this.load(item[0], item[1], item[2], item[3]);
+			}
+		};
+		return d;
+	})();
 	var prvw = new cnvConstr(), upld = new cnvConstr(), edtr = new cnvConstr(), canvas = BX.create('CANVAS'), ctx;
 	/**
 	 * @return {BX.UploaderFile}
@@ -249,7 +588,8 @@ var mobileNames = {};
 				placeHolder : null,
 				events : {
 					click : BX.delegate(this.clickFile, this)
-				}
+				},
+				type : "html"
 			},
 			name : {
 				template : "#name#",
@@ -434,7 +774,7 @@ var mobileNames = {};
 				{
 					this[name] = val;
 					var template = this.fields[name].template.
-							replace('#' + name + '#', (!!val ? val : '')).
+							replace('#' + name + '#', this.fields[name]["type"] === "html" ? (val || '') : BX.util.htmlspecialchars(val || '')).
 							replace(/#id#/gi, this.id),
 						fii, fjj, el, result = {html : template, events : {}};
 
@@ -515,6 +855,8 @@ var mobileNames = {};
 					data[ii] = this[ii];
 				}
 			}
+			data["size"] = this.file["size"];
+			data["type"] = this["type"];
 			if (!!this.copies)
 			{
 				var copy;
@@ -644,33 +986,63 @@ var mobileNames = {};
 		return this;
 	};
 	BX.extend(BX.UploaderImage, BX.UploaderFile);
-	BX.UploaderImage.prototype.makePreviewImageWork = function(image)
+	BX.UploaderImage.prototype.makePreviewImageWork = function(image, cnv, ctx, exifOrientation)
 	{
-		var result = null;
+		exifOrientation = parseInt(exifOrientation);
+
+		var result = null,
+			width = cnv.width,
+			height = cnv.height;
+
 		if (this.file)
 		{
-			this.file.width = image.width;
-			this.file.height = image.height;
+			this.file.width = cnv.width;
+			this.file.height = cnv.height;
 		}
 
 		if (!!this.canvas)
 		{
-			BX.adjust(prvw.getCanvas(), { props : { width : image.width, height : image.height } } );
-			prvw.getContext().drawImage(image, 0, 0);
-
-			this.applyFile(prvw.getCanvas(), false);
-
+			setOrientation(image, cnv, ctx, exifOrientation);
+			if (this.file)
+			{
+				this.file.width = cnv.width;
+				this.file.height = cnv.height;
+				if (exifOrientation)
+				{
+					this.file.exif = {
+						Orientation : exifOrientation
+					}
+				}
+			}
+			this.applyFile(cnv, false);
 			result = this.canvas;
 		}
 		else if (BX(this.id + 'Canvas'))
 		{
-			var res2 = BX.UploaderUtils.scaleImage(image, this.fields.preview.params),
+			var res2 = BX.UploaderUtils.scaleImage({width : width, height : height}, this.fields.preview.params),
 				props = {
 					props : { width : res2.destin.width, height : res2.destin.height, src : image.src },
 					attrs : {
 						className : (this.file.width > this.file.height ? "landscape" : "portrait")
 					}
 				};
+			switch (exifOrientation)
+			{
+				case 2:
+					props.attrs.className += ' flip'; break;
+				case 3:
+					props.attrs.className += ' rotate-180'; break;
+				case 4:
+					props.attrs.className += ' flip-and-rotate-180'; break;
+				case 5:
+					props.attrs.className += ' flip-and-rotate-270'; break;
+				case 6:
+					props.attrs.className += ' rotate-90'; break;
+				case 7:
+					props.attrs.className += ' flip-and-rotate-90'; break;
+				case 8:
+					props.attrs.className += ' rotate-270'; break;
+			}
 			result = BX.create("IMG", props);
 		}
 
@@ -683,15 +1055,15 @@ var mobileNames = {};
 		return result;
 	};
 
-	BX.UploaderImage.prototype.makePreviewImageLoadHandler = function(image, canvas, context){
-		this.makePreviewImageWork(image);
+	BX.UploaderImage.prototype.makePreviewImageLoadHandler = function(image, canvas, context, exifOrientation){
+		this.makePreviewImageWork(image, canvas, context, exifOrientation);
 		this.status = statuses.ready;
 
 		BX.onCustomEvent(this, "onFileIsInited", [this.id, this, this.caller]);
 		BX.onCustomEvent(this.caller, "onFileIsInited", [this.id, this, this.caller]);
 		this.log('is initialized as an image with preview');
 		if (this.preparationStatus == statuses.inprogress)
-			this.makeCopies(image, canvas, context);
+			this.makeCopies(image, canvas, context, exifOrientation);
 		if (this["_makePreviewImageLoadHandler"])
 		{
 			this._makePreviewImageLoadHandler = null;
@@ -849,7 +1221,7 @@ var mobileNames = {};
 				template = template.replace('#' + ii + '#',
 					(ii === "preview" ? "" :
 						('<span id="' + this.id + name + 'Editor" class="' + this.fields[ii]["className"] + '">' +
-						this.fields[ii]["editorTemplate"].replace('#' + ii + '#', (!!this[ii] ? this[ii] : '')) + '</span>')));
+						this.fields[ii]["editorTemplate"].replace('#' + ii + '#', (!!this[ii] ? BX.util.htmlspecialchars(this[ii]) : '')) + '</span>')));
 			}
 		}
 
@@ -868,29 +1240,30 @@ var mobileNames = {};
 		this.editor = editor;
 		return false;
 	};
-	BX.UploaderImage.prototype.showEditor = function(image, canvas, context)
+	BX.UploaderImage.prototype.showEditor = function(image, canvas, context, exifOrientation)
 	{
 		BX.adjust(canvas, { props : { width : this.file.width, height : this.file.height } } );
-		context.drawImage(image, 0, 0);
+		setOrientation(image, canvas, context, exifOrientation);
 		this.editor.copyCanvas(canvas);
 	};
-	BX.UploaderImage.prototype.makeCopies = function(image, canvas, context)
+	BX.UploaderImage.prototype.makeCopies = function(image, cnv, ctx, exifOrientation)
 	{
-		var copy, res, dataURI, result;
-
+		var copy, res, dataURI, result,
+			context = canvas.getContext('2d');
+		setOrientation(image, canvas, context, exifOrientation);
 		while ((copy = this.copies.getNext()) && !!copy)
 		{
-			res = BX.UploaderUtils.scaleImage(image, copy);
-			BX.adjust(canvas, {props : { width : res.destin.width, height : res.destin.height } } );
-			context.drawImage(image,
+			res = BX.UploaderUtils.scaleImage(canvas, copy);
+			BX.adjust(cnv, {props : { width : res.destin.width, height : res.destin.height } } );
+			ctx.drawImage(canvas,
 				res.source.x, res.source.y, res.source.width, res.source.height,
 				res.destin.x, res.destin.y, res.destin.width, res.destin.height
 			);
 
-			dataURI = canvas.toDataURL(this.file.type);
+			dataURI = cnv.toDataURL(this.file.type);
 			result = BX.UploaderUtils.dataURLToBlob(dataURI);
-			result.width = canvas.width;
-			result.height = canvas.height;
+			result.width = cnv.width;
+			result.height = cnv.height;
 			result.name = this.name;
 			result.thumb = copy.id;
 			result.canvases = this.copies.length;

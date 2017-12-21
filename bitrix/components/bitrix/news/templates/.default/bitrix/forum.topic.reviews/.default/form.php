@@ -7,11 +7,12 @@
  * @var CMain $APPLICATION
  * @var CUser $USER
  */
+$tabIndex = 1;
 ?><? if ($arParams['SHOW_MINIMIZED'] == "Y")
 {
 	?>
 	<div class="reviews-collapse reviews-minimized" style='position:relative; float:none;'>
-		<a class="reviews-collapse-link" id="sw<?=$arParams["FORM_ID"]?>" onclick="window.UC.f<?=$arParams["FORM_ID"]?>.transverse()" href="javascript:void(0);"><?=$arParams['MINIMIZED_EXPAND_TEXT']?></a>
+		<a class="reviews-collapse-link" id="sw<?=$arParams["FORM_ID"]?>" onclick="BX.onCustomEvent(BX('<?=$arParams["FORM_ID"]?>'), 'onTransverse')" href="javascript:void(0);"><?=$arParams['MINIMIZED_EXPAND_TEXT']?></a>
 	</div>
 	<?
 }
@@ -28,25 +29,50 @@ if (!empty($arResult["ERROR_MESSAGE"])):
 <?
 endif;
 ?>
-<script type="text/javascript">
-window.reviewsCtrlEnterHandler<?=CUtil::JSEscape($arParams["form_index"]);?> = function()
-{
-	if (window.<?=$arParams["jsObjName"]?>)
-		window.<?=$arParams["jsObjName"]?>.SaveContent();
-	BX.submit(BX('<?=$arParams["FORM_ID"] ?>'), 'preview_comment', 'N');
-}
-</script>
 <div class="reviews-reply-form" <?=(($arParams['SHOW_MINIMIZED'] == "Y") ? 'style="display:none;"' : '' )?>>
 <form name="<?=$arParams["FORM_ID"] ?>" id="<?=$arParams["FORM_ID"]?>" action="<?=POST_FORM_ACTION_URI?>#postform"<?
-?> method="POST" enctype="multipart/form-data" <?
-?> onsubmit="return window.UC.f<?=$arParams["FORM_ID"]?>.validate('<?=$arParams["AJAX_POST"]?>');"<?
-?> class="reviews-form">
+?> method="POST" enctype="multipart/form-data" class="reviews-form">
+<script type="text/javascript">
+	BX.ready(function(){
+		BX.Forum.Init({
+			id : <?=CUtil::PhpToJSObject(array_keys($arResult["MESSAGES"]))?>,
+			form : BX('<?=$arParams["FORM_ID"]?>'),
+			preorder : '<?=$arParams["PREORDER"]?>',
+			pageNumber : <?=intval($arResult['PAGE_NUMBER']);?>,
+			pageCount : <?=intval($arResult['PAGE_COUNT']);?>,
+			bVarsFromForm : '<?=$arParams["bVarsFromForm"]?>',
+			ajaxPost : '<?=$arParams["AJAX_POST"]?>',
+			lheId : 'REVIEW_TEXT'
+		});
+		<? if ($arParams['SHOW_MINIMIZED'] == "Y")
+		{
+		?>
+		BX.addCustomEvent(BX('<?=$arParams["FORM_ID"]?>'), 'onBeforeHide', function() {
+			var link = BX('sw<?=$arParams["FORM_ID"]?>');
+			if (link) {
+				link.innerHTML = BX.message('MINIMIZED_EXPAND_TEXT');
+				BX.removeClass(BX.addClass(link.parentNode, "reviews-expanded"), "reviews-minimized");
+			}
+		});
+		BX.addCustomEvent(BX('<?=$arParams["FORM_ID"]?>'), 'onBeforeShow', function() {
+			var link = BX('sw<?=$arParams["FORM_ID"]?>');
+			if (link) {
+				link.innerHTML = BX.message('MINIMIZED_MINIMIZE_TEXT');
+				BX.removeClass(BX.addClass(link.parentNode, "reviews-minimized"), "reviews-expanded");
+			}
+		});
+		<?
+		}
+		?>
+	});
+</script>
 	<input type="hidden" name="index" value="<?=htmlspecialcharsbx($arParams["form_index"])?>" />
 	<input type="hidden" name="back_page" value="<?=$arResult["CURRENT_PAGE"]?>" />
 	<input type="hidden" name="ELEMENT_ID" value="<?=$arParams["ELEMENT_ID"]?>" />
 	<input type="hidden" name="SECTION_ID" value="<?=$arResult["ELEMENT_REAL"]["IBLOCK_SECTION_ID"]?>" />
 	<input type="hidden" name="save_product_review" value="Y" />
 	<input type="hidden" name="preview_comment" value="N" />
+	<input type="hidden" name="AJAX_POST" value="<?=$arParams["AJAX_POST"]?>" />
 	<?=bitrix_sessid_post()?>
 	<?
 	if ($arParams['AUTOSAVE'])
@@ -80,48 +106,38 @@ window.reviewsCtrlEnterHandler<?=CUtil::JSEscape($arParams["form_index"]);?> = f
 		<div class="reviews-reply-header"><span><?=$arParams["MESSAGE_TITLE"]?></span><span class="reviews-required-field">*</span></div>
 		<div class="reviews-reply-field reviews-reply-field-text">
 			<?
-			$arSmiles = array();
-			if ($arResult["FORUM"]["ALLOW_SMILES"] == "Y")
-			{
-				foreach($arResult["SMILES"] as $arSmile)
-				{
-					$arSmiles[] = array_change_key_case($arSmile, CASE_LOWER) + array(
-						'path' => $arSmile["IMAGE"],
-						'code' => array_shift(explode(" ", str_replace("\\\\","\\",$arSmile["TYPING"]))));
-				}
-			}
+			$APPLICATION->IncludeComponent(
+				"bitrix:main.post.form",
+				"",
+				Array(
+					"FORM_ID" => $arParams["FORM_ID"],
+					"SHOW_MORE" => "Y",
+					"PARSER" => forumTextParser::GetEditorToolbar(array("forum" => $arResult["FORUM"])),
 
-			CModule::IncludeModule("fileman");
-			AddEventHandler("fileman", "OnIncludeLightEditorScript", "CustomizeLHEForForum");
+					"LHE" => array(
+						'id' => 'REVIEW_TEXT',
+						'bSetDefaultCodeView' => ($arParams['EDITOR_CODE_DEFAULT'] === "Y"),
+						'bResizable' => true,
+						'bAutoResize' => true,
+						"documentCSS" => "body {color:#434343; font-size: 14px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 20px;}",
+						'setFocusAfterShow' => false
+					),
 
-			$LHE = new CLightHTMLEditor();
+					"ADDITIONAL" => array(),
 
-			$arEditorParams = array(
-				'bRecreate' => true,
-				'id' => $arParams["LheId"],
-				'content' => isset($arResult["REVIEW_TEXT"]) ? $arResult["REVIEW_TEXT"] : "",
-				'inputName' => "REVIEW_TEXT",
-				'inputId' => "",
-				'width' => "100%",
-				'height' => "200px",
-				'minHeight' => "200px",
-				'bUseFileDialogs' => false,
-				'bUseMedialib' => false,
-				'BBCode' => true,
-				'bBBParseImageSize' => true,
-				'jsObjName' => $arParams["jsObjName"],
-				'toolbarConfig' => array(),
-				'smileCountInToolbar' => 3,
-				'arSmiles' => $arSmiles,
-				'bQuoteFromSelection' => true,
-				'ctrlEnterHandler' => 'reviewsCtrlEnterHandler'.$arParams["form_index"],
-				'bSetDefaultCodeView' => ($arParams['EDITOR_CODE_DEFAULT'] === 'Y'),
-				'bResizable' => true,
-				'bAutoResize' => true
+					"TEXT" => Array(
+						"ID" => "REVIEW_TEXT",
+						"NAME" => "REVIEW_TEXT",
+						"VALUE" => isset($arResult["REVIEW_TEXT"]) ? $arResult["REVIEW_TEXT"] : "",
+						"SHOW" => "Y",
+						"HEIGHT" => "200px"),
+
+					"SMILES" => COption::GetOptionInt("forum", "smile_gallery_id", 0),
+					"NAME_TEMPLATE" => $arParams["NAME_TEMPLATE"],
+				),
+				$component,
+				array("HIDE_ICONS" => "Y")
 			);
-
-			$arEditorParams['toolbarConfig'] = forumTextParser::GetEditorToolbar(array('forum' => $arResult['FORUM']));
-			$LHE->Show($arEditorParams);
 			?>
 		</div>
 		<?
@@ -231,43 +247,6 @@ window.reviewsCtrlEnterHandler<?=CUtil::JSEscape($arParams["form_index"]);?> = f
 
 	</div>
 </form>
-<script type="text/javascript">
-BX.ready(function(){
-	window["UC"] = (!!window["UC"] ? window["UC"] : {});
-	window["UC"]["l<?=$arParams["FORM_ID"]?>"] = new FTRList({
-		id : <?=CUtil::PhpToJSObject(array_keys($arResult["MESSAGES"]))?>,
-		form : BX('<?=$arParams["FORM_ID"]?>'),
-		preorder : '<?=$arParams["PREORDER"]?>',
-		pageNumber : <?=intval($arResult['PAGE_NUMBER']);?>,
-		pageCount : <?=intval($arResult['PAGE_COUNT']);?>
-	});
-	window["UC"]["f<?=$arParams["FORM_ID"]?>"] = new FTRForm({
-		form : BX('<?=$arParams["FORM_ID"]?>'),
-		editorName : '<?=$arParams["jsObjName"]?>',
-		editorId : '<?=$arParams["LheId"]?>'
-	});
-	<? if ($arParams['SHOW_MINIMIZED'] == "Y")
-	{
-	?>
-	BX.addCustomEvent(this.form, 'onBeforeShow', function(obj) {
-		var link = BX('sw<?=$arParams["FORM_ID"]?>');
-		if (link) {
-			link.innerHTML = BX.message('MINIMIZED_EXPAND_TEXT');
-			BX.removeClass(BX.addClass(link.parentNode, "reviews-expanded"), "reviews-minimized");
-		}
-	});
-	BX.addCustomEvent(this.form, 'onBeforeHide', function(obj) {
-		var link = BX('sw<?=$arParams["FORM_ID"]?>');
-		if (link) {
-			link.innerHTML = BX.message('MINIMIZED_MINIMIZE_TEXT');
-			BX.removeClass(BX.addClass(link.parentNode, "reviews-minimized"), "reviews-expanded");
-		}
-	});
-	<?
-	}
-	?>
-});
-</script>
 </div>
 <?
 if ($arParams['AUTOSAVE'])

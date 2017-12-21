@@ -13,7 +13,7 @@ global $APPLICATION, $USER;
 
 if (!$USER->IsAuthorized())
 {
-	$APPLICATION->AuthForm(GetMessage("SALE_ACCESS_DENIED"));
+	$APPLICATION->AuthForm(GetMessage("SALE_ACCESS_DENIED"), false, false, 'N', false);
 }
 
 $ID = urldecode(urldecode($arParams["ID"]));

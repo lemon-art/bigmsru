@@ -312,10 +312,10 @@ ksort($arOperations);
 					</td>
 					<td align="left">
 					<label for="OPERATION_ID_<?= $ind ?>" 
-						title="<?=$arOperation["DESCRIPTION"];?>">
-						<?=$name?>
+						title="<?=htmlspecialcharsbx($arOperation["DESCRIPTION"]);?>">
+						<?=htmlspecialcharsbx($name)?>
 						<?if($name!=$arOperation['NAME']):?>
-						(<?=$arOperation['NAME']?>)
+						(<?=htmlspecialcharsbx($arOperation['NAME'])?>)
 						<?endif;?>
 					</label></td>
 				</tr>

@@ -10,6 +10,7 @@ use Bitrix\Main\Localization\Loc;
 use Bitrix\Sale\Delivery\Services;
 use Bitrix\Main\ArgumentNullException;
 use Bitrix\Sale\Internals\ShipmentExtraServiceTable;
+use Bitrix\Sale\Shipment;
 
 Loc::loadMessages(__FILE__);
 
@@ -72,6 +73,9 @@ class Manager
 	 */
 	public static function getClassesList()
 	{
+		if(static::$classes === null)
+			self::initClassesList();
+
 		return static::$classes;
 	}
 
@@ -94,6 +98,7 @@ class Manager
 		);
 
 		\Bitrix\Main\Loader::registerAutoLoadClasses('sale', $classes);
+		Services\Manager::getHandlersList();
 		unset($classes['\Bitrix\Sale\Delivery\ExtraServices\Store']);
 		$event = new Event('sale', 'onSaleDeliveryExtraServicesClassNamesBuildList');
 		$event->send();
@@ -107,7 +112,7 @@ class Manager
 			{
 				/** @var  EventResult $eventResult*/
 				if ($eventResult->getType() != EventResult::SUCCESS)
-					throw new SystemException("Can't add custom extra service class successfully");
+					continue;
 
 				$params = $eventResult->getParameters();
 
@@ -157,14 +162,15 @@ class Manager
 	}
 
 	/**
-	 * @return int total cost
+	 * @param Shipment|null $shipment
+	 * @return float
 	 */
-	public function getTotalCost()
+	public function getTotalCostShipment(Shipment $shipment = null)
 	{
 		$result = 0;
 
 		foreach($this->items as $itemId => $item)
-			$result += $item->getCost();
+			$result += $item->getCostShipment($shipment);
 
 		return $result;
 	}
@@ -236,7 +242,7 @@ class Manager
 			throw new ArgumentNullException("params[\"CLASS_NAME\"]");
 
 		if(!class_exists($params["CLASS_NAME"]))
-			throw new SystemException("Class \"".$params["CLASS_NAME"]."\" doesn't exist");
+			return false;
 
 		$item = new $params["CLASS_NAME"]($params["ID"], $params, $currency, $value, $additionalParams);
 
@@ -712,6 +718,21 @@ class Manager
 	public function isClone()
 	{
 		return $this->isClone;
+	}
+
+	/**
+	 * @return float total cost
+	 * @deprecated
+	 * @use \Bitrix\Sale\Delivery\ExtraServices\Manager::getTotalCostShipment()
+	 */
+	public function getTotalCost()
+	{
+		$result = 0;
+
+		foreach($this->items as $itemId => $item)
+			$result += $item->getCost();
+
+		return $result;
 	}
 }
 

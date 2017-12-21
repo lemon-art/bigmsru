@@ -95,6 +95,7 @@ class SenderConnectorUser extends \Bitrix\Sender\Connector
 		$groupInput = '<select name="'.$this->getFieldName('GROUP_ID').'">';
 		$groupDb = \Bitrix\Main\GroupTable::getList(array(
 			'select' => array('ID', 'NAME',),
+			'filter' => array('!=ID' => 2),
 			'order' => array('C_SORT' => 'ASC', 'NAME' => 'ASC')
 		));
 		while($group = $groupDb->fetch())

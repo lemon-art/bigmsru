@@ -28,6 +28,7 @@ class OrderDiscountManager
 	const DESCR_VALUE_ACTION_DISCOUNT = 'D';
 	const DESCR_VALUE_ACTION_EXTRA = 'E';
 	const DESCR_VALUE_ACTION_ACCUMULATE = 'A';
+	const DESCR_VALUE_ACTION_CUMULATIVE = self::DESCR_VALUE_ACTION_ACCUMULATE;
 
 	const DESCR_LIMIT_MAX = 'MAX';
 	const DESCR_LIMIT_MIN = 'MIN';
@@ -228,9 +229,6 @@ class OrderDiscountManager
 			else
 			{
 				$fields['DISCOUNT_HASH'] = $hash;
-				$fields['ACTIONS_DESCR'] = array();
-				if (isset($discountData['ACTIONS_DESCR']))
-					$fields['ACTIONS_DESCR'] = $discountData['ACTIONS_DESCR'];
 				$tableResult = Internals\OrderDiscountTable::add($fields);
 				if ($tableResult->isSuccess())
 				{
@@ -457,6 +455,93 @@ class OrderDiscountManager
 	}
 
 	/**
+	 * Round basket item price.
+	 *
+	 * @param array $basketItem			Basket item data.
+	 * @param array $roundData			Round data.
+	 * @return array
+	 */
+	public static function roundPrice(array $basketItem, array $roundData = array())
+	{
+		if (empty($basketItem))
+			return array();
+
+		$result = self::executeDiscountProvider(
+			array('MODULE_ID' => $basketItem['MODULE'], 'METHOD' => 'roundPrice'),
+			array($basketItem, $roundData)
+		);
+		if (empty($result))
+			return array();
+
+		if (!isset($result['PRICE']) || !isset($result['DISCOUNT_PRICE']))
+			return array();
+
+		if (!isset($result['ROUND_RULE']))
+			return array();
+
+		return $result;
+	}
+
+	/**
+	 * Round basket prices.
+	 *
+	 * @param array $basket			Basket.
+	 * @param array $roundData		Round data.
+	 * @param array $orderData      Order (without basket).
+	 * @return array
+	 */
+	public static function roundBasket(array $basket, array $roundData = array(), array $orderData = array())
+	{
+		if (empty($basket))
+			return array();
+
+		$result = array();
+		$basketByModules = array();
+		$roundByModules = array();
+		foreach ($basket as $basketCode => $basketItem)
+		{
+			if (!isset($basketItem['MODULE']))
+				continue;
+			$module = $basketItem['MODULE'];
+			if (!isset($basketByModules[$module]))
+			{
+				$basketByModules[$module] = array();
+				$roundByModules[$module] = array();
+			}
+			$basketByModules[$module][$basketCode] = $basketItem;
+			$roundByModules[$module][$basketCode] = (isset($roundData[$basketCode]) ? $roundData[$basketCode] : array());
+		}
+		unset($basketCode, $basketItem);
+
+		foreach ($basketByModules as $module => $moduleItems)
+		{
+			$moduleResult = self::executeDiscountProvider(
+				array('MODULE_ID' => $module, 'METHOD' => 'roundBasket'),
+				array($moduleItems, $roundByModules[$module], $orderData)
+			);
+			if ($moduleResult === false)
+			{
+				$moduleResult = array();
+				foreach ($moduleItems as $basketCode => $basketItem)
+				{
+					$itemResult = self::roundPrice($basketItem, $roundByModules[$module][$basketCode]);
+					if (!empty($itemResult))
+						$moduleResult[$basketCode] = $itemResult;
+				}
+			}
+			if (empty($moduleResult))
+				continue;
+
+			foreach (array_keys($moduleResult) as $basketCode)
+				$result[$basketCode] = $moduleResult[$basketCode];
+			unset($moduleResult);
+		}
+		unset($moduleResult, $module, $moduleItems);
+
+		return $result;
+	}
+
+	/**
 	 * Load applied discount list
 	 *
 	 * @param int $order				Order id.
@@ -553,6 +638,7 @@ class OrderDiscountManager
 			if (!isset($resultData['APPLY_BLOCKS'][$blockCounter]))
 				$resultData['APPLY_BLOCKS'][$blockCounter] = array(
 					'BASKET' => array(),
+					'BASKET_ROUND' => array(),
 					'ORDER' => array()
 				);
 
@@ -699,12 +785,60 @@ class OrderDiscountManager
 				$index = ($translate ? $basketList[$data['ENTITY_ID']] : $data['ENTITY_ID']);
 				$resultData['DATA']['BASKET'][$index] = $data['ENTITY_DATA'];
 			}
-			else
-			{
-
-			}
 		}
 		unset($data, $dataIterator);
+
+		$iterator = Internals\OrderDiscountDataTable::getList(array(
+			'select' => array('*'),
+			'filter' => array(
+				'=ORDER_ID' => $order,
+				'=ENTITY_TYPE' => Internals\OrderDiscountDataTable::ENTITY_TYPE_DISCOUNT_STORED_DATA
+			)
+		));
+		$actionStoredData = $iterator->fetch();
+		if (!empty($actionStoredData) && is_array($actionStoredData))
+		{
+			if (!empty($actionStoredData['ENTITY_DATA']) && is_array($actionStoredData['ENTITY_DATA']))
+				$resultData['DATA']['STORED_ACTION_DATA'] = $actionStoredData['ENTITY_DATA'];
+		}
+		unset($actionStoredData, $iterator);
+
+		$dataIterator = Internals\OrderRoundTable::getList(array(
+			'select' => array('*'),
+			'filter' => array(
+				'=ORDER_ID' => $order,
+				'=ENTITY_TYPE' => Internals\OrderRoundTable::ENTITY_TYPE_BASKET
+			)
+		));
+		while ($data = $dataIterator->fetch())
+		{
+			$data['APPLY_BLOCK_COUNTER'] = (int)$data['APPLY_BLOCK_COUNTER'];
+			if ($data['APPLY_BLOCK_COUNTER'] < 0)
+				continue;
+			$blockCounter = $data['APPLY_BLOCK_COUNTER'];
+			if (!isset($resultData['APPLY_BLOCKS'][$blockCounter]))
+				$resultData['APPLY_BLOCKS'][$blockCounter] = array(
+					'BASKET' => array(),
+					'BASKET_ROUND' => array(),
+					'ORDER' => array(),
+				);
+			$index = ($data['ORDER_ROUND'] == 'Y' ? 'ORDER_ROUND' : 'BASKET_ROUND');
+			$basketCode = static::getBasketCodeByRule($data, $translate, $basketList);
+			if ($basketCode == '')
+				continue;
+
+			$resultData['APPLY_BLOCKS'][$blockCounter][$index][$basketCode] = array(
+				'RULE_ID' => (int)$data['ID'],
+				'APPLY' => $data['APPLY'],
+				'ROUND_RULE' => $data['ROUND_RULE']
+			);
+			unset($basketCode, $index, $blockCounter);
+		}
+		unset($data, $dataIterator);
+
+		if (!empty($resultData['APPLY_BLOCKS']))
+			ksort($resultData['APPLY_BLOCKS']);
+
 		/* for compatibility only */
 		if (isset($resultData['APPLY_BLOCKS'][0]))
 		{
@@ -961,7 +1095,14 @@ class OrderDiscountManager
 		}
 
 		if ($process)
+		{
+			if (isset($data['REVERT_APPLY']))
+			{
+				$resultData['REVERT_APPLY'] = $data['REVERT_APPLY'];
+			}
+
 			$result->setData($resultData);
+		}
 		return $result;
 	}
 
@@ -1336,7 +1477,7 @@ class OrderDiscountManager
 		$resultList = $event->getResults();
 		if (empty($resultList) || !is_array($resultList))
 			return;
-		foreach ($resultList as &$eventResult)
+		foreach ($resultList as $eventResult)
 		{
 			if ($eventResult->getType() != Main\EventResult::SUCCESS)
 				continue;
@@ -1354,6 +1495,10 @@ class OrderDiscountManager
 				self::$discountProviders[$module]['getEditUrl'] = $provider['getEditUrl'];
 			if (isset($provider['calculateApplyCoupons']))
 				self::$discountProviders[$module]['calculateApplyCoupons'] = $provider['calculateApplyCoupons'];
+			if (isset($provider['roundPrice']))
+				self::$discountProviders[$module]['roundPrice'] = $provider['roundPrice'];
+			if (isset($provider['roundBasket']))
+				self::$discountProviders[$module]['roundBasket'] = $provider['roundBasket'];
 		}
 		unset($provider, $module, $eventResult, $resultList, $event);
 	}
@@ -1376,6 +1521,8 @@ class OrderDiscountManager
 		$requiredFields = Internals\OrderDiscountTable::getEmptyFields($discount);
 		if (!empty($requiredFields))
 		{
+			if (in_array('ACTIONS_DESCR', $requiredFields))
+				return false;
 			$requiredFields[] = 'ID';
 			$row = Internals\DiscountTable::getRow(array(
 				'select' => $requiredFields,

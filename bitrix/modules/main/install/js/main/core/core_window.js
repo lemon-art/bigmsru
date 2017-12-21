@@ -632,8 +632,15 @@ BX.CWindow.prototype.Move = function(x, y)
 		if (left > (scrollSize.scrollWidth - floatWidth - dxShadow))
 			left = scrollSize.scrollWidth - floatWidth - dxShadow;
 
-		if (top > (scrollSize.scrollHeight - floatHeight - dxShadow))
-			top = scrollSize.scrollHeight - floatHeight - dxShadow;
+		var scrollHeight = Math.max(
+			document.body.scrollHeight, document.documentElement.scrollHeight,
+			document.body.offsetHeight, document.documentElement.offsetHeight,
+			document.body.clientHeight, document.documentElement.clientHeight,
+			scrollSize.scrollHeight
+		);
+
+		if (top > (scrollHeight - floatHeight - dxShadow))
+			top = scrollHeight - floatHeight - dxShadow;
 
 		//Top side
 		if (top < 0)
@@ -766,6 +773,15 @@ BX.CWindowDialog.prototype.CreateOverlay = function(zIndex)
 	if (null == this.OVERLAY)
 	{
 		var windowSize = BX.GetWindowScrollSize();
+
+		// scrollHeight in BX.GetWindowScrollSize may be incorrect
+		var scrollHeight = Math.max(
+			document.body.scrollHeight, document.documentElement.scrollHeight,
+			document.body.offsetHeight, document.documentElement.offsetHeight,
+			document.body.clientHeight, document.documentElement.clientHeight,
+			windowSize.scrollHeight
+		);
+
 		this.OVERLAY = document.body.appendChild(BX.create("DIV", {
 			style: {
 				position: 'absolute',
@@ -773,7 +789,7 @@ BX.CWindowDialog.prototype.CreateOverlay = function(zIndex)
 				left: '0px',
 				zIndex: zIndex || (parseInt(this.DIV.style.zIndex)-2),
 				width: windowSize.scrollWidth + "px",
-				height: windowSize.scrollHeight + "px"
+				height: scrollHeight + "px"
 			}
 		}));
 	}
@@ -2663,7 +2679,7 @@ BX.CMenu.prototype.addItem = function(item)
 					BX.onCustomEvent('onMenuItemHover', [this.BXMENULEVEL, this.OPENER])
 				}
 			},
-			html: '<span class="bx-core-popup-menu-item-icon' + (item.GLOBAL_ICON ? ' '+item.GLOBAL_ICON : '') + '"></span><span class="bx-core-popup-menu-item-text">'+item.TEXT+'</span>'
+			html: '<span class="bx-core-popup-menu-item-icon' + (item.GLOBAL_ICON ? ' '+item.GLOBAL_ICON : '') + '"></span><span class="bx-core-popup-menu-item-text">'+(item.HTML||BX.util.htmlspecialchars(item.TEXT))+'</span>'
 		});
 
 		if (bHasMenu && !item.DISABLED)

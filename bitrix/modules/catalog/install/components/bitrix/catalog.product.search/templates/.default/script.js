@@ -77,16 +77,25 @@ BX.Catalog.ProductSearchDialog = (function () {
 	};
 
 	ProductSearchDialog.prototype.fShowSku = function (sku, scope) {
-		for (var i in sku) {
-			if (sku.hasOwnProperty(i) && BX(this.tableId+'_sku-' + sku[i]['ID'])) {
-				if (BX(this.tableId+'_sku-' + sku[i]['ID']).parentNode.parentNode.style.display == "none") {
-					BX.show(BX(this.tableId+'_sku-' + sku[i]['ID']).parentNode.parentNode);
-				}
-				else {
-					BX.hide(BX(this.tableId+'_sku-' + sku[i]['ID']).parentNode.parentNode);
-				}
+		var i,
+			item,
+			expanded = BX.hasClass(scope, 'is-expand');
+
+		if (!BX.type.isArray(sku) || sku.length < 1)
+			return false;
+		for (i = 0; i < sku.length; i++)
+		{
+			item = BX(this.tableId+'_sku-' + sku[i]);
+			if (BX.type.isElementNode(item))
+			{
+				if (!expanded)
+					BX.show(item.parentNode.parentNode);
+				else
+					BX.hide(item.parentNode.parentNode);
 			}
+			item = null;
 		}
+
 		BX.toggleClass(scope, 'is-expand');
 		return false;
 	};
@@ -264,18 +273,18 @@ BX.Catalog.ProductSearchDialog = (function () {
 
 	ProductSearchDialog.prototype.setBreadcrumbs = function (data) {
 		var title = this.iblockName,
-			arHtml = ['<a class="adm-navchain-item adm-navchain-item-desktop" href="#" onclick="return '+this.tableId+'_helper.onSectionClick(0)">'+title+'</a>'],
+			arHtml = ['<a class="adm-navchain-item adm-navchain-item-desktop" href="#" onclick="return '+this.tableId+'_helper.onSectionClick(0)">'+BX.util.htmlspecialchars(title)+'</a>'],
 			arPath = [];
 		for(var i in data)
 		{
 			if (data.hasOwnProperty(i))
 			{
 				arPath.push(data[i].ID);
-				arHtml.push('<a class="adm-navchain-item adm-navchain-item-desktop" href="#" onclick="return '+this.tableId+'_helper.onSectionClick('+data[i].ID+')">'+data[i].NAME+'</a>');
+				arHtml.push('<a class="adm-navchain-item adm-navchain-item-desktop" href="#" onclick="return '+this.tableId+'_helper.onSectionClick('+data[i].ID+')">'+BX.util.htmlspecialchars(data[i].NAME)+'</a>');
 				title = data[i].NAME;
 			}
 		}
-		this.popup.SetTitle(title);
+		this.popup.SetTitle(BX.util.htmlspecialcharsback(title));
 		BX(this.tableId+'_breadcrumbs').innerHTML = arHtml.join('<span class="adm-navchain-delimiter"></span>');
 		this.openBranchByPath(arPath);
 	};
@@ -296,7 +305,7 @@ BX.Catalog.ProductSearchDialog = (function () {
 				url.push(encodeURIComponent(k) + '=' + encodeURIComponent(params.data[k]));
 			}
 		}
-		if (appendParameters && typeof appendParameters == 'object')
+		if (BX.type.isPlainObject(appendParameters))
 		{
 			for (k in appendParameters) {
 				if (appendParameters.hasOwnProperty(k) && appendParameters[k])

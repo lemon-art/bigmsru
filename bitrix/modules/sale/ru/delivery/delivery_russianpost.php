@@ -82,6 +82,9 @@ class CDeliveryRUSSIANPOST
 			"CALCULATOR" => array("CDeliveryRUSSIANPOST", "Calculate"),
 			"TRACKING_CLASS_NAME" => '\Bitrix\Sale\Delivery\Tracking\RusPost',
 
+			"DEPRECATED" => "Y",
+			"GET_ADMIN_MESSAGE" => array("CDeliveryRUSSIANPOST", "getAdminMessage"),
+			
 			/* List of delivery profiles */
 			"PROFILES" => array(
 				"ground" => array(
@@ -511,6 +514,21 @@ class CDeliveryRUSSIANPOST
 
 		return $result;
 	}
+
+	public function getAdminMessage()
+	{
+		return array(
+			'MESSAGE' => GetMessage(
+				'SALE_DH_RUSSIANPOST_MESSAGE',
+				array(
+					'#A1#' => '<a href="/bitrix/admin/sale_delivery_service_edit.php?lang='.LANGUAGE_ID.'&PARENT_ID=0&CLASS_NAME=%5CSale%5CHandlers%5CDelivery%5CAdditionalHandler&SERVICE_TYPE=RUSPOST">',
+					'#A2#' => '</a>'
+				)
+			),
+			"TYPE" => "ERROR",
+			"HTML" => true
+		);
+	}	
 }
 
 AddEventHandler("sale", "onSaleDeliveryHandlersBuildList", array('CDeliveryRUSSIANPOST', 'Init'));

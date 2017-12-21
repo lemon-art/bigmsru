@@ -261,13 +261,8 @@ class CAllSaleDelivery
 	 */
 	function GetLocationList($arFilter = Array())
 	{
-		$deliveryId = 0;
-
 		if(!empty($arFilter['DELIVERY_ID']))
-		{
-			$deliveryId = $arFilter['DELIVERY_ID'];
-			$arFilter['DELIVERY_ID'] = self::getIdByCode($deliveryId);
-		}
+			$arFilter['DELIVERY_ID'] = self::getIdByCode($arFilter['DELIVERY_ID']);
 
 		try
 		{
@@ -276,8 +271,13 @@ class CAllSaleDelivery
 
 			while($loc = $res->Fetch())
 			{
-				 $loc['DELIVERY_ID'] = $deliveryId;
-				 $locations[] = $loc;
+				$oldDeliveryId = self::getCodeById($loc['DELIVERY_ID']);
+
+				if(strlen($oldDeliveryId) <= 0)
+					continue;
+
+				$loc['DELIVERY_ID'] = $oldDeliveryId;
+				$locations[] = $loc;
 			}
 		}
 		catch(Exception $e)
@@ -1057,7 +1057,7 @@ class CAllSaleDelivery
 			if($selectAsterisk || in_array("PRICE", $arSelectFields))
 			{
 				$service["CLASS_NAME"] = '\Bitrix\Sale\Delivery\Services\Configurable';
-				$tmpSrv = \Bitrix\Sale\Delivery\Services\Manager::createObject($service);
+				$tmpSrv = \Bitrix\Sale\Delivery\Services\Manager::getPooledObject($service);
 
 				if($tmpSrv)
 				{
@@ -1182,7 +1182,16 @@ class CAllSaleDelivery
 		}
 
 		if(isset($arFields["LOCATIONS"]) && is_array($arFields["LOCATIONS"]))
+		{
 			Helper::resetLocationsForEntity($newId, $arFields['LOCATIONS'], self::CONN_ENTITY_NAME, !!$arOptions['EXPECT_LOCATION_CODES']);
+
+			\Bitrix\Sale\Internals\ServiceRestrictionTable::add(array(
+				"SERVICE_ID" => $newId,
+				"SERVICE_TYPE" => \Bitrix\Sale\Services\Base\RestrictionManager::SERVICE_TYPE_SHIPMENT,
+				"CLASS_NAME" => '\Bitrix\Sale\Delivery\Restrictions\ByLocation',
+				"SORT" => 100
+			));
+		}
 
 		if (isset($arFields["PAY_SYSTEM"]))
 			CSaleDelivery::UpdateDeliveryPay($newId, $arFields["PAY_SYSTEM"]);
@@ -1308,13 +1317,6 @@ class CAllSaleDelivery
 				$result->addError( new \Bitrix\Main\Entity\EntityError("Can't convert old delivery id: ".$delivery["CODE"]));
 				continue;
 			}
-
-			$res = \Bitrix\Sale\Internals\ServiceRestrictionTable::add(array(
-				"SERVICE_ID" => $newId,
-				"SERVICE_TYPE" => \Bitrix\Sale\Services\Base\RestrictionManager::SERVICE_TYPE_SHIPMENT,
-				"CLASS_NAME" => '\Bitrix\Sale\Delivery\Restrictions\ByLocation',
-				"SORT" => 100
-			));
 
 			if(!$res->isSuccess())
 				$result->addErrors($res->getErrors());
@@ -1472,12 +1474,16 @@ class CAllSaleDelivery
 			if(!$basketItem)
 				continue;
 
+			if($basketItem->isBundleChild())
+				continue;
+
 			$itemFieldValues = $basketItem->getFieldValues();
 			$itemFieldValues["QUANTITY"] = $shipmentItem->getField("QUANTITY");
 
 			if(!empty($itemFieldValues["DIMENSIONS"]) && is_string($itemFieldValues["DIMENSIONS"]))
 				$itemFieldValues["DIMENSIONS"] = unserialize($itemFieldValues["DIMENSIONS"]);
 
+			unset($itemFieldValues['DATE_INSERT'], $itemFieldValues['DATE_UPDATE']);
 			$oldOrder["ITEMS"][] = $itemFieldValues;
 			$itemWeight = floatval($basketItem->getField("WEIGHT"));
 

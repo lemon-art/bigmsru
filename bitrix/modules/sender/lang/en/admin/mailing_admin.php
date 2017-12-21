@@ -36,4 +36,5 @@ $MESS["MAIN_ADMIN_LIST_DEACTIVATE"] = "deactivate";
 $MESS["rub_f_is_public"] = "Available for subscription";
 $MESS["rub_sort"] = "Sort";
 $MESS["rub_is_public"] = "Subscription";
+$MESS["rub_f_chain_name"] = "Message subject";
 ?>

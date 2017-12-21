@@ -117,6 +117,25 @@ else
 			<td><?=$arResult["User"]["LAST_VISIT_FORMATED"]?>&nbsp;</td>
 		</tr>
 		</table>
+		<?
+		if ($arParams['USER_CONSENT'] == 'Y')
+			$APPLICATION->IncludeComponent(
+				"bitrix:main.userconsent.request",
+				"",
+				array(
+					"ID" => $arParams["USER_CONSENT_ID"],
+					"IS_CHECKED" => $arParams["USER_CONSENT_IS_CHECKED"],
+					"AUTO_SAVE" => "Y",
+					"IS_LOADED" => $arParams["USER_CONSENT_IS_LOADED"],
+					"ORIGIN_ID" => "sender/sub",
+					"ORIGINATOR_ID" => "",
+					"REPLACE" => array(
+						'button_caption' => GetMessage("B_B_USER_SAVE"),
+						'fields' => array(GetMessage("B_B_USER_ALIAS"), GetMessage("B_B_USER_SITE"), GetMessage("B_B_USER_BIRTHDAY"), GetMessage("B_B_USER_PHOTO"))
+					),
+				)
+			);
+		?>
 		<div class="blog-buttons">
 			<input type="hidden" name="BLOG_USER_ID" value="<?=$arResult["BlogUser"]["ID"]?>">
 			<input type="hidden" name="ID" value="<?=$arParams["ID"]?>">

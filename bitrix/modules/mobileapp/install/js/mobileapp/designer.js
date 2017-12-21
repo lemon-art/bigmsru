@@ -1042,7 +1042,6 @@
 										draggable: true,
 										titleBar: BX.message("MOBILEAPP_CONNECT_TO_APP_TITLE"),
 										closeByEsc: true,
-										height: 500,
 										contentColor: "white",
 										overlay: {opacity: 500},
 										zIndex: 10000,
@@ -1623,7 +1622,6 @@
 					this.popup = new BX.PopupWindow('DesignerCreateForm' + Math.random(), null, {
 						content: formContent,
 						closeByEsc: true,
-						height: 1000,
 						overlay: true,
 						autoHide: false,
 						zIndex: 10000
@@ -1955,7 +1953,7 @@
 				});
 				this.popup.setContent(
 					BX.create("DIV", {
-						style: {width: '700px', margin: "17px"},
+						style: {margin: "17px"},
 						children: [
 							this.images,
 							BX('file-selectdialog-designer')
@@ -2119,7 +2117,7 @@
 					props: {
 						className: "designer-app-switcher-list-item-inner"
 					},
-					html: project.name + " (" + code + ")"
+					html: BX.util.htmlspecialchars(project.name) + " (" + code + ")"
 				});
 				var appItem = BX.create("DIV", {
 					props: {
@@ -2165,7 +2163,7 @@
 				});
 				if (this.activeApp === false)
 				{
-					this.activeValueNode.innerHTML = project.name + " (" + code + ")";
+					this.activeValueNode.innerHTML = BX.util.htmlspecialchars(project.name) + " (" + code + ")";
 					this.activeApp = code;
 				}
 				this.apps[code] = project;
@@ -2193,7 +2191,6 @@
 						closeByEsc: true,
 						darkMode: false,
 						autoHide: true,
-						height: 1000,
 						zIndex: 10000
 					});
 				}
@@ -2241,7 +2238,7 @@
 			setActiveApp: function (code)
 			{
 				this.activeApp = code;
-				this.activeValueNode.innerHTML = this.apps[code].name + " (" + code + ")";
+				this.activeValueNode.innerHTML = BX.util.htmlspecialchars(this.apps[code].name) + " (" + code + ")";
 			},
 			onChange: function (code)
 			{

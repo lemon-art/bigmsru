@@ -4,6 +4,8 @@ if (!$this->__component->__parent || empty($this->__component->__parent->__name)
 	$GLOBALS['APPLICATION']->SetAdditionalCSS('/bitrix/components/bitrix/blog/templates/.default/style.css');
 	$GLOBALS['APPLICATION']->SetAdditionalCSS('/bitrix/components/bitrix/blog/templates/.default/themes/blue/style.css');
 endif;
+
+CUtil::InitJSCore(array("ajax"));
 ?>
 <div class="blog-comments">
 <a name="comments"></a>
@@ -208,7 +210,7 @@ else
 						OnSave: function() {}
 					};
 				};
-				
+
 				// Submit form by ctrl+enter
 				window.blogCommentCtrlEnterHandler = function(e)
 				{
@@ -240,7 +242,7 @@ else
 			}
 
 			$LHE = new CLightHTMLEditor;
-			
+
 			$LHE->Show(array(
 				'id' => 'LHEBlogCom',
 				'height' => $arParams['EDITOR_DEFAULT_HEIGHT'],
@@ -254,8 +256,8 @@ else
 					'ForeColor','FontList', 'FontSizeList',
 					'RemoveFormat',
 					'Quote', 'Code',
-					((!$arResult["NoCommentUrl"]) ? 'CreateLink' : 'CreateLinkNC'), 
-					((!$arResult["NoCommentUrl"]) ? 'DeleteLink' : ''), 
+					((!$arResult["NoCommentUrl"]) ? 'CreateLink' : 'CreateLinkNC'),
+					((!$arResult["NoCommentUrl"]) ? 'DeleteLink' : ''),
 					'Image',
 					//'BlogImage',
 					(($arResult["allowVideo"] == "Y") ? 'BlogInputVideo' : ''),
@@ -278,7 +280,7 @@ else
 				'bSetDefaultCodeView' => $arParams['EDITOR_CODE_DEFAULT'], // Set first view to CODE or to WYSIWYG
 				'bBBParseImageSize' => true // [IMG ID=XXX WEIGHT=5 HEIGHT=6],  [IMGWEIGHT=5 HEIGHT=6]/image.gif[/IMG]
 			));
-			
+
 			if(strlen($arResult["NoCommentReason"]) > 0)
 			{
 				?>
@@ -291,10 +293,14 @@ else
 				<div class="blog-comment-field blog-comment-field-captcha">
 					<div class="blog-comment-field-captcha-label">
 						<label for=""><?=GetMessage("B_B_MS_CAPTCHA_SYM")?></label><span class="blog-required-field">*</span><br>
-						<input type="hidden" name="captcha_code" id="captcha_code" value="<?=$arResult["CaptchaCode"]?>">
+						<input type="hidden" name="captcha_code" id="captcha_code" value="">
 						<input type="text" size="30" name="captcha_word" id="captcha_word" value=""  tabindex="7">
 						</div>
-					<div class="blog-comment-field-captcha-image"><div id="div_captcha"></div></div>
+					<div class="blog-comment-field-captcha-image">
+						<div id="div_captcha">
+							<img src="" width="180" height="40" id="captcha" style="display:none;">
+						</div>
+					</div>
 				</div>
 				<?
 			}
@@ -310,28 +316,6 @@ else
 		</div>
 	</div>
 	</div>
-
-	<?
-	if($arResult["use_captcha"]===true)
-	{
-		?>
-		<div id="captcha_del">
-		<script data-skip-moving="true">
-			<!--
-			var cc;
-			if(document.cookie.indexOf('<?echo session_name()?>'+'=') == -1)
-				cc = Math.random();
-			else
-				cc ='<?=$arResult["CaptchaCode"]?>';
-
-			document.write('<img src="/bitrix/tools/captcha.php?captcha_code='+cc+'" width="180" height="40" id="captcha" style="display:none;">');
-			document.getElementById('captcha_code').value = cc;
-			//-->
-		</script>
-		</div>
-		<?
-	}
-	?>
 	<?
 	$prevTab = 0;
 	function ShowComment($comment, $tabCount=0, $tabSize=2.5, $canModerate=false, $User=Array(), $use_captcha=false, $bCanUserComment=false, $errorComment=false, $arParams = array())
@@ -346,7 +330,7 @@ else
 				$paddingSize = 2.5 * 5 + ($tabCount - 5) * 1.5;
 			elseif($tabCount > 10)
 				$paddingSize = 2.5 * 5 + 1.5 * 5 + ($tabCount-10) * 1;
-				
+
 			if($prevTab > $tabCount)
 				$prevTab = $tabCount;
 			if($prevTab <= 5)
@@ -634,8 +618,8 @@ else
 					$commentPreview = Array(
 							"ID" => "preview",
 							"TitleFormated" => htmlspecialcharsEx($_POST["subject"]),
-							"TextFormated" => $_POST["commentFormated"],
-							"AuthorName" => $User["NAME"],
+							"TextFormated" => htmlspecialcharsEx($_POST["commentFormated"]),
+							"AuthorName" => htmlspecialcharsEx($User["NAME"]),
 							"DATE_CREATE" => GetMessage("B_B_MS_PREVIEW_TITLE"),
 						);
 					ShowComment($commentPreview, (IntVal($_POST["edit_id"]) == $comment["ID"] && $comment["CAN_EDIT"] == "Y") ? $level : ($level+1), 2.5, false, Array(), false, false, false, $arParams);
@@ -744,8 +728,8 @@ else
 				$commentPreview = Array(
 						"ID" => "preview",
 						"TitleFormated" => htmlspecialcharsEx($_POST["subject"]),
-						"TextFormated" => $_POST["commentFormated"],
-						"AuthorName" => $arResult["User"]["NAME"],
+						"TextFormated" => htmlspecialcharsEx($_POST["commentFormated"]),
+						"AuthorName" => htmlspecialcharsEx($arResult["User"]["NAME"]),
 						"DATE_CREATE" => GetMessage("B_B_MS_PREVIEW_TITLE"),
 					);
 				ShowComment($commentPreview, 0, 2.5, false, $arResult["User"], $arResult["use_captcha"], $arResult["CanUserComment"], false, $arParams);
@@ -827,8 +811,8 @@ else
 				$commentPreview = Array(
 						"ID" => "preview",
 						"TitleFormated" => htmlspecialcharsEx($_POST["subject"]),
-						"TextFormated" => $_POST["commentFormated"],
-						"AuthorName" => $arResult["User"]["NAME"],
+						"TextFormated" => htmlspecialcharsEx($_POST["commentFormated"]),
+						"AuthorName" => htmlspecialcharsEx($arResult["User"]["NAME"]),
 						"DATE_CREATE" => GetMessage("B_B_MS_PREVIEW_TITLE"),
 					);
 				ShowComment($commentPreview, 0, 2.5, false, $arResult["User"], $arResult["use_captcha"], $arResult["CanUserComment"], $arResult["COMMENT_ERROR"], $arParams);

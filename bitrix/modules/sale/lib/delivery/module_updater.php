@@ -4,16 +4,19 @@
 	and module_updater
 */
 
-include_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/update_class.php");
-global $DB, $DBType;
-$updater = new CUpdater();
-$updater->Init($curPath = "", $DBType, $updaterName = "", $curDir = "", "sale", "DB");
+//include_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/update_class.php");
+//global $DB, $DBType;
+/** @global CDatabase $DB */
+/** @global string $DBType */
 
-$updater->CopyFiles("install/admin", "admin");
+$localUpdater = new CUpdater();
+$localUpdater->Init($curPath = "", $DBType, $updaterName = "", $curDir = "", "sale", "DB");
 
-if(!$updater->TableExists("b_sale_delivery_srv"))
+$localUpdater->CopyFiles("install/admin", "admin");
+
+if(!$localUpdater->TableExists("b_sale_delivery_srv"))
 {
-	$updater->Query(array(
+	$localUpdater->Query(array(
 		"MySQL" => "create table if not exists b_sale_delivery_srv
 			(
 				ID int NOT NULL AUTO_INCREMENT,
@@ -33,9 +36,9 @@ if(!$updater->TableExists("b_sale_delivery_srv"))
 	));
 }
 
-if(!$updater->TableExists("b_sale_delivery_rstr"))
+if(!$localUpdater->TableExists("b_sale_delivery_rstr"))
 {
-	$updater->Query(array(
+	$localUpdater->Query(array(
 		"MySQL" => "create table if not exists b_sale_delivery_rstr
 			(
 				ID int NOT NULL AUTO_INCREMENT,
@@ -48,9 +51,9 @@ if(!$updater->TableExists("b_sale_delivery_rstr"))
 	));
 }
 
-if(!$updater->TableExists("b_sale_delivery_es"))
+if(!$localUpdater->TableExists("b_sale_delivery_es"))
 {
-	$updater->Query(array(
+	$localUpdater->Query(array(
 		"MySQL" => "create table if not exists b_sale_delivery_es
 			(
 				ID int NOT NULL AUTO_INCREMENT,
@@ -71,9 +74,9 @@ if(!$updater->TableExists("b_sale_delivery_es"))
 	));
 }
 
-if (!$updater->TableExists("b_sale_order_delivery_es"))
+if (!$localUpdater->TableExists("b_sale_order_delivery_es"))
 {
-	$updater->Query(array(
+	$localUpdater->Query(array(
 		"MySQL"  => "create table if not exists b_sale_order_delivery_es
 			(
 				ID INT NOT NULL AUTO_INCREMENT,
@@ -85,18 +88,18 @@ if (!$updater->TableExists("b_sale_order_delivery_es"))
 	));
 }
 
-if ($updater->TableExists("b_sale_delivery"))
+if ($localUpdater->TableExists("b_sale_delivery"))
 {
 	if (!$DB->Query("SELECT CONVERTED FROM b_sale_delivery WHERE 1=0", true))
-		$updater->Query(array(
+		$localUpdater->Query(array(
 			"MySQL"  => "ALTER TABLE b_sale_delivery ADD CONVERTED char(1) not null default 'N'", true)
 		);
 }
 
-if ($updater->TableExists("b_sale_delivery_handler"))
+if ($localUpdater->TableExists("b_sale_delivery_handler"))
 {
 	if (!$DB->Query("SELECT CONVERTED FROM b_sale_delivery_handler WHERE 1=0", true))
-		$updater->Query(array(
+		$localUpdater->Query(array(
 			"MySQL"  => "ALTER TABLE b_sale_delivery_handler ADD CONVERTED char(1) not null default 'N'", true
 		));
 }
@@ -107,3 +110,5 @@ if(IsModuleInstalled("sale"))
 	CAgent::AddAgent('\CSaleDeliveryHandler::convertToNewAgent(true);', "sale", "N");
 	CAgent::AddAgent('\CSaleDelivery::convertPSRelationsAgent();', "sale", "N");
 }
+
+unset($localUpdater);

@@ -4,6 +4,9 @@ namespace Bitrix\Sale\Services\PaySystem\Restrictions;
 
 use Bitrix\Main\ArgumentTypeException;
 use Bitrix\Main\Localization\Loc;
+use Bitrix\Sale\Internals\Entity;
+use Bitrix\Sale\Order;
+use Bitrix\Sale\PaymentCollection;
 use Bitrix\Sale\Services\Base;
 use Bitrix\Sale\Payment;
 
@@ -12,19 +15,19 @@ Loc::loadMessages(__FILE__);
 class Price extends Base\Restriction
 {
 	/**
-	 * @param $entityParams
-	 * @param array $params
-	 * @param int $paymentId
+	 * @param $params
+	 * @param array $restrictionParams
+	 * @param int $serviceId
 	 * @return bool
 	 */
-	protected static function check($entityParams, array $params, $paymentId = 0)
+	public static function check($params, array $restrictionParams, $serviceId = 0)
 	{
-		if ($entityParams['PRICE_PAYMENT'] === null)
+		if ($params['PRICE_PAYMENT'] === null)
 			return true;
 
-		$maxValue = static::getPrice($entityParams, $params['MAX_VALUE']);
-		$minValue = static::getPrice($entityParams, $params['MIN_VALUE']);
-		$price = (float)$entityParams['PRICE_PAYMENT'];
+		$maxValue = static::getPrice($params, $restrictionParams['MAX_VALUE']);
+		$minValue = static::getPrice($params, $restrictionParams['MIN_VALUE']);
+		$price = (float)$params['PRICE_PAYMENT'];
 
 		if ($maxValue > 0 && $minValue > 0)
 			return ($maxValue >= $price) && ($minValue <= $price);
@@ -39,13 +42,28 @@ class Price extends Base\Restriction
 	}
 
 	/**
-	 * @param Payment $entity
+	 * @param Entity $entity
 	 * @return array
 	 */
-	protected static function extractParams(Payment $entity)
+	protected static function extractParams(Entity $entity)
 	{
+		$orderPrice = null;
+		$paymentPrice = null;
+
+		if ($entity instanceof Payment)
+		{
+			/** @var PaymentCollection $collection */
+			$collection = $entity->getCollection();
+			/** @var Order $order */
+			$order = $collection->getOrder();
+
+			$orderPrice = $order->getPrice();
+			$paymentPrice = $entity->getField('SUM');
+		}
+
 		return array(
-			'PRICE_PAYMENT' => $entity->getField('SUM')
+			'PRICE_PAYMENT' => $paymentPrice,
+			'PRICE_ORDER' => $orderPrice,
 		);
 	}
 
@@ -76,11 +94,11 @@ class Price extends Base\Restriction
 	}
 
 	/**
-	 * @param $paySystemId
+	 * @param $entityId
 	 * @return array
 	 * @throws \Bitrix\Main\ArgumentException
 	 */
-	public static function getParamsStructure($paySystemId = 0)
+	public static function getParamsStructure($entityId = 0)
 	{
 		return array(
 			"MIN_VALUE" => array(

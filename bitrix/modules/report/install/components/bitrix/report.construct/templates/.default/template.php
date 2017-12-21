@@ -1094,19 +1094,16 @@ $name = $APPLICATION->IncludeComponent(
 <? endif ?>
 
 <?php $this->SetViewTarget("pagetitle", 100);?>
-<div class="reports-title-buttons">
 	<? if($arParams['REPORT_ID'] && false): ?>
-	<a class="reports-title-button"
+	<a class="webform-small-button webform-small-button-blue"
 		onclick="BX.Report['<?=$jsClass?>'].export('<?=$arParams['REPORT_ID']?>')">
-		<i class=""></i>
-		<span class="reports-link"><?=GetMessage('REPORT_TITLE_EXPORT')?></span>
+		<span class="webform-small-button-text"><?=GetMessage('REPORT_TITLE_EXPORT')?></span>
 	</a>
 	&nbsp;
 	<? endif ?>
-	<a class="reports-title-button"
+	<a class="webform-small-button webform-small-button-blue webform-small-button-back"
 		href="<?=CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_REPORT_LIST"], array());?>">
-		<i class="reports-title-button-back-icon"></i>
-		<span class="reports-link"><?=GetMessage('REPORT_RETURN_TO_LIST')?></span>
+		<span class="webform-small-button-icon"></span>
+		<span class="webform-small-button-text"><?=GetMessage('REPORT_RETURN_TO_LIST')?></span>
 	</a>
-</div>
 <?php $this->EndViewTarget();?>

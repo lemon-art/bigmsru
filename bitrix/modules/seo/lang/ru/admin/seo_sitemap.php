@@ -61,6 +61,7 @@ $MESS["SITEMAP_RUN_IBLOCK_NAME"] = "Обработка инфоблока: #IBLO
 $MESS["SITEMAP_RUN_FINALIZE"] = "Генерация индексного файла";
 $MESS["SITEMAP_RUN_FINISH"] = "Генерация закончена";
 $MESS["SITEMAP_FILENAME_ADDRESS"] = "Адрес карты сайта";
+$MESS["SITEMAP_FILENAME_ADDRESS_ATTENTION"] = "Данный файл будет перезаписан! Убедитесь, что по этому адресу не находится нужный вам файл.";
 $MESS["SEO_SITEMAP_SAVEANDRUN"] = "Сохранить и запустить";
 $MESS["SEO_SITEMAP_LOGIC_WARNING"] = "Внимание! При смене логики обхода дерева каталогов несохраненные изменения настроек будут потеряны. Продолжить?";
 $MESS["SEO_SITEMAP_RUN_ROBOTS_WARNING"] = "Внимание! Файл robots.txt содержит правила со ссылками на другие файлы sitemap.xml:<ul>#SITEMAPS#</ul><a href=\"/bitrix/admin/seo_robots.php?lang=#LANGUAGE_ID#&site_id=#SITE_ID#\">Перейти к настройке robots.txt</a>";

@@ -862,7 +862,10 @@ final class CSaleOrderPropsAdapter implements FetchAdapter
 		}
 
 		$oldProperty = self::convertNewToOld($newProperty);
-		$oldProperty['VALUE'] = self::getOldValue($newProperty['VALUE'], $newProperty['TYPE']);
+		if (array_key_exists('VALUE', $newProperty))
+		{
+			$oldProperty['VALUE'] = self::getOldValue($newProperty['VALUE'], $newProperty['TYPE']);
+		}
 
 		return array_intersect_key($oldProperty, $this->select);
 	}
@@ -1060,17 +1063,32 @@ final class CSaleOrderPropsAdapter implements FetchAdapter
 
 	static function migrate()
 	{
+		$correctFields = array(
+			'REQUIRED',
+			'USER_PROPS',
+			'ACTIVE',
+			'UTIL',
+			'MULTIPLE',
+		);
+
 		$errors = '';
-		$result = Application::getConnection()->query('SELECT * FROM b_sale_order_props');
+		$result = Application::getConnection()->query('SELECT * FROM b_sale_order_props ORDER BY ID ASC');
 
 		while ($oldProperty = $result->fetch())
 		{
 			$newProperty = self::convertOldToNew($oldProperty);
 			$newProperty['IS_ADDRESS'] = 'N'; // fix oracle's mb default
 
-			if (array_key_exists('REQUIRED', $newProperty))
+			foreach ($newProperty as $key => $value)
 			{
-				$newProperty['REQUIRED'] = ToUpper($newProperty['REQUIRED']);
+				if (strpos($key, 'IS_') === 0)
+				{
+					$newProperty[$key] = ToUpper($value);
+				}
+				elseif(in_array($key, $correctFields))
+				{
+					$newProperty[$key] = ToUpper($value);
+				}
 			}
 
 			$update = OrderPropsTable::update($newProperty['ID'], array_intersect_key($newProperty, self::$allFields));

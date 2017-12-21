@@ -22,6 +22,15 @@ $data = array(
 			"SORT" => 300,
 			'GROUP' => 'CONNECT_SETTINGS_ASSIST'
 		),
+		"ASSIST_SERVER_URL" => array(
+			"NAME" => Loc::getMessage("SALE_HPS_ASSIST_SERVER_URL"),
+			"SORT" => 350,
+			'GROUP' => 'CONNECT_SETTINGS_ASSIST',
+			'DEFAULT' => array(
+				"PROVIDER_VALUE" => 'payments.paysecure.ru',
+				"PROVIDER_KEY" => "VALUE"
+			)
+		),
 		"ASSIST_SHOP_SECRET_WORLD" => array(
 			"NAME" => Loc::getMessage("SALE_HPS_ASSIST_SHOP_SECRET_WORLD"),
 			"SORT" => 400,

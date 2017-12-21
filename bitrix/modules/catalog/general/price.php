@@ -13,22 +13,56 @@ class CAllPrice
 
 		$currency = false;
 
-		if ((is_set($arFields, "PRODUCT_ID") || $ACTION=="ADD") && intval($arFields["PRODUCT_ID"]) <= 0)
+		if ($ACTION == "ADD")
 		{
-			$APPLICATION->ThrowException(Loc::getMessage("KGP_EMPTY_PRODUCT"), "EMPTY_PRODUCT_ID");
-			return false;
+			if (!isset($arFields['PRODUCT_ID']))
+			{
+				$APPLICATION->ThrowException(Loc::getMessage("KGP_EMPTY_PRODUCT"), "EMPTY_PRODUCT_ID");
+				return false;
+			}
+			if (!isset($arFields['CATALOG_GROUP_ID']))
+			{
+				$APPLICATION->ThrowException(Loc::getMessage("KGP_EMPTY_CATALOG_GROUP"), "EMPTY_CATALOG_GROUP_ID");
+				return false;
+			}
+			if (!isset($arFields['CURRENCY']))
+			{
+				$APPLICATION->ThrowException(Loc::getMessage("KGP_EMPTY_CURRENCY"), "EMPTY_CURRENCY");
+				return false;
+			}
+			if (!isset($arFields['PRICE']))
+				$arFields['PRICE'] = 0;
+
+			if (!isset($arFields['QUANTITY_FROM']))
+				$arFields['QUANTITY_FROM'] = false;
+			if (!isset($arFields['QUANTITY_TO']))
+				$arFields['QUANTITY_TO'] = false;
 		}
-		if ((is_set($arFields, "CATALOG_GROUP_ID") || $ACTION=="ADD") && intval($arFields["CATALOG_GROUP_ID"]) <= 0)
+
+		$priceExist = isset($arFields['PRICE']);
+		$currencyExist = isset($arFields['CURRENCY']);
+
+		if (isset($arFields['PRODUCT_ID']))
 		{
-			$APPLICATION->ThrowException(Loc::getMessage("KGP_EMPTY_CATALOG_GROUP"), "EMPTY_CATALOG_GROUP_ID");
-			return false;
+			$arFields['PRODUCT_ID'] = (int)$arFields['PRODUCT_ID'];
+			if ($arFields['PRODUCT_ID'] <= 0)
+			{
+				$APPLICATION->ThrowException(Loc::getMessage("KGP_EMPTY_PRODUCT"), "EMPTY_PRODUCT_ID");
+				return false;
+			}
 		}
-		if ((is_set($arFields, "CURRENCY") || $ACTION=="ADD") && strlen($arFields["CURRENCY"]) <= 0)
+		if (isset($arFields['CATALOG_GROUP_ID']))
 		{
-			$APPLICATION->ThrowException(Loc::getMessage("KGP_EMPTY_CURRENCY"), "EMPTY_CURRENCY");
-			return false;
+			$arFields['CATALOG_GROUP_ID'] = (int)$arFields['CATALOG_GROUP_ID'];
+			if ($arFields['CATALOG_GROUP_ID'] <= 0)
+			{
+				$APPLICATION->ThrowException(Loc::getMessage("KGP_EMPTY_CATALOG_GROUP"), "EMPTY_CATALOG_GROUP_ID");
+				return false;
+			}
 		}
-		if (isset($arFields['CURRENCY']))
+		if ($priceExist)
+			$arFields['PRICE'] = (float)$arFields['PRICE'];
+		if ($currencyExist)
 		{
 			$currency = CCurrency::GetByID($arFields['CURRENCY']);
 			if (empty($currency))
@@ -37,44 +71,108 @@ class CAllPrice
 				return false;
 			}
 		}
-
-		if (is_set($arFields, "PRICE") || $ACTION=="ADD")
+		if (isset($arFields['PRICE_SCALE']))
 		{
-			$arFields["PRICE"] = str_replace(",", ".", $arFields["PRICE"]);
-			$arFields["PRICE"] = (float)$arFields["PRICE"];
+			$arFields['PRICE_SCALE'] = (float)$arFields['PRICE_SCALE'];
 		}
-
-		if ((is_set($arFields, "QUANTITY_FROM") || $ACTION=="ADD") && intval($arFields["QUANTITY_FROM"]) <= 0)
-			$arFields["QUANTITY_FROM"] = false;
-		if ((is_set($arFields, "QUANTITY_TO") || $ACTION=="ADD") && intval($arFields["QUANTITY_TO"]) <= 0)
-			$arFields["QUANTITY_TO"] = false;
-
-		$priceExist = isset($arFields['PRICE']);
-		$currencyExist = isset($arFields['CURRENCY']);
-		if ($priceExist != $currencyExist)
+		else
 		{
-			$currentValues = Catalog\PriceTable::getList(array(
-				'select' => array('PRICE', 'CURRENCY'),
-				'filter' => array('=ID' => $ID)
-			))->fetch();
-			if (!empty($currentValues))
+			if ($priceExist != $currencyExist)
 			{
-				$currentPrice = ($priceExist ? $arFields['PRICE'] : (float)$currentValues['PRICE']);
-				$currentCurrency = ($currencyExist ? $arFields['CURRENCY'] : $currentValues['CURRENCY']);
-				$currency = CCurrency::GetByID($currentCurrency);
-				if (!empty($currency))
-					$arFields['PRICE_SCALE'] = $currentPrice*$currency['CURRENT_BASE_RATE'];
-				unset($currentCurrency, $currentPrice);
+				$iterator = Catalog\PriceTable::getList(array(
+					'select' => array('PRICE', 'CURRENCY'),
+					'filter' => array('=ID' => $ID)
+				));
+				$currentValues = $iterator->fetch();
+				if (!empty($currentValues))
+				{
+					$currentPrice = ($priceExist ? $arFields['PRICE'] : (float)$currentValues['PRICE']);
+					$currentCurrency = ($currencyExist ? $arFields['CURRENCY'] : $currentValues['CURRENCY']);
+					$currency = CCurrency::GetByID($currentCurrency);
+					if (!empty($currency))
+						$arFields['PRICE_SCALE'] = $currentPrice*$currency['CURRENT_BASE_RATE'];
+					unset($currentCurrency, $currentPrice);
+				}
+				unset($currentValues, $iterator);
 			}
-			unset($currentValues);
-		}
-		elseif ($priceExist && $currencyExist)
-		{
-			$arFields['PRICE_SCALE'] = $arFields['PRICE']*$currency['CURRENT_BASE_RATE'];
+			elseif ($priceExist && $currencyExist)
+			{
+				$arFields['PRICE_SCALE'] = $arFields['PRICE']*$currency['CURRENT_BASE_RATE'];
+			}
 		}
 		unset($currencyExist, $priceExist, $currency);
 
+		if (isset($arFields['QUANTITY_FROM']))
+		{
+			if ($arFields['QUANTITY_FROM'] !== false)
+			{
+				$arFields['QUANTITY_FROM'] = (int)$arFields['QUANTITY_FROM'];
+				if ($arFields['QUANTITY_FROM'] <= 0)
+					$arFields['QUANTITY_FROM'] = false;
+			}
+		}
+		if (isset($arFields['QUANTITY_TO']))
+		{
+			if ($arFields['QUANTITY_TO'] !== false)
+			{
+				$arFields['QUANTITY_TO'] = (int)$arFields['QUANTITY_TO'];
+				if ($arFields['QUANTITY_TO'] <= 0)
+					$arFields['QUANTITY_TO'] = false;
+			}
+		}
+
 		return true;
+	}
+
+	/**
+	 * @param int $id
+	 * @return array|false
+	 */
+	public static function GetByID($id)
+	{
+		global $USER;
+
+		$id = (int)$id;
+		if ($id <= 0)
+			return false;
+
+		$price = Catalog\PriceTable::getById($id)->fetch();
+		if (empty($price))
+			return false;
+
+		if ($price['TIMESTAMP_X'] instanceof Main\Type\DateTime)
+			$price['TIMESTAMP_X'] = $price['TIMESTAMP_X']->toString();
+
+		$priceTypes = CCatalogGroup::GetListArray();
+		$price['CATALOG_GROUP_NAME'] = null;
+		if (isset($priceTypes[$price['CATALOG_GROUP_ID']]))
+		{
+			$price['CATALOG_GROUP_NAME'] = ($priceTypes[$price['CATALOG_GROUP_ID']]['NAME_LANG'] !== null
+				? $priceTypes[$price['CATALOG_GROUP_ID']]['NAME_LANG']
+				: $priceTypes[$price['CATALOG_GROUP_ID']]['NAME']
+			);
+		}
+		unset($priceTypes);
+
+		$price['CAN_ACCESS'] = 'N';
+		$price['CAN_BUY'] = 'N';
+		$iterator = Catalog\GroupAccessTable::getList(array(
+			'select' => array('ACCESS'),
+			'filter' => array(
+				'=CATALOG_GROUP_ID' => $price['CATALOG_GROUP_ID'],
+				'@GROUP_ID' => (CCatalog::IsUserExists() ? $USER->GetUserGroupArray() : array(2))
+			)
+		));
+		while ($row = $iterator->fetch())
+		{
+			if ($row['ACCESS'] == Catalog\GroupAccessTable::ACCESS_BUY)
+				$price['CAN_ACCESS'] = 'Y';
+			elseif ($row['ACCESS'] == Catalog\GroupAccessTable::ACCESS_VIEW)
+				$price['CAN_BUY'] = 'Y';
+		}
+		unset($row, $iterator);
+
+		return $price;
 	}
 
 	public static function Update($ID, $arFields, $boolRecalc = false)
@@ -390,14 +488,14 @@ class CAllPrice
 					if (!empty($arExtra))
 					{
 						$boolSearch = true;
-						$arExtraList[$arExtra['ID']] = $arExtra['PERCENTAGE'];
+						$arExtraList[$arExtra['ID']] = (float)$arExtra['PERCENTAGE'];
 					}
 				}
 				if ($boolSearch)
 				{
 					$arNewPrice = array(
 						'CURRENCY' => $arFields['CURRENCY'],
-						'PRICE' => RoundEx($arFields["PRICE"] * (1 + DoubleVal($arExtraList[$arPrice['EXTRA_ID']])/100), CATALOG_VALUE_PRECISION),
+						'PRICE' => roundEx($arFields["PRICE"] * (1 + $arExtraList[$arPrice['EXTRA_ID']]/100), CATALOG_VALUE_PRECISION),
 					);
 					CPrice::Update($arPrice['ID'],$arNewPrice,false);
 				}
@@ -422,6 +520,7 @@ class CAllPrice
 					$arExtra = CExtra::GetByID($arFields['EXTRA_ID']);
 					if (!empty($arExtra))
 					{
+						$arExtra["PERCENTAGE"] = (float)$arExtra["PERCENTAGE"];
 						$arFilter = array('PRODUCT_ID' => $arFields['PRODUCT_ID'],'CATALOG_GROUP_ID' => $arBaseGroup['ID']);
 						if (isset($arFields['QUANTITY_FROM']))
 							$arFilter['QUANTITY_FROM'] = $arFields['QUANTITY_FROM'];
@@ -437,7 +536,10 @@ class CAllPrice
 						if ($arBasePrice = $rsBasePrices->Fetch())
 						{
 							$arFields['CURRENCY'] = $arBasePrice['CURRENCY'];
-							$arFields['PRICE'] = RoundEx($arBasePrice["PRICE"] * (1 + DoubleVal($arExtra["PERCENTAGE"])/100), CATALOG_VALUE_PRECISION);
+							$arFields['PRICE'] = roundEx($arBasePrice["PRICE"] * (1 + $arExtra["PERCENTAGE"]/100), CATALOG_VALUE_PRECISION);
+							$currency = CCurrency::GetByID($arBasePrice['CURRENCY']);
+							if (!empty($currency))
+								$arFields['PRICE_SCALE'] = $arFields['PRICE']*$currency['CURRENT_BASE_RATE'];
 						}
 						else
 						{

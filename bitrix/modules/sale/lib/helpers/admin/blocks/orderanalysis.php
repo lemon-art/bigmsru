@@ -2,9 +2,13 @@
 
 namespace Bitrix\Sale\Helpers\Admin\Blocks;
 
+use Bitrix\Main;
+use Bitrix\Sale\Company;
+use Bitrix\Sale\Internals;
 use	Bitrix\Sale\Order,
 	Bitrix\Sale\Payment,
 	Bitrix\Main\Localization\Loc;
+use Bitrix\Sale\Services\Company\Manager;
 
 Loc::loadMessages(__FILE__);
 
@@ -24,17 +28,56 @@ class OrderAnalysis
 
 	public static function getView(Order $order, OrderBasket $orderBasket, $selectPayment = null, $selectId = null)
 	{
+		global $APPLICATION, $USER;
 		// prepare data
 
 		$orderId   = $order->getId();
 		$data      = $orderBasket->prepareData();
 		$items     = $data['ITEMS'];
 		$documents = array();
+		$documentAllowList = array();
+		static $userCompanyList = array();
+		$isUserResponsible = false;
+		$isAllowCompany = false;
 		$itemNo    = 0;
+
+
+
+		$saleModulePermissions = $APPLICATION->GetGroupRight("sale");
+
+		if($saleModulePermissions == "P")
+		{
+			if (empty($userCompanyList))
+			{
+				$userCompanyList = Manager::getUserCompanyList($USER->GetID());
+			}
+
+			if ($order->getField('RESPONSIBLE_ID') == $USER->GetID())
+			{
+				$isUserResponsible = true;
+			}
+
+			if (in_array($order->getField('COMPANY_ID'), $userCompanyList))
+			{
+				$isAllowCompany = true;
+			}
+		}
 
 		/** @var \Bitrix\Sale\Payment $payment */
 		foreach ($order->getPaymentCollection() as $payment)
+		{
 			$documents []= $payment;
+
+			$documentAllowList['PAYMENT'][$payment->getId()] = true;
+
+			if ($saleModulePermissions == "P")
+			{
+				$isPaymentUserResponsible = ($isUserResponsible || $payment->getField('RESPONSIBLE_ID') == $USER->GetID());
+				$isPaymentAllowCompany = ($isAllowCompany || in_array($payment->getField('COMPANY_ID'), $userCompanyList));
+				$documentAllowList['PAYMENT'][$payment->getId()] = ($isPaymentUserResponsible || $isPaymentAllowCompany);
+			}
+
+		}
 
 		/** @var \Bitrix\Sale\Shipment $shipment */
 		foreach ($order->getShipmentCollection() as $shipment)
@@ -46,11 +89,11 @@ class OrderAnalysis
 					/** @var \Bitrix\Sale\ShipmentItem $shipmentItem */
 					foreach ($shipment->getShipmentItemCollection() as $shipmentItem)
 					{
-						$basketItem = $shipmentItem->getBasketItem();
+						$basketCode = $shipmentItem->getBasketCode();
 
-						if (isset($items[$basketItem->getBasketCode()]))
+						if ($basketCode && isset($items[$basketCode]))
 						{
-							$item = &$items[$basketItem->getBasketCode()];
+							$item = &$items[$basketCode];
 							if ($shippedQuantity = &$item['SHIPPED_QUANTITY'])
 								$shippedQuantity += (float) $shipmentItem->getField('QUANTITY');
 							else
@@ -60,6 +103,15 @@ class OrderAnalysis
 				}
 
 				$documents []= $shipment;
+
+				$documentAllowList['SHIPMENT'][$shipment->getId()] = true;
+
+				if ($saleModulePermissions == "P")
+				{
+					$isShipmentUserResponsible = ($isUserResponsible || $shipment->getField('RESPONSIBLE_ID') == $USER->GetID());
+					$isShipmentAllowCompany = ($isAllowCompany || in_array($shipment->getField('COMPANY_ID'), $userCompanyList));
+					$documentAllowList['SHIPMENT'][$shipment->getId()] = ($isShipmentUserResponsible || $isShipmentAllowCompany);
+				}
 			}
 		}
 
@@ -113,11 +165,11 @@ class OrderAnalysis
 						?>
 						<tr class="bdb-line">
 							<td class="tac"><?=++$itemNo?></td>
-							<td style="text-align: left;"><a class="fwb" href="<?=$item['EDIT_PAGE_URL']?>"><?=htmlspecialcharsbx($item['NAME']);?></a></td>
+							<td style="text-align: left;"><a class="fwb" href="<?=$item['EDIT_PAGE_URL']?>"><?=htmlspecialcharsEx($item['NAME']);?></a></td>
 							<td class="tac"><?=$properties;?></td>
-							<td class="tac"><?=$quantity.' '.$item['MEASURE_TEXT']?></td>
-							<td class="tac"><?=$shippedQuantity.' '.$item['MEASURE_TEXT']?></td>
-							<td class="tac"><?=($quantity - $shippedQuantity).' '.$item['MEASURE_TEXT']?></td>
+							<td class="tac"><?=$quantity.' '.htmlspecialcharsEx($item['MEASURE_TEXT'])?></td>
+							<td class="tac"><?=$shippedQuantity.' '.htmlspecialcharsEx($item['MEASURE_TEXT'])?></td>
+							<td class="tac"><?=($quantity - $shippedQuantity).' '.htmlspecialcharsEx($item['MEASURE_TEXT'])?></td>
 						</tr>
 					<?endforeach?>
 					<tr><td colspan="8" style="padding: 16px; background: #f7fafa; text-align: left;" class="fwb"><?=Loc::getMessage('SALE_OANALYSIS_ITEMS_QUANTITY').': '.count($items)?></td></tr>
@@ -146,20 +198,28 @@ class OrderAnalysis
 							<div class="adm-bus-orderdocs-threelist-block-img adm-bus-orderdocs-threelist-block-img-doc_<?=$isPayment ? 'payment' : 'shipping'?>"></div>
 							<div class="adm-bus-orderdocs-threelist-block-content">
 								<div class="adm-bus-orderdocs-threelist-block-title">
-									<?if ($isPayment):?>
+									<?if ($isPayment):
+										$isAllowCompany = $documentAllowList['PAYMENT'][$documentId];
+										?>
 										<?if ($document->isPaid()):?>
 											<span class="adm-bus-orderdocs-docstatus adm-bus-orderdocs-docstatus-paid"><?=Loc::getMessage('SALE_OANALYSIS_PAYMENT_PAID')?></span>
 										<?elseif ($document->isReturn()):?>
 											<span class="adm-bus-orderdocs-docstatus"><?=Loc::getMessage('SALE_OANALYSIS_PAYMENT_RETURN')?></span>
 										<?endif?>
-										<a href="/bitrix/admin/sale_order_payment_edit.php?order_id=<?=$orderId?>&payment_id=<?=$documentId?>" class="adm-bus-orderdocs-threelist-block-title-link">
+											<? if ($isAllowCompany): ?>
+											<a href="/bitrix/admin/sale_order_payment_edit.php?order_id=<?=$orderId?>&payment_id=<?=$documentId?>" class="adm-bus-orderdocs-threelist-block-title-link">
 											<?=Loc::getMessage('SALE_OANALYSIS_PAYMENT_TITLE', array(
 												'#SYSTEM_NAME#' => htmlspecialcharsbx($document->getField('PAY_SYSTEM_NAME')),
 												'#PAYMENT_ID#'  => $documentId,
 												'#SUM#'         => SaleFormatCurrency($document->getField('SUM'), $document->getField('CURRENCY')),
 											))?>
-										</a>
-									<?else:/* shipment*/?>
+											</a>
+											<?else:?>
+												<?= Loc::getMessage('SALE_OANALYSIS_HIDDEN');?>
+											<? endif; ?>
+									<?else:/* shipment*/
+										$isAllowCompany = $documentAllowList['SHIPMENT'][$documentId];
+									?>
 										<?if ($document->isShipped()):?>
 											<span class="adm-bus-orderdocs-docstatus adm-bus-orderdocs-docstatus-shippingallowed"><?=Loc::getMessage('SALE_OANALYSIS_SHIPMENT_SHIPPED')?></span>
 										<?elseif ($document->isCanceled()):?>
@@ -167,6 +227,7 @@ class OrderAnalysis
 										<?elseif ($document->isAllowDelivery()):?>
 											<span class="adm-bus-orderdocs-docstatus adm-bus-orderdocs-docstatus-shippingallowed"><?=Loc::getMessage('SALE_OANALYSIS_SHIPMENT_ALLOWED')?></span>
 										<?endif?>
+										<? if ($isAllowCompany): ?>
 										<a href="/bitrix/admin/sale_order_shipment_edit.php?order_id=<?=$orderId?>&shipment_id=<?=$documentId?>"
 										   class="adm-bus-orderdocs-threelist-block-title-link<?=$document->isCanceled() ? 'adm-bus-orderdocs-threelist-block-title-link-canceled' : ''?>">
 											<?=Loc::getMessage('SALE_OANALYSIS_SHIPMENT_TITLE', array(
@@ -174,6 +235,9 @@ class OrderAnalysis
 												'#ORDER_ID#'    => $orderId,
 											))?>
 										</a>
+										<?else:?>
+											<?= Loc::getMessage('SALE_OANALYSIS_HIDDEN');?>
+										<? endif; ?>
 									<?endif?>
 								</div>
 								<?self::renderBottomBlocks($document->getField($isPayment ? 'DATE_BILL' : 'DATE_INSERT'), $document->getField('RESPONSIBLE_ID'))?>

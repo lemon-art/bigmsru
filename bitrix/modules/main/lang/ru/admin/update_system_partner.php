@@ -23,6 +23,7 @@ $MESS["SUP_SUBT_LICENCE"] = "Лицензионное соглашение";
 $MESS["SUP_SUBT_LICENCE_HINT"] = "Перед использованием системы обновлений вы должны принять новое лицензионное соглашение";
 $MESS["SUP_SUBT_LICENCE_BUTTON"] = "Открыть лицензионное соглашение";
 $MESS["SUP_SUBT_AGREE"] = "Я принимаю лицензионное соглашение";
+$MESS["SUP_SUBT_AGREE_PRIVACY"] = "Я ознакомился с <a href=\"http://marketplace.1c-bitrix.ru/about/privacy.php\" target=\"_blank\">Условиями о конфиденциальности</a> и согласен с ними";
 $MESS["SUP_APPLY"] = "Применить";
 $MESS["SUP_SUBT_ERROR_LICENCE"] = "Ошибка принятия лицензии";
 $MESS["SUP_SUBK_KEY"] = "Ввод лицензионного ключа";
@@ -169,7 +170,7 @@ $MESS["SUP_SUAC_TEXT"] = "Для того чтобы добавить новое
 $MESS["SUP_SUAC_ADD"] = "Активировать купон";
 $MESS["SUP_SUAC_TEXT2"] = "Введите купон:";
 $MESS["SUP_SU_UPD_MP_NEW"] = "На ваш сайт были добавлены новые решения:";
-$MESS["SUP_SU_UPD_MP_NEW2"] = "Вы можете установить решения сейчас или сделать это позже на странице Marketplace - Установленные решения.";
+$MESS["SUP_SU_UPD_MP_NEW2"] = "Вы можете установить решения сейчас или сделать это позже на странице Маркетплейс - Установленные решения.";
 $MESS["SUP_SU_UPD_MP_NEW_INST"] = "Установить";
 $MESS["SUP_SUAC_NO_COUP"] = "Не введен купон для активации";
 ?>

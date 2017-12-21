@@ -73,6 +73,8 @@ class CBlogSearch
 	public static function OnSearchReindex($NS=Array(), $oCallback=NULL, $callback_method="")
 	{
 		global $DB, $USER_FIELD_MANAGER;
+		static $blogPostEventIdList = null;
+
 		$arResult = array();
 		//CBlogSearch::Trace('OnSearchReindex', 'NS', $NS);
 		if($NS["MODULE"]=="blog" && strlen($NS["ID"])>0)
@@ -176,7 +178,17 @@ class CBlogSearch
 
 			$bSonet = false;
 			if(IsModuleInstalled("socialnetwork"))
+			{
 				$bSonet = true;
+				if (
+					$blogPostEventIdList === null
+					&& \Bitrix\Main\Loader::includeModule("socialnetwork")
+				)
+				{
+					$blogPostLivefeedProvider = new \Bitrix\Socialnetwork\Livefeed\BlogPost;
+					$blogPostEventIdList = $blogPostLivefeedProvider->getEventId();
+				}
+			}
 
 			$parserBlog = new blogTextParser(false, "/bitrix/images/blog/smile/");
 
@@ -205,7 +217,7 @@ class CBlogSearch
 					b_blog_post bp
 					INNER JOIN b_blog b ON (bp.BLOG_ID = b.ID)
 					INNER JOIN b_blog_group bg ON (b.GROUP_ID = bg.ID) ".
-					($bSonet ? "LEFT JOIN b_sonet_log BSL ON (BSL.EVENT_ID in ('blog_post', 'blog_post_micro', 'blog_post_important') AND BSL.SOURCE_ID = bp.ID) " : "").
+					($bSonet ? "LEFT JOIN b_sonet_log BSL ON (BSL.EVENT_ID in ('".implode("', '", $blogPostEventIdList)."') AND BSL.SOURCE_ID = bp.ID) " : "").
 				" WHERE
 					bp.DATE_PUBLISH <= ".$DB->CurrentTimeFunction()."
 					AND b.ACTIVE = 'Y'
@@ -689,7 +701,7 @@ class CBlogSearch
 				}
 
 				$searchContent = blogTextParser::killAllTags($ar["POST_TEXT"]);
-//				$searchContent .= "\r\n" . $GLOBALS["USER_FIELD_MANAGER"]->OnSearchIndex("BLOG_COMMENT", $ar["ID"]);
+				$searchContent .= "\r\n" . $USER_FIELD_MANAGER->OnSearchIndex("BLOG_COMMENT", $ar["ID"]);
 
 				$Result = array(
 					"ID" => "C".$ar["ID"],

@@ -23,6 +23,7 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/lib/loader.php");
 		"bitrix\\main\\argumenttypeexception" => "lib/exception.php",
 		"bitrix\\main\\notimplementedexception" => "lib/exception.php",
 		"bitrix\\main\\notsupportedexception" => "lib/exception.php",
+		"bitrix\\main\\invalidoperationexception" => "lib/exception.php",
 		"bitrix\\main\\objectpropertyexception" => "lib/exception.php",
 		"bitrix\\main\\objectnotfoundexception" => "lib/exception.php",
 		"bitrix\\main\\objectexception" => "lib/exception.php",
@@ -122,7 +123,11 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/lib/loader.php");
 		"bitrix\\main\\sendereventhandler" => "lib/senderconnector.php",
 		"bitrix\\main\\senderconnectoruser" => "lib/senderconnector.php",
 		"bitrix\\main\\urlrewriterrulemaker" => "lib/urlrewriter.php",
+		"bitrix\\main\\update\\stepper" => "lib/update/stepper.php",
 		"CTimeZone" => "classes/general/time.php",
+		"bitrix\\main\\composite\\abstractresponse" => "lib/composite/responder.php",
+		"bitrix\\main\\composite\\fileresponse" => "lib/composite/responder.php",
+		"bitrix\\main\\composite\\memcachedresponse" => "lib/composite/responder.php",
 	)
 );
 
@@ -233,13 +238,21 @@ if(!($GLOBALS["DB"]->Connect($DBHost, $DBName, $DBLogin, $DBPassword)))
 	die();
 }
 
+//licence key
+$LICENSE_KEY = "";
+if(file_exists(($_fname = $_SERVER["DOCUMENT_ROOT"].BX_ROOT."/license_key.php")))
+	include($_fname);
+if($LICENSE_KEY == "" || strtoupper($LICENSE_KEY) == "DEMO")
+	define("LICENSE_KEY", "DEMO");
+else
+	define("LICENSE_KEY", $LICENSE_KEY);
+
 //language independed classes
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/punycode.php");
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/charset_converter.php");
 require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/classes/".$DBType."/main.php");	//main class
 require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/classes/".$DBType."/option.php");	//options and settings class
 require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/classes/general/cache.php");	//various cache classes
-require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/classes/general/cache_html.php");	//html cache class support
 require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/classes/general/module.php");
 
 error_reporting(E_COMPILE_ERROR|E_ERROR|E_CORE_ERROR|E_PARSE);

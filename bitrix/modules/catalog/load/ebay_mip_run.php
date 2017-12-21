@@ -15,11 +15,7 @@ if (!CCatalog::IsUserExists())
 	$bTmpUserCreated = true;
 
 	if (isset($USER))
-	{
 		$USER_TMP = $USER;
-		unset($USER);
-	}
-
 	$USER = new CUser();
 }
 
@@ -85,7 +81,7 @@ if (empty($arRunErrors))
 {
 	try
 	{
-		$offers = \Bitrix\Catalog\ExportOfferCreator::getOfferObject(
+		$offers = \Bitrix\Catalog\Ebay\ExportOfferCreator::getOfferObject(
 			array(
 				"IBLOCK_ID" => $IBLOCK_ID,
 				"PRODUCT_GROUPS" => $V,
@@ -136,7 +132,6 @@ if (!empty($arRunErrors))
 
 if ($bTmpUserCreated)
 {
-	unset($USER);
 	if (isset($USER_TMP))
 	{
 		$USER = $USER_TMP;
@@ -145,4 +140,3 @@ if ($bTmpUserCreated)
 }
 
 die();
-?>

@@ -10,12 +10,10 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 /** @global CUser $USER */
 /** @global CMain $APPLICATION */
 
-$arParams["WIDTH"] = (int)$arParams["WIDTH"];
+$arParams["WIDTH"] = (isset($arParams["WIDTH"]) ? (int)$arParams["WIDTH"] : 0);
 if ($arParams["WIDTH"] > 0)
-{
 	$arResult["WIDTH"] = $arParams["WIDTH"];
-}
+
 $arResult["ID"] = (isset($arParams["ID"]) && !empty($arParams["ID"]) ? $arParams["ID"] : "cat_tab_".$this->randString());
 
-$this->IncludeComponentTemplate();
-?>
+$this->includeComponentTemplate();

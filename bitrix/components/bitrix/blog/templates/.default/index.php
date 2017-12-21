@@ -21,7 +21,7 @@
 			"PATH_TO_CATEGORY_EDIT"	=> $arResult["PATH_TO_CATEGORY_EDIT"],
 			"BLOG_URL"				=> $arResult["VARIABLES"]["blog"],
 			"SET_NAV_CHAIN"			=> $arResult["SET_NAV_CHAIN"],
-			"GROUP_ID" 			=> $arParams["GROUP_ID"],
+			"GROUP_ID" 				=> $arParams["GROUP_ID"],
 		),
 	$component
 );?>

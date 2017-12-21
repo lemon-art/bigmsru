@@ -312,14 +312,12 @@ define("REPORT_LIST_CREATE_BUTTON", true);?>
 
 </div>
 <? $this->SetViewTarget("pagetitle", 100);?>
-<div class="reports-title-buttons">
-
-	<a class="webform-small-button webform-small-button-transparent bx24-top-toolbar-button"
+	<a class="webform-small-button webform-small-button-blue"
 		onclick="BX.Report['<?=$jsClass?>'].import()">
 		<span class="webform-small-button-text"><?=GetMessage('REPORT_IMPORT_BUTTON')?></span>
 	</a>
 
-	<a class="webform-small-button webform-small-button-blue bx24-top-toolbar-add"
+	<a class="webform-small-button webform-small-button-blue webform-small-button-add"
 		href="<?=CComponentEngine::MakePathFromTemplate(
 					$arParams["PATH_TO_REPORT_CONSTRUCT"],
 					array("report_id" => 0, 'action' => 'create'));?>
@@ -327,7 +325,7 @@ define("REPORT_LIST_CREATE_BUTTON", true);?>
 		<span class="webform-small-button-icon"></span>
 		<span class="webform-small-button-text"><?=GetMessage('REPORT_ADD')?></span>
 	</a>
-</div><?
+<?
 
 $this->EndViewTarget();
 endif;

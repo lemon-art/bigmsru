@@ -116,7 +116,7 @@ if($arParams["SHOW_WORKFLOW"] || $this->StartResultCache(false, ($arParams["CACH
 	else//Handle case when ELEMENT_CODE used
 		$ELEMENT_ID = CIBlockFindTools::GetElementID(
 			$arParams["ELEMENT_ID"],
-			$arParams["ELEMENT_CODE"],
+			$arParams["~ELEMENT_CODE"],
 			false,
 			false,
 			array(

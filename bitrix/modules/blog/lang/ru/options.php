@@ -45,4 +45,7 @@ $MESS["BLOG_POST_GROUP_USER_MAX_RIGHTS"] = "Максимальные права 
 $MESS["BLOG_COMMENT_GROUP_USER_MAX_RIGHTS"] = "Максимальные права на комментарии для групп пользователей блога";
 $MESS["BLOG_USE_AUTOSAVE"] = "Использовать автосохранение для сообщений";
 $MESS["BLOG_USE_IMAGE_PERM"] = "Проверять права для изображений";
+$MESS["MAIN_RESTORE_DEFAULTS"] = "По умолчанию";
+$MESS["BLOG_OPTIONS_SMILE_GALLERY_ID"] = "Галерея смайлов блога";
+$MESS["BLOG_OPTIONS_SMILE_SET_ID"] = "Набор смайлов блога";
 ?>

@@ -104,7 +104,7 @@ foreach ($mapIframeLangKeys as $key)
 				<?endif?>
 
 				<?
-					$compositeStatus = \CHTMLPagesCache::IsCompositeEnabled() ? Loc::getMessage("MAIN_SITE_SPEED_ENABLED") : Loc::getMessage("MAIN_SITE_SPEED_DISABLED");
+					$compositeStatus = \Bitrix\Main\Composite\Helper::isCompositeEnabled() ? Loc::getMessage("MAIN_SITE_SPEED_ENABLED") : Loc::getMessage("MAIN_SITE_SPEED_DISABLED");
 				?>
 				<a href="/bitrix/admin/composite.php?lang=<?=LANGUAGE_ID?>" class="site-speed-perf-label"><?=Loc::getMessage("MAIN_SITE_SPEED_COMPOSITE_SITE")?></a>:<span class="site-speed-perf-value"><?=$compositeStatus?></span>
 				<?

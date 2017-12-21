@@ -4,6 +4,27 @@
 /** @global CUser $USER */
 use Bitrix\Main\Loader;
 define('NO_AGENT_CHECK', true);
+
+$executeExport = (isset($_REQUEST['ACTION']) && is_string($_REQUEST['ACTION']) && $_REQUEST['ACTION'] == 'EXPORT');
+$existActionFile = (isset($_REQUEST['ACT_FILE']) && is_string($_REQUEST['ACT_FILE']) && trim($_REQUEST['ACT_FILE']) !== '');
+$existExportSession = false;
+if (isset($_REQUEST['CUR_EXPORT_SESS_ID']) && is_string($_REQUEST['CUR_EXPORT_SESS_ID']))
+{
+	$exportSessionId = trim($_REQUEST['CUR_EXPORT_SESS_ID']);
+	$existExportSession = ($exportSessionId !== '' && preg_match('/^CE\d+$/', $exportSessionId));
+	unset($exportSessionId);
+}
+$listPosition = 0;
+if (isset($_REQUEST['CUR_ELEMENT_ID']) && is_string($_REQUEST['CUR_ELEMENT_ID']))
+	$listPosition = (int)$_REQUEST['CUR_ELEMENT_ID'];
+
+if ($executeExport && $existActionFile && $existExportSession && $listPosition > 0)
+{
+	define('NO_KEEP_STATISTIC', true);
+	define('STOP_STATISTICS', true);
+}
+unset($listPosition, $existExportSession, $existActionFile, $executeExport);
+
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/catalog/prolog.php");
 if (!($USER->CanDoOperation('catalog_read') || $USER->CanDoOperation('catalog_export_edit') || $USER->CanDoOperation('catalog_export_exec')))
@@ -142,82 +163,236 @@ if (($bCanEdit || $bCanExec) && check_bitrix_sessid())
 				//		If there is a setup, then setup and run with the parameters in setup
 				//		else run
 				// Otherwise, the initialization parameters and run
-				$bDefaultProfile = true;
-				$boolNeedEdit = false;
-				if ($PROFILE_ID > 0)
+
+				$CUR_EXPORT_SESS_ID = '';
+				if (isset($_REQUEST['CUR_EXPORT_SESS_ID']) && is_string($_REQUEST['CUR_EXPORT_SESS_ID']))
 				{
-					$ar_profile = CCatalogExport::GetByID($PROFILE_ID);
-					if ($ar_profile)
-					{
-						if ($ar_profile["DEFAULT_PROFILE"] != "Y")
-							$bDefaultProfile = false;
-						if ('Y' == $ar_profile["NEED_EDIT"])
-							$boolNeedEdit = true;
-					}
-					else
-					{
-						$PROFILE_ID = 0;
-					}
+					$CUR_EXPORT_SESS_ID = trim($_REQUEST['CUR_EXPORT_SESS_ID']);
+				}
+				if ($CUR_EXPORT_SESS_ID !== '' && !preg_match('/^CE\d+$/', $CUR_EXPORT_SESS_ID))
+				{
+					$CUR_EXPORT_SESS_ID = '';
 				}
 
-				// if profile absent, search default profile
-				if ($PROFILE_ID <= 0)
+				$CUR_ELEMENT_ID = 0;
+				if (isset($_REQUEST['CUR_ELEMENT_ID']) && is_string($_REQUEST['CUR_ELEMENT_ID']))
 				{
-					$db_profile = CCatalogExport::GetList(
-						array(),
-						array("DEFAULT_PROFILE" => "Y", "FILE_NAME" => $strActFileName)
-					);
-					if ($ar_profile = $db_profile->Fetch())
-					{
-						$PROFILE_ID = (int)$ar_profile['ID'];
-						if ($ar_profile['NEED_EDIT'] == 'Y')
-							$boolNeedEdit = true;
-					}
+					$CUR_ELEMENT_ID = (int)$_REQUEST['CUR_ELEMENT_ID'];
+				}
+				if ($CUR_ELEMENT_ID < 0)
+				{
+					$CUR_ELEMENT_ID = 0;
 				}
 
-				if ($bDefaultProfile || $boolNeedEdit)
+				if ($CUR_ELEMENT_ID > 0 && '' != $CUR_EXPORT_SESS_ID && isset($_SESSION[$CUR_EXPORT_SESS_ID]) && is_array($_SESSION[$CUR_EXPORT_SESS_ID]))
 				{
-					if (strlen($arReportsList[$strActFileName]["FILE_SETUP"]) > 0)
+					$firstStep = false;
+
+					$arSetupVars = array();
+					$intSetupVarsCount = 0;
+					if (isset($_SESSION[$CUR_EXPORT_SESS_ID]["SETUP_VARS"]))
 					{
-						$STEP = intval($_REQUEST["STEP"]);
-						if (isset($_POST['backButton']) && !empty($_POST['backButton'])) $STEP-=2;
-						if ($STEP <= 0) $STEP = 1;
-						$FINITE = false;
-
-						ob_start();
-						$APPLICATION->SetTitle($arReportsList[$strActFileName]["TITLE"]);
-						include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
-
-						// compatibility hack!
-						$CATALOG_RIGHT = 'W';
-						include($_SERVER["DOCUMENT_ROOT"].$arReportsList[$strActFileName]["FILE_SETUP"]);
-
-						if ($FINITE!==true)
+						parse_str($_SESSION[$CUR_EXPORT_SESS_ID]["SETUP_VARS"], $arSetupVars);
+						if (!empty($arSetupVars) && is_array($arSetupVars))
 						{
-							ob_end_flush();
-							include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");
-							die();
+							$intSetupVarsCount = extract($arSetupVars, EXTR_SKIP);
 						}
-						ob_end_clean();
+					}
+
+					$arInternalVars = array();
+					$intInternalVarsCount = 0;
+					if (isset($_SESSION[$CUR_EXPORT_SESS_ID]["INTERNAL_VARS"]))
+					{
+						$arInternalVars = $_SESSION[$CUR_EXPORT_SESS_ID]["INTERNAL_VARS"];
+						if (!empty($arInternalVars) && is_array($arInternalVars))
+						{
+							$intInternalVarsCount = extract($arInternalVars, EXTR_SKIP);
+						}
 					}
 				}
 				else
 				{
-					$arSetupVars = array();
-					$intSetupVarsCount = 0;
+					$firstStep = true;
 
-					parse_str($ar_profile["SETUP_VARS"], $arSetupVars);
-					if (!empty($arSetupVars) && is_array($arSetupVars))
+					$bDefaultProfile = true;
+					$boolNeedEdit = false;
+					if ($PROFILE_ID > 0)
 					{
-						$intSetupVarsCount = extract($arSetupVars, EXTR_SKIP);
+						$ar_profile = CCatalogExport::GetByID($PROFILE_ID);
+						if ($ar_profile)
+						{
+							if ($ar_profile["DEFAULT_PROFILE"] != "Y")
+								$bDefaultProfile = false;
+							if ('Y' == $ar_profile["NEED_EDIT"])
+								$boolNeedEdit = true;
+						}
+						else
+						{
+							$PROFILE_ID = 0;
+						}
+					}
+
+					// if profile absent, search default profile
+					if ($PROFILE_ID <= 0)
+					{
+						$db_profile = CCatalogExport::GetList(
+							array(),
+							array("DEFAULT_PROFILE" => "Y", "FILE_NAME" => $strActFileName)
+						);
+						if ($ar_profile = $db_profile->Fetch())
+						{
+							$PROFILE_ID = (int)$ar_profile['ID'];
+							if ($ar_profile['NEED_EDIT'] == 'Y')
+								$boolNeedEdit = true;
+						}
+					}
+
+					if ($bDefaultProfile || $boolNeedEdit)
+					{
+						if (strlen($arReportsList[$strActFileName]["FILE_SETUP"]) > 0)
+						{
+							$STEP = intval($_REQUEST["STEP"]);
+							if (isset($_POST['backButton']) && !empty($_POST['backButton'])) $STEP-=2;
+							if ($STEP <= 0) $STEP = 1;
+							$FINITE = false;
+
+							ob_start();
+							$APPLICATION->SetTitle($arReportsList[$strActFileName]["TITLE"]);
+							include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
+
+							// compatibility hack!
+							$CATALOG_RIGHT = 'W';
+							include($_SERVER["DOCUMENT_ROOT"].$arReportsList[$strActFileName]["FILE_SETUP"]);
+
+							if ($FINITE!==true)
+							{
+								ob_end_flush();
+								include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");
+								die();
+							}
+							ob_end_clean();
+						}
+					}
+					else
+					{
+						$arSetupVars = array();
+						$intSetupVarsCount = 0;
+
+						parse_str($ar_profile["SETUP_VARS"], $arSetupVars);
+						if (!empty($arSetupVars) && is_array($arSetupVars))
+						{
+							$intSetupVarsCount = extract($arSetupVars, EXTR_SKIP);
+						}
+					}
+
+					if ('' != $CUR_EXPORT_SESS_ID && isset($_SESSION[$CUR_EXPORT_SESS_ID]))
+					{
+						unset($_SESSION[$CUR_EXPORT_SESS_ID]);
+						unset($CUR_EXPORT_SESS_ID);
 					}
 				}
 
 				$strExportErrorMessage = "";
 
+				$finalExport = true;
+
 				CCatalogDiscountSave::Disable();
 				include($_SERVER["DOCUMENT_ROOT"].$arReportsList[$strActFileName]["FILE_RUN"]);
 				CCatalogDiscountSave::Enable();
+
+				if (!$finalExport)
+				{
+					if (empty($CUR_EXPORT_SESS_ID))
+						$CUR_EXPORT_SESS_ID = "CE".time();
+
+					$arInternalVars = array();
+					$arInternalVarsList = array();
+					if (isset($INTERNAL_VARS_LIST) && '' != $INTERNAL_VARS_LIST)
+					{
+						$arInternalVarsList = explode(",", $INTERNAL_VARS_LIST);
+					}
+					if (!empty($arInternalVarsList) && is_array($arInternalVarsList))
+					{
+						foreach ($arInternalVarsList as $strInternalVarName)
+						{
+							$strInternalVarName = trim($strInternalVarName);
+							if (!empty($strInternalVarName) && isset($GLOBALS[$strInternalVarName]))
+							{
+								$arInternalVars[$strInternalVarName] = $GLOBALS[$strInternalVarName];
+							}
+						}
+						unset($strInternalVarName);
+					}
+
+					$setupVars = "";
+					$arSetupVars = array();
+					$arSetupVarsList = array();
+					if (isset($SETUP_VARS_LIST) && '' != $SETUP_VARS_LIST)
+					{
+						$arSetupVarsList = explode(",", $SETUP_VARS_LIST);
+					}
+					if (!empty($arSetupVarsList) && is_array($arSetupVarsList))
+					{
+						foreach ($arSetupVarsList as $strSetupVarName)
+						{
+							$strSetupVarName = trim($strSetupVarName);
+							if (!empty($strSetupVarName) && isset($GLOBALS[$strSetupVarName]))
+							{
+								$arSetupVars[$strSetupVarName] = $GLOBALS[$strSetupVarName];
+							}
+						}
+						unset($strSetupVarName);
+						if (!empty($arSetupVars))
+							$setupVars = http_build_query($arSetupVars);
+					}
+
+					$_SESSION[$CUR_EXPORT_SESS_ID]["CUR_ELEMENT_ID"] = $CUR_ELEMENT_ID;
+					$_SESSION[$CUR_EXPORT_SESS_ID]["INTERNAL_VARS"] = $arInternalVars;
+					$_SESSION[$CUR_EXPORT_SESS_ID]["SETUP_VARS"] = $setupVars;
+					$_SESSION[$CUR_EXPORT_SESS_ID]["ERROR_MESSAGE"] .= $strExportErrorMessage;
+					//$_SESSION[$CUR_EXPORT_SESS_ID]["OK_MESSAGE"] .= $strImportOKMessage;
+
+					$urlParams = "CUR_ELEMENT_ID=".$CUR_ELEMENT_ID."&CUR_EXPORT_SESS_ID=".urlencode($CUR_EXPORT_SESS_ID)."&ACT_FILE=".urlencode($strActFileName)."&ACTION=EXPORT&PROFILE_ID=".$PROFILE_ID;
+					$fullUrl = $APPLICATION->GetCurPage().'?lang='.LANGUAGE_ID.'&'.$urlParams.'&'.bitrix_sessid_get();
+					?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<title><?= GetMessage("CES_STEP_TITLE") ?></title>
+</head>
+<body>
+<?echo GetMessage("CES_AUTO_REFRESH");?><br>
+<a href="<?=$fullUrl; ?>"><?echo GetMessage("CES_AUTO_REFRESH_STEP");?></a><br>
+<script type="text/javascript">
+function DoNext()
+{
+	window.location="<?=$fullUrl; ?>";
+}
+setTimeout('DoNext()', 2000);
+</script>
+</body>
+</html><?
+
+					include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin_after.php");
+					die();
+				}
+				else
+				{
+					if (isset($CUR_EXPORT_SESS_ID) && strlen($CUR_EXPORT_SESS_ID) > 0 && is_set($_SESSION, $CUR_EXPORT_SESS_ID))
+					{
+						$strExportErrorMessage = $_SESSION[$CUR_EXPORT_SESS_ID]["ERROR_MESSAGE"].$strExportErrorMessage;
+						//$strImportOKMessage = $_SESSION[$CUR_EXPORT_SESS_ID]["OK_MESSAGE"].$strImportOKMessage;
+
+						unset($_SESSION[$CUR_EXPORT_SESS_ID]);
+						unset($CUR_EXPORT_SESS_ID);
+					}
+				}
+
+				if (isset($CUR_EXPORT_SESS_ID) && strlen($CUR_EXPORT_SESS_ID) > 0 && is_set($_SESSION, $CUR_EXPORT_SESS_ID))
+				{
+					$strExportErrorMessage = $_SESSION[$CUR_EXPORT_SESS_ID]["ERROR_MESSAGE"].$strExportErrorMessage;
+					//$strImportOKMessage = $_SESSION[$CUR_EXPORT_SESS_ID]["OK_MESSAGE"].$strImportOKMessage;
+				}
+
 
 				if (strlen($strExportErrorMessage) > 0)
 					$strErrorMessage .= $strExportErrorMessage;
@@ -1493,7 +1668,7 @@ if ($_GET["success_export"]=="Y")
 						{
 							if ($APPLICATION->GetFileAccessPermission($strSetupFileName) >= "R")
 							{
-								echo "<p>".GetMessage("CES_EXPORT_FILE")." <a href=\"".htmlspecialcharsbx($strSetupFileName)."\">".htmlspecialcharsex($strSetupFileName)."</a></p>";
+								echo "<p>".GetMessage("CES_EXPORT_FILE")." <a href=\"".htmlspecialcharsbx($strSetupFileName)."\">".htmlspecialcharsbx($strSetupFileName)."</a></p>";
 							}
 						}
 					}
@@ -1540,7 +1715,7 @@ echo BeginNote();
 		if (is_array($arRetval) && !empty($arRetval))
 		{
 			echo GetMessage("CES_NOTES8");?><br>
-			<textarea name="crontasks" cols="70" rows="5" wrap="off" readonly>
+			<textarea name="crontasks" cols="70" rows="5" readonly>
 			<?
 			echo htmlspecialcharsbx(implode("\n", $arRetval))."\n";
 			?>
@@ -1548,10 +1723,10 @@ echo BeginNote();
 			<?
 		}
 		echo GetMessage("CES_NOTES10");?><br><br>
-		<?echo GetMessage("CES_NOTES11");?><br>
-		<?echo $_SERVER["DOCUMENT_ROOT"];?>/bitrix/php_interface/include/catalog_export/cron_frame.php<br>
-		<?echo GetMessage("CES_NOTES12");?>
-	<?endif;
+		<?=GetMessage("CES_NOTES11_EXT", array('#FILE#' => '/bitrix/php_interface/include/catalog_export/cron_frame.php'));?><br>
+		<?=GetMessage("CES_NOTES12_EXT");?><br>
+		<?=GetMessage('CES_NOTES13_EXT', array('#FOLDER#' => '/bitrix/modules/catalog/load/'));
+	endif;
 
 echo EndNote();
 

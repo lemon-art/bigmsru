@@ -22,4 +22,7 @@ $MESS["CP_BND_CACHE_GROUPS"] = "Враховувати права доступу
 $MESS["CP_BND_SET_META_KEYWORDS"] = "Встановлювати ключові слова сторінки";
 $MESS["CP_BND_SET_META_DESCRIPTION"] = "Встановлювати опис сторінки";
 $MESS["CP_BND_SET_BROWSER_TITLE"] = "Встановлювати заголовок вікна браузера";
+$MESS["CP_BND_SET_CANONICAL_URL"] = "Встановлювати канонічний URL";
+$MESS["CP_BND_SET_LAST_MODIFIED"] = "Встановлювати у заголовках відповіді час модифікації сторінки";
+$MESS["CP_BND_STRICT_SECTION_CHECK"] = "Сувора перевірка розділу для показу елемента";
 ?>

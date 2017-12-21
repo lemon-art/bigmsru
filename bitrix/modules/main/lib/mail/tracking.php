@@ -9,7 +9,9 @@
 namespace Bitrix\Main\Mail;
 
 use Bitrix\Main\Config as Config;
+use Bitrix\Main\Application;
 use Bitrix\Main\EventResult;
+use Bitrix\Main\Security\Sign\BadSignatureException;
 use Bitrix\Main\Security\Sign\Signer;
 
 class Tracking
@@ -76,15 +78,19 @@ class Tracking
 	}
 
 	/**
-	 * @param $moduleId
-	 * @param $arFields
+	 * Get click link.
+	 *
+	 * @param string $moduleId Module ID.
+	 * @param array $fields Fields.
 	 * @return string
 	 */
-	public static function getLinkClick($moduleId, $arFields)
+	public static function getLinkClick($moduleId, $fields)
 	{
-		$tag = static::getTag($moduleId, $arFields);
-		$bitrixDirectory = \Bitrix\Main\Application::getInstance()->getPersonalRoot();
-		return $bitrixDirectory.'/tools/track_mail_click.php?tag='.urlencode($tag);
+		$uri = Application::getInstance()->getPersonalRoot();
+		$uri .= '/tools/track_mail_click.php';
+		$uri .= '?tag=' . urlencode(static::getTag($moduleId, $fields));
+
+		return $uri;
 	}
 
 	/**
@@ -106,6 +112,55 @@ class Tracking
 		}
 
 		return $resutl;
+	}
+
+	/**
+	 * Get sign.
+	 *
+	 * @param string $value Value.
+	 * @return string
+	 */
+	public static function getSign($value)
+	{
+		static $cached = array();
+		foreach ($cached as $cache)
+		{
+			if ($cache[0] == $value)
+			{
+				return $cache[1];
+			}
+		}
+
+		$signer = new Signer;
+		$sign = $signer->getSignature($value, static::SIGN_SALT_ACTION);
+
+		$cached[] = array($value, $sign);
+		if (count($cached) > 10)
+		{
+			array_shift($cached);
+		}
+
+		return $sign;
+	}
+
+	/**
+	 * Verify sign.
+	 *
+	 * @param string $value Value.
+	 * @param string $signature Signature.
+	 * @return bool
+	 */
+	public static function validateSign($value, $signature)
+	{
+		try
+		{
+			$signer = new Signer;
+			return $signer->validate($value, $signature, static::SIGN_SALT_ACTION);
+		}
+		catch (BadSignatureException $exception)
+		{
+			return false;
+		}
 	}
 
 	/**

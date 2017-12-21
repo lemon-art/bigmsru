@@ -11,7 +11,7 @@ if (!CSalePdf::isPdfAvailable())
 
 if ($_REQUEST['BLANK'] == 'Y')
 	$blank = true;
-
+/** @var CSaleTfpdf $pdf */
 $pdf = new CSalePdf('P', 'pt', 'A4');
 
 if ($params['BILLUA_BACKGROUND'])
@@ -48,376 +48,430 @@ $pdf->AddPage();
 
 
 $pdf->SetFont($fontFamily, 'B', $fontSize);
-
-$pdf->Write(15, CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_TITLE', array('#PAYMENT_NUMBER#' => htmlspecialcharsbx($params["ACCOUNT_NUMBER"]), '#PAYMENT_DATE#' => $params["DATE_INSERT"]))));
-$pdf->Ln();
-$pdf->Ln();
-
-$pdf->SetFont($fontFamily, '', $fontSize);
-
-$title = CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_SELLER').': ');
-$title_width = $pdf->GetStringWidth($title);
-$pdf->Write(15, $title);
-
-$pdf->Write(15, CSalePdf::prepareToPdf($params["SELLER_COMPANY_NAME"]));
-$pdf->Ln();
-
-$pdf->Cell($title_width, 15, '');
-$pdf->MultiCell(0, 15, CSalePdf::prepareToPdf(sprintf(
-		Loc::getMessage('SALE_HPS_BILLUA_SELLER_COMPANY_RS').' %s, '.Loc::getMessage('SALE_HPS_BILLUA_SELLER_COMPANY_BANK').' %s, '.Loc::getMessage('SALE_HPS_BILLUA_SELLER_COMPANY_MFO').' %s',
-	$params["SELLER_COMPANY_BANK_ACCOUNT"],
-	$params["SELLER_COMPANY_BANK_NAME"],
-	$params["SELLER_COMPANY_MFO"]
-)));
-
-$sellerAddr = '';
-if ($params["SELLER_COMPANY_ADDRESS"])
+if($params['BILLUA_HEADER'])
 {
-	$sellerAddr = $params["SELLER_COMPANY_ADDRESS"];
-	if (is_array($sellerAddr))
-		$sellerAddr = implode(', ', $sellerAddr);
-	else
-		$sellerAddr = str_replace(array("\r\n", "\n", "\r"), ', ', strval($sellerAddr));
-}
-
-$pdf->Cell($title_width, 15, '');
-$pdf->MultiCell(0, 15, CSalePdf::prepareToPdf(sprintf(
-	Loc::getMessage('SALE_HPS_BILLUA_SELLER_COMPANY_ADDRESS').': %s, '.Loc::getMessage('SALE_HPS_BILLUA_SELLER_COMPANY_PHONE').': %s',
-	$sellerAddr,
-	$params["SELLER_COMPANY_PHONE"]
-)));
-
-$pdf->Cell($title_width, 15, '');
-$pdf->MultiCell(0, 15, CSalePdf::prepareToPdf(sprintf(
-	Loc::getMessage('SALE_HPS_BILLUA_SELLER_COMPANY_EDRPOY').': %s, '.Loc::getMessage('SALE_HPS_BILLUA_SELLER_COMPANY_IPN').': %s, '.Loc::getMessage('SALE_HPS_BILLUA_SELLER_COMPANY_PDV').': %s',
-	$params["SELLER_COMPANY_EDRPOY"],
-	$params["SELLER_COMPANY_IPN"],
-	$params["SELLER_COMPANY_PDV"]
-)));
-
-if ($params["SELLER_COMPANY_SYS"])
-{
-	$pdf->Cell($title_width, 15, '');
-	$pdf->Write(15, CSalePdf::prepareToPdf($params["SELLER_COMPANY_SYS"]));
+	$pdf->Write(15, CSalePdf::prepareToPdf($params['BILLUA_HEADER']).CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_TITLE', array('#PAYMENT_NUMBER#' => htmlspecialcharsbx($params["ACCOUNT_NUMBER"]), '#PAYMENT_DATE#' => $params["DATE_INSERT"]))));
+	$pdf->Ln();
 	$pdf->Ln();
 }
-$pdf->Ln();
-
-$pdf->Cell($title_width, 15, CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_BUYER').': '));
-
-$pdf->Write(15, CSalePdf::prepareToPdf($params["BUYER_PERSON_COMPANY_NAME"]));
-$pdf->Ln();
-
-$buyerPhone = $params["BUYER_PERSON_COMPANY_PHONE"];
-$buyerFax = $params["BUYER_PERSON_COMPANY_FAX"];
-if ($buyerPhone || $buyerFax)
+if ($params['BILLUA_SELLER_SHOW'] == 'Y')
 {
-	$pdf->Cell($title_width, 15, '');
+	$pdf->SetFont($fontFamily, '', $fontSize);
 
-	if ($buyerPhone)
+	$title = CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_SELLER').': ');
+	$title_width = $pdf->GetStringWidth($title);
+	$pdf->Write(15, $title);
+
+	$pdf->Write(15, CSalePdf::prepareToPdf($params["SELLER_COMPANY_NAME"]));
+	$pdf->Ln();
+
+	$pdf->Cell($title_width, 15, '');
+	$pdf->MultiCell(0, 15, CSalePdf::prepareToPdf(sprintf(
+			Loc::getMessage('SALE_HPS_BILLUA_SELLER_COMPANY_RS').' %s, '.Loc::getMessage('SALE_HPS_BILLUA_SELLER_COMPANY_BANK').' %s, '.Loc::getMessage('SALE_HPS_BILLUA_SELLER_COMPANY_MFO').' %s',
+		$params["SELLER_COMPANY_BANK_ACCOUNT"],
+		$params["SELLER_COMPANY_BANK_NAME"],
+		$params["SELLER_COMPANY_MFO"]
+	)));
+
+	$sellerAddr = '';
+	if ($params["SELLER_COMPANY_ADDRESS"])
 	{
-		$pdf->Write(15, CSalePdf::prepareToPdf(sprintf(Loc::getMessage('SALE_HPS_BILLUA_BUYER_PHONE').': %s', $buyerPhone)));
-		if ($buyerFax)
-			$pdf->Write(15, CSalePdf::prepareToPdf(', '));
+		$sellerAddr = $params["SELLER_COMPANY_ADDRESS"];
+		if (is_array($sellerAddr))
+			$sellerAddr = implode(', ', $sellerAddr);
+		else
+			$sellerAddr = str_replace(array("\r\n", "\n", "\r"), ', ', strval($sellerAddr));
 	}
 
-	if ($buyerFax)
-		$pdf->Write(15, CSalePdf::prepareToPdf(sprintf(Loc::getMessage('SALE_HPS_BILLUA_BUYER_FAX').': %s', $buyerFax)));
-
-	$pdf->Ln();
-}
-
-if ($params["BUYER_PERSON_COMPANY_ADDRESS"])
-{
-	$buyerAddr = $params["BUYER_PERSON_COMPANY_ADDRESS"];
-	if (is_array($buyerAddr))
-		$buyerAddr = implode(', ', $buyerAddr);
-	else
-		$buyerAddr = str_replace(array("\r\n", "\n", "\r"), ', ', strval($buyerAddr));
 	$pdf->Cell($title_width, 15, '');
-	$pdf->Write(15, CSalePdf::prepareToPdf(sprintf(
-		Loc::getMessage('SALE_HPS_BILLUA_BUYER_ADDRESS').': %s',
-		$buyerAddr
+	$pdf->MultiCell(0, 15, CSalePdf::prepareToPdf(sprintf(
+		Loc::getMessage('SALE_HPS_BILLUA_SELLER_COMPANY_ADDRESS').': %s, '.Loc::getMessage('SALE_HPS_BILLUA_SELLER_COMPANY_PHONE').': %s',
+		$sellerAddr,
+		$params["SELLER_COMPANY_PHONE"]
 	)));
+
+	$pdf->Cell($title_width, 15, '');
+
+	$requisiteList = array();
+	foreach (array('EDRPOY', 'IPN', 'PDV') as $value)
+	{
+		if ($params["SELLER_COMPANY_".$value])
+			$requisiteList[] = Loc::getMessage('SALE_HPS_BILLUA_SELLER_COMPANY_'.$value).': '.$params["SELLER_COMPANY_".$value];
+	}
+	$text = join(', ', $requisiteList);
+
+	$pdf->MultiCell(0, 15, CSalePdf::prepareToPdf($text));
+
+	if ($params["SELLER_COMPANY_SYS"])
+	{
+		$pdf->Cell($title_width, 15, '');
+		$pdf->Write(15, CSalePdf::prepareToPdf($params["SELLER_COMPANY_SYS"]));
+		$pdf->Ln();
+	}
 	$pdf->Ln();
 }
 
-$pdf->Ln();
-
-if ($params["BUYER_PERSON_COMPANY_DOGOVOR"])
+if ($params['BILLUA_PAYER_SHOW'] === 'Y')
 {
-	$pdf->Write(15, CSalePdf::prepareToPdf(sprintf(
-		Loc::getMessage('SALE_HPS_BILLUA_BUYER_DOGOVOR').': %s',
-			$params["BUYER_PERSON_COMPANY_DOGOVOR"]
-	)));
+	$pdf->Cell($title_width, 15, CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_BUYER').': '));
+
+	$pdf->Write(15, CSalePdf::prepareToPdf($params["BUYER_PERSON_COMPANY_NAME"]));
+	$pdf->Ln();
+
+	$buyerPhone = $params["BUYER_PERSON_COMPANY_PHONE"];
+	$buyerFax = $params["BUYER_PERSON_COMPANY_FAX"];
+	if ($buyerPhone || $buyerFax)
+	{
+		$pdf->Cell($title_width, 15, '');
+
+		if ($buyerPhone)
+		{
+			$pdf->Write(15, CSalePdf::prepareToPdf(sprintf(Loc::getMessage('SALE_HPS_BILLUA_BUYER_PHONE').': %s', $buyerPhone)));
+			if ($buyerFax)
+				$pdf->Write(15, CSalePdf::prepareToPdf(', '));
+		}
+
+		if ($buyerFax)
+			$pdf->Write(15, CSalePdf::prepareToPdf(sprintf(Loc::getMessage('SALE_HPS_BILLUA_BUYER_FAX').': %s', $buyerFax)));
+
+		$pdf->Ln();
+	}
+
+	if ($params["BUYER_PERSON_COMPANY_ADDRESS"])
+	{
+		$buyerAddr = $params["BUYER_PERSON_COMPANY_ADDRESS"];
+		if (is_array($buyerAddr))
+			$buyerAddr = implode(', ', $buyerAddr);
+		else
+			$buyerAddr = str_replace(array("\r\n", "\n", "\r"), ', ', strval($buyerAddr));
+		$pdf->Cell($title_width, 15, '');
+		$pdf->Write(15, CSalePdf::prepareToPdf(sprintf(
+			Loc::getMessage('SALE_HPS_BILLUA_BUYER_ADDRESS').': %s',
+			$buyerAddr
+		)));
+		$pdf->Ln();
+	}
 
 	$pdf->Ln();
+
+	if ($params["BUYER_PERSON_COMPANY_DOGOVOR"])
+	{
+		$pdf->Write(15, CSalePdf::prepareToPdf(sprintf(
+			Loc::getMessage('SALE_HPS_BILLUA_BUYER_DOGOVOR').': %s',
+				$params["BUYER_PERSON_COMPANY_DOGOVOR"]
+		)));
+
+		$pdf->Ln();
+	}
+}
+$arCurFormat = CCurrencyLang::GetCurrencyFormat($params['CURRENCY']);
+$currency = trim(str_replace('#', '', $arCurFormat['FORMAT_STRING']));
+
+$arCells = array();
+$columnList = array('NUMBER', 'NAME', 'QUANTITY', 'MEASURE', 'PRICE', 'VAT_RATE', 'SUM');
+$arCols = array();
+$vatRateColumn = 0;
+foreach ($columnList as $column)
+{
+	if ($params['BILLUA_COLUMN_'.$column.'_SHOW'] == 'Y')
+	{
+		$caption = $params['BILLUA_COLUMN_'.$column.'_TITLE'];
+		if (in_array($column, array('PRICE', 'SUM')))
+			$caption .= ', '.$currency;
+
+		$arCols[$column] = array(
+			'NAME' => CSalePdf::prepareToPdf($caption),
+			'SORT' => $params['BILLUA_COLUMN_'.$column.'_SORT']
+		);
+	}
+}
+if ($params['USER_COLUMNS'])
+{
+	$columnList = array_merge($columnList, array_keys($params['USER_COLUMNS']));
+	foreach ($params['USER_COLUMNS'] as $id => $val)
+	{
+		$arCols[$id] = array(
+			'NAME' => CSalePdf::prepareToPdf($val['NAME']),
+			'SORT' => $val['SORT']
+		);
+	}
 }
 
-$basketItems = array();
+uasort($arCols, function ($a, $b) {return ($a['SORT'] < $b['SORT']) ? -1 : 1;});
 
-/** @var \Bitrix\Sale\PaymentCollection $paymentCollection */
-$paymentCollection = $payment->getCollection();
+$arColumnKeys = array_keys($arCols);
+$columnCount = count($arColumnKeys);
 
-/** @var \Bitrix\Sale\Order $order */
-$order = $paymentCollection->getOrder();
-
-/** @var \Bitrix\Sale\Basket $basket */
-$basket = $order->getBasket();
-
-if (count($basket->getBasketItems()) > 0)
+if ($params['BASKET_ITEMS'])
 {
 	$arCells = array();
 	$arProps = array();
-	$arRowsWidth = array(1 => 0, 0, 0, 0, 0, 0, 0);
 
+	$isVatInPrice = false;
 	$n = 0;
 	$sum = 0.00;
 	$vat = 0;
 
-	/** @var \Bitrix\Sale\BasketItem $basketItem */
-	foreach ($basket->getBasketItems() as $basketItem)
+	foreach ($params['BASKET_ITEMS'] as $basketItem)
 	{
-		$productName = $basketItem->getField("NAME");
+		$productName = $basketItem["NAME"];
 		if ($productName == "OrderDelivery")
 			$productName = Loc::getMessage('SALE_HPS_BILLUA_DELIVERY');
 		else if ($productName == "OrderDiscount")
 			$productName = Loc::getMessage('SALE_HPS_BILLUA_DISCOUNT');
 
-		if ($basketItem->isVatInPrice())
-			$basketItemPrice = $basketItem->getPrice();
-		else
-			$basketItemPrice = $basketItem->getPrice()*(1 + $basketItem->getVatRate());
+		$isVatInPrice = $basketItem['IS_VAT_IN_PRICE'];
 
-		$arCells[++$n] = array(
-			1 => CSalePdf::prepareToPdf($n),
-			CSalePdf::prepareToPdf($productName),
-			CSalePdf::prepareToPdf(roundEx($basketItem->getQuantity(), SALE_VALUE_PRECISION)),
-			CSalePdf::prepareToPdf($basketItem->getField("MEASURE_NAME") ? $basketItem->getField("MEASURE_NAME") : Loc::getMessage('SALE_HPS_BILLUA_MEASHURE')),
-			CSalePdf::prepareToPdf(SaleFormatCurrency($basketItem->getPrice(), $basketItem->getCurrency(), true)),
-			CSalePdf::prepareToPdf(roundEx($basketItem->getVatRate()*100, SALE_VALUE_PRECISION)."%"),
-			CSalePdf::prepareToPdf(SaleFormatCurrency(
-				$basketItemPrice * $basketItem->getQuantity(),
-				$basketItem->getCurrency(),
-				true
-			))
-		);
+		if ($basketItem['IS_VAT_IN_PRICE'])
+			$basketItemPrice = $basketItem['PRICE'];
+		else
+			$basketItemPrice = $basketItem['PRICE']*(1 + $basketItem['VAT_RATE']);
+
+		$arCells[++$n] = array();
+		foreach ($arCols as $columnId => $col)
+		{
+			$data = null;
+
+			switch ($columnId)
+			{
+				case 'NUMBER':
+					$data = CSalePdf::prepareToPdf($n);
+					$arCols[$columnId]['IS_DIGIT'] = true;
+					break;
+				case 'NAME':
+					$data = CSalePdf::prepareToPdf($productName);
+					break;
+				case 'QUANTITY':
+					$data = CSalePdf::prepareToPdf(roundEx($basketItem['QUANTITY'], SALE_VALUE_PRECISION));
+					$arCols[$columnId]['IS_DIGIT'] = true;
+					break;
+				case 'MEASURE':
+					$data = CSalePdf::prepareToPdf($basketItem["MEASURE_NAME"] ? $basketItem["MEASURE_NAME"] : Loc::getMessage('SALE_HPS_BILLUA_MEASHURE'));
+					$arCols[$columnId]['IS_DIGIT'] = true;
+					break;
+				case 'PRICE':
+					$data = CSalePdf::prepareToPdf(SaleFormatCurrency($basketItem['PRICE'], $basketItem['CURRENCY'], true));
+					$arCols[$columnId]['IS_DIGIT'] = true;
+					break;
+				case 'VAT_RATE':
+					$data = CSalePdf::prepareToPdf(roundEx($basketItem['VAT_RATE']*100, SALE_VALUE_PRECISION)."%");
+					$arCols[$columnId]['IS_DIGIT'] = true;
+					break;
+				case 'SUM':
+					$data = CSalePdf::prepareToPdf(SaleFormatCurrency($basketItemPrice * $basketItem['QUANTITY'], $basketItem['CURRENCY'], true));
+					$arCols[$columnId]['IS_DIGIT'] = true;
+					break;
+				default:
+					if (preg_match('/[^0-9 ,\.]/', $basketItem[$columnId]) === 0)
+					{
+						if (!array_key_exists('IS_DIGIT', $arCols[$columnId]))
+							$arCols[$columnId]['IS_DIGIT'] = true;
+					}
+					else
+					{
+						$arCols[$columnId]['IS_DIGIT'] = false;
+					}
+					$data = ($basketItem[$columnId]) ? CSalePdf::prepareToPdf($basketItem[$columnId]) : '';
+			}
+			if ($data !== null)
+				$arCells[$n][$columnId] = $data;
+		}
 
 		$arProps[$n] = array();
 
-		/** @var \Bitrix\Sale\BasketPropertyItem $basketPropertyItem */
-		foreach ($basketItem->getPropertyCollection() as $basketPropertyItem)
+		foreach ($basketItem['PROPS'] as $basketPropertyItem)
 		{
-			if ($basketPropertyItem->getField('CODE') == 'CATALOG.XML_ID' || $basketPropertyItem->getField('CODE') == 'PRODUCT.XML_ID')
+			if ($basketPropertyItem['CODE'] == 'CATALOG.XML_ID' || $basketPropertyItem['CODE'] == 'PRODUCT.XML_ID')
 				continue;
-			$arProps[$n][] = CSalePdf::prepareToPdf(sprintf("%s: %s", $basketPropertyItem->getField("NAME"), $basketPropertyItem->getField("VALUE")));
+			$arProps[$n][] = CSalePdf::prepareToPdf(sprintf("%s: %s", $basketPropertyItem["NAME"], $basketPropertyItem["VALUE"]));
 		}
 
-		for ($i = 1; $i <= 7; $i++)
-			$arRowsWidth[$i] = max($arRowsWidth[$i], $pdf->GetStringWidth($arCells[$n][$i]));
-
-		$sum += doubleval($basketItem->getPrice() * $basketItem->getQuantity());
-		$vat = max($vat, $basketItem->getVatRate());
+		$sum += doubleval($basketItem['PRICE'] * $basketItem['QUANTITY']);
+		$vat = max($vat, $basketItem['VAT_RATE']);
 	}
 
-	/** @var \Bitrix\Sale\ShipmentCollection $shipmentCollection */
-	$shipmentCollection = $order->getShipmentCollection();
-
-	$shipment = null;
-
-	/** @var \Bitrix\Sale\Shipment $shipmentItem */
-	foreach ($shipmentCollection as $shipmentItem)
+	if ($vat <= 0)
 	{
-		if (!$shipmentItem->isSystem())
-		{
-			$shipment = $shipmentItem;
-			break;
-		}
+		unset($arCols['VAT_RATE']);
+		$columnCount = count($arCols);
+		$arColumnKeys = array_keys($arCols);
+		foreach ($arCells as $i => $cell)
+			unset($arCells[$i]['VAT_RATE']);
 	}
 
-	if ($shipment && (float)$shipment->getPrice() > 0)
+	if ($vat > 0 && array_key_exists('PRICE', $arCols) && $isVatInPrice)
+		$arCols['PRICE']['NAME'] = CSalePdf::prepareToPdf($params['BILLUA_COLUMN_PRICE_TAX_TITLE'].', '.$currency);
+
+	if ($vat > 0 && array_key_exists('SUM', $arCols))
+		$arCols['SUM']['NAME'] = CSalePdf::prepareToPdf($params['BILLUA_COLUMN_SUM_TAX_TITLE'].', '.$currency);
+
+	if ($params['DELIVERY_PRICE'] > 0)
 	{
 		$sDeliveryItem = Loc::getMessage('SALE_HPS_BILLUA_DELIVERY');
-		if ($shipment->getDeliveryName())
-			$sDeliveryItem .= sprintf(" (%s)", $shipment->getDeliveryName());
-		$arCells[++$n] = array(
-			1 => CSalePdf::prepareToPdf($n),
-			CSalePdf::prepareToPdf($sDeliveryItem),
-			CSalePdf::prepareToPdf(1),
-			CSalePdf::prepareToPdf(''),
-			CSalePdf::prepareToPdf(SaleFormatCurrency(
-				$shipment->getPrice(),
-				$shipment->getCurrency(),
-				true
-			)),
-			CSalePdf::prepareToPdf(roundEx($vat*100, SALE_VALUE_PRECISION)."%"),
-			CSalePdf::prepareToPdf(SaleFormatCurrency(
-				$shipment->getPrice(),
-				$shipment->getCurrency(),
-				true
-			))
-		);
+		if ($params['DELVIERY_NAME'])
+			$sDeliveryItem .= sprintf(" (%s)", $params['DELVIERY_NAME']);
 
-		for ($i = 1; $i <= 7; $i++)
-			$arRowsWidth[$i] = max($arRowsWidth[$i], $pdf->GetStringWidth($arCells[$n][$i]));
+		$arCells[++$n] = array();
+		foreach ($arCols as $columnId => $col)
+		{
+			$data = null;
 
-		$sum += doubleval($shipment->getPrice());
+			switch ($columnId)
+			{
+				case 'NUMBER':
+					$data = CSalePdf::prepareToPdf($n);
+					break;
+				case 'NAME':
+					$data = CSalePdf::prepareToPdf($sDeliveryItem);
+					break;
+				case 'QUANTITY':
+					$data = CSalePdf::prepareToPdf(1);
+					break;
+				case 'MEASURE':
+					$data = CSalePdf::prepareToPdf('');
+					break;
+				case 'PRICE':
+					$data = CSalePdf::prepareToPdf(SaleFormatCurrency($params['DELIVERY_PRICE'], $params['CURRENCY'], true));
+					break;
+				case 'VAT_RATE':
+					$data = CSalePdf::prepareToPdf(roundEx($vat*100, SALE_VALUE_PRECISION)."%");
+					break;
+				case 'SUM':
+					$data = CSalePdf::prepareToPdf(SaleFormatCurrency($params['DELIVERY_PRICE'], $params['CURRENCY'], true));
+					break;
+				default:
+					$data = '';
+			}
+			if ($data !== null)
+				$arCells[$n][$columnId] = $data;
+		}
+
+		$sum += doubleval($params['DELIVERY_PRICE']);
 	}
 
 	$items = $n;
 	$orderTax = 0;
-	$taxes = $order->getTax();
-
-	$taxesList = $taxes->getTaxList();
-	if ($taxesList)
+	if ($params['BILLUA_TOTAL_SHOW'] === 'Y')
 	{
-		foreach ($taxesList as $tax)
+		if ($params['TAXES'])
 		{
-			$arCells[++$n] = array(
-				1 => null,
-				null,
-				null,
-				null,
-				null,
-				CSalePdf::prepareToPdf(sprintf(
+			foreach ($params['TAXES'] as $tax)
+			{
+				$arCells[++$n] = array();
+				for ($i = 0; $i < $columnCount; $i++)
+					$arCells[$n][$arColumnKeys[$i]] = null;
+
+				$arCells[$n][$arColumnKeys[$columnCount-2]] = CSalePdf::prepareToPdf(sprintf(
 					"%s%s%s:",
 					($tax["IS_IN_PRICE"] == "Y") ? Loc::getMessage('SALE_HPS_BILLUA_IN_PRICE') : "",
 					($vat <= 0) ? $tax["TAX_NAME"] : Loc::getMessage('SALE_HPS_BILLUA_TAX'),
 					($vat <= 0 && $tax["IS_PERCENT"] == "Y")
 						? sprintf(' (%s%%)', roundEx($tax["VALUE"],SALE_VALUE_PRECISION))
 						: ""
-				)),
-				CSalePdf::prepareToPdf(SaleFormatCurrency(
+				));
+				$arCells[$n][$arColumnKeys[$columnCount-1]] = CSalePdf::prepareToPdf(SaleFormatCurrency(
 					$tax["VALUE_MONEY"],
-					$order->getCurrency(),
+					$params['CURRENCY'],
 					true
-				))
-			);
+				));
 
-			$orderTax += $tax["VALUE_MONEY"];
-
-			$arRowsWidth[7] = max($arRowsWidth[7], $pdf->GetStringWidth($arCells[$n][7]));
+				$orderTax += $tax["VALUE_MONEY"];
+			}
 		}
+
+		if ($params['SUM_PAID'])
+		{
+			$arCells[++$n] = array();
+			for ($i = 0; $i < $columnCount; $i++)
+				$arCells[$n][$arColumnKeys[$i]] = null;
+
+			$arCells[$n][$arColumnKeys[$columnCount-2]] = CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_PAYMENT_PAID').":");
+			$arCells[$n][$arColumnKeys[$columnCount-1]] = CSalePdf::prepareToPdf(SaleFormatCurrency($params['DELIVERY_PRICE'], $params['CURRENCY'], true));
+		}
+
+		if ($params['DISCOUNT_PRICE'])
+		{
+			$arCells[++$n] = array();
+			for ($i = 0; $i < $columnCount; $i++)
+				$arCells[$n][$arColumnKeys[$i]] = null;
+
+			$arCells[$n][$arColumnKeys[$columnCount-2]] = CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_DISCOUNT').":");
+			$arCells[$n][$arColumnKeys[$columnCount-1]] = CSalePdf::prepareToPdf(SaleFormatCurrency($params['DISCOUNT_PRICE'], $params['CURRENCY'], true));
+		}
+
+		$arCells[++$n] = array();
+		for ($i = 0; $i < $columnCount; $i++)
+			$arCells[$n][$arColumnKeys[$i]] = null;
+
+		$arCells[$n][$arColumnKeys[$columnCount-2]] = CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_SUM').':');
+		$arCells[$n][$arColumnKeys[$columnCount-1]] = CSalePdf::prepareToPdf(SaleFormatCurrency($params['SUM'], $params['CURRENCY'], true));
 	}
 
-	$sumPaid = $paymentCollection->getPaidSum();
-	if (DoubleVal($sumPaid) > 0)
-	{
-		$arCells[++$n] = array(
-			1 => null,
-			null,
-			null,
-			null,
-			null,
-			CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_PAYMENT_PAID').":"),
-			CSalePdf::prepareToPdf(SaleFormatCurrency(
-				$sumPaid,
-				$order->getCurrency(),
-				true
-			))
-		);
-
-		$arRowsWidth[7] = max($arRowsWidth[7], $pdf->GetStringWidth($arCells[$n][7]));
-	}
-
-	if (DoubleVal($order->getDiscountPrice()) > 0)
-	{
-		$arCells[++$n] = array(
-			1 => null,
-			null,
-			null,
-			null,
-			null,
-			CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_DISCOUNT').":"),
-			CSalePdf::prepareToPdf(SaleFormatCurrency(
-				$order->getDiscountPrice(),
-				$order->getCurrency(),
-				true
-			))
-		);
-
-		$arRowsWidth[7] = max($arRowsWidth[7], $pdf->GetStringWidth($arCells[$n][7]));
-	}
-
-	$arCells[++$n] = array(
-		1 => null,
-		null,
-		null,
-		null,
-		null,
-		CSalePdf::prepareToPdf($vat <= 0 ? Loc::getMessage('SALE_HPS_BILLUA_SUM_WITHOUT_TAX').':' : Loc::getMessage('SALE_HPS_BILLUA_SUM').':'),
-		CSalePdf::prepareToPdf(SaleFormatCurrency(
-			$payment->getSum(),
-			$order->getCurrency(),
-			true
-		))
-	);
-
-	$arRowsWidth[7] = max($arRowsWidth[7], $pdf->GetStringWidth($arCells[$n][7]));
-
-	$showVat = false;
-
-	$arCurFormat = CCurrencyLang::GetCurrencyFormat($order->getCurrency());
-	$currency = trim(str_replace('#', '', $arCurFormat['FORMAT_STRING']));
-
-	$arColsCaption = array(
-		1 => CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_POS')),
-		CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_BASKET_ITEM')),
-		CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_BASKET_ITEM_QUANTITY')),
-		CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_BASKET_ITEM_MEASURE')),
-		CSalePdf::prepareToPdf(($vat <= 0 ? Loc::getMessage('SALE_HPS_BILLUA_BASKET_ITEM_PRICE').', ' : Loc::getMessage('SALE_HPS_BILLUA_BASKET_ITEM_PRICE_TAX').', ').$currency),
-		CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_BASKET_ITEM_TAX')),
-		CSalePdf::prepareToPdf(($vat <= 0 ? Loc::getMessage('SALE_HPS_BILLUA_BASKET_ITEM_SUM').', ' : Loc::getMessage('SALE_HPS_BILLUA_BASKET_ITEM_SUM_TAX').', ').$currency)
-	);
-	for ($i = 1; $i <= 7; $i++)
-		$arRowsWidth[$i] = max($arRowsWidth[$i], $pdf->GetStringWidth($arColsCaption[$i]));
-
-	for ($i = 1; $i <= 7; $i++)
-		$arRowsWidth[$i] += 10;
-	if (!$showVat)
-		$arRowsWidth[6] = 0;
-	$arRowsWidth[2] = $width - (array_sum($arRowsWidth)-$arRowsWidth[2]);
+	$rowsInfo = $pdf->calculateRowsWidth($arCols, $arCells, $items, $width);
+	$arRowsWidth = $rowsInfo['ROWS_WIDTH'];
+	$arRowsContentWidth = $rowsInfo['ROWS_CONTENT_WIDTH'];
 }
 $pdf->Ln();
 
 $x0 = $pdf->GetX();
 $y0 = $pdf->GetY();
 
-for ($i = 1; $i <= 7; $i++)
+$k = 0;
+do
 {
-	if ($showVat || $i != 6)
-		$pdf->Cell($arRowsWidth[$i], 20, $arColsCaption[$i], 0, 0, 'C');
-	${"x$i"} = $pdf->GetX();
-}
+	$newLine = false;
+	foreach ($arCols as $columnId => $column)
+	{
+		list($string, $arCols[$columnId]['NAME']) = $pdf->splitString($column['NAME'], $arRowsContentWidth[$columnId]);
+		if ($vat > 0 || $columnId !== 'VAT_RATE')
+			$pdf->Cell($arRowsWidth[$columnId], 20, $string, 0, 0, $k ? 'L' : 'C');
 
-$pdf->Ln();
+		if ($arCols[$columnId]['NAME'])
+		{
+			$k++;
+			$newLine = true;
+		}
+
+		$i = array_search($columnId, $arColumnKeys);
+		${"x".($i+1)} = $pdf->GetX();
+	}
+
+	$pdf->Ln();
+}
+while($newLine);
 
 $y5 = $pdf->GetY();
 
-$pdf->Line($x0, $y0, $x7, $y0);
-for ($i = 0; $i <= 7; $i++)
+$pdf->Line($x0, $y0, ${"x".$columnCount}, $y0);
+for ($i = 0; $i <= $columnCount; $i++)
 {
-	if ($showVat || $i != 6)
+	if ($vat > 0 || $arColumnKeys[$i] != 'VAT_RATE')
 		$pdf->Line(${"x$i"}, $y0, ${"x$i"}, $y5);
 }
-$pdf->Line($x0, $y5, $x7, $y5);
+$pdf->Line($x0, $y5, ${'x'.$columnCount}, $y5);
 
 $rowsCnt = count($arCells);
 for ($n = 1; $n <= $rowsCnt; $n++)
 {
 	$arRowsWidth_tmp = $arRowsWidth;
+	$arRowsContentWidth_tmp = $arRowsContentWidth;
 	$accumulated = 0;
-	for ($j = 1; $j <= 7; $j++)
+	$accumulatedContent = 0;
+	foreach ($arCols as $columnId => $column)
 	{
-		if (is_null($arCells[$n][$j]))
+		if (is_null($arCells[$n][$columnId]))
 		{
-			$accumulated += $arRowsWidth_tmp[$j];
-			$arRowsWidth_tmp[$j] = null;
+			$accumulated += $arRowsWidth_tmp[$columnId];
+			$arRowsWidth_tmp[$columnId] = null;
+			$accumulatedContent += $arRowsContentWidth_tmp[$columnId];
+			$arRowsContentWidth_tmp[$columnId] = null;
 		}
 		else
 		{
-			$arRowsWidth_tmp[$j] += $accumulated;
+			$arRowsWidth_tmp[$columnId] += $accumulated;
+			$arRowsContentWidth_tmp[$columnId] += $accumulatedContent;
 			$accumulated = 0;
+			$accumulatedContent = 0;
 		}
 	}
 
@@ -426,77 +480,83 @@ for ($n = 1; $n <= $rowsCnt; $n++)
 
 	$pdf->SetFont($fontFamily, '', $fontSize);
 
-	if (!is_null($arCells[$n][2]))
+	$l = 0;
+	do
 	{
-		$text = $arCells[$n][2];
-		$cellWidth = $arRowsWidth_tmp[2];
-	}
-	else
-	{
-		$text = $arCells[$n][6];
-		$cellWidth = $arRowsWidth_tmp[6];
-	}
-
-	for ($l = 0; $pdf->GetStringWidth($text) > 0; $l++)
-	{
-		list($string, $text) = $pdf->splitString($text, $cellWidth-5);
-
-		if (!is_null($arCells[$n][1]))
-			$pdf->Cell($arRowsWidth_tmp[1], 15, ($l == 0) ? $arCells[$n][1] : '', 0, 0, 'C');
-		if ($l == 0)
-			$x1 = $pdf->GetX();
-
-		if (!is_null($arCells[$n][2]))
-			$pdf->Cell($arRowsWidth_tmp[2], 15, $string);
-		if ($l == 0)
-			$x2 = $pdf->GetX();
-
-		if (!is_null($arCells[$n][3]))
-			$pdf->Cell($arRowsWidth_tmp[3], 15, ($l == 0) ? $arCells[$n][3] : '', 0, 0, 'R');
-		if ($l == 0)
-			$x3 = $pdf->GetX();
-
-		if (!is_null($arCells[$n][4]))
-			$pdf->Cell($arRowsWidth_tmp[4], 15, ($l == 0) ? $arCells[$n][4] : '', 0, 0, 'R');
-		if ($l == 0)
-			$x4 = $pdf->GetX();
-
-		if (!is_null($arCells[$n][5]))
-			$pdf->Cell($arRowsWidth_tmp[5], 15, ($l == 0) ? $arCells[$n][5] : '', 0, 0, 'R');
-		if ($l == 0)
-			$x5 = $pdf->GetX();
-
-		if (!is_null($arCells[$n][6]))
+		$newLine = false;
+		foreach ($arCols as $columnId => $column)
 		{
-			if (is_null($arCells[$n][2]))
-				$pdf->Cell($arRowsWidth_tmp[6], 15, $string, 0, 0, 'R');
-			else if ($showVat)
-				$pdf->Cell($arRowsWidth_tmp[6], 15, ($l == 0) ? $arCells[$n][6] : '', 0, 0, 'R');
-		}
-		if ($l == 0)
-			$x6 = $pdf->GetX();
+			$string = '';
+			if (!is_null($arCells[$n][$columnId]))
+				list($string, $arCells[$n][$columnId]) = $pdf->splitString($arCells[$n][$columnId], $arRowsContentWidth_tmp[$columnId]);
 
-		if (!is_null($arCells[$n][7]))
-			$pdf->Cell($arRowsWidth_tmp[7], 15, ($l == 0) ? $arCells[$n][7] : '', 0, 0, 'R');
-		if ($l == 0)
-			$x7 = $pdf->GetX();
+			$rowWidth = $arRowsWidth_tmp[$columnId];
+
+			if (in_array($columnId, array('QUANTITY', 'MEASURE', 'PRICE', 'SUM')))
+			{
+				if (!is_null($arCells[$n][$columnId]))
+				{
+					$pdf->Cell($rowWidth, 15, $string, 0, 0, 'R');
+				}
+			}
+			elseif ($columnId == 'NUMBER')
+			{
+				if (!is_null($arCells[$n][$columnId]))
+					$pdf->Cell($rowWidth, 15, ($l == 0) ? $string : '', 0, 0, 'C');
+			}
+			elseif ($columnId == 'NAME')
+			{
+				if (!is_null($arCells[$n][$columnId]))
+					$pdf->Cell($rowWidth, 15, $string, 0, 0,  ($n > $items) ? 'R' : '');
+			}
+			elseif ($columnId == 'VAT_RATE')
+			{
+				if (!is_null($arCells[$n][$columnId]))
+					$pdf->Cell($rowWidth, 15, $string, 0, 0, 'R');
+			}
+			else
+			{
+				if (!is_null($arCells[$n][$columnId]))
+				{
+					$pdf->Cell($rowWidth, 15, $string, 0, 0,   ($n > $items) ? 'R' : 'L');
+				}
+			}
+
+			if ($l == 0)
+			{
+				$pos = array_search($columnId, $arColumnKeys);
+				${'x'.($pos+1)} = $pdf->GetX();
+			}
+
+			if ($arCells[$n][$columnId])
+				$newLine = true;
+		}
 
 		$pdf->Ln();
+		$l++;
 	}
+	while($newLine);
 
-	if (isset($arProps[$n]) && is_array($arProps[$n]))
+	if ($params['BILLUA_COLUMN_NAME_SHOW'] == 'Y')
 	{
-		$pdf->SetFont($fontFamily, '', $fontSize-2);
-		foreach ($arProps[$n] as $property)
+		if (isset($arProps[$n]) && is_array($arProps[$n]))
 		{
-			$pdf->Cell($arRowsWidth_tmp[1], 12, '');
-			$pdf->Cell($arRowsWidth_tmp[2], 12, $property);
-			$pdf->Cell($arRowsWidth_tmp[3], 12, '');
-			$pdf->Cell($arRowsWidth_tmp[4], 12, '');
-			$pdf->Cell($arRowsWidth_tmp[5], 12, '');
-			if ($showVat)
-				$pdf->Cell($arRowsWidth_tmp[6], 12, '');
-			$pdf->Cell($arRowsWidth_tmp[7], 12, '', 0, 1);
+			$pdf->SetFont($fontFamily, '', $fontSize-2);
+			foreach ($arProps[$n] as $property)
+			{
+				$i = 0;
+				$line = 0;
+				foreach ($arCols as $columnId => $col)
+				{
+					$i++;
+					if ($i == $columnCount)
+						$line = 1;
+					if ($columnId == 'NAME')
+						$pdf->Cell($arRowsWidth_tmp[$columnId], 12, $property, 0, $line);
+					else
+						$pdf->Cell($arRowsWidth_tmp[$columnId], 12, '', 0, $line);
+				}
+			}
 		}
 	}
 
@@ -504,50 +564,51 @@ for ($n = 1; $n <= $rowsCnt; $n++)
 
 	if ($y0 > $y5)
 		$y0 = $margin['top'];
-	for ($i = (is_null($arCells[$n][1])) ? 6 : 0; $i <= 7; $i++)
+	for ($i = ($n > $items) ? $columnCount - 1 : 0; $i <= $columnCount; $i++)
 	{
-		if ($showVat || $i != 5)
+		if ($vat > 0 || $arColumnKeys[$i] != 'VAT_RATE')
 			$pdf->Line(${"x$i"}, $y0, ${"x$i"}, $y5);
 	}
 
-	$pdf->Line((!is_null($arCells[$n][1])) ? $x0 : $x6, $y5, $x7, $y5);
+	$pdf->Line(($n <= $items) ? $x0 : ${'x'.($columnCount-1)}, $y5, ${'x'.$columnCount}, $y5);
 }
 $pdf->Ln();
-
-$pdf->SetFont($fontFamily, 'B', $fontSize);
-$pdf->Write(15, CSalePdf::prepareToPdf(sprintf(
-	Loc::getMessage('SALE_HPS_BILLUA_BASKET_ITEMS_TOTAL'),
-	$items,
-	($payment->getField('CURRENCY') == "UAH")
-		? Number2Word_Rus(
-			$payment->getSum(),
-			"Y",
-			$payment->getField('CURRENCY')
-		)
-		: SaleFormatCurrency(
-			$payment->getSum(),
-			$payment->getField('CURRENCY'),
-			false
-		)
-)));
-$pdf->Ln();
-
-if ($vat > 0)
+if ($params['BILLUA_TOTAL_SHOW'] === 'Y')
 {
+	$pdf->SetFont($fontFamily, 'B', $fontSize);
 	$pdf->Write(15, CSalePdf::prepareToPdf(sprintf(
-			Loc::getMessage('SALE_HPS_BILLUA_BASKET_ITEMS_TAX'),
-		($payment->getField('CURRENCY') == "UAH")
-			? Number2Word_Rus($orderTax, "Y", $payment->getField('CURRENCY'))
-			: SaleFormatCurrency($orderTax, $payment->getField('CURRENCY'), false)
+		Loc::getMessage('SALE_HPS_BILLUA_BASKET_ITEMS_TOTAL'),
+		$items,
+		($params['CURRENCY'] == "UAH")
+			? Number2Word_Rus(
+				$params['SUM'],
+				"Y",
+				$params['CURRENCY']
+			)
+			: SaleFormatCurrency(
+				$params['SUM'],
+				$params['CURRENCY'],
+				false
+			)
 	)));
-}
-else
-{
-	$pdf->Write(15, CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_BASKET_ITEMS_WITHOUT_TAX')));
-}
-$pdf->Ln();
-$pdf->Ln();
+	$pdf->Ln();
 
+	if ($vat > 0)
+	{
+		$pdf->Write(15, CSalePdf::prepareToPdf(sprintf(
+				Loc::getMessage('SALE_HPS_BILLUA_BASKET_ITEMS_TAX'),
+			($params['CURRENCY'] == "UAH")
+				? Number2Word_Rus($orderTax, "Y", $params['CURRENCY'])
+				: SaleFormatCurrency($orderTax, $params['CURRENCY'], false)
+		)));
+	}
+	elseif($orderTax == 0)
+	{
+		$pdf->Write(15, CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_BASKET_ITEMS_WITHOUT_TAX')));
+	}
+	$pdf->Ln();
+	$pdf->Ln();
+}
 if ($params["BILLUA_COMMENT1"] || $params["BILLUA_COMMENT2"])
 {
 	$pdf->Write(15, CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_COMMENT')));
@@ -577,77 +638,80 @@ if ($params["BILLUA_COMMENT1"] || $params["BILLUA_COMMENT2"])
 }
 
 $pdf->Ln();
-if ($params['BILLUA_PATH_TO_STAMP'])
+if ($params['BILLUA_FOOTER_SHOW'] == 'Y')
 {
-	$filePath = $pdf->GetImagePath($params['BILLUA_PATH_TO_STAMP']);
-	if ($filePath != '' && !$blank && \Bitrix\Main\IO\File::isFileExists($filePath))
+	if ($params['BILLUA_PATH_TO_STAMP'])
 	{
-		list($stampHeight, $stampWidth) = $pdf->GetImageSize($params['BILLUA_PATH_TO_STAMP']);
-		if ($stampHeight && $stampWidth)
+		$filePath = $pdf->GetImagePath($params['BILLUA_PATH_TO_STAMP']);
+		if ($filePath != '' && !$blank && \Bitrix\Main\IO\File::isFileExists($filePath))
 		{
-			if ($stampHeight > 120 || $stampWidth > 120)
+			list($stampHeight, $stampWidth) = $pdf->GetImageSize($params['BILLUA_PATH_TO_STAMP']);
+			if ($stampHeight && $stampWidth)
 			{
-				$ratio = 120 / max($stampHeight, $stampWidth);
-				$stampHeight = $ratio * $stampHeight;
-				$stampWidth = $ratio * $stampWidth;
+				if ($stampHeight > 120 || $stampWidth > 120)
+				{
+					$ratio = 120 / max($stampHeight, $stampWidth);
+					$stampHeight = $ratio * $stampHeight;
+					$stampWidth = $ratio * $stampWidth;
+				}
+				$pdf->Image(
+						$params['BILLUA_PATH_TO_STAMP'],
+						$margin['left'] + 40, $pdf->GetY(),
+						$stampWidth, $stampHeight
+				);
 			}
-			$pdf->Image(
-					$params['BILLUA_PATH_TO_STAMP'],
-					$margin['left'] + 40, $pdf->GetY(),
-					$stampWidth, $stampHeight
-			);
 		}
 	}
-}
 
-$pdf->Line($pdf->GetX(), $pdf->GetY(), $pdf->GetX()+$width, $pdf->GetY());
-$pdf->Ln();
-$pdf->Ln();
+	$pdf->Line($pdf->GetX(), $pdf->GetY(), $pdf->GetX()+$width, $pdf->GetY());
+	$pdf->Ln();
+	$pdf->Ln();
 
-$isAccSign = false;
-if (!$blank && $params['SELLER_COMPANY_ACC_SIGN'])
-{
-	list($signHeight, $signWidth) = $pdf->GetImageSize($params['SELLER_COMPANY_ACC_SIGN']);
-
-	if ($signHeight && $signWidth)
+	$isAccSign = false;
+	if (!$blank && $params['SELLER_COMPANY_ACC_SIGN'])
 	{
-		$ratio = min(37.5/$signHeight, 150/$signWidth);
-		$signHeight = $ratio * $signHeight;
-		$signWidth  = $ratio * $signWidth;
+		list($signHeight, $signWidth) = $pdf->GetImageSize($params['SELLER_COMPANY_ACC_SIGN']);
 
-		$isAccSign = true;
+		if ($signHeight && $signWidth)
+		{
+			$ratio = min(37.5/$signHeight, 150/$signWidth);
+			$signHeight = $ratio * $signHeight;
+			$signWidth  = $ratio * $signWidth;
+
+			$isAccSign = true;
+		}
 	}
+
+	$pdf->SetFont($fontFamily, 'B', $fontSize);
+	$pdf->Write(15, CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_WRITER').': '));
+
+	if ($isAccSign)
+	{
+		$pdf->Image(
+			$params['SELLER_COMPANY_ACC_SIGN'],
+			$pdf->GetX() + 80 - $signWidth/2, $pdf->GetY() - $signHeight + 15,
+			$signWidth, $signHeight
+		);
+	}
+
+	$pdf->SetFont($fontFamily, '', $fontSize);
+	$pdf->Cell(160, 15, '', 'B', 0, 'C');
+	if ($params["SELLER_COMPANY_ACCOUNTANT_NAME"])
+		$pdf->Write(15, CSalePdf::prepareToPdf($params["SELLER_COMPANY_ACCOUNTANT_NAME"]));
+
+	$pdf->SetX(max($pdf->GetX()+20, $margin['left']+3*$width/5));
+	if ($params["SELLER_COMPANY_ACCOUNTANT_POSITION"])
+	{
+		$pdf->SetFont($fontFamily, 'B', $fontSize);
+		$pdf->Write(15, CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_ACC_POSITION').': '));
+
+		$pdf->SetFont($fontFamily, '', $fontSize);
+		$pdf->Cell(0, 15, CSalePdf::prepareToPdf($params["SELLER_COMPANY_ACCOUNTANT_POSITION"]), 'B', 0, 'C');
+	}
+	$pdf->Ln();
+	$pdf->Ln();
+	$pdf->Ln();
 }
-
-$pdf->SetFont($fontFamily, 'B', $fontSize);
-$pdf->Write(15, CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_WRITER').': '));
-
-if ($isAccSign)
-{
-	$pdf->Image(
-		$params['SELLER_COMPANY_ACC_SIGN'],
-		$pdf->GetX() + 80 - $signWidth/2, $pdf->GetY() - $signHeight + 15,
-		$signWidth, $signHeight
-	);
-}
-
-$pdf->SetFont($fontFamily, '', $fontSize);
-$pdf->Cell(160, 15, '', 'B', 0, 'C');
-
-$pdf->Write(15, CSalePdf::prepareToPdf($params["SELLER_COMPANY_ACCOUNTANT_NAME"]));
-
-$pdf->SetX(max($pdf->GetX()+20, $margin['left']+3*$width/5));
-
-$pdf->SetFont($fontFamily, 'B', $fontSize);
-$pdf->Write(15, CSalePdf::prepareToPdf(Loc::getMessage('SALE_HPS_BILLUA_ACC_POSITION').': '));
-
-$pdf->SetFont($fontFamily, '', $fontSize);
-$pdf->Cell(0, 15, CSalePdf::prepareToPdf($params["SELLER_COMPANY_ACCOUNTANT_POSITION"]), 'B', 0, 'C');
-
-$pdf->Ln();
-$pdf->Ln();
-$pdf->Ln();
-
 if ($params["DATE_PAY_BEFORE"])
 {
 	$pdf->SetFont($fontFamily, 'B', $fontSize);
@@ -668,8 +732,17 @@ else if ($_REQUEST['DOWNLOAD'] == 'Y')
 return $pdf->Output(
 	sprintf(
 		'Rakhunok No%s vid %s.pdf',
-		$params["ACCOUNT_NUMBER"],
-		ConvertDateTime($payment->getField("DATE_BILL"), 'YYYY-MM-DD')
+		str_replace(
+			array(
+				chr(0), chr(1), chr(2), chr(3), chr(4), chr(5), chr(6), chr(7), chr(8), chr(9), chr(10), chr(11),
+				chr(12), chr(13), chr(14), chr(15), chr(16), chr(17), chr(18), chr(19), chr(20), chr(21), chr(22),
+				chr(23), chr(24), chr(25), chr(26), chr(27), chr(28), chr(29), chr(30), chr(31),
+				'"', '*', '/', ':', '<', '>', '?', '\\', '|'
+			),
+			'_',
+			strval($params["ACCOUNT_NUMBER"])
+		),
+		ConvertDateTime($params["DATE_BILL"], 'YYYY-MM-DD')
 	), $dest
 );
 ?>

@@ -178,7 +178,7 @@ BX.Main.SiteSpeed = (function() {
 		var histo = AmCharts.makeChart(divId, {
 			"type": "serial",
 			"theme": "none",
-			"pathToImages":"/bitrix/js/main/amcharts/3.3/images/",
+			"pathToImages":"/bitrix/js/main/amcharts/3.21/images/",
 			"dataProvider": dataProvider,
 			"startDuration": 1,
 			"balloon": {
@@ -280,7 +280,7 @@ BX.Main.SiteSpeed = (function() {
 		return AmCharts.makeChart(divId, {
 			"type": "serial",
 			"theme": "none",
-			"pathToImages": "/bitrix/js/main/amcharts/3.3/images/",
+			"pathToImages": "/bitrix/js/main/amcharts/3.21/images/",
 			"dataDateFormat" : "YYYY-MM-DD JJ:NN:SS",
 			"valueAxes": [{
 				"stackType": "regular",

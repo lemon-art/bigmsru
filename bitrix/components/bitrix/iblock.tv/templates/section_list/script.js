@@ -169,18 +169,30 @@ jsPublicTV.prototype.GeneratePlayer = function()
 				flv.style.display = "block";
 			});
 
-			if (window.jwplayer)
+			var addStatHandler = function()
 			{
-				this.Player.oJw = jwplayer(this.PlayerConfig.obj_id.flv);
-
-				// Add onplay event handler for statistic
-				if (this.GatherStatistics)
+				if (window.jwplayer)
 				{
-					this.RunDelayFunction(function(){
-						_this.Player.oJw.onPlay(function(state){jsPublicTVCollector.StatEvent(_this.Player.oJw, state.oldstate, 'PLAYING');});
-					}, 50, 0);
+					_this.Player.oJw = jwplayer(_this.PlayerConfig.obj_id.flv);
+
+					// Add onplay event handler for statistic
+					if (_this.GatherStatistics)
+					{
+						_this.RunDelayFunction(function ()
+						{
+							_this.Player.oJw.onPlay(function (state)
+							{
+								jsPublicTVCollector.StatEvent(_this.Player.oJw, state.oldstate, 'PLAYING');
+							});
+						}, 50, 0);
+					}
 				}
-			}
+				else
+				{
+					setTimeout(addStatHandler, 200);
+				}
+			};
+			addStatHandler();
 		}
 	}
 }
@@ -225,27 +237,31 @@ jsPublicTV.prototype.KillTree = function()
 
 jsPublicTV.prototype.BuildBlock = function(i)
 {
-	var CurLevel = this['Sections'][i]['Depth'] ?this['Sections'][i]['Depth'] :0;
-	var _this = this;
+	var CurLevel = this['Sections'][i]['Depth'] ?this['Sections'][i]['Depth'] :0,
+		_this = this,
+		ParentBlock,
+		blockTitle,
+		block,
+		j;
 
 	//get parent
 	if(CurLevel==1 || CurLevel==0)
-		var ParentBlock = this.TreeBlockID;
+		ParentBlock = this.TreeBlockID;
 	else if(this['Sections'][i]['Depth'] == this['Sections'][i-1]['Depth'])
-		var ParentBlock = BX(this.Prefix + 'bx-tv-section-' + (i-1)).parentNode;
+		ParentBlock = BX(this.Prefix + 'bx-tv-section-' + (i-1)).parentNode;
 	else
-		var ParentBlock = BX(this.Prefix + 'bx-tv-section-' + (i-1));
+		ParentBlock = BX(this.Prefix + 'bx-tv-section-' + (i-1));
 
 	//build block
 	if(CurLevel>0)
 	{
 		//title
-		var block = ParentBlock.appendChild(document.createElement('DIV'));
-		block.innerHTML = '<div style="clear:both"></div>' + this['Sections'][i]['Name'];
-		block.onclick = function(){_this.TreeExpand(i)};
-		block.className = 'bitrix-tv-section-title';
+		blockTitle = ParentBlock.appendChild(document.createElement('DIV'));
+		blockTitle.innerHTML = '<div style="clear:both"></div>' + this['Sections'][i]['Name'];
+		blockTitle.onclick = function(){_this.TreeExpand(i)};
+		blockTitle.className = 'bitrix-tv-section-title';
 		//block
-		var block = ParentBlock.appendChild(document.createElement('DIV'));
+		block = ParentBlock.appendChild(document.createElement('DIV'));
 		block.id = this.Prefix + 'bx-tv-section-' + i;
 		//set style
 		block.className = 'bitrix-tv-section-closed';
@@ -304,15 +320,16 @@ jsPublicTV.prototype.TreeExpand = function(i)
 
 jsPublicTV.prototype.TreeExpandUp = function(i)
 {
-		var block = BX(this.Prefix + 'bx-tv-section-' + (i));
+		var block = BX(this.Prefix + 'bx-tv-section-' + (i)),
+			j;
 		if(block)
 		{
-			var i=0; //max_depth 25
+			j=0; //max_depth 25
 			while(this.TreeBlockID.id != block.id)
 			{
 				block.style.display = 'block';
 				block = block.parentNode;
-				if(i++>25)
+				if(j++>25)
 					break;
 			}
 		}

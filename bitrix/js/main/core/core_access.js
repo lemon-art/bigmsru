@@ -201,6 +201,11 @@ BX.Access.SelectProvider = function(id)
 
 BX.Access.AddSelection = function(ob)
 {
+	if(!ob.provider)
+	{
+		return;
+	}
+
 	if(!BX.Access.obSelected[ob.provider])
 	{
 		BX.Access.obSelected[ob.provider] = {};

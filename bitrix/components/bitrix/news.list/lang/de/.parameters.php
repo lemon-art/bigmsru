@@ -33,4 +33,5 @@ $MESS["CP_BNL_SET_META_KEYWORDS"] = "Schlüsselwörter der Seite definieren";
 $MESS["CP_BNL_SET_META_DESCRIPTION"] = "Beschreibung der Seite definieren";
 $MESS["CP_BNL_SET_BROWSER_TITLE"] = "Überschrift des Browserfensters festlegen";
 $MESS["CP_BNL_SET_LAST_MODIFIED"] = "Im Header der Antwort den Zeitpunkt der Seitenänderung angeben";
+$MESS["CP_BNL_STRICT_SECTION_CHECK"] = "Übergeordneten Bereich bei der Ansicht der Liste prüfen";
 ?>

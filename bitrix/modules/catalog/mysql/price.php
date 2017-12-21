@@ -54,32 +54,6 @@ class CPrice extends CAllPrice
 		return $ID;
 	}
 
-	public static function GetByID($ID)
-	{
-		global $DB, $USER;
-		$ID = (int)$ID;
-		if ($ID <= 0)
-			return false;
-		$strUserGroups = (CCatalog::IsUserExists() ? $USER->GetGroups() : '2');
-		$strSql =
-			"SELECT CP.ID, CP.PRODUCT_ID, CP.EXTRA_ID, CP.CATALOG_GROUP_ID, CP.PRICE, ".
-			"	CP.CURRENCY, CP.QUANTITY_FROM, CP.QUANTITY_TO, IF(CGG.ID IS NULL, 'N', 'Y') as CAN_ACCESS, CP.TMP_ID, ".
-			"	CGL.NAME as CATALOG_GROUP_NAME, IF(CGG1.ID IS NULL, 'N', 'Y') as CAN_BUY, ".
-			"	".$DB->DateToCharFunction("CP.TIMESTAMP_X", "FULL")." as TIMESTAMP_X ".
-			"FROM b_catalog_price CP, b_catalog_group CG ".
-			"	LEFT JOIN b_catalog_group2group CGG ON (CG.ID = CGG.CATALOG_GROUP_ID AND CGG.GROUP_ID IN (".$strUserGroups.") AND CGG.BUY <> 'Y') ".
-			"	LEFT JOIN b_catalog_group2group CGG1 ON (CG.ID = CGG1.CATALOG_GROUP_ID AND CGG1.GROUP_ID IN (".$strUserGroups.") AND CGG1.BUY = 'Y') ".
-			"	LEFT JOIN b_catalog_group_lang CGL ON (CG.ID = CGL.CATALOG_GROUP_ID AND CGL.LANG = '".LANGUAGE_ID."') ".
-			"WHERE CP.ID = ".$ID." ".
-			"	AND CP.CATALOG_GROUP_ID = CG.ID ".
-			"GROUP BY CP.ID, CP.PRODUCT_ID, CP.EXTRA_ID, CP.CATALOG_GROUP_ID, CP.PRICE, CP.CURRENCY, CP.QUANTITY_FROM, CP.QUANTITY_TO, CP.TIMESTAMP_X ";
-		$db_res = $DB->Query($strSql, false, "File: ".__FILE__."<br>Line: ".__LINE__);
-		if ($res = $db_res->Fetch())
-			return $res;
-
-		return false;
-	}
-
 	/**
 	 * @param array $arOrder
 	 * @param array $arFilter

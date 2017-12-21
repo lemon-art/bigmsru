@@ -1,10 +1,15 @@
 <?
+use \Bitrix\Main\Config\Option;
+
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 
 if (!isset($arParams['GOOGLE_VERSION']))
 	$arParams['GOOGLE_VERSION'] = '3';
 
 $arParams['DEV_MODE'] = $arParams['DEV_MODE'] == 'Y' ? 'Y' : 'N';
+
+if(strlen($arParams['API_KEY']) <= 0)
+	$arParams['API_KEY'] =  Option::get('fileman', 'google_map_api_key', '');
 
 if (!defined('BX_GMAP_SCRIPT_LOADED'))
 {
@@ -21,7 +26,7 @@ if (!defined('BX_GMAP_SCRIPT_LOADED'))
 
 $arParams['MAP_ID'] =
 	(strlen($arParams["MAP_ID"])<=0 || !preg_match("/^[A-Za-z_][A-Za-z01-9_]*$/", $arParams["MAP_ID"])) ?
-	'MAP_'.RandString() : $arParams['MAP_ID'];
+	'MAP_'.$this->randString() : $arParams['MAP_ID'];
 
 $arParams['INIT_MAP_LON'] = floatval($arParams['INIT_MAP_LON']);
 $arParams['INIT_MAP_LON'] = $arParams['INIT_MAP_LON'] ? $arParams['INIT_MAP_LON'] : 37.64;
@@ -94,6 +99,8 @@ if (substr($arParams['MAP_HEIGHT'], -1, 1) != '%')
 	if ($arParams['MAP_HEIGHT'] <= 0) $arParams['MAP_HEIGHT'] = 500;
 	$arParams['MAP_HEIGHT'] .= 'px';
 }
+
+CJSCore::Init();
 
 $this->IncludeComponentTemplate();
 ?>

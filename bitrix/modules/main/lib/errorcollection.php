@@ -47,7 +47,7 @@ class ErrorCollection extends Dictionary
 		foreach($this->values as $error)
 		{
 			/** @var Error $error */
-			if($error->getCode() == $code)
+			if($error->getCode() === $code)
 			{
 				return $error;
 			}

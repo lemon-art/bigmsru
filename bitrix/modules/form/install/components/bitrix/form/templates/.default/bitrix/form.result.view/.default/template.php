@@ -42,8 +42,9 @@ if ($arResult["isAccessFormResultEdit"] == "Y" && strlen($arParams["EDIT_URL"]) 
 					?>&nbsp;&nbsp;&nbsp;<?
 					if (intval($arResult["RESULT_USER_ID"])>0) 
 					{
+						$userName = array("NAME" => $arResult["RESULT_USER_FIRST_NAME"], "LAST_NAME" => $arResult["RESULT_USER_LAST_NAME"], "SECOND_NAME" => $arResult["RESULT_USER_SECOND_NAME"], "LOGIN" => $arResult["RESULT_USER_LOGIN"]);
 					?>
-						[<a title='<?=GetMessage("FORM_EDIT_USER")?>' href='/bitrix/admin/user_edit.php?lang=<?=LANGUAGE_ID?>&ID=<?=$arResult["RESULT_USER_ID"]?>'><?=$arResult["RESULT_USER_ID"]?></a>] (<?=$arResult["RESULT_USER_LOGIN"]?>) <?=$arResult["RESULT_USER_FIRST_NAME"]?> <?=$arResult["RESULT_USER_LAST_NAME"]?>
+						[<a title='<?=GetMessage("FORM_EDIT_USER")?>' href='/bitrix/admin/user_edit.php?lang=<?=LANGUAGE_ID?>&ID=<?=$arResult["RESULT_USER_ID"]?>'><?=$arResult["RESULT_USER_ID"]?></a>] (<?=$arResult["RESULT_USER_LOGIN"]?>) <?=CUser::FormatName($arParams["NAME_TEMPLATE"], $userName)?>
 						<?if($arResult["RESULT_USER_AUTH"]=="N") {?> <?=GetMessage("FORM_NOT_AUTH")?><?}?>
 					<?
 					}
@@ -90,7 +91,7 @@ if ($arParams["SHOW_STATUS"] == "Y")
 {
 ?>
 <p>
-<b><?=GetMessage("FORM_CURRENT_STATUS")?></b>&nbsp;[<span class='<?=$arResult["RESULT_STATUS_CSS"]?>'><?=$arResult["RESULT_STATUS_TITLE"]?></span>]
+<b><?=GetMessage("FORM_CURRENT_STATUS")?></b>&nbsp;[<span class="<?=htmlspecialcharsbx($arResult["RESULT_STATUS_CSS"])?>"><?=htmlspecialcharsbx($arResult["RESULT_STATUS_TITLE"])?></span>]
 </p>
 <?
 }

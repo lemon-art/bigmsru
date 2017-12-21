@@ -87,6 +87,10 @@ $arComponentParameters = array(
 		),
 		"COMPARE" => array(
 			"NAME" => GetMessage('IBLOCK_COMPARE')
+		),
+		'EXTENDED_SETTINGS' => array(
+			'NAME' => GetMessage('IBLOCK_EXTENDED_SETTINGS'),
+			'SORT' => 10000
 		)
 	),
 	"PARAMETERS" => array(
@@ -261,6 +265,13 @@ $arComponentParameters = array(
 			"TYPE" => "CHECKBOX",
 			"DEFAULT" => "N",
 		),
+		'COMPATIBLE_MODE' => array(
+			'PARENT' => 'EXTENDED_SETTINGS',
+			'NAME' => GetMessage('CP_BCLL_COMPATIBLE_MODE'),
+			'TYPE' => 'CHECKBOX',
+			'DEFAULT' => 'Y',
+			'REFRESH' => 'Y'
+		),
 	),
 );
 CIBlockParameters::AddPagerSettings($arComponentParameters, GetMessage("T_IBLOCK_DESC_PAGER_CATALOG"), true, true);
@@ -270,8 +281,25 @@ if ($catalogIncluded)
 	$arComponentParameters["PARAMETERS"]['HIDE_NOT_AVAILABLE'] = array(
 		'PARENT' => 'DATA_SOURCE',
 		'NAME' => GetMessage('CP_BCLL_HIDE_NOT_AVAILABLE'),
-		'TYPE' => 'CHECKBOX',
+		'TYPE' => 'LIST',
 		'DEFAULT' => 'N',
+		'VALUES' => array(
+			'Y' => GetMessage('CP_BCLL_HIDE_NOT_AVAILABLE_HIDE'),
+			'L' => GetMessage('CP_BCLL_HIDE_NOT_AVAILABLE_LAST'),
+			'N' => GetMessage('CP_BCLL_HIDE_NOT_AVAILABLE_SHOW')
+		),
+		'ADDITIONAL_VALUES' => 'N'
+	);
+	$arComponentParameters['PARAMETERS']['HIDE_NOT_AVAILABLE_OFFERS'] = array(
+		'PARENT' => 'DATA_SOURCE',
+		'NAME' => GetMessage('CP_BCLL_HIDE_NOT_AVAILABLE_OFFERS'),
+		'TYPE' => 'LIST',
+		'DEFAULT' => 'N',
+		'VALUES' => array(
+			'Y' => GetMessage('CP_BCLL_HIDE_NOT_AVAILABLE_OFFERS_HIDE'),
+			'L' => GetMessage('CP_BCLL_HIDE_NOT_AVAILABLE_OFFERS_SUBSCRIBE'),
+			'N' => GetMessage('CP_BCLL_HIDE_NOT_AVAILABLE_OFFERS_SHOW')
+		)
 	);
 	$arComponentParameters["PARAMETERS"]['CONVERT_CURRENCY'] = array(
 		'PARENT' => 'PRICES',

@@ -76,4 +76,13 @@ class GroupLocationTable extends Connector
 			),
 		);
 	}
+
+	public static function deleteByGroupId($groupId)
+	{
+		if(intval($groupId) <= 0)
+			return;
+
+		$con = \Bitrix\Main\Application::getConnection();
+		$con->queryExecute("DELETE FROM ".self::getTableName()." WHERE LOCATION_GROUP_ID=".intval($groupId));
+	}
 }

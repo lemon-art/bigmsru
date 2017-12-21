@@ -116,4 +116,7 @@ $MESS["CP_BCS_DISABLE_INIT_JS_IN_COMPONENT"] = "Zusätzliche JavaScript-Biblioth
 $MESS["DISABLE_INIT_JS_IN_COMPONENT_TIP"] = "Ist diese Option aktiviert, wird die Komponente die \"popup\" Bibliothek nicht einschließen. Wenn die Komponentenvorlage auf der Vorlage der Version 12.5 des \"Onlineshops\" basiert, wird die Benutzung dieser Option die Funktionalität einschränken.";
 $MESS["SALE_OFFER_ID"] = "Produkte anzeigen, die als Geschenk mit dieser ID der Produktvariante gewählt werden können";
 $MESS["SALE_ELEMENT_ID"] = "Produkte anzeigen, die als Geschenk mit dieser Element-ID gewählt werden können";
+$MESS["CP_SGMP_SHOW_SLIDER"] = "Laufleiste der Produkte anzeigen";
+$MESS["CP_SGMP_SLIDER_INTERVAL"] = "Zeitabstand beim Bildwechsel, ms";
+$MESS["CP_SGMP_SLIDER_PROGRESS"] = "Fortschrittsbalken anzeigen";
 ?>

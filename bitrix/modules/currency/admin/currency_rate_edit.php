@@ -177,7 +177,7 @@ if ($ID > 0)
 	<td><select name="CURRENCY"><?
 		foreach ($currencyList as $currency => $title)
 		{
-			?><option value="<?=$currency; ?>"<?=($currency == $currencyRate['CURRENCY'] ? ' selected' : ''); ?>><?=htmlspecialcharsbx($title); ?></option><?
+			?><option value="<?=htmlspecialcharsbx($currency); ?>"<?=($currency == $currencyRate['CURRENCY'] ? ' selected' : ''); ?>><?=htmlspecialcharsbx($title); ?></option><?
 		}
 		unset($currency, $title);
 	?></select></td>
@@ -195,7 +195,7 @@ if ($ID > 0)
 </tr>
 <tr class="adm-detail-required-field">
 	<td><?echo GetMessage("curr_rates_rate_cnt")?>: <span class="required" style="vertical-align: super; font-size: smaller;">1</span></td>
-	<td><input type="text" id="RATE_CNT" name="RATE_CNT" value="<?=(int)$currencyRate['RATE_CNT']; ?>" size="5"></td>
+	<td><input type="text" id="RATE_CNT" name="RATE_CNT" value="<?=htmlspecialcharsbx($currencyRate['RATE_CNT']); ?>" size="5"></td>
 </tr>
 <tr class="adm-detail-required-field">
 	<td><?echo GetMessage("curr_rates_rate")?>: <span class="required" style="vertical-align: super; font-size: smaller;">1</span></td>
@@ -204,7 +204,7 @@ if ($ID > 0)
 if ($showGetRate)
 {
 ?>
-		&nbsp;<input id="get_btn" type="button" title="<?echo GetMessage("curr_rates_query_ex")?>" value="<?echo GetMessage("curr_rates_query")?>">
+		&nbsp;<input id="get_btn" type="button" title="<?=htmlspecialcharsbx(GetMessage("curr_rates_query_ex")); ?>" value="<?=htmlspecialcharsbx(GetMessage("curr_rates_query")); ?>">
 		<div id="currency_query_error_div"></div><?
 }
 ?>

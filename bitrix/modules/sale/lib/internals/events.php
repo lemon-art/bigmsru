@@ -15,10 +15,7 @@ class Events
 	 */
 	public static function onSaleBasketItemEntitySaved(Main\Event $event)
 	{
-		\CBitrixComponent::includeComponentClass("bitrix:sale.basket.basket.line");
-		$component = new \SaleBasketLineComponent();
-		$component->onIncludeComponentLang();
-		return $component->onSaleBasketItemEntitySaved($event);
+		return Sale\BasketComponentHelper::onSaleBasketItemEntitySaved($event);
 	}
 
 	/**
@@ -29,9 +26,6 @@ class Events
 	 */
 	public static function onSaleBasketItemDeleted(Main\Event $event)
 	{
-		\CBitrixComponent::includeComponentClass("bitrix:sale.basket.basket.line");
-		$component = new \SaleBasketLineComponent();
-		$component->onIncludeComponentLang();
-		return $component->onSaleBasketItemDeleted($event);
+		return Sale\BasketComponentHelper::onSaleBasketItemDeleted($event);
 	}
 }

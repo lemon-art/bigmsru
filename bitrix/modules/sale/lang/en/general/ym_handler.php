@@ -51,4 +51,7 @@ $MESS["SALE_YMH_NAME"] = " ";
 $MESS["SALE_YMH_DESCRIPTION"] = " ";
 $MESS["SALE_YMH_SHT"] = " ";
 $MESS["SALE_YMH_ADMIN_NOTIFY_SEND_STATUS_ERROR_403"] = " ";
+$MESS["SALE_YMH_LOG_TYPE_ORDER_CREATE_ERROR"] = "Error creating an order.";
+$MESS["SALE_YMARKET_ORDER_PRICE_CHANGED"] = "Attention! Order total has changed while the customer was placing their order.";
+$MESS["SALE_YMH_MARK_BUYER_WAITING"] = "Awaiting information on a customer";
 ?>

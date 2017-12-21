@@ -127,4 +127,6 @@ $MESS["FILEMAN_OPTION_USE_EDITOR_3"] = "Use new visual editor";
 $MESS["FILEMAN_OPTION_ADD_ERROR_PROPS"] = "Maximum parameter size exceeded: \"Property Types\".";
 $MESS["FILEMAN_OPTION_ADD_ERROR_MENU"] = "Maximum parameter size exceeded: \"Menu Types\".";
 $MESS["FILEMAN_REPLACE_NEW_LINES_WITH_BR"] = "Auto replace newlines with &lt;br&gt; when switching editing mode (Text/HTML/Visual editor)";
+$MESS["FILEMAN_OPTION_GOOGLE_MAP_API_KEY"] = "JavaScript API key for Google Maps";
+$MESS["FILEMAN_OPTION_GOOGLE_MAP_API_KEY_NOTE"] = "How to get the key: #A#";
 ?>

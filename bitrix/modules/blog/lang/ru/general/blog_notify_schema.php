@@ -13,4 +13,6 @@ $MESS["BLG_NS_MODERATE_POST"] = "Новое сообщение для модер
 $MESS["BLG_NS_MODERATE_COMMENT"] = "Новый комментарий для модерации";
 $MESS["BLG_NS_PUBLISHED_POST"] = "Публикация вашего сообщения модератором";
 $MESS["BLG_NS_PUBLISHED_COMMENT"] = "Публикация вашего комментария модератором";
+$MESS["BLG_NS_IM_ANSWER_SUCCESS"] = "Комментарий успешно опубликован";
+$MESS["BLG_NS_IM_ANSWER_ERROR"] = "Ошибка публикации комментария";
 ?>

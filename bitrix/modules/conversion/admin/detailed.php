@@ -15,7 +15,7 @@ Loc::loadMessages(__FILE__);
 
 Loader::IncludeModule('conversion');
 
-if ($APPLICATION->GetGroupRight('conversion') < 'W')
+if ($APPLICATION->GetGroupRight('conversion') < 'R')
 	$APPLICATION->AuthForm(Loc::getMessage('ACCESS_DENIED'));
 
 $userOptions = CUserOptions::GetOption('conversion', 'filter', array());
@@ -103,6 +103,8 @@ foreach ($attributeTypes as $name => $type)
 {
 	if (($value = $_GET[$name]) !== null && $name != $attributeName)
 	{
+		$filter[$name] = $value;
+
 		$context->setAttribute($name, $value);
 
 		if ($value)

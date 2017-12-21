@@ -40,7 +40,7 @@ class CSecurityUserTest
 	 * @param array $params
 	 * @return array
 	 */
-	public function check($params = array())
+	public function check(array $params = array())
 	{
 		$this->initializeParams($params);
 		$testID = $this->getParam('TEST_ID', $this->internalName);

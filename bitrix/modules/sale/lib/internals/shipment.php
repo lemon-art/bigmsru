@@ -248,7 +248,6 @@ class ShipmentTable extends Main\Entity\DataManager
 			new Main\Entity\IntegerField(
 				'DELIVERY_ID',
                  array(
-                     'required' => true,
 	                 'title' => Loc::getMessage('ORDER_SHIPMENT_ENTITY_DELIVERY_ID_FIELD'),
                  )
 			),

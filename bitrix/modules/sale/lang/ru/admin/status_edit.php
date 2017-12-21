@@ -19,5 +19,8 @@ $MESS['SSEN_NOTIFY_W_CONTENT'] = 'Шаблон станет доступен п�
 $MESS['SSEN_NOTIFY_LINK'] = 'Почтовый шаблон статуса';
 $MESS['SSEN_TASKS_LINK'] = 'Уровни доступа';
 $MESS['SSEN_GROUPS_LINK'] = 'Группы пользователей';
+$MESS['SSEN_COLOR'] = 'Цвет статуса';
 $MESS['SSEN_INVALID_TASK_ID_FOR'] = 'Не правильный уровень доступа для';
 $MESS['SALE_STATUS_WRONG_TYPE'] = "Статусу \"#STATUS_ID#\" нельзя установить тип \"#STATUS_TYPE#\"";
+$MESS['SALE_STATUS_TYPE_ORDER_EXISTS'] = "Статусу \"#STATUS_ID#\" нельзя установить тип \"#STATUS_TYPE#\", т.к. есть <a href=\"/bitrix/admin/sale_order.php?set_filter=Y&filter_status[]=#CURRENT_STATUS_ID#\" target=\"_blank\">заказы</a> с таким статусом";
+$MESS['SALE_STATUS_TYPE_SHIPMENT_EXISTS'] = "Статусу \"#STATUS_ID#\" нельзя установить тип \"#STATUS_TYPE#\", т.к. есть <a href=\"/bitrix/admin/sale_order_shipment.php?&set_filter=Y&&filter_status[]=#CURRENT_STATUS_ID#\" target=\"_blank\">отгрузки</a> с таким статусом";

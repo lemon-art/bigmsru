@@ -53,7 +53,7 @@ if($APPLICATION->GetGroupRight("sender")!="D")
 						),
 						array(
 							"text" => GetMessage("mnu_sender_site_mailing_stat"),
-							"url" => "sender_statistics.php?MAILING_ID=" . $mailing['ID'] . "&lang=" . LANGUAGE_ID,
+							"url" => "sender_mailing_stat.php?MAILING_ID=" . $mailing['ID'] . "&lang=" . LANGUAGE_ID,
 							"title" => GetMessage("mnu_sender_site_mailing_stat_alt")
 						),
 						array(
@@ -78,6 +78,11 @@ if($APPLICATION->GetGroupRight("sender")!="D")
 		"page_icon" => "sender_page_icon",
 		"items_id" => "menu_sender",
 		"items" => array(
+			array(
+				"text" => GetMessage("mnu_sender_stat"),
+				"url" => "sender_statistics.php?lang=".LANGUAGE_ID,
+				"title" => GetMessage("mnu_sender_stat_alt"),
+			),
 			array(
 				"text" => GetMessage("mnu_sender_mailing_admin"),
 				"url" => "sender_mailing_admin.php?lang=".LANGUAGE_ID,

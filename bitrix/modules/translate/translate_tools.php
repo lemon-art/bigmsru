@@ -152,7 +152,7 @@ function GetTDirList($path, $subDirs = false)
 
 	if (preg_match('|^' . preg_quote(realpath($_SERVER['DOCUMENT_ROOT'] . '/upload'), '|') . '|i' . BX_UTF_PCRE_MODIFIER, $fullpath))
 	{
-		return ;
+		return false;
 	}
 
 	$fullpath = prepare_path($fullpath);
@@ -620,4 +620,3 @@ function TR_BACKUP($file)
 	}
 	return $bReturn;
 }
-?>

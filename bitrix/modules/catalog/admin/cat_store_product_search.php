@@ -38,7 +38,7 @@ function GetProductSku($userId, $lid, $productId, $productName = '', $currency =
 		return false;
 
 	$lid = trim($lid);
-	if(strlen($lid) <= 0)
+	if($lid === '')
 		return false;
 
 	$productName = trim($productName);
@@ -374,12 +374,10 @@ $addDefault = "Y";
 
 $iblockId = intval($_REQUEST["IBLOCK_ID"]);
 
-$lid = htmlspecialcharsbx($_REQUEST["LID"]);
-if(strlen($lid) <= 0)
-	$lid = false;
+$lid = (isset($_REQUEST['LID']) ? (string)$_REQUEST['LID'] : '');
 
 $func_name = preg_replace("/[^a-zA-Z0-9_\-\.]/is", "", $_REQUEST["func_name"]);
-$caller = htmlspecialcharsbx($_REQUEST['caller']);
+$caller = (isset($_REQUEST['caller']) ? (string)$_REQUEST['caller'] : '');
 $buyerId = intval($USER->GetID());
 $sTableID = "tbl_product_search";
 if($caller)
@@ -406,7 +404,7 @@ if(!($arIBlock = $dbIBlock->Fetch()))
 {
 	$arFilterTmp = array("MIN_PERMISSION" => "R");
 
-	if(strlen($lid) > 0)
+	if($lid !== '')
 		$arFilterTmp["LID"] = $lid;
 
 	$arCatalogFilter = array();
@@ -1447,8 +1445,8 @@ foreach($arCatalog as $submenu)
 		<input type="hidden" name="BUYER_ID" value="<?echo htmlspecialcharsbx($buyerId)?>">
 		<input type="hidden" name="QUANTITY" value="<?echo htmlspecialcharsbx($QUANTITY)?>">
 		<input type="hidden" name="lang" value="<?echo LANGUAGE_ID?>">
-		<input type="hidden" id="LID" name="LID" value="<?echo $lid?>">
-		<input type="hidden" id="caller" name="caller" value="<?echo $caller?>">
+		<input type="hidden" id="LID" name="LID" value="<?echo htmlspecialcharsbx($lid)?>">
+		<input type="hidden" id="caller" name="caller" value="<?echo htmlspecialcharsbx($caller)?>">
 		<input type="hidden" name="subscribe" value="<? echo ($boolSubscribe ? 'Y' : 'N'); ?>">
 <?
 	if ($orderForm)

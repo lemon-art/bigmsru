@@ -61,6 +61,8 @@
 
 			this.SetParseBxMode(parseBx);
 
+			this.pasteNodeIndexTmp = BX.clone(this.editor.pasteNodeIndex);
+
 			while (el.firstChild)
 			{
 				firstChild = el.firstChild;
@@ -163,7 +165,9 @@
 						return oldNode.ownerDocument.createTextNode(this.editor.INVISIBLE_CURSOR);
 					}
 
-					bCleanNodeAfterPaste = !oldNode.getAttribute('data-bx-paste-flag');
+					var bxPasteFlag = oldNode.getAttribute('data-bx-paste-flag');
+
+					bCleanNodeAfterPaste = bxPasteFlag !== 'Y' && !this.pasteNodeIndexTmp[bxPasteFlag];
 
 					if (oldNode && oldNode.id)
 					{
@@ -185,6 +189,8 @@
 						oldNodeType = oldNode.nodeType;
 					}
 					oldNode.removeAttribute('data-bx-paste-flag');
+					if (this.pasteNodeIndexTmp[bxPasteFlag])
+						delete this.pasteNodeIndexTmp[bxPasteFlag];
 				}
 				else
 				{
@@ -454,7 +460,6 @@
 				whiteAttributes = {align: 1, alt: 1, bgcolor: 1, border: 1, cellpadding: 1, cellspacing: 1, color:1, colspan:1, height: 1, href: 1, rowspan: 1, size: 1, span: 1, src: 1, style: 1, target: 1, title: 1, type: 1, value: 1, width: 1},
 				decorNodes = {"B": 1, "STRONG": 1, "I": 1, "EM": 1, "U": 1, "DEL": 1, "S": 1, "STRIKE": 1},
 				cleanEmpty = {"A": 1, "SPAN": 1, "B": 1, "STRONG": 1, "I": 1, "EM": 1, "U": 1, "DEL": 1, "S": 1, "STRIKE": 1, "H1": 1, "H2": 1, "H3": 1, "H4": 1, "H5": 1, "H6": 1, "ABBR": 1, "TIME": 1, "FIGURE": 1,  "FIGCAPTION": 1};
-
 
 			// Clean iframes
 			if (nodeName == 'IFRAME')
@@ -1375,11 +1380,10 @@
 			htmlcomment: true,
 			iframe: true,
 			video: true,
+			audio: true,
 			'object': true
 		};
 
-		//if((!this.arConfig["bWithoutPHP"] || this.limit_php_access) && this.arConfig["use_advanced_php_parser"] == 'Y')
-		//{
 		this.bUseAPP = true; // APP - AdvancedPHPParser
 		this.APPConfig =
 		{
@@ -1388,14 +1392,10 @@
 			arTags :
 			{
 				'a' : ['href','title','class','style'],
-				'img' : ['src','alt','class','style','width','height']
+				'img' : ['src','alt','class','style','width','height'],
+				'input' : ['id','name','value']
 			}
 		};
-		//}
-//		else
-//		{
-//			this.bUseAPP = false;
-//		}
 
 		this.customParsers = [];
 		this.arScripts = {}; // object which contains all php codes with indexes
@@ -1403,6 +1403,7 @@
 		this.arHtmlComments = {}; // object which contains all html comments with indexes
 		this.arIframes = {}; // object which contains all iframes with indexes
 		this.arVideos = {}; // object which contains all iframes with emeded videos
+		this.arAudio = {};
 		this.arStyles = {}; // object which contains all <style> tags with indexes
 		this.arObjects = {}; // object which contains all <object> tags with indexes
 		this.surrClass = 'bxhtmled-surrogate';
@@ -1416,6 +1417,7 @@
 			anchor: 1,
 			iframe: 1,
 			video: 1,
+			audio: 1,
 			'object': 1
 		};
 
@@ -1451,6 +1453,8 @@
 			content = this.ReplaceHtmlCommentsBySymCode(content);
 			// Iframe & Video
 			content = this.ReplaceIframeBySymCode(content);
+			// Audio
+			content = this.ReplaceAudioBySymCode(content);
 			// Style
 			content = this.ReplaceStyleBySymCode(content);
 			// Object && embed
@@ -1703,6 +1707,24 @@
 					return _this.GetPattern(index++, false, 'style');
 				}
 			);
+
+			return content;
+		},
+
+		// Example: <audio controls=""><source src="/sound.mp3" type="audio/mpeg"> => #BXAUDIO_0#
+		ReplaceAudioBySymCode: function(content)
+		{
+			this.arAudio = {};
+			var
+				_this = this,
+				index = 0;
+
+			content = content.replace(/<audio[\s\S]*?\/audio>/gi, function(s)
+				{
+					_this.arAudio[index] = s;
+					return _this.GetPattern(index++, false, 'audio');
+				}
+			);
 			return content;
 		},
 
@@ -1804,6 +1826,9 @@
 				case 'video':
 					code = '#BXVIDEO_';
 					break;
+				case 'audio':
+					code = '#BXAUDIO_';
+					break;
 				case 'object':
 					code = '#BXOBJECT_';
 					break;
@@ -1820,7 +1845,7 @@
 		{
 			var _this = this;
 
-			content = content.replace(/#BX(PHP|JAVASCRIPT|HTMLCOMMENT|IFRAME|STYLE|VIDEO|OBJECT)_(\d+)#/g, function(str, type, ind)
+			content = content.replace(/#BX(PHP|JAVASCRIPT|HTMLCOMMENT|IFRAME|STYLE|VIDEO|AUDIO|OBJECT)_(\d+)#/g, function(str, type, ind)
 			{
 				var res = '';
 				if (_this.IsAllowed(type.toLowerCase()))
@@ -1844,6 +1869,9 @@
 							break;
 						case 'VIDEO':
 							res = _this.GetVideoHTML(_this.arVideos[ind]);
+							break;
+						case 'AUDIO':
+							res = _this.GetAudioHTML(_this.arAudio[ind]);
 							break;
 						case 'OBJECT':
 							res = _this.GetObjectHTML(_this.arObjects[ind]);
@@ -1952,6 +1980,22 @@
 				'</span>';
 
 			return result;
+		},
+
+		GetAudioHTML: function(code)
+		{
+			if (typeof code !== 'string')
+				return null;
+			var
+				title = "Audio",
+				params = this.FetchVideoIframeParams(code);
+
+			if (params && params.src)
+			{
+				title += ': ' + this.GetShortTitle(BX.util.htmlspecialchars(params.src));
+			}
+
+			return this.GetSurrogateHTML("audio", title, "Audio: " + this.GetShortTitle(code), {value : code});
 		},
 
 		GetObjectHTML: function(code)
@@ -2076,7 +2120,7 @@
 		_GetUnParsedContent: function(content)
 		{
 			var _this = this;
-			content = content.replace(/#BX(PHP|JAVASCRIPT|HTMLCOMMENT|IFRAME|STYLE|VIDEO|OBJECT)_(\d+)#/g, function(str, type, ind)
+			content = content.replace(/#BX(PHP|JAVASCRIPT|HTMLCOMMENT|IFRAME|STYLE|VIDEO|AUDIO|OBJECT)_(\d+)#/g, function(str, type, ind)
 			{
 				var res;
 				switch (type)
@@ -2098,6 +2142,9 @@
 						break;
 					case 'VIDEO':
 						res = _this.arVideos[ind].html;
+						break;
+					case 'AUDIO':
+						res = _this.arAudio[ind];
 						break;
 					case 'OBJECT':
 						res = _this.arObjects[ind].html;
@@ -2504,6 +2551,12 @@
 						return _this._GetUnParsedContent(params.value);
 					}
 				},
+				audio: {
+					Parse: function(params)
+					{
+						return _this._GetUnParsedContent(params.value);
+					}
+				},
 				object: {
 					Parse: function(params)
 					{
@@ -2626,9 +2679,9 @@
 				surr = surrs[i];
 				if (usedSurrs[surr.id])
 				{
-					if (surr.getAttribute('data-bx-paste-flag') == 'Y' || usedSurrs[surr.id].getAttribute('data-bx-paste-flag') != 'Y')
+					if (surr.getAttribute('data-bx-paste-flag') == 'Y' || !usedSurrs[surr.id].getAttribute('data-bx-paste-flag'))
 						BX.remove(surr);
-					else if (usedSurrs[surr.id].getAttribute('data-bx-paste-flag') == 'Y')
+					else if (usedSurrs[surr.id].getAttribute('data-bx-paste-flag'))
 						BX.remove(usedSurrs[surr.id]);
 				}
 				else
@@ -3264,6 +3317,10 @@
 			content = content.replace(/[\r\n\s\t]*?\[\/list\]/ig, '[/LIST]');
 			content = content.replace(/[\r\n\s\t]*?\[\*\]?/ig, '[*]');
 
+			// Paragraph
+			content = content.replace(/\[p\]/ig, '<p>');
+			content = content.replace(/\[\/p\]\n?/ig, '</p>');
+
 			var
 				arSimpleTags = [
 					'b','u', 'i', ['s', 'del'], // B, U, I, S
@@ -3552,6 +3609,11 @@
 				}
 			}
 
+			if (nodeName == "SCRIPT")
+			{
+				return '';
+			}
+
 			if (nodeName == "IFRAME" && oNode.node.src)
 			{
 				var
@@ -3621,6 +3683,10 @@
 			}
 			else if(nodeName == 'LI')
 			{
+				if (oNode.node.lastChild && oNode.node.lastChild.nodeName == 'BR')
+				{
+					oNode.node.removeChild(oNode.node.lastChild);
+				}
 				oNode.bbTag = '*';
 				oNode.breakLineBefore = true;
 				oNode.hideRight = true;
@@ -3693,8 +3759,6 @@
 					oNode.hide = !BX.util.in_array(nodeName, this.editor.BBCODE_TAGS);
 				}
 			}
-
-
 			else if(!BX.util.in_array(nodeName, this.editor.BBCODE_TAGS)) //'p', 'u', 'div', 'table', 'tr', 'img', 'td', 'a'
 			{
 				oNode.hide = true;

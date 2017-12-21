@@ -95,11 +95,15 @@ class Indexer
 		\Bitrix\Iblock\IblockTable::update($this->iblockId, array(
 			"PROPERTY_INDEX" => "Y",
 		));
+		//TODO: replace \CIBlock::CleanCache to d7 method
+		\CIBlock::CleanCache($this->iblockId);
 		if ($this->skuIblockId)
 		{
 			\Bitrix\Iblock\IblockTable::update($this->skuIblockId, array(
 				"PROPERTY_INDEX" => "Y",
 			));
+			//TODO: replace \CIBlock::CleanCache to d7 method
+			\CIBlock::CleanCache($this->skuIblockId);
 		}
 
 		return true;

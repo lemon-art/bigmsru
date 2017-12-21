@@ -239,7 +239,7 @@ BX.ready(function(){
 			<ul class="photo-items-list photo-album-thumbs-list">
 
 			<?foreach($arResult["SECTIONS"] as $res):?>
-					<li class="photo-item photo-album-item photo-album-<?=($res["ACTIVE"] != "Y" ? "nonactive" : "active")?> <?= (!empty($res["PASSWORD"]) ? " photo-album-password " : "")?>" id="photo_album_info_<?=$res["ID"]?>" title="<?= trim("&laquo;".$res["~NAME"]."&raquo;  ".(!empty($res["DATE"]) ? " ".$res["DATE"] : ""))?>">
+					<li class="photo-item photo-album-item photo-album-<?=($res["ACTIVE"] != "Y" ? "nonactive" : "active")?> <?= (!empty($res["PASSWORD"]) ? " photo-album-password " : "")?>" id="photo_album_info_<?=$res["ID"]?>">
 					<div class="photo-item-cover-block-outside">
 						<div class="photo-item-cover-block-container">
 							<div class="photo-item-cover-block-outer">
@@ -275,7 +275,7 @@ BX.ready(function(){
 								<div class="photo-item-info-block-inner">
 									<div class="photo-album-photos-top"><?=$res["ELEMENTS_CNT"]?> <?=GetMessage("P_PHOTOS")?></div>
 									<div class="photo-album-name">
-										<a href="<?=$res["LINK"]?>" id="photo_album_name_<?=$res["ID"]?>" title="<?=htmlspecialcharsbx($res["~NAME"])?>"><?=$res["NAME"]?></a>
+										<a href="<?=$res["LINK"]?>" id="photo_album_name_<?=$res["ID"]?>"><?=$res["NAME"]?></a>
 									</div>
 									<div class="photo-album-description" id="photo_album_description_<?=$res["ID"]?>"><?=$res["DESCRIPTION"]?></div>
 									<div class="photo-album-date"><span id="photo_album_date_<?=$res["ID"]?>"><?=$res["DATE"]?></span></div>

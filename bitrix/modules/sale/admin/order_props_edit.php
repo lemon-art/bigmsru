@@ -620,7 +620,7 @@ if ($errors)
 	<?=GetFilterHiddens("filter_")?>
 	<input type="hidden" name="Update" value="Y">
 	<input type="hidden" name="lang" value="<?=LANG?>">
-	<input type="hidden" name="PREVIOUS-TYPE" value="<?=$property['TYPE']?>">
+	<input type="hidden" name="PREVIOUS-TYPE" value="<?=htmlspecialcharsbx($property['TYPE'])?>">
 	<?=bitrix_sessid_post()?>
 
 	<?

@@ -9,8 +9,10 @@
 namespace Bitrix\Sale;
 
 use Bitrix\Main;
+use Bitrix\Sale\Cashbox\CheckManager;
 use Bitrix\Sale\Compatible;
 use Bitrix\Sale\Internals;
+use Bitrix\Sale\Helpers;
 
 Main\Localization\Loc::loadMessages(__FILE__);
 
@@ -26,6 +28,8 @@ class Notify
 	const EVENT_ON_SHIPMENT_DELIVER_SEND_EMAIL = "OnOrderDeliverSendEmail";
 	const EVENT_SHIPMENT_DELIVER_SEND_EMAIL_EVENT_NAME = "SALE_ORDER_DELIVERY";
 
+	const EVENT_ON_CHECK_PRINT_SEND_EMAIL = "SALE_CHECK_PRINT";
+
 	const EVENT_ON_ORDER_PAID_SEND_EMAIL = "OnOrderPaySendEmail";
 
 	const EVENT_ON_ORDER_CANCEL_SEND_EMAIL = "OnOrderCancelSendEmail";
@@ -35,6 +39,14 @@ class Notify
 	const EVENT_ORDER_TRACKING_NUMBER_SEND_EMAIL_EVENT_NAME = "SALE_ORDER_TRACKING_NUMBER";
 	const EVENT_ORDER_STATUS_CHANGED_SEND_EMAIL_EVENT_NAME = "SALE_STATUS_CHANGED";
 	const EVENT_SHIPMENT_TRACKING_NUMBER_SEND_EMAIL_EVENT_NAME = "SALE_ORDER_TRACKING_NUMBER";
+
+
+	const EVENT_DEFAULT_STATUS_CHANGED_ID = "SALE_STATUS_CHANGED_";
+	const EVENT_SHIPMENT_STATUS_SEND_EMAIL = "OnSaleShipmentStatusSendEmail";
+	const EVENT_SHIPMENT_STATUS_EMAIL =	"OnSaleShipmentStatusEMail";
+
+	const EVENT_ORDER_ALLOW_PAY_SEND_EMAIL_EVENT_NAME = "SALE_ORDER_ALLOW_PAY";
+	const EVENT_ON_ORDER_ALLOW_PAY_STATUS_EMAIL =	"OnSaleOrderAllowPayStatusEMail";
 
 	const EVENT_MOBILE_PUSH_ORDER_CREATED = "ORDER_CREATED";
 	const EVENT_MOBILE_PUSH_ORDER_STATUS_CHANGE = "ORDER_STATUS_CHANGED";
@@ -84,15 +96,46 @@ class Notify
 			return $result;
 		}
 
+		$by = $sort = '';
+
+		$separator = "<br/>";
+
+		$eventName = static::EVENT_ORDER_NEW_SEND_EMAIL_EVENT_NAME;
+
+		$filter = array(
+			"EVENT_NAME" => $eventName,
+			'ACTIVE' => 'Y',
+		);
+
+		if ($entity instanceof OrderBase)
+		{
+			$filter['SITE_ID'] = $entity->getSiteId();
+		}
+		elseif (defined('SITE_ID') && SITE_ID != '')
+		{
+			$filter['SITE_ID'] = SITE_ID;
+		}
+
+		$res = \CEventMessage::GetList($by, $sort, $filter);
+		if ($eventMessage = $res->Fetch())
+		{
+			if ($eventMessage['BODY_TYPE'] == 'text')
+			{
+				$separator = "\n";
+			}
+		}
+
 		$basketList = '';
 		/** @var Basket $basket */
-		if ($basket = $entity->getBasket())
+		$basket = $entity->getBasket();
+		if ($basket)
 		{
-			if ($basketTextList = $basket->getListOfFormatText())
+			$basketTextList = $basket->getListOfFormatText();
+			if (!empty($basketTextList))
 			{
 				foreach ($basketTextList as $basketItemCode => $basketItemData)
 				{
-					$basketList .= $basketItemData."\n";
+					$basketList .= $basketItemData.$separator;
 				}
 			}
 		}
@@ -109,9 +152,9 @@ class Notify
 			"ORDER_LIST" => $basketList,
 			"SALE_EMAIL" => Main\Config\Option::get("sale", "order_email", "order@".$_SERVER["SERVER_NAME"]),
 			"DELIVERY_PRICE" => $entity->getDeliveryPrice(),
+			"ORDER_PUBLIC_URL" => Helpers\Order::isAllowGuestView($entity) ? Helpers\Order::getPublicLink($entity) : ""
 		);
 
-		$eventName = static::EVENT_ORDER_NEW_SEND_EMAIL_EVENT_NAME;
 		$send = true;
 
 		foreach(GetModuleEvents("sale", static::EVENT_ON_ORDER_NEW_SEND_EMAIL, true) as $oldEvent)
@@ -125,7 +168,7 @@ class Notify
 		if($send)
 		{
 			$event = new \CEvent;
-			$event->Send($eventName, $entity->getField('LID'), $fields, "N");
+			$event->Send($eventName, $entity->getField('LID'), $fields, "Y", "", array(),static::getOrderLanguageId($entity));
 		}
 
 		static::addSentEvent($entity->getId(), static::EVENT_ORDER_NEW_SEND_EMAIL_EVENT_NAME);
@@ -174,7 +217,8 @@ class Notify
 			"ORDER_DATE" => $entity->getDateInsert()->toString(),
 			"EMAIL" => static::getUserEmail($entity),
 			"ORDER_CANCEL_DESCRIPTION" => $entity->getField('REASON_CANCELED'),
-			"SALE_EMAIL" => Main\Config\Option::get("sale", "order_email", "order@".$_SERVER["SERVER_NAME"])
+			"SALE_EMAIL" => Main\Config\Option::get("sale", "order_email", "order@".$_SERVER["SERVER_NAME"]),
+			"ORDER_PUBLIC_URL" => Helpers\Order::isAllowGuestView($entity) ? Helpers\Order::getPublicLink($entity) : ""
 		);
 
 		$eventName = static::EVENT_ORDER_CANCEL_SEND_EMAIL_EVENT_NAME;
@@ -191,7 +235,7 @@ class Notify
 		if($send)
 		{
 			$event = new \CEvent;
-			$event->Send($eventName, $entity->getField('LID'), $fields, "N");
+			$event->Send($eventName, $entity->getField('LID'), $fields, "Y", "", array(), static::getOrderLanguageId($entity));
 		}
 
 		\CSaleMobileOrderPush::send(static::EVENT_MOBILE_PUSH_ORDER_CANCELED, array("ORDER" => static::getOrderFields($entity)));
@@ -238,7 +282,8 @@ class Notify
 			"ORDER_ACCOUNT_NUMBER_ENCODE" => urlencode(urlencode($entity->getField("ACCOUNT_NUMBER"))),
 			"ORDER_DATE" => $entity->getDateInsert()->toString(),
 			"EMAIL" => static::getUserEmail($entity),
-			"SALE_EMAIL" => Main\Config\Option::get("sale", "order_email", "order@".$_SERVER["SERVER_NAME"])
+			"SALE_EMAIL" => Main\Config\Option::get("sale", "order_email", "order@".$_SERVER["SERVER_NAME"]),
+			"ORDER_PUBLIC_URL" => Helpers\Order::isAllowGuestView($entity) ? Helpers\Order::getPublicLink($entity) : ""
 		);
 
 		$eventName = static::EVENT_ORDER_PAID_SEND_EMAIL_EVENT_NAME;
@@ -255,7 +300,7 @@ class Notify
 		if($send)
 		{
 			$event = new \CEvent;
-			$event->Send($eventName, $entity->getField('LID'), $fields, "N");
+			$event->Send($eventName, $entity->getField('LID'), $fields, "Y", "", array(), static::getOrderLanguageId($entity));
 		}
 
 		\CSaleMobileOrderPush::send(static::EVENT_MOBILE_PUSH_ORDER_PAID, array("ORDER" => static::getOrderFields($entity)));
@@ -286,7 +331,7 @@ class Notify
 			throw new Main\ArgumentTypeException('entity', '\Bitrix\Sale\Order');
 		}
 
-		$statusEventName = "SALE_STATUS_CHANGED_".$entity->getField("STATUS_ID");
+		$statusEventName = static::EVENT_DEFAULT_STATUS_CHANGED_ID.$entity->getField("STATUS_ID");
 
 		if (static::hasSentEvent($entity->getId(), $statusEventName))
 		{
@@ -320,13 +365,18 @@ class Notify
 				"ORDER_ID" => $entity->getField("ACCOUNT_NUMBER"),
 				"ORDER_REAL_ID" => $entity->getField("ID"),
 				"ORDER_ACCOUNT_NUMBER_ENCODE" => urlencode(urlencode($entity->getField("ACCOUNT_NUMBER"))),
-				"ORDER_DATE" => $entity->getField("DATE_INSERT")->toString(),
 				"ORDER_STATUS" => $statusData["NAME"],
 				"EMAIL" => static::getUserEmail($entity),
 				"ORDER_DESCRIPTION" => $statusData["DESCRIPTION"],
 				"TEXT" => "",
-				"SALE_EMAIL" => Main\Config\Option::get("sale", "order_email", "order@".$_SERVER["SERVER_NAME"])
+				"SALE_EMAIL" => Main\Config\Option::get("sale", "order_email", "order@".$_SERVER["SERVER_NAME"]),
+				"ORDER_PUBLIC_URL" => Helpers\Order::isAllowGuestView($entity) ? Helpers\Order::getPublicLink($entity) : ""
 			);
+
+			if ($entity->getField("DATE_INSERT") instanceof Main\Type\Date)
+			{
+				$fields['ORDER_DATE'] = $entity->getField("DATE_INSERT")->toString();
+			}
 
 			foreach(GetModuleEvents("sale", static::EVENT_ORDER_STATUS_EMAIL, true) as $oldEvent)
 			{
@@ -360,16 +410,333 @@ class Notify
 				);
 				if (!($eventMessageData = $eventMessageRes->Fetch()))
 				{
-					$eventName = static::EVENT_ORDER_STATUS_CHANGED_SEND_EMAIL_EVENT_NAME;
+					$eventName = static::EVENT_DEFAULT_STATUS_CHANGED_ID.$entity->getField("STATUS_ID");
 				}
 
 				unset($o, $b);
 				$event = new \CEvent;
-				$event->Send($eventName, $entity->getSiteId(), $fields, "N");
+				$event->Send($eventName, $entity->getSiteId(), $fields, "Y", "", array(),  $siteData['LANGUAGE_ID']);
 			}
 		}
 
 		\CSaleMobileOrderPush::send(static::EVENT_MOBILE_PUSH_ORDER_STATUS_CHANGE, array("ORDER" => static::getOrderFields($entity)));
+
+		static::addSentEvent($entity->getId(), $statusEventName);
+
+		return $result;
+	}
+
+	/**
+	 * @param Internals\Entity $entity
+	 *
+	 * @return Result
+	 * @throws Main\ArgumentNullException
+	 * @throws Main\ArgumentTypeException
+	 */
+	public static function sendShipmentStatusChange(Internals\Entity $entity)
+	{
+		$result = new Result();
+
+		if (static::isNotifyDisabled())
+		{
+			return $result;
+		}
+
+		if (!$entity instanceof Shipment)
+		{
+			throw new Main\ArgumentTypeException('entity', '\Bitrix\Sale\Shipment');
+		}
+
+		$statusEventName = static::EVENT_DEFAULT_STATUS_CHANGED_ID.$entity->getField("STATUS_ID");
+
+		if (static::hasSentEvent('s'.$entity->getId(), $statusEventName))
+		{
+			return $result;
+		}
+
+		/** @var Internals\Fields $fields */
+		$fields = $entity->getFields();
+		$originalValues = $fields->getOriginalValues();
+
+		if (array_key_exists('STATUS_ID', $originalValues) && $originalValues['STATUS_ID'] == $entity->getField("STATUS_ID"))
+		{
+			return $result;
+		}
+
+		static $cacheSiteData = array();
+
+		/** @var ShipmentCollection $shipmentCollection */
+		if (!$shipmentCollection = $entity->getCollection())
+		{
+			$result->addError(new ResultError(Main\Localization\Loc::getMessage("SALE_NOTIFY_SHIPMENT_COLLECTION_NOT_FOUND")));
+			return $result;
+		}
+
+		/** @var Order $order */
+		if (!$order = $shipmentCollection->getOrder())
+		{
+			$result->addError(new ResultError(Main\Localization\Loc::getMessage("SALE_NOTIFY_ORDER_NOT_FOUND")));
+			return $result;
+		}
+
+
+		if (!isset($cacheSiteData[$order->getSiteId()]))
+		{
+			$siteRes = \CSite::GetByID($order->getSiteId());
+			$siteData = $siteRes->Fetch();
+		}
+		else
+		{
+			$siteData = $cacheSiteData[$order->getSiteId()];
+		}
+		
+		$statusData = Internals\StatusTable::getList(array(
+								 'select' => array(
+									 'ID',
+									 'NOTIFY',
+									 'NAME' => 'Bitrix\Sale\Internals\StatusLangTable:STATUS.NAME',
+								 ),
+								 'filter' => array(
+									 '=ID' => $entity->getField("STATUS_ID"),
+									 '=Bitrix\Sale\Internals\StatusLangTable:STATUS.LID' => $siteData['LANGUAGE_ID'],
+									 '=TYPE' => DeliveryStatus::TYPE
+								 ),
+								 'limit'  => 1,
+							 ))->fetch();
+
+		if (!empty($statusData) && $statusData['NOTIFY'] == "Y")
+		{
+			$isSend = true;
+
+			$fields = array(
+				"ORDER_ID" => $order->getField("ACCOUNT_NUMBER"),
+				"ORDER_REAL_ID" => $order->getField("ID"),
+				"ORDER_ACCOUNT_NUMBER_ENCODE" => urlencode(urlencode($order->getField("ACCOUNT_NUMBER"))),
+				"ORDER_DATE" => $order->getDateInsert()->toString(),
+				"SHIPMENT_ID" => $entity->getId(),
+				"SHIPMENT_DATE" => $entity->getField("DATE_INSERT")->toString(),
+				"SHIPMENT_STATUS" => $statusData["NAME"],
+				"EMAIL" => static::getUserEmail($order),
+				"TEXT" => "",
+				"SALE_EMAIL" => Main\Config\Option::get("sale", "order_email", "order@".$_SERVER["SERVER_NAME"]),
+				"ORDER_PUBLIC_URL" => Helpers\Order::isAllowGuestView($order) ? Helpers\Order::getPublicLink($order) : ""
+			);
+
+			$eventManager = Main\EventManager::getInstance();
+			if ($eventsList = $eventManager->findEventHandlers('sale', static::EVENT_SHIPMENT_STATUS_EMAIL))
+			{
+				$event = new Main\Event('sale', static::EVENT_SHIPMENT_STATUS_EMAIL, array(
+					'EVENT_NAME' => $statusEventName,
+					'VALUES' => $fields
+				));
+				$event->send();
+
+				if ($event->getResults())
+				{
+					/** @var Main\EventResult $eventResult */
+					foreach($event->getResults() as $eventResult)
+					{
+						if($eventResult->getType() === Main\EventResult::ERROR)
+						{
+							$isSend = false;
+						}
+						elseif($eventResult->getType() == Main\EventResult::SUCCESS)
+						{
+							if ($eventResultParams = $eventResult->getParameters())
+							{
+								/** @var Result $eventResultData */
+								if (!empty($eventResultParams) && is_array($eventResultParams))
+								{
+									if (!empty($eventResultParams['EVENT_NAME']))
+									{
+										$statusEventName = $eventResultParams['EVENT_NAME'];
+									}
+
+									if (!empty($eventResultParams['VALUES']) && is_array($eventResultParams['VALUES']))
+									{
+										$fields = $eventResultParams['VALUES'];
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if($isSend)
+			{
+				$b = '';
+				$o = '';
+				$eventMessage = new \CEventMessage;
+				$eventMessageRes = $eventMessage->GetList(
+					$b,
+					$o,
+					array(
+						"EVENT_NAME" => $statusEventName,
+						"SITE_ID" => $order->getSiteId(),
+						'ACTIVE' => 'Y'
+					)
+				);
+				if (!($eventMessageData = $eventMessageRes->Fetch()))
+				{
+					$statusEventName = static::EVENT_DEFAULT_STATUS_CHANGED_ID.$entity->getField("STATUS_ID");
+				}
+
+				unset($o, $b);
+				$event = new \CEvent;
+				$event->Send($statusEventName, $order->getSiteId(), $fields, "Y", "", array(),  $siteData['LANGUAGE_ID']);
+			}
+		}
+
+		static::addSentEvent('s'.$entity->getId(), $statusEventName);
+
+		return $result;
+	}
+
+	/**
+	 * @param Internals\Entity $entity
+	 *
+	 * @return Result
+	 * @throws Main\ArgumentNullException
+	 * @throws Main\ArgumentTypeException
+	 */
+	public static function sendOrderAllowPayStatusChange(Internals\Entity $entity)
+	{
+		$result = new Result();
+
+		if (static::isNotifyDisabled())
+		{
+			return $result;
+		}
+
+		if (!$entity instanceof Order)
+		{
+			throw new Main\ArgumentTypeException('entity', '\Bitrix\Sale\Order');
+		}
+
+		$statusEventName = static::EVENT_ORDER_ALLOW_PAY_SEND_EMAIL_EVENT_NAME;
+
+		if (static::hasSentEvent($entity->getId(), $statusEventName))
+		{
+			return $result;
+		}
+
+		/** @var Internals\Fields $fields */
+		$fields = $entity->getFields();
+		$originalValues = $fields->getOriginalValues();
+
+		if (array_key_exists('STATUS_ID', $originalValues) && $originalValues['STATUS_ID'] == $entity->getField("STATUS_ID"))
+		{
+			return $result;
+		}
+
+		static $cacheSiteData = array();
+
+		if (!isset($cacheSiteData[$entity->getSiteId()]))
+		{
+			$siteRes = \CSite::GetByID($entity->getSiteId());
+			$siteData = $siteRes->Fetch();
+		}
+		else
+		{
+			$siteData = $cacheSiteData[$entity->getSiteId()];
+		}
+
+		$statusData = Internals\StatusTable::getList(array(
+								 'select' => array(
+									 'ID',
+									 'NOTIFY',
+									 'NAME' => 'Bitrix\Sale\Internals\StatusLangTable:STATUS.NAME',
+								 ),
+								 'filter' => array(
+									 '=ID' => $entity->getField("STATUS_ID"),
+									 '=Bitrix\Sale\Internals\StatusLangTable:STATUS.LID' => $siteData['LANGUAGE_ID'],
+									 '=TYPE' => OrderStatus::TYPE
+								 ),
+								 'limit'  => 1,
+							 ))->fetch();
+
+		if (!empty($statusData) && $statusData['NOTIFY'] == "Y")
+		{
+			$isSend = true;
+
+			$fields = array(
+				"ORDER_ID" => $entity->getField("ACCOUNT_NUMBER"),
+				"ORDER_REAL_ID" => $entity->getField("ID"),
+				"ORDER_ACCOUNT_NUMBER_ENCODE" => urlencode(urlencode($entity->getField("ACCOUNT_NUMBER"))),
+				"ORDER_DATE" => $entity->getDateInsert()->toString(),
+				"ORDER_STATUS" => $statusData["NAME"],
+				"EMAIL" => static::getUserEmail($entity),
+				"TEXT" => "",
+				"SALE_EMAIL" => Main\Config\Option::get("sale", "order_email", "order@".$_SERVER["SERVER_NAME"]),
+				"ORDER_PUBLIC_URL" => Helpers\Order::isAllowGuestView($entity) ? Helpers\Order::getPublicLink($entity) : ""
+			);
+
+			$eventManager = Main\EventManager::getInstance();
+			if ($eventsList = $eventManager->findEventHandlers('sale', static::EVENT_ON_ORDER_ALLOW_PAY_STATUS_EMAIL))
+			{
+				$event = new Main\Event('sale', static::EVENT_ON_ORDER_ALLOW_PAY_STATUS_EMAIL, array(
+					'EVENT_NAME' => $statusEventName,
+					'VALUES' => $fields
+				));
+				$event->send();
+
+				if ($event->getResults())
+				{
+					/** @var Main\EventResult $eventResult */
+					foreach($event->getResults() as $eventResult)
+					{
+						if($eventResult->getType() === Main\EventResult::ERROR)
+						{
+							$isSend = false;
+						}
+						elseif($eventResult->getType() == Main\EventResult::SUCCESS)
+						{
+							if ($eventResultParams = $eventResult->getParameters())
+							{
+								/** @var Result $eventResultData */
+								if (!empty($eventResultParams) && is_array($eventResultParams))
+								{
+									if (!empty($eventResultParams['EVENT_NAME']))
+									{
+										$statusEventName = $eventResultParams['EVENT_NAME'];
+									}
+
+									if (!empty($eventResultParams['VALUES']) && is_array($eventResultParams['VALUES']))
+									{
+										$fields = $eventResultParams['VALUES'];
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if($isSend)
+			{
+				$b = '';
+				$o = '';
+				$eventMessage = new \CEventMessage;
+				$eventMessageRes = $eventMessage->GetList(
+					$b,
+					$o,
+					array(
+						"EVENT_NAME" => $statusEventName,
+						"SITE_ID" => $entity->getSiteId(),
+						'ACTIVE' => 'Y'
+					)
+				);
+				if (!($eventMessageData = $eventMessageRes->Fetch()))
+				{
+					$statusEventName = static::EVENT_ORDER_ALLOW_PAY_SEND_EMAIL_EVENT_NAME;
+				}
+
+				unset($o, $b);
+				$event = new \CEvent;
+				$event->Send($statusEventName, $entity->getSiteId(), $fields, "Y", "", array(), $siteData['LANGUAGE_ID']);
+			}
+		}
 
 		static::addSentEvent($entity->getId(), $statusEventName);
 
@@ -436,11 +803,12 @@ class Notify
 			"ORDER_TRACKING_NUMBER" => $entity->getField('TRACKING_NUMBER'),
 			"BCC" => Main\Config\Option::get("sale", "order_email", "order@".$_SERVER['SERVER_NAME']),
 			"EMAIL" => static::getUserEmail($order),
-			"SALE_EMAIL" => Main\Config\Option::get("sale", "order_email", "order@".$_SERVER['SERVER_NAME'])
+			"SALE_EMAIL" => Main\Config\Option::get("sale", "order_email", "order@".$_SERVER['SERVER_NAME']),
+			"ORDER_PUBLIC_URL" => Helpers\Order::isAllowGuestView($order) ? Helpers\Order::getPublicLink($order) : ""
 		);
 
 		$event = new \CEvent;
-		$event->send(static::EVENT_SHIPMENT_TRACKING_NUMBER_SEND_EMAIL_EVENT_NAME, $order->getField("LID"), $emailFields, "N");
+		$event->send(static::EVENT_SHIPMENT_TRACKING_NUMBER_SEND_EMAIL_EVENT_NAME, $order->getField("LID"), $emailFields, "Y", "", array(), static::getOrderLanguageId($order));
 
 		static::addSentEvent('s'.$entity->getId(), static::EVENT_SHIPMENT_TRACKING_NUMBER_SEND_EMAIL_EVENT_NAME);
 
@@ -498,8 +866,11 @@ class Notify
 			"ORDER_REAL_ID" => $order->getField("ID"),
 			"ORDER_ACCOUNT_NUMBER_ENCODE" => urlencode(urlencode($order->getField("ACCOUNT_NUMBER"))),
 			"ORDER_DATE" => $order->getDateInsert()->toString(),
+			"SHIPMENT_ID" => $entity->getId(),
+			"SHIPMENT_DATE" => $entity->getField("DATE_INSERT")->toString(),
 			"EMAIL" => static::getUserEmail($order),
 			"SALE_EMAIL" => Main\Config\Option::get("sale", "order_email", "order@".$_SERVER["SERVER_NAME"]),
+			"ORDER_PUBLIC_URL" => Helpers\Order::isAllowGuestView($order) ? Helpers\Order::getPublicLink($order) : ""
 		);
 
 		$eventName = static::EVENT_SHIPMENT_DELIVER_SEND_EMAIL_EVENT_NAME;
@@ -516,12 +887,71 @@ class Notify
 		if($send)
 		{
 			$event = new \CEvent;
-			$event->Send($eventName, $order->getField('LID'), $fields, "N");
+			$event->Send($eventName, $order->getField('LID'), $fields, "Y", "", array(), static::getOrderLanguageId($order));
 		}
 
 		\CSaleMobileOrderPush::send(static::EVENT_MOBILE_PUSH_SHIPMENT_ALLOW_DELIVERY, array("ORDER" => static::getOrderFields($order)));
 
 		static::addSentEvent('s'.$entity->getId(), static::EVENT_SHIPMENT_DELIVER_SEND_EMAIL_EVENT_NAME);
+
+		return $result;
+	}
+
+	/**
+	 * @param Internals\Entity $entity
+	 *
+	 * @return Result
+	 * @throws Main\ArgumentNullException
+	 * @throws Main\ArgumentTypeException
+	 */
+	public static function sendPrintableCheck(Internals\Entity $entity)
+	{
+		$result = new Result();
+
+		if (static::isNotifyDisabled())
+		{
+			return $result;
+		}
+
+		if (!$entity instanceof Payment)
+		{
+			throw new Main\ArgumentTypeException('entity', '\Bitrix\Sale\Payment');
+		}
+
+		/** @var PaymentCollection $paymentCollection */
+		if (!$paymentCollection = $entity->getCollection())
+		{
+			$result->addError(new ResultError(Main\Localization\Loc::getMessage("SALE_NOTIFY_PAYMENT_COLLECTION_NOT_FOUND")));
+			return $result;
+		}
+
+		/** @var Order $order */
+		if (!$order = $paymentCollection->getOrder())
+		{
+			$result->addError(new ResultError(Main\Localization\Loc::getMessage("SALE_NOTIFY_ORDER_NOT_FOUND")));
+			return $result;
+		}
+
+		$check = CheckManager::getLastPrintableCheckInfo($entity);
+		if (!empty($check['LINK']))
+		{
+			$fields = array(
+				"ORDER_ID" => $order->getField("ACCOUNT_NUMBER"),
+				"ORDER_ACCOUNT_NUMBER_ENCODE" => urlencode(urlencode($order->getField("ACCOUNT_NUMBER"))),
+				"ORDER_USER" => static::getUserName($order),
+				"ORDER_DATE" => $order->getDateInsert()->toString(),
+				"EMAIL" => static::getUserEmail($order),
+				"SALE_EMAIL" => Main\Config\Option::get("sale", "order_email", "order@".$_SERVER["SERVER_NAME"]),
+				"CHECK_LINK" => $check['LINK'],
+				"ORDER_PUBLIC_URL" => Helpers\Order::isAllowGuestView($order) ? Helpers\Order::getPublicLink($order) : ""
+			);
+
+			$eventName = static::EVENT_ON_CHECK_PRINT_SEND_EMAIL;
+			$event = new \CEvent;
+			$event->Send($eventName, $order->getField('LID'), $fields, "N");
+
+			static::addSentEvent('p'.$entity->getId(), $eventName);
+		}
 
 		return $result;
 	}
@@ -617,7 +1047,7 @@ class Notify
 			if ($userData = $userRes->fetch())
 			{
 				$userData['PAYER_NAME'] = \CUser::FormatName(\CSite::GetNameFormat(null, $order->getSiteId()), $userData, true);
-				static::$cacheUserData[$order->getUserId()] = $userData;
+				static::$cacheUserData[$order->getUserId()]['PAYER_NAME'] = $userData['PAYER_NAME'];
 				$userName = $userData['PAYER_NAME'];
 			}
 		}
@@ -828,7 +1258,16 @@ class Notify
 		return $fields;
 	}
 
-
+	/**
+	 * @param Order $order
+	 *
+	 * @return mixed
+	 */
+	public static function getOrderLanguageId(Order $order)
+	{
+		$siteData = Main\SiteTable::GetById($order->getSiteId())->fetch();
+		return $siteData['LANGUAGE_ID'];
+	}
 
 	/**
 	 * Convert an array of dates from the object to a string

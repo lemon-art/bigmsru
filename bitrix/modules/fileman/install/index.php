@@ -63,6 +63,7 @@ Class fileman extends CModule
 		RegisterModuleDependences("main", "OnUserTypeBuildList", "fileman", "CUserTypeVideo", "GetUserTypeDescription");
 		RegisterModuleDependences("main", "OnEventLogGetAuditTypes", "fileman", "CEventFileman", "GetAuditTypes");
 		RegisterModuleDependences("main", "OnEventLogGetAuditHandlers", "fileman", "CEventFileman", "MakeFilemanObject");
+		RegisterModuleDependences("main", "OnUserTypeBuildList", "fileman", "\\Bitrix\\Fileman\\UserField\\Address", "getUserTypeDescription", 154);
 
 		require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/fileman/install/tasks/install.php");
 
@@ -107,6 +108,7 @@ Class fileman extends CModule
 		UnRegisterModuleDependences("main", "OnUserTypeBuildList", "fileman", "CUserTypeVideo", "GetUserTypeDescription");
 		UnRegisterModuleDependences("main", "OnEventLogGetAuditTypes", "fileman", "CEventFileman", "GetAuditTypes");
 		UnRegisterModuleDependences("main", "OnEventLogGetAuditHandlers", "fileman", "CEventFileman", "MakeFilemanObject");
+		UnRegisterModuleDependences("main", "OnUserTypeBuildList", "fileman", "\\Bitrix\\Fileman\\UserField\\Address", "getUserTypeDescription");
 
 		require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/fileman/install/tasks/uninstall.php");
 

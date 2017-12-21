@@ -35,6 +35,11 @@ class CCloudStorageBucket extends CAllCloudStorageBucket
 	*/
 	public function getBucketArray()
 	{
+		if(!isset($this->arBucket))
+		{
+			self::_init();
+			$this->arBucket = self::$arBuckets[$this->_ID];
+		}
 		return $this->arBucket;
 	}
 	/**
@@ -236,6 +241,33 @@ class CCloudStorageBucket extends CAllCloudStorageBucket
 		}
 	}
 	/**
+	 * @return bool
+	*/
+	function RenewToken()
+	{
+		if ($this->service->tokenHasExpired)
+		{
+			$newSettings = false;
+			foreach(GetModuleEvents("clouds", "OnExpiredToken", true) as $arEvent)
+			{
+				$newSettings = ExecuteModuleEventEx($arEvent, array($this->arBucket));
+				if ($newSettings)
+					break;
+			}
+			if ($newSettings)
+			{
+				$updateResult = $this->Update(array("SETTINGS" => $newSettings));
+				if ($updateResult)
+				{
+					$this->service->tokenHasExpired = false;
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+	/**
 	 * @param array[string]string $arSettings
 	 * @return bool
 	*/
@@ -286,6 +318,11 @@ class CCloudStorageBucket extends CAllCloudStorageBucket
 	function SaveFile($filePath, $arFile)
 	{
 		$result = $this->service->SaveFile($this->arBucket, $filePath, $arFile);
+		if (!$result && $this->RenewToken())
+		{
+			$result = $this->service->SaveFile($this->getBucketArray(), $filePath, $arFile);
+		}
+
 		if ($result)
 		{
 			foreach(GetModuleEvents("clouds", "OnAfterSaveFile", true) as $arEvent)
@@ -353,7 +390,12 @@ class CCloudStorageBucket extends CAllCloudStorageBucket
 	*/
 	function ListFiles($filePath = "/", $bRecursive = false)
 	{
-		return $this->service->ListFiles($this->arBucket, $filePath, $bRecursive);
+		$result = $this->service->ListFiles($this->arBucket, $filePath, $bRecursive);
+		if (!$result && $this->RenewToken())
+		{
+			$result = $this->service->ListFiles($this->getBucketArray(), $filePath, $bRecursive);
+		}
+		return $result;
 	}
 	/**
 	 * @param string $filePath
@@ -621,6 +663,7 @@ class CCloudStorageBucket extends CAllCloudStorageBucket
 			{
 				$arFields["SETTINGS"] = serialize($arFields["SETTINGS"]);
 				$this->_ID = $DB->Add("b_clouds_file_bucket", $arFields);
+				self::$arBuckets = null;
 				$this->arBucket = null;
 				if(CACHED_b_clouds_file_bucket !== false)
 					$CACHE_MANAGER->CleanDir("b_clouds_file_bucket");
@@ -748,6 +791,8 @@ class CCloudStorageBucket extends CAllCloudStorageBucket
 				return false;
 		}
 
+		self::$arBuckets = null;
+		$this->arBucket = null;
 		if(CACHED_b_clouds_file_bucket !== false)
 			$CACHE_MANAGER->CleanDir("b_clouds_file_bucket");
 

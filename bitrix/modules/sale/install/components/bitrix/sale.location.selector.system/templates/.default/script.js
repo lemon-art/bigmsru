@@ -917,10 +917,6 @@ if(typeof BX.Sale.component.location.selector.system == 'undefined' && typeof BX
 			var inputsHTML = '';
 			var serialized = '';
 
-			console.log('displaySelectedForm');
-			console.log(sv.selected.nodes);
-			console.log(sv.cache.nodes);
-
 			if(sv.selected.nodes.length > 0){
 
 				var separ = '';
@@ -1044,12 +1040,13 @@ if(typeof BX.Sale.component.location.selector.system.tree == 'undefined' && type
 		refineResponce: function(responce){
 
 			var result = {items: []};
+
 			for(var k in responce.ITEMS)
 			{
 				if(!responce.ITEMS.hasOwnProperty(k))
 					continue;
 
-				var isParent = typeof responce.ITEMS[k].IS_PARENT != 'undefined' && parseInt(responce.ITEMS[k].IS_PARENT) > 0;
+				var isParent = typeof responce.ITEMS[k].IS_PARENT != 'undefined' && (responce.ITEMS[k].IS_PARENT == true || parseInt(responce.ITEMS[k].IS_PARENT) > 0);
 
 				result.items.push({
 					name: 				responce.ITEMS[k].DISPLAY,

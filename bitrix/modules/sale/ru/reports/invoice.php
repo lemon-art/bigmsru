@@ -196,14 +196,16 @@ while ($ar_tax_list = $db_tax_list->Fetch())
 ClearVars("b_");
 //$db_basket = CSaleBasket::GetList(($b="NAME"), ($o="ASC"), array("ORDER_ID"=>$ORDER_ID));
 //if ($db_basket->ExtractFields("b_")):
+$arCurFormat = CCurrencyLang::GetCurrencyFormat($arOrder["CURRENCY"]);
+$currency = preg_replace('/(^|[^&])#/', '${1}', $arCurFormat['FORMAT_STRING']);
 	?>
 	<table border="0" cellspacing="0" cellpadding="2" width="100%">
 		<tr bgcolor="#E2E2E2">
 			<td align="center" style="border: 1pt solid #000000; border-right:none;">№</td>
 			<td align="center" style="border: 1pt solid #000000; border-right:none;">Предмет счета</td>
 			<td nowrap align="center" style="border: 1pt solid #000000; border-right:none;">Кол-во</td>
-			<td nowrap align="center" style="border: 1pt solid #000000; border-right:none;">Цена, руб</td>
-			<td nowrap align="center" style="border: 1pt solid #000000;">Сумма, руб</td>
+			<td nowrap align="center" style="border: 1pt solid #000000; border-right:none;">Цена,<?=$currency;?></td>
+			<td nowrap align="center" style="border: 1pt solid #000000;">Сумма,<?=$currency;?></td>
 		</tr>
 		<?
 		$n = 1;
@@ -387,10 +389,15 @@ ClearVars("b_");
 		echo SaleFormatCurrency($arOrder["PRICE"], $arOrder["CURRENCY"]);
 	}
 	?>.</p>
-
+<?
+	if ($arOrder['CURRENCY'] === 'UAH')
+		$contextCurrency = 'гривнах';
+	else
+		$contextCurrency = 'рублях';
+?>
 <p><font size="2">В случае непоступления средств на расчетный счет продавца в течение пяти
 банковских дней со дня выписки счета, продавец оставляет за собой право
-пересмотреть отпускную цену товара в рублях пропорционально изменению курса доллара
+пересмотреть отпускную цену товара в <?=$contextCurrency;?> пропорционально изменению курса доллара
 и выставить счет на доплату.<br><br>
 В платежном поручении обязательно указать - "Оплата по счету № <?echo $arOrder["ACCOUNT_NUMBER"]?> от <?echo $arOrder["DATE_INSERT_FORMAT"] ?>".<br><br>
 Получение товара только после прихода денег на расчетный счет компании.

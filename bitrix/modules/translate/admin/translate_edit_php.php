@@ -23,16 +23,17 @@ $abs_path = CSite::GetSiteDocRoot($site).$file;
 if(!isAllowPath($file) || strpos($file, "/lang/") === false)
 	$strError = GetMessage("trans_edit_err")."<br>";
 
+$aTabs = array(
+	array("DIV" => "edit1", "TAB" => GetMessage("TRANS_TITLE"), "ICON" => "translate_edit", "TITLE" => GetMessage("TRANS_TITLE_TITLE")),
+);
+$tabControl = new CAdminTabControl("tabControl", $aTabs);
+
+$chain = "";
+$arPath = array();
+
 if($strError == "")
 {
-	$aTabs = array(
-		array("DIV" => "edit1", "TAB" => GetMessage("TRANS_TITLE"), "ICON" => "translate_edit", "TITLE" => GetMessage("TRANS_TITLE_TITLE")),
-	);
-	$tabControl = new CAdminTabControl("tabControl", $aTabs);
-
 	// form a way to get back
-	$chain = "";
-	$arPath = array();
 	$path_back = dirname($file);
 	$arSlash = explode("/",$path_back);
 	if (is_array($arSlash))

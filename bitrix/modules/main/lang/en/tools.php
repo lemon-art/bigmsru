@@ -274,12 +274,15 @@ $MESS["MAIN_MAILTO"] = "Send message";
 $MESS["MAIN_F_TIMESTAMP"] = "Modified";
 $MESS["AJAX_WAIT"] = "Loading...";
 $MESS["HTTP_CLIENT_ERROR_CONNECT"] = "Error connecting to %HOST%:%PORT%. Error code: \"%ERRNO%\", error description: \"%ERRSTR%\"";
-$MESS["TOOLS_TRIAL_EXP"] = "Trial period of the product has expired. You can purchase the full version of the product on the site <a href=\"http://www.bitrixsoft.com/\">www.bitrixsoft.com</a>.";
+$MESS["TOOLS_TRIAL_EXP"] = "Trial period of the product has expired. You can purchase the full version of the product on the site <a href=\"https://www.bitrix24.com/prices/self-hosted.php\">www.bitrix24.com</a>.";
 $MESS["expire_mess1"] = "<font class=\"tablebodytext\"><font color=\"#FF0000\">
 		Trial period of the product has expired.
-		You can purchase the full version of the product on the site <a href=\"http://www.bitrixsoft.com/\">www.bitrixsoft.com</a>.
+		The current trial product copy will be automatically blocked in 2 weeks.
+		You can purchase the full version of the product on the site <a href=\"https://www.bitrix24.com/prices/self-hosted.php\">www.bitrix24.com</a>.
 		</font></font>";
-$MESS["expire_mess2"] = "Trial period of the product has expired. You can purchase the full version of the product on the site <a href=\"http://www.bitrixsoft.com/\">www.bitrixsoft.com</a>. <a href=\"/bitrix/coupon_activation.php?lang=en\">Registration</a>.";
+$MESS["expire_mess2"] = "Your free 30-day trial period is over. You are welcome to continue using your product copy with a commercial license key (no need to make a new product installation). To purchase a commercial license key, please visit our site: <a href=\"https://www.bitrix24.com\" target=\"_blank\">www.bitrix24.com</a>.
+<br /><br />
+If you have a commercial license key, please use it to <a href=\"/bitrix/coupon_activation.php?lang=en\" target=\"_blank\">activate and unblock</a> your product copy.";
 $MESS["main_tools_menu_left"] = "Section menu";
 $MESS["main_tools_menu_top"] = "Main menu";
 $MESS["top_panel_updates"] = "There are updates available";

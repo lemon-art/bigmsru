@@ -25,10 +25,17 @@ if($request->get('action') == 'get_template')
 	$templateCharset = $request->get('template_charset');
 
 	\Bitrix\Main\Loader::includeModule('fileman');
-	$template = \Bitrix\Sender\Preset\Template::getById($templateType, $templateId);
-	if ($template)
+	if ($templateType == 'USER' && !$templateId && isset($_SESSION['bx_sender_template_tmp']))
 	{
-		echo \Bitrix\Fileman\Block\Editor::getHtmlForEditor($template['HTML'], $templateCharset);
+		echo base64_decode($_SESSION['bx_sender_template_tmp']);
+	}
+	else
+	{
+		$template = \Bitrix\Sender\Preset\Template::getById($templateType, $templateId);
+		if ($template)
+		{
+			echo \Bitrix\Fileman\Block\Editor::getHtmlForEditor($template['HTML'], $templateCharset);
+		}
 	}
 
 	require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin_js.php");

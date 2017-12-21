@@ -168,7 +168,7 @@ if($this->startResultCache(false, array($arParams)))
 				if($arParams["CHECK_DATES"])
 					$arFilter[">ACTIVE_FROM"] = $posting['DATE_SENT'];
 				else
-					$arFilter[">DATE_INSERT"] = $posting['DATE_SENT'];
+					$arFilter[">DATE_CREATE"] = $posting['DATE_SENT'];
 			}
 		}
 

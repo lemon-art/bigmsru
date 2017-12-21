@@ -127,6 +127,22 @@ if(!($dbEvent->Fetch()))
 			"DESCRIPTION" => GetMessage("SALE_ORDER_TRACKING_NUMBER_TYPE_DESC"),
 		));
 
+		$et = new CEventType;
+		$et->Add(array(
+			"LID" => $lid,
+			"EVENT_NAME" => "SALE_CHECK_PRINT",
+			"NAME" => GetMessage("SALE_CHECK_PRINT_TYPE_NAME"),
+			"DESCRIPTION" => GetMessage("SALE_CHECK_PRINT_TYPE_DESC"),
+		));
+
+		$et = new CEventType;
+		$et->Add(array(
+			"LID"       => $lid,
+			"EVENT_NAME"    => "SALE_ORDER_SHIPMENT_STATUS_CHANGED",
+			"NAME"          => GetMessage("SALE_ORDER_SHIPMENT_STATUS_CHANGED_TYPE_NAME"),
+			"DESCRIPTION"   => GetMessage("SALE_ORDER_SHIPMENT_STATUS_CHANGED_TYPE_DESC")
+		));
+
 		$arSites = array();
 		$sites = CSite::GetList(($b=""), ($o=""), Array("LANGUAGE_ID"=>$lid));
 		while ($site = $sites->Fetch())
@@ -138,12 +154,14 @@ if(!($dbEvent->Fetch()))
 
 			$arHTMLEvents = array(
 				"SALE_NEW_ORDER", "SALE_ORDER_CANCEL", "SALE_ORDER_DELIVERY", "SALE_ORDER_PAID",
-				"SALE_ORDER_REMIND_PAYMENT", "SALE_SUBSCRIBE_PRODUCT", "SALE_ORDER_TRACKING_NUMBER"
+				"SALE_ORDER_REMIND_PAYMENT", "SALE_SUBSCRIBE_PRODUCT", "SALE_ORDER_TRACKING_NUMBER", "SALE_CHECK_PRINT",
+				"SALE_ORDER_SHIPMENT_STATUS_CHANGED"
 			);
 
 			foreach($arHTMLEvents as $eventName)
 			{
 				$emess = new CEventMessage;
+
 				$message = str_replace(
 						array(
 								"#TITLE#",
@@ -160,6 +178,7 @@ if(!($dbEvent->Fetch()))
 								GetMessage("SMAIL_FOOTER_SHOP"),
 							),
 						$template);
+
 				$emess->Add(array(
 					"ACTIVE" => "Y",
 					"EVENT_NAME" => $eventName,
@@ -234,6 +253,7 @@ if(!($dbEvent->Fetch()))
 				$str .= "#ORDER_DESCRIPTION# - ".GetMessage("SKGS_STATUS_DESCR")."\n";
 				$str .= "#TEXT# - ".GetMessage("SKGS_STATUS_TEXT")."\n";
 				$str .= "#SALE_EMAIL# - ".GetMessage("SKGS_SALE_EMAIL")."\n";
+				$str .= "#ORDER_PUBLIC_URL# - ".GetMessage("SKGS_ORDER_PUBLIC_LINK")."\n";
 
 				$eventTypeID = $eventType->Add(
 						array(

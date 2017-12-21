@@ -9,8 +9,6 @@ DROP TABLE if exists b_blog_user_group;
 DROP TABLE if exists b_blog_user2user_group;
 DROP TABLE if exists b_blog_user_group_perms;
 DROP TABLE if exists b_blog_trackback;
-DROP TABLE if exists b_blog_smile;
-DROP TABLE if exists b_blog_smile_lang;
 DROP TABLE if exists b_blog_user2blog;
 DROP TABLE if exists b_blog_image;
 DROP TABLE if exists b_blog_post_category;

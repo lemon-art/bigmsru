@@ -3,23 +3,19 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
 $defCountry = "Россия";
 $defCity = "c213"; //Moscow
+$url = 'ts='.time();
 
-$ob = new CHTTP();
-$ob->http_timeout = 10;
-$ob->Query(
-	"GET",
-	"export.yandex.ru",
-	80,
-	"/bar/reginfo.xml?".$url,
-	false,
-	"",
-	"N"
-);
-if($ob->result)
+$http = new \Bitrix\Main\Web\HttpClient();
+$http->setTimeout(10);
+$res = $http->get("https://export.yandex.ru/bar/reginfo.xml?".$url);
+
+if($res !== false)
 {
-	$res = str_replace("\xE2\x88\x92", "-", $ob->result);
+	$res = str_replace("\xE2\x88\x92", "-", $res);
+	$res = $GLOBALS["APPLICATION"]->ConvertCharset($res, 'UTF-8', SITE_CHARSET);
+
 	$xml = new CDataXML();
-	$xml->LoadString($GLOBALS["APPLICATION"]->ConvertCharset($res, 'UTF-8', SITE_CHARSET));
+	$xml->LoadString($res);
 
 	$node = $xml->SelectNodes('/info/weather/day/country');
 	if(is_object($node))
@@ -43,7 +39,7 @@ if($cache->StartDataCache(60*60*24*7, "gadget_yadex_weather"))
 {
 	$http = new \Bitrix\Main\Web\HttpClient();
 	$http->setTimeout(20);
-	$res = $http->get("http://weather.yandex.ru/static/cities.xml");
+	$res = $http->get("https://pogoda.yandex.ru/static/cities.xml");
 	if($res !== false)
 	{
 		$res = \Bitrix\Main\Text\Encoding::convertEncoding($res, 'UTF-8', SITE_CHARSET);

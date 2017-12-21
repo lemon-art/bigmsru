@@ -35,7 +35,6 @@ $MESS["MAIN_COMPOSITE_BANNER_BGCOLOR"] = "Изменить цвет фона";
 $MESS["MAIN_COMPOSITE_BANNER_STYLE"] = "Изменить цвет логотипа и надписи";
 $MESS["MAIN_COMPOSITE_BANNER_STYLE_WHITE"] = "Белый фон";
 $MESS["MAIN_COMPOSITE_CLEAR_CACHE"] = "Сбросить кеш";
-$MESS["MAIN_COMPOSITE_HITS_WITHOUT_CACHE"] = "Количество хитов, для которых не была записана композитная страница из-за ограничений дискового пространства";
 $MESS["MAIN_COMPOSITE_WARNING_EDUCATION"] = "Перед включением композитного режима <br>рекомендуется ознакомиться с <a href=\"https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=39\" target=\"_blank\">курсом</a> по его внедрению.";
 $MESS["MAIN_COMPOSITE_DOMAINS"] = "Список доменных имен (каждое в новой строке)";
 $MESS["MAIN_COMPOSITE_STORAGE"] = "Хранить кеш в";

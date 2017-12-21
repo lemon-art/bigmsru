@@ -364,7 +364,13 @@ BX.seoEditor.prototype.addRule = function(rule, bSkipUniqueCheck)
 };
 
 var tmpWindow = null;
-var arStandardDisallow = ['*/index.php', '/bitrix/', '/*show_include_exec_time=', '/*show_page_exec_time=', '/*show_sql_stat=', '/*bitrix_include_areas=', '/*clear_cache=', '/*clear_cache_session=', '/*ADD_TO_COMPARE_LIST', '/*ORDER_BY', '/*PAGEN', '/*?print=', '/*&print=', '/*print_course=', '/*?action=', '/*&action=', '/*register=', '/*forgot_password=', '/*change_password=', '/*login=', '/*logout=', '/*auth=', '/*backurl=','/*back_url=', '/*BACKURL=','/*BACK_URL=', '/*back_url_admin=', '/*?utm_source='];
+var arStandardDisallow = ['*/index.php', '/bitrix/', '/*show_include_exec_time=', '/*show_page_exec_time=',
+	'/*show_sql_stat=', '/*bitrix_include_areas=', '/*clear_cache=', '/*clear_cache_session=', '/*ADD_TO_COMPARE_LIST',
+	'/*ORDER_BY', '/*PAGEN', '/*?print=', '/*&print=', '/*print_course=', '/*?action=', '/*&action=', '/*register=',
+	'/*forgot_password=', '/*change_password=', '/*login=', '/*logout=', '/*auth=', '/*backurl=','/*back_url=',
+	'/*BACKURL=','/*BACK_URL=', '/*back_url_admin=', '/*?utm_source=', '/*?bxajaxid=', '/*&bxajaxid=',
+	'/*?view_result=', '/*&view_result='
+];
 var arStandardAllow = ['/bitrix/components/', '/bitrix/cache/', '/bitrix/js/', '/bitrix/templates/', '/bitrix/panel/'];
 
 function getActionWindow()

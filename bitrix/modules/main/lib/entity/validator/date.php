@@ -20,7 +20,7 @@ class Date extends Base
 			return true;
 		}
 
-		if ($value instanceof Type\DateTime)
+		if ($value instanceof Type\Date)
 		{
 			// self-validating object
 			return true;

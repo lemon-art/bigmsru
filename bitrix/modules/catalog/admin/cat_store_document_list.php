@@ -27,7 +27,7 @@ ClearVars();
 
 $sTableID = "b_catalog_store_docs";
 
-$oSort = new CAdminSorting($sTableID, "ID", "desc");
+$oSort = new CAdminSorting($sTableID, "ID", "DESC");
 $lAdmin = new CAdminList($sTableID, $oSort);
 
 $errorMessage = "";
@@ -109,7 +109,6 @@ $aContext = array(
 	array(
 		"TEXT" => GetMessage("CAT_DOC_ADD"),
 		"ICON" => "btn_new",
-		"LINK" => "cat_store_document_edit.php?lang=".LANG.$siteLID,
 		"TITLE" =>  GetMessage("CAT_DOC_ADD_TITLE"),
 		"MENU" => $arSiteMenu
 	),
@@ -125,12 +124,61 @@ $arFilterFields = array(
 	"filter_date_document_from",
 	"filter_date_document_to",
 );
+$filterValues = array_fill_keys($arFilterFields, null);
 $lAdmin->InitFilter($arFilterFields);
 
+if (isset($filter_site_id) && is_string($filter_site_id))
+{
+	$filter_site_id = trim($filter_site_id);
+	if ($filter_site_id != '' && $filter_site_id != 'NOT_REF')
+		$filterValues['filter_site_id'] = $filter_site_id;
+}
+if (isset($filter_doc_type) && is_string($filter_doc_type))
+{
+	$filter_doc_type = trim($filter_doc_type);
+	if ($filter_doc_type != '' && isset($documentTypes[$filter_doc_type]))
+		$filterValues['filter_doc_type'] = $filter_doc_type;
+}
+if (isset($filter_contractor_id) && is_string($filter_contractor_id))
+{
+	$filter_contractor_id = trim($filter_contractor_id);
+	if ($filter_contractor_id != '')
+		$filterValues['filter_contractor_id'] = (int)$filter_contractor_id;
+}
+if (isset($filter_status) && is_string($filter_status))
+{
+	if ($filter_status == 'Y' || $filter_status == 'N')
+		$filterValues['filter_status'] = $filter_status;
+}
+if (isset($filter_date_document_from) && is_string($filter_date_document_from))
+{
+	$filter_date_document_from = trim($filter_date_document_from);
+	if ($filter_date_document_from !== '')
+		$filterValues['filter_date_document_from'] = $filter_date_document_from;
+}
+if (isset($filter_date_document_to) && is_string($filter_date_document_to))
+{
+	if ($filter_date_document_to !== '')
+		$filterValues['filter_date_document_to'] = $filter_date_document_to;
+}
+
 $arFilter = array();
-if(strlen($_REQUEST["filter_site_id"]) > 0 && $_REQUEST["filter_site_id"] != "NOT_REF") $arFilter["SITE_ID"] = $_REQUEST["filter_site_id"];
-if(strlen($_REQUEST["filter_doc_type"]) > 0) $arFilter["DOC_TYPE"] = $_REQUEST["filter_doc_type"];
-if(strlen($_REQUEST["filter_date_document_from"]) > 0) $arFilter["!<DATE_DOCUMENT"] = $_REQUEST["filter_date_document_from"];
+if ($filterValues['filter_site_id'] !== null)
+	$arFilter['SITE_ID'] = $filterValues['filter_site_id'];
+if ($filterValues['filter_doc_type'] !== null)
+	$arFilter['DOC_TYPE'] = $filterValues['filter_doc_type'];
+if ($filterValues['filter_contractor_id'] !== null)
+	$arFilter['CONTRACTOR_ID'] = $filterValues['filter_contractor_id'];
+if ($filterValues['filter_status'] !== null)
+	$arFilter["STATUS"] = $filterValues['filter_status'];
+if ($filterValues['filter_date_document_from'] !== null)
+	$arFilter['!<DATE_DOCUMENT'] = $filterValues['filter_date_document_from'];
+if ($filterValues['filter_date_document_to'] !==  null)
+	$arFilter["!>DATE_DOCUMENT"] = (CIBlock::isShortDate($filterValues['filter_date_document_to'])
+		? ConvertTimeStamp(AddTime(MakeTimeStamp($filterValues['filter_date_document_to']), 1, "D"), "FULL")
+		: $filterValues['filter_date_document_to']
+	);
+
 if(strlen($_REQUEST["filter_date_document_to"])>0)
 {
 	if($arDate = ParseDateTime($_REQUEST["filter_date_document_to"], CSite::GetDateFormat("FULL", SITE_ID)))
@@ -150,8 +198,6 @@ if(strlen($_REQUEST["filter_date_document_to"])>0)
 		$filter_date_document_to = "";
 	}
 }
-if(strlen($_REQUEST["filter_status"]) > 0) $arFilter["STATUS"] = $_REQUEST["filter_status"];
-if(strlen($_REQUEST["filter_contractor_id"]) > 0) $arFilter["CONTRACTOR_ID"] = $_REQUEST["filter_contractor_id"];
 
 if (!isset($by))
 	$by = 'ID';
@@ -592,20 +638,20 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_aft
 		<tr>
 			<td><?= GetMessage("CAT_DOC_SITE_ID") ?>:</td>
 			<td>
-				<?echo CSite::SelectBox("filter_site_id", $filter_site_id, "(".GetMessage("CAT_DOC_SITE_ID").")"); ?>
+				<?echo CSite::SelectBox("filter_site_id", $filterValues['filter_site_id'], "(".GetMessage("CAT_DOC_SITE_ID").")"); ?>
 			</td>
 		</tr>
 		<tr>
 			<td><?= GetMessage("CAT_DOC_TYPE") ?>:</td>
 			<td>
 				<select name="filter_doc_type">
-					<option value=""><?= htmlspecialcharsex("(".GetMessage("CAT_DOC_TYPE").")") ?></option>
+					<option value=""><?=htmlspecialcharsbx("(".GetMessage("CAT_DOC_TYPE").")") ?></option>
 
 					<?
 					foreach($documentTypes as $type => $class)
 					{
 						?>
-						<option value="<?=$type?>"<?if($_REQUEST["filter_doc_type"] == $type) echo " selected"?>><?= htmlspecialcharsex(GetMessage("CAT_DOC_".$type)) ?></option>
+						<option value="<?=$type?>"<?if($filterValues['filter_doc_type'] == $type) echo " selected"?>><?=htmlspecialcharsbx(GetMessage("CAT_DOC_".$type)) ?></option>
 					<?
 					}
 					?>
@@ -615,20 +661,28 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_aft
 		<tr>
 			<td><?= GetMessage("CAT_DOC_DATE") ?> (<?= CSite::GetDateFormat("SHORT") ?>):</td>
 			<td>
-				<?echo CalendarPeriod("filter_date_document_from", $_REQUEST["filter_date_document_from"], "filter_date_document_to", $_REQUEST["filter_date_document_to"], "find_form", "Y")?>
+				<?=CAdminCalendar::CalendarPeriod(
+					'filter_date_document_from',
+					'filter_date_document_to',
+					$filterValues['filter_date_document_from'],
+					$filterValues['filter_date_document_to'],
+					true,
+					10,
+					false
+				); ?>
 			</td>
 		</tr>
 		<tr>
 			<td><?= GetMessage("CAT_DOC_CONTRACTOR") ?>:</td>
 			<td>
 				<select name="filter_contractor_id">
-					<option value=""><?= htmlspecialcharsex("(".GetMessage("CAT_DOC_CONTRACTOR").")") ?></option>
+					<option value=""><?=htmlspecialcharsbx("(".GetMessage("CAT_DOC_CONTRACTOR").")") ?></option>
 
 					<?
 					foreach($arContractors as $arContractor)
 					{
 						?>
-						<option value="<?=$arContractor["ID"]?>"<?if($_REQUEST["filter_doc_type"] == $arContractor["ID"]) echo " selected"?>><?= htmlspecialcharsbx(getContractorTitle($arContractor["ID"])) ?></option>
+						<option value="<?=$arContractor["ID"]?>"<?if($filterValues['filter_contractor_id'] == $arContractor["ID"]) echo " selected"?>><?= htmlspecialcharsbx(getContractorTitle($arContractor["ID"])) ?></option>
 					<?
 					}
 					?>
@@ -639,9 +693,9 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_aft
 			<td><?= GetMessage("CAT_DOC_STATUS") ?>:</td>
 			<td>
 				<select name="filter_status">
-					<option value=""><?= htmlspecialcharsex("(".GetMessage("CAT_DOC_STATUS").")") ?></option>
-					<option value="Y"<?if($filter_status == "Y") echo " selected"?>><?= htmlspecialcharsex(GetMessage("CAT_DOC_EXECUTION_Y")) ?></option>
-					<option value="N"<?if($filter_status == "N") echo " selected"?>><?= htmlspecialcharsex(GetMessage("CAT_DOC_EXECUTION_N")) ?></option>
+					<option value=""><?=htmlspecialcharsbx("(".GetMessage("CAT_DOC_STATUS").")") ?></option>
+					<option value="Y"<?if($filterValues['filter_status'] == "Y") echo " selected"?>><?=htmlspecialcharsbx(GetMessage("CAT_DOC_EXECUTION_Y")) ?></option>
+					<option value="N"<?if($filterValues['filter_status'] == "N") echo " selected"?>><?=htmlspecialcharsbx(GetMessage("CAT_DOC_EXECUTION_N")) ?></option>
 				</select>
 			</td>
 		</tr>
@@ -661,5 +715,5 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_aft
 $lAdmin->DisplayList();
 if(strlen($errorMessage) > 0)
 	CAdminMessage::ShowMessage($errorMessage);
-?><?
-require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");?>
+
+require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");

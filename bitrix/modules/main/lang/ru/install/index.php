@@ -216,4 +216,10 @@ $MESS["MAIN_DESKTOP_EMAIL_KEY"] = "E-mail";
 $MESS["MAIN_DESKTOP_EMAIL_VALUE"] = "<a href=\"mailto:info@1c-bitrix.ru\">info@1c-bitrix.ru</a>";
 $MESS["MAIN_DESKTOP_INFO_TITLE"] = "Информация о сайте";
 $MESS["MAIN_DESKTOP_RSS_TITLE"] = "Новости 1С-Битрикс";
-?>
+
+$MESS["MAIN_MAIL_CONFIRM_EVENT_TYPE_NAME"] = "Подтверждение email-адреса отправителя";
+$MESS["MAIN_MAIL_CONFIRM_EVENT_TYPE_DESC"] = "
+
+#EMAIL_TO# - Email-адрес для подтверждения
+#MESSAGE_SUBJECT# - Тема сообщения
+#CONFIRM_CODE# - Код подтверждения";

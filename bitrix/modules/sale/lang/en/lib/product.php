@@ -16,4 +16,5 @@ $MESS["SALE_PRODUCT_ENTITY_PURCHASING_PRICE_IN_SITE_CURRENCY_FIELD"] = "Purchasi
 $MESS["SALE_PRODUCT_ENTITY_ARRIVED_PRODUCTS_IN_PERIOD_BY_SHOP_FIELD"] = "Product items arrived";
 $MESS["SALE_PRODUCT_ENTITY_ARRIVED_PRODUCTS_IN_PERIOD_BY_STORE_FIELD"] = "Goods arrived at warehouses over period of time";
 $MESS["SALE_PRODUCT_ENTITY_EXPENSE_PRODUCTS_IN_PERIOD_BY_STORE_FIELD"] = "Goods dispatched from warehouses over period of time";
+$MESS["SALE_PRODUCT_ENTITY_SUBSCRIPTIONS_IN_PERIOD_BY_SHOP_FIELD"] = "Subscriptions for specified reporting period";
 ?>

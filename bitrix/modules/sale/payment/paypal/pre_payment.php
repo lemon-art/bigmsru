@@ -70,7 +70,7 @@ class CSalePaySystemPrePayment
 			$imgSrc = "//www.paypal.com/de_DE/i/btn/btn_xpressCheckout.gif";
 		else
 			$imgSrc = "//www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif";
-		return "<input name=\"paypalbutton\" style=\"padding-top:7px;\" type=\"image\" src=\"".$imgSrc."\" value=\"".GetMessage("PPL_BUTTON")."\">";
+		return "<input name=\"paypalbutton\" style=\"padding-top:7px;\" type=\"image\" src=\"".$imgSrc."\" value=\"".GetMessage("PPL_BUTTON")."\" onclick='var cp=BX(\"coupon\"); if (cp) cp.disabled=true;'>";
 	}
 
 	function BasketButtonAction($orderData = array())

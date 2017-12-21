@@ -442,7 +442,7 @@ ML_MESS.Save = '<?= GetMessageJS('ML_SAVE')?>';
 		<div id="mlsd_coll" class="mlsd_admin">
 			<table>
 			<tr><td><b><?=GetMessage('ML_NAME')?>:</b></td><td><input type="text" id="mlsd_coll_name" /></td></tr>
-			<tr><td style="vertical-align: top;"><?=GetMessage('ML_DESC')?>:</td><td><textarea id="mlsd_coll_desc" rows="2" cols="21"></textarea></td></tr>
+			<tr><td style="vertical-align: top;"><?=GetMessage('ML_DESC')?>:</td><td><textarea id="mlsd_coll_desc" rows="2" cols="21" style="resize: vertical;"></textarea></td></tr>
 			<tr><td><?=GetMessage('ML_KEYWORDS')?>:</td><td><input type="text" id="mlsd_coll_keywords" /></td></tr>
 			<tr><td><?=GetMessage('ML_PLACE')?>:</td>
 			<td><select id="mlsd_coll_parent" style="width: 190px;"><option value="0"><?= GetMessage('ML_UPPER_LEVEL')?></option></select></td></tr>
@@ -461,7 +461,7 @@ ML_MESS.Save = '<?= GetMessageJS('ML_SAVE')?>';
 		<tr><td class="ml-content-cell">
 			<table class="mlsd-fields-tbl">
 			<tr><td><b><?=GetMessage('ML_NAME')?>:</b></td><td><input type="text" id="mlsd_coll_name" /></td></tr>
-			<tr><td style="vertical-align: top;"><?=GetMessage('ML_DESC')?>:</td><td><textarea id="mlsd_coll_desc" rows="2" cols="21"></textarea></td></tr>
+			<tr><td style="vertical-align: top;"><?=GetMessage('ML_DESC')?>:</td><td><textarea id="mlsd_coll_desc" rows="2" cols="21" style="resize: vertical;"></textarea></td></tr>
 			<tr><td><?=GetMessage('ML_KEYWORDS')?>:</td><td><input type="text" id="mlsd_coll_keywords" /></td></tr>
 			<tr><td><?=GetMessage('ML_PLACE')?>:</td>
 			<td><select id="mlsd_coll_parent" style="width: 190px;"><option value="0"><?= GetMessage('ML_UPPER_LEVEL')?></option></select></td></tr>
@@ -489,7 +489,7 @@ ML_MESS.Save = '<?= GetMessageJS('ML_SAVE')?>';
 			</div>
 			<div id="mlsd_load_cont">
 				<b><label for="ml_load_file"><?=GetMessage('ML_FILE')?>:</label></b>
-				<input id="ml_load_file" type="file" name="load_file" style="margin-left: 15px; width:200px;">
+				<input id="ml_load_file" type="file" name="load_file" style="margin-left: 15px; max-width:250px;">
 			</div>
 			<div id="mlsd_select_cont" style="display: none;">
 				<b><label for="mlsd_item_path"><?=GetMessage('ML_FILE')?>:</label></b>
@@ -615,7 +615,7 @@ ML_MESS.Save = '<?= GetMessageJS('ML_SAVE')?>';
 			</div>
 			<div id="mlsd_load_cont">
 				<b><label for="ml_load_file"><?=GetMessage('ML_FILE')?>:</label></b>
-				<input id="ml_load_file" type="file" name="load_file" style="margin-left: 15px; width:200px;">
+				<input id="ml_load_file" type="file" name="load_file" style="margin-left: 15px; max-width:250px;">
 				<input id="ml_load_max_size" type="hidden" name="ml_load_max_size" value="<?=CMedialib::getMaximumFileUploadSize()?>">
 			</div>
 			<div id="mlsd_select_cont" style="display: none;">

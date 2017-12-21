@@ -305,6 +305,12 @@ class CAllCatalogExport
 		global $defCatalogAvailCurrencies;
 		$defCatalogAvailCurrencies = CCatalogCSVSettings::getDefaultSettings(CCatalogCSVSettings::FIELDS_CURRENCY);
 
+		if (!defined('CATALOG_EXPORT_NO_STEP'))
+			define('CATALOG_EXPORT_NO_STEP', true);
+		$firstStep = true;
+		$finalExport = true;
+		$CUR_ELEMENT_ID = 0;
+
 		CCatalogDiscountSave::Disable();
 		include($_SERVER["DOCUMENT_ROOT"].$strFile);
 		CCatalogDiscountSave::Enable();

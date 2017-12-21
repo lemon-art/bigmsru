@@ -4,6 +4,7 @@ namespace Bitrix\Main\Localization;
 use Bitrix\Main;
 use Bitrix\Main\IO\Path;
 use Bitrix\Main\Context;
+use Bitrix\Main\Config\Configuration;
 
 final class Loc
 {
@@ -236,6 +237,9 @@ final class Loc
 			if(stripos($trace[$i]["function"], "GetMessage") === 0)
 			{
 				$currentFile = Path::normalize($trace[$i]["file"]);
+
+				//we suppose there is a language file even if it wasn't registered via loadMessages()
+				self::$lazyLoadFiles[$currentFile] = $currentFile;
 				break;
 			}
 		}
@@ -329,16 +333,25 @@ final class Loc
 	}
 
 	/**
-	 * Returns default language for specified language. Defualt language is used when translation is not found.
+	 * Returns default language for specified language. Default language is used when translation is not found.
 	 *
 	 * @param string $lang
 	 * @return string
 	 */
 	public static function getDefaultLang($lang)
 	{
-		static $subst = array('ua'=>'ru', 'kz'=>'ru', 'by'=>'ru', 'ru'=>'ru');
+		static $subst = array('ua'=>'ru', 'kz'=>'ru', 'by'=>'ru', 'ru'=>'ru', 'en'=>'en', 'de'=>'en');
 		if(isset($subst[$lang]))
+		{
 			return $subst[$lang];
+		}
+
+		$options = Configuration::getValue("default_language");
+		if(isset($options[$lang]))
+		{
+			return $options[$lang];
+		}
+
 		return 'en';
 	}
 

@@ -18,4 +18,5 @@ $MESS ["SALE_DH_RPF_FEATURE_ENABLED"] = "включена";
 $MESS ["SALE_DH_RPF_WRP_LESS_100_DECLARED_VALUE"] = "Бандероль с объявленной ценностью массой до 100 г.";
 $MESS ["SALE_DH_RPF_SET_DEFAULT_TARIF_SET"] = "установить";
 $MESS ["SALE_DH_RPF_SET_DEFAULT_TARIF"] = "Тарифы по умолчанию";
+$MESS ['SALE_DH_RPF_DEPRECATED_MESSAGE'] = "Данный обработчик службы доставки устарел и больше не поддерживается. Для корректной работы Вам необходимо воспользоваться #A1#новым обработчиком#A2#";
 ?>

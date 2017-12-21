@@ -85,3 +85,12 @@ $MESS["SALE_HPS_BILL_LA_LOGO_DPI_96"] = "100% (96 dpi)";
 $MESS["SALE_HPS_BILL_LA_LOGO_DPI_150"] = "64% (150 dpi)";
 $MESS["SALE_HPS_BILL_LA_LOGO_DPI_300"] = "32% (300 dpi)";
 $MESS["SALE_HPS_BILL_LA_LOGO_DPI_600"] = "16% (600 dpi)";
+
+$MESS["SALE_HPS_BILL_LA_TOTAL_SHOW"] = "Показывать итоговую информацию";
+$MESS["SALE_HPS_BILL_LA_PAYER_SHOW"] = "Показывать информацию о плательщике";
+
+$MESS["SALE_HPS_BILL_LA_COLUMN_TITLE"] = "Заголовок для колонки ";
+$MESS["SALE_HPS_BILL_LA_COLUMN_SORT"] = "Сортировка";
+$MESS["SALE_HPS_BILL_LA_COLUMN_SHOW"] = "Активность";
+
+$MESS["SALE_HPS_BILL_LA_HEADER"] = "Заголовок счета";

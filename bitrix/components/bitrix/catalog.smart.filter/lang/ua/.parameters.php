@@ -15,4 +15,7 @@ $MESS["CP_BCSF_XML_EXPORT"] = "Включити підтримку Яндекс.
 $MESS["CP_BCSF_HIDE_NOT_AVAILABLE"] = "Не відображати товари, яких немає на складах";
 $MESS["CP_BCSF_CONVERT_CURRENCY"] = "Показувати ціни в одній валюті";
 $MESS["CP_BCSF_CURRENCY_ID"] = "Валюта, в яку будуть сконвертовані ціни";
+$MESS["CP_BCSF_SMART_FILTER_PATH"] = "Блок ЧПК розумного фільтра";
+$MESS["CP_BCSF_SECTION_CODE_PATH"] = "Шлях з символьних кодів розділу";
+$MESS["CP_BCSF_PAGER_PARAMS_NAME"] = "Ім'я масиву зі змінними для побудови посилань в посторінковій навігації";
 ?>

@@ -7,6 +7,9 @@ if ($saleModulePermissions == "D")
 
 IncludeModuleLangFile(__FILE__);
 
+global $USER;
+$intUserID = $USER->getId();
+
 $arAvailableExports = array(
 //		"excel" => "excel.php",
 		"csv" => "csv.php",

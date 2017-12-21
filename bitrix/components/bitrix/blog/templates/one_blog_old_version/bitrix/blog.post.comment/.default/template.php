@@ -57,7 +57,7 @@ else
 									<a id=image class=blogButton href='javascript:tag_image()'><img src="<?=$templateFolder?>/images/image_link.gif" width="20" height="20" title="<?=GetMessage("BLOG_P_INSERT_IMAGE_LINK")?>" class="blogButton"></a>
 									<a id=quote class=blogButton href='javascript:quoteMessage()'><img src="<?=$templateFolder?>/images/quote.gif" width="20" height="20" title="<?=GetMessage("BPC_QUOTE")?>" class="blogButton"></a>
 									<a id=code class=blogButton href='javascript:simpletag("CODE")'><img src="<?=$templateFolder?>/images/code.gif" width="20" height="20" title="<?=GetMessage("BPC_CODE")?>" class="blogButton"></a>
-									<a id=list class=blogButton href='javascript:tag_list()'><img src="<?=$templateFolder?>/images/list.gif" width="20" height="20" title="<?=GetMessage("BPC_LIST")?>" class="blogButton"<?if($arResult["use_captcha"]!==true) echo ' onload="imageLoaded()"'?>></a>
+									<a id=list class=blogButton href='javascript:tag_list()'><img src="<?=$templateFolder?>/images/list.gif" width="20" height="20" title="<?=GetMessage("BPC_LIST")?>" class="blogButton"></a>
 								</td>
 								<td width=100% align=right nowrap><a id=close_all style=visibility:hidden class=blogButton href='javascript:closeall()' title='<?=GetMessage("BPC_CLOSE_OPENED_TAGS")?>'><?=GetMessage("BPC_CLOSE_ALL_TAGS")?></a></td>
 							</tr>
@@ -116,6 +116,32 @@ else
 						<?
 					}
 					?>
+					<tr>
+						<td></td>
+						<td><?
+							//							userconsent only for unregistered users
+							if (empty($arResult["User"]) && $arParams['USER_CONSENT'] == 'Y')
+							{
+								$APPLICATION->IncludeComponent(
+									"bitrix:main.userconsent.request",
+									"",
+									array(
+										"ID" => $arParams["USER_CONSENT_ID"],
+										"IS_CHECKED" => $arParams["USER_CONSENT_IS_CHECKED"],
+										"AUTO_SAVE" => "Y",
+										"IS_LOADED" => $arParams["USER_CONSENT_IS_LOADED"],
+										"ORIGIN_ID" => "sender/sub",
+										"ORIGINATOR_ID" => "",
+										"REPLACE" => array(
+											'button_caption' => GetMessage("B_B_MS_SEND"),
+											'fields' => array(GetMessage("B_B_MS_NAME"), 'E-mail')
+										),
+									)
+								);
+							}
+							?>
+						</td>
+					</tr>
 					<tr>
 						<td>&nbsp;</td>
 						<td align="left"><input type="hidden" name="post" value="Y"><input type="submit" name="post" value="<?=GetMessage("B_B_MS_SEND")?>"><input type="submit" name="preview" value="<?=GetMessage("B_B_MS_PREVIEW")?>"></td>

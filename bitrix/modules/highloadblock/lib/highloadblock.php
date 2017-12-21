@@ -58,7 +58,12 @@ class HighloadBlockTable extends Entity\DataManager
 				'expression' => array(
 					'(SELECT COUNT(ID) FROM b_user_field WHERE b_user_field.ENTITY_ID = '.$sqlHelper->getConcatFunction("'HLBLOCK_'", $sqlHelper->castToChar('%s')).')', 'ID'
 				)
-			)
+			),
+			'LANG' => new Entity\ReferenceField(
+				'LANG',
+				'Bitrix\Highloadblock\HighloadBlockLangTable',
+				array('=this.ID' => 'ref.ID', 'ref.LID' => new \Bitrix\Main\DB\SqlExpression('?', LANG))
+			),
 		);
 
 		return $fieldsMap;
@@ -149,7 +154,7 @@ class HighloadBlockTable extends Entity\DataManager
 		}
 
 		// rename table in db
-		if ($data['TABLE_NAME'] !== $oldData['TABLE_NAME'])
+		if (isset($data['TABLE_NAME']) && $data['TABLE_NAME'] !== $oldData['TABLE_NAME'])
 		{
 			$connection = Application::getConnection();
 			$sqlHelper = $connection->getSqlHelper();
@@ -281,6 +286,24 @@ class HighloadBlockTable extends Entity\DataManager
 			$managedCache->cleanDir("b_user_field");
 		}
 
+		// clear langs
+		$res = HighloadBlockLangTable::getList(array(
+			'filter' => array('ID' => $primary)
+		));
+		while ($row = $res->fetch())
+		{
+			HighloadBlockLangTable::delete($row['ID']);
+		}
+
+		// clear rights
+		$res = HighloadBlockRightsTable::getList(array(
+			'filter' => array('HL_ID' => $primary)
+		));
+		while ($row = $res->fetch())
+		{
+			HighloadBlockRightsTable::delete($row['ID']);
+		}
+
 		// remove row
 		$result = parent::delete($primary);
 
@@ -368,9 +391,11 @@ class HighloadBlockTable extends Entity\DataManager
 			if ($uField['MULTIPLE'] == 'N')
 			{
 				// just add single field
-				$field = $USER_FIELD_MANAGER->getEntityField($uField, $uField['FIELD_NAME']);
+				$params = array(
+					'required' => $uField['MANDATORY'] == 'Y'
+				);
+				$field = $USER_FIELD_MANAGER->getEntityField($uField, $uField['FIELD_NAME'], $params);
 				$entity->addField($field);
-
 				foreach ($USER_FIELD_MANAGER->getEntityReferences($uField, $field) as $reference)
 				{
 					$entity->addField($reference);
@@ -605,7 +630,10 @@ class HighloadBlockTable extends Entity\DataManager
 			$userfield['FIELD_NAME'].'_SINGLE',
 			'%s',
 			$utmEntity->getFullName().':'.'OBJECT.VALUE',
-			array('data_type' => get_class($utmEntity->getField('VALUE')))
+			array(
+					'data_type' => get_class($utmEntity->getField('VALUE')),
+					'required' => $userfield['MANDATORY'] == 'Y'
+				)
 		);
 
 		$hlentity->addField($aliasField);
@@ -618,7 +646,9 @@ class HighloadBlockTable extends Entity\DataManager
 		}*/
 
 		// add seriazed cache-field
-		$cacheField = new Entity\TextField($userfield['FIELD_NAME']);
+		$cacheField = new Entity\TextField($userfield['FIELD_NAME'], array(
+			'required' => $userfield['MANDATORY'] == 'Y'
+		));
 
 		Main\UserFieldTable::setMultipleFieldSerialization($cacheField, $userfield);
 

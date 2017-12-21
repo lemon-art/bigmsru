@@ -260,7 +260,7 @@ class CAdminList
 			return false;
 
 		//AddMessage2Log("GroupAction = ".$_REQUEST['action']." & ".($this->bCanBeEdited?'bCanBeEdited':'ne'));
-		if($_REQUEST['action_button']=="edit")
+		if($_REQUEST['action']=="edit")
 		{
 			if(isset($_REQUEST['ID']))
 			{
@@ -350,6 +350,34 @@ class CAdminList
 
 	public function InitFilter($arFilterFields)
 	{
+		//Filter by link from favorites. Extract fields.
+		if(isset($_REQUEST['adm_filter_applied']) && intval($_REQUEST['adm_filter_applied']) > 0)
+		{
+			$dbRes = \CAdminFilter::GetList(array(), array('ID' => intval($_REQUEST['adm_filter_applied'])));
+
+			if($row = $dbRes->Fetch())
+			{
+				$fields = unserialize($row['FIELDS']);
+
+				if(is_array($fields) && !empty($fields))
+				{
+					foreach($fields as $field => $params)
+					{
+						if(isset($params['value']))
+						{
+							if(!isset($params['hidden']) || $params['hidden'] != 'true')
+							{
+								$GLOBALS[$field] = $params['value'];
+
+								if($GLOBALS['set_filter'] != 'Y')
+									$GLOBALS['set_filter'] = 'Y';
+							}
+						}
+					}
+				}
+			}
+		}
+
 		$sTableID = $this->table_id;
 		global $del_filter, $set_filter, $save_filter;
 		if($del_filter <> "")
@@ -1171,15 +1199,15 @@ class CAdminListRow
 				{
 					if($action["DEFAULT"] == true)
 					{
-						$sDefAction = $action["ACTION"]
-							? htmlspecialcharsbx($action["ACTION"])
-							: "BX.adminPanel.Redirect([], '".CUtil::JSEscape($action["LINK"])."', event)"
-						;
-						$sDefTitle = (!empty($action["TITLE"])? $action["TITLE"]:$action["TEXT"]);
+						$sDefAction = ($action["ACTION"]? $action["ACTION"] : "BX.adminPanel.Redirect([], '".CUtil::JSEscape($action["LINK"])."', event)");
+						$sDefTitle = (!empty($action["TITLE"])? $action["TITLE"] : $action["TEXT"]);
 						break;
 					}
 				}
 			}
+
+			$sDefAction = htmlspecialcharsbx($sDefAction, ENT_COMPAT, false);
+			$sDefTitle = htmlspecialcharsbx($sDefTitle, ENT_COMPAT, false);
 		}
 
 		$sMenuItems = "";
@@ -1301,6 +1329,8 @@ class CAdminListRow
 						case "select":
 							if($field["edit"]["values"][$val])
 								$val = htmlspecialcharsex($field["edit"]["values"][$val]);
+							else
+								$val = htmlspecialcharsex($val);
 							break;
 						case "file":
 							if ($val > 0)

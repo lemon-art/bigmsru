@@ -386,16 +386,6 @@
 
 					var applier = getStyler(tagName, arStyle, cssClass);
 
-//					if (false && params.bSelectParentIfCollapsed && range.collapsed)
-//					{
-//						var parents = applier.IsAppliedToRange(range, false);
-//						if (parents && parents[0])
-//						{
-//							//range = applier.SelectNode(range, parents[0]);
-//							range = _this.editor.selection.SelectNode(parents[0]);
-//						}
-//					}
-
 					if (params.bClear)
 					{
 						range = applier.UndoToRange(range, false);
@@ -661,7 +651,7 @@
 						var wholeBlockSelected = range.startContainer == blockElement.firstChild && range.endContainer == blockElement.lastChild;
 
 						// Divs and blockquotes can be inside each other
-						if (BX.util.in_array(nodeName, nestedBlockTags) && params.nestedBlocks !== false)
+						if (nodeName && BX.util.in_array(nodeName, nestedBlockTags) && params.nestedBlocks !== false)
 						{
 							// create new div
 							blockElement = _this.document.createElement(nodeName || DEFAULT_NODE_NAME);
@@ -1355,7 +1345,10 @@
 						});
 					}
 
-					_this.actions.formatBlock.exec('formatBlock', null);
+					if (!_this.editor.iframeView.IsEmpty(true))
+					{
+						_this.actions.formatBlock.exec('formatBlock', null);
+					}
 				},
 				state: BX.DoNothing,
 				value: BX.DoNothing
@@ -1570,7 +1563,7 @@
 
 					for (i = 0; i < nodes.length; i++)
 					{
-						if (nodes[i] && nodes[i].nodeName == "LI")
+						if (nodes[i] && nodes[i].nodeName == "LI" && !_this.editor.bbCode)
 						{
 							// 1. Add color to LI
 							nodes[i].style.color = value;
@@ -1687,7 +1680,7 @@
 					if (_this.editor.bbCode && _this.editor.synchro.IsFocusedOnTextarea())
 					{
 						_this.editor.textareaView.Focus();
-						var linkHtml = "[URL=" + value.href + "]" + (value.text || value.href) + "[/URL]";
+						var linkHtml = "[URL=" + _this.editor.util.spaceUrlEncode(value.href) + "]" + (value.text || value.href) + "[/URL]";
 						_this.editor.textareaView.WrapWith(false, false, linkHtml);
 					}
 					else
@@ -1722,7 +1715,7 @@
 							}
 							if (params.className)
 								link.className = params.className;
-							link.href = params.href || '';
+							link.href = _this.editor.util.spaceUrlEncode(params.href) || '';
 
 							if (params.noindex)
 							{
@@ -1927,6 +1920,8 @@
 				{
 					if (value.src == '')
 						return;
+
+					value.src = _this.editor.util.spaceUrlEncode(value.src);
 
 					// Only for bbCode == true
 					if (_this.editor.bbCode && _this.editor.synchro.IsFocusedOnTextarea())
@@ -2684,7 +2679,7 @@
 					if (node && node.nodeType == 1 && node.nodeName == 'LI')
 					{
 						fch = node.firstChild;
-						if (fch.nodeName == 'I' && fch.innerHTML == '' && fch.className !== '')
+						if (fch && fch.nodeName == 'I' && fch.innerHTML == '' && fch.className !== '')
 						{
 							return fch.className;
 						}
@@ -2702,7 +2697,7 @@
 					for (i = 0; i < list.childNodes.length; i++)
 					{
 						node = list.childNodes[i];
-						if (node && node.nodeType == 1 && node.nodeName == 'LI')
+						if (node && node.nodeType == 1 && node.nodeName == 'LI' && node.firstChild)
 						{
 							fch = node.firstChild;
 							if (fch.nodeName == 'I' && fch.innerHTML == '' && fch.className !== '')
@@ -4102,30 +4097,46 @@
 			{
 				range = range || _this.editor.selection.GetRange(_this.editor.selection.GetSelection(document));
 
-				var tmpDiv;
-				// mantis:64329
-				if (range.startContainer == range.endContainer &&
-						range.startOffset == 0 &&
-						range.endOffset == range.endContainer.length &&
-						range.startContainer.parentNode &&
-						range.startContainer.parentNode.nodeName == 'A' &&
-						range.startContainer.parentNode.href
-				)
+				if (range)
 				{
-					tmpDiv = BX.create('DIV', {html: range.startContainer.parentNode.href}, _this.editor.GetIframeDoc());
+					var tmpDiv;
+					// mantis:64329
+					if (range.startContainer == range.endContainer && range.startOffset == 0 && range.endOffset == range.endContainer.length && range.startContainer.parentNode && range.startContainer.parentNode.nodeName == 'A' && range.startContainer.parentNode.href)
+					{
+						tmpDiv = BX.create('DIV', {html: range.startContainer.parentNode.href}, _this.editor.GetIframeDoc());
+					}
+					else
+					{
+						var html = range.toHtml();
+						html = html.replace(/<br.*?>/ig, "#BX_BR#");
+						tmpDiv = BX.create('DIV', {html: BX.util.htmlspecialchars(html)}, _this.editor.GetIframeDoc());
+					}
+
+					var extSel = _this.editor.util.GetTextContentEx(tmpDiv);
+					extSel = extSel.replace(/#BX_BR#/ig, "<br>");
+					setExternalSelection(extSel);
+					BX.remove(tmpDiv);
 				}
 				else
 				{
-					var html = range.toHtml();
-					html = html.replace(/<br.*?>/ig, "#BX_BR#");
-					tmpDiv = BX.create('DIV', {html: html}, _this.editor.GetIframeDoc());
+					setExternalSelection('');
 				}
+			}
 
-				var extSel = _this.editor.util.GetTextContentEx(tmpDiv);
-				extSel = extSel.replace(/#BX_BR#/ig, "<br>");
-				setExternalSelection(extSel);
+			function checkSpaceAfterQuotes(target)
+			{
+				var
+					i, quote,
+					quotes = target.querySelectorAll("blockquote.bxhtmled-quote");
 
-				BX.remove(tmpDiv);
+				for (i = 0; i < quotes.length; i++)
+				{
+					quote = quotes[i];
+					if (quote.nextSibling === null)
+					{
+						_this.editor.util.InsertAfter(_this.editor.util.GetInvisibleTextNode(), quote);
+					}
+				}
 			}
 
 			return {
@@ -4149,42 +4160,21 @@
 					}
 					else
 					{
+						if (!range && _this.editor.selection.lastCheckedRange && _this.editor.selection.lastCheckedRange.range)
+						{
+							range = _this.editor.selection.lastCheckedRange.range;
+						}
+						_this.editor.iframeView.Focus();
+						if (range)
+						{
+							_this.editor.selection.SetSelection(range);
+						}
+
 						if(sel)
 						{
-							if (!range && _this.editor.selection.lastCheckedRange && _this.editor.selection.lastCheckedRange.range)
-							{
-								range = _this.editor.selection.lastCheckedRange.range;
-							}
-							_this.editor.iframeView.Focus();
-							if (range)
-							{
-								_this.editor.selection.SetSelection(range);
-							}
-
 							var quoteId = 'bxq_' + Math.round(Math.random() * 1000000);
 
-							// Bug in Chrome - when you press enter but it put carret on the prev string
-							// Chrome 43.0.2357 in Mac puts visible space instead of invisible
-							// Commented to solve mantis:73977
-							//if (BX.browser.IsMac() && BX.browser.IsChrome() && false)
-							//{
-							//	var tmpId = "bx-editor-temp-" + Math.round(Math.random() * 1000000);
-							//	_this.editor.InsertHtml('<blockquote id="' + quoteId + '" class="bxhtmled-quote">' + sel + '</blockquote>' + '<span><span id="' + tmpId + '">' + _this.editor.INVISIBLE_SPACE + '</span></span>', range);
-							//
-							//	setTimeout(function()
-							//	{
-							//		var tmpElement = _this.editor.GetIframeElement(tmpId);
-							//		if (tmpElement)
-							//		{
-							//			_this.editor.selection.SetAfter(tmpElement.parentNode);
-							//			BX.remove(tmpElement);
-							//		}
-							//	}, 10);
-							//}
-							//else
-							{
-								_this.editor.InsertHtml('<blockquote id="' + quoteId + '" class="bxhtmled-quote">' + sel + '</blockquote>' + _this.editor.INVISIBLE_SPACE, range);
-							}
+							_this.editor.InsertHtml('<blockquote id="' + quoteId + '" class="bxhtmled-quote">' + sel + '</blockquote>' + _this.editor.INVISIBLE_SPACE, range);
 
 							setTimeout(function()
 							{
@@ -4197,12 +4187,15 @@
 									{
 										BX.remove(prev);
 									}
-									quote.id = null;
+									quote.removeAttribute('id');
 								}
 							}, 0);
 						}
 						else
 						{
+							if (!range && _this.editor.selection.lastRange)
+								range = _this.editor.selection.lastRange;
+
 							res = _this.actions.formatBlock.exec('formatBlock', 'blockquote', 'bxhtmled-quote', false, {range: range});
 						}
 
@@ -4221,6 +4214,7 @@
 				setExternalSelectionFromRange : setExternalSelectionFromRange,
 				setExternalSelection : setExternalSelection,
 				getExternalSelection : getExternalSelection,
+				checkSpaceAfterQuotes: checkSpaceAfterQuotes,
 				setRange : setRange,
 				checkNode: checkNode
 			};
@@ -4292,7 +4286,7 @@
 							{
 								src: smile.path,
 								title: smile.name || smile.code
-							}});
+							}}, _this.editor.iframeView.document);
 							_this.editor.SetBxTag(smileImg, {tag: "smile", params: smile});
 							if (smile.width)
 								smileImg.style.width = parseInt(smile.width) + 'px';
@@ -4302,11 +4296,10 @@
 
 							var textBefore = _this.editor.iframeView.document.createTextNode(' ');
 							smileImg.parentNode.insertBefore(textBefore, smileImg);
-							var textAfer = _this.editor.iframeView.document.createTextNode(' ');
+							var textAfer = BX.create("SPAN", {html: '&nbsp;'}, _this.editor.iframeView.document);
 							_this.editor.util.InsertAfter(textAfer, smileImg);
-
 							_this.editor.selection.SetAfter(textAfer);
-							setTimeout(function(){_this.editor.selection.SetAfter(smileImg);}, 10);
+							setTimeout(function(){_this.editor.selection.SetAfter(textAfer);}, 10);
 						}
 					}
 				},
@@ -5168,7 +5161,10 @@
 						tag += "=" + value;
 					}
 
-					_this.editor.textareaView.WrapWith("[" + tag + "]", "[/" + tag_end + "]");
+					if(params.singleTag === true)
+						_this.editor.textareaView.WrapWith("[", "]", tag);
+					else
+						_this.editor.textareaView.WrapWith("[" + tag + "]", "[/" + tag_end + "]");
 				},
 				state: BX.DoNothing,
 				value: BX.DoNothing

@@ -243,7 +243,7 @@ if ($db_Message && ($res = $db_Message->GetNext()))
 			"STATISTIC" => IsModuleInstalled("statistic") && $APPLICATION->GetGroupRight("statistic") > "D" ? "Y" : "N",
 			"MAIN" => $APPLICATION->GetGroupRight("main") > "D" ? "Y" : "N");
 		if ($res["PANELS"]["EDIT"] != "Y" && $USER->IsAuthorized() && $res["AUTHOR_ID"] == $USER->GetId()):
-			if (COption::GetOptionString("forum", "USER_EDIT_OWN_POST", "N") == "Y"):
+			if (COption::GetOptionString("forum", "USER_EDIT_OWN_POST", "Y") == "Y"):
 				$res["PANELS"]["EDIT"] = "Y";
 			else:
 				// get last message in topic

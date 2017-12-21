@@ -62,6 +62,56 @@ BX.tooltip = function(user_id, anchor_name, loader, rootClassName, bForceUseLoad
 BX.tooltip.disable = function(){ bDisable = true; };
 BX.tooltip.enable = function(){ bDisable = false; };
 
+BX.tooltip.hide = function(userId) {
+	if (BX('user_info_' + userId))
+	{
+		BX('user_info_' + userId).style.display = 'none';
+	}
+};
+
+BX.tooltip.openIM = function(userId) {
+	if (top.BXIM)
+	{
+		top.BXIM.openMessenger(userId);
+		BX.tooltip.hide(userId);
+	}
+	else if (BX('MULSonetMessageChatTemplate'))
+	{
+		window.open(BX('MULSonetMessageChatTemplate').replace('#user_id#', userId).replace('#USER_ID#', userId).replace('#ID#', userId), '', 'location=yes,status=no,scrollbars=yes,resizable=yes,width=700,height=550,top='+Math.floor((screen.height - 550)/2-14)+',left='+Math.floor((screen.width - 700)/2-5));
+		BX.tooltip.hide(userId);
+	}
+	return false;
+};
+
+
+BX.tooltip.openCallTo = function(userId) {
+	if (top.BXIM)
+	{
+		top.BXIM.callTo(userId);
+		BX.tooltip.hide(userId);
+	}
+	return false;
+};
+
+BX.tooltip.checkCallTo = function(nodeId) {
+	if (
+		!top.BXIM
+		|| !top.BXIM.checkCallSupport()
+	)
+	{
+		BX.remove(nodeId);
+	}
+};
+
+BX.tooltip.openVideoCall = function(userId) {
+	if (BX('MULVideoCallTemplate'))
+	{
+		window.open(BX('MULVideoCallTemplate').replace('#user_id#', userId).replace('#USER_ID#', userId).replace('#ID#', userId), '', 'location=yes,status=no,scrollbars=yes,resizable=yes,width=1000,height=600,top='+Math.floor((screen.height - 600)/2-14)+',left='+Math.floor((screen.width - 1000)/2-5));
+		BX.tooltip.hide(userId);
+	}
+	return false;
+};
+
 BX.CTooltip = function(user_id, anchor, loader, rootClassName, bForceUseLoader, params)
 {
 	this.LOADER = (
@@ -201,7 +251,7 @@ BX.CTooltip = function(user_id, anchor, loader, rootClassName, bForceUseLoader, 
 
 		var left = _this.CoordsLeft;
 		var top = _this.CoordsTop + 30;
-		var arScroll = jsUtils.GetWindowScrollPos();
+		var arScroll = BX.GetWindowScrollPos();
 		var body = document.body;
 
 		var h_mirror = false;
@@ -385,7 +435,7 @@ BX.CTooltip = function(user_id, anchor, loader, rootClassName, bForceUseLoader, 
 
 		document.getElementById('user_info_' + _this.USER_ID).onmouseout = function() {
 			_this.StopTrackMouse(this);
-		}
+		};
 
 		BX.onCustomEvent('onTooltipShow', [this]);
 	};
@@ -427,7 +477,7 @@ BX.CTooltip.prototype.StartTrackMouse = function(ob)
 
 	if(!this.tracking)
 	{
-		var elCoords = jsUtils.GetRealPos(ob);
+		var elCoords = BX.pos(ob);
 		this.RealAnchor = ob;
 		this.CoordsLeft = elCoords.left + 0;
 		this.CoordsTop = elCoords.top - 325;
@@ -435,7 +485,8 @@ BX.CTooltip.prototype.StartTrackMouse = function(ob)
 		this.AnchorBottom = elCoords.bottom;
 
 		this.tracking = 1;
-		jsUtils.addEvent(document, "mousemove", _this.TrackMouse);
+		BX.bind(document, "mousemove", _this.TrackMouse);
+
 		setTimeout(function() {_this.tickTimer()}, 500);
 	}
 };
@@ -445,7 +496,7 @@ BX.CTooltip.prototype.StopTrackMouse = function()
 	var _this = this;
 	if(this.tracking)
 	{
-		jsUtils.removeEvent(document, "mousemove", _this.TrackMouse);
+		BX.unbind(document, "mousemove", _this.TrackMouse);
 		this.active = false;
 		setTimeout(function() {_this.HideTooltip()}, 500);
 		this.tracking = false;
@@ -516,11 +567,11 @@ BX.CTooltip.prototype.ShowOpacityEffect = function(oCallback, bFade)
 					_this.DIV.style.display = 'none';
 
 
-				if (jsUtils.IsIE() && i == 1 && bFade && _this.IFRAME)
+				if (BX.browser.IsIE() && i == 1 && bFade && _this.IFRAME)
 					_this.IFRAME.style.display = 'none';
 
 
-				if (jsUtils.IsIE() && i == steps && _this.DIV)
+				if (BX.browser.IsIE() && i == steps && _this.DIV)
 				{
 					if (!bFade)
 						_this.IFRAME.style.display = 'block';

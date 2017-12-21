@@ -13,7 +13,9 @@ $arFormData = $_REQUEST['form_data'];
 
 $AUTOSAVE = new CAutoSave();
 
-if ($AUTOSAVE->Set($arFormData))
+if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'reset')
+	$AUTOSAVE->Reset();
+elseif ($AUTOSAVE->Set($arFormData))
 	echo time() + CTimeZone::GetOffset();
 else
 	echo 'FAILED';

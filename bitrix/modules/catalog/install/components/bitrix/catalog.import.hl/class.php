@@ -55,7 +55,10 @@ class CBitrixCatalogImportHl extends CBitrixComponent
 				}
 				else
 				{
-					$this->error = GetMessage("CC_BCIH_XML_PARSE_ERROR", array("#CODE#" => 30));
+					if (!$this->error)
+					{
+						$this->error = GetMessage("CC_BCIH_XML_PARSE_ERROR", array("#CODE#" => 30));
+					}
 				}
 			}
 			else
@@ -98,6 +101,12 @@ class CBitrixCatalogImportHl extends CBitrixComponent
 				'NAME' => $highBlockName,
 				'TABLE_NAME' => 'b_'.strtolower($highBlockName),
 			));
+			if (!$result->isSuccess())
+			{
+				$this->error = GetMessage("CC_BCIH_REFERENCE_ERROR", array("#MESSAGE#" => implode($result->getErrorMessages())));
+				return 0;
+			}
+
 			$highBlockID = $result->getId();
 
 			$arFieldsName = array(

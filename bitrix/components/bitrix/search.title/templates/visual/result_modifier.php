@@ -107,6 +107,7 @@ if (!empty($arResult["ELEMENTS"]) && CModule::IncludeModule("iblock"))
 		$arFilter["CATALOG_SHOP_QUANTITY_".$value["ID"]] = 1;
 	}
 	$arFilter["=ID"] = $arResult["ELEMENTS"];
+	$arResult["ELEMENTS"] = array();
 	$rsElements = CIBlockElement::GetList(array(), $arFilter, false, false, $arSelect);
 	while($arElement = $rsElements->Fetch())
 	{

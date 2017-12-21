@@ -20,9 +20,7 @@ div.bx-playlist-edit .edit-field-active{border-color: #434B50 #ADC0CF #ADC0CF #4
 div.bx-playlist-edit table.internal .rowcontrol{margin-top: 3px !important;background-position: left center !important;}
 div.bx-playlist-edit table.internal td div.va_playlist_fd_over{background-image: none!important; padding: 2px !important;}
 div.bx-playlist-edit td div.va_playlist_fd_over .rowcontrol{margin-top: 0px !important;}
-
-
-
-
-
-
+.playlist-table .up { background-image: url(/bitrix/themes/.default/images/menu/up.gif); }
+.playlist-table .down{ background-image: url(/bitrix/themes/.default/images/menu/down.gif); }
+.playlist-table .delete{ background-image: url(/bitrix/themes/.default/images/menu/delete.gif); }
+.playlist-table .rowcontrol { display: block; width: 16px; height: 16px; overflow: hidden; margin-right: 3px; margin-top: 11px; background-repeat: no-repeat;}

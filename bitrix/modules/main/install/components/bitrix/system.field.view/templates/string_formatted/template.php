@@ -1,6 +1,18 @@
-<?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
-
 <?
+if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true)
+{
+	die();
+}
+
+/**
+ * Bitrix vars
+ *
+ * @var array $arParams
+ * @var array $arResult
+ * @var CBitrixComponentTemplate $this
+ * @global CMain $APPLICATION
+ */
+
 if ($arParams["arUserField"]["MULTIPLE"] == "Y")
 {
 	for($i = 0, $l = count($arResult["VALUE"]); $i < $l; $i++)
@@ -44,4 +56,3 @@ else
 		$arParams["arUserField"]["SETTINGS"]["PATTERN"]
 	);
 }
-?>

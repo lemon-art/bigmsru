@@ -33,4 +33,7 @@ $MESS["SEARCH_OPTIONS_FULL_TEXT_ENGINE_SPHINX"] = "Sphinx";
 $MESS["SEARCH_OPTIONS_SPHINX_CONNECTION"] = "Строка подключения для управления индексом (протокол MySql):";
 $MESS["SEARCH_OPTIONS_SPHINX_INDEX_NAME"] = "Идентификатор индекса:";
 $MESS["SEARCH_OPTIONS_SPHINX_ERROR"] = "Ошибка подключения к серверу Sphinx:";
+$MESS["SEARCH_OPTIONS_FULL_TEXT_ENGINE_MYSQL"] = "Полнотекстовый поиск MySql";
+$MESS["SEARCH_OPTIONS_MYSQL_ERROR"] = "Ошибка включения полнотекстового поиска:";
+$MESS["SEARCH_OPTIONS_MYSQL_NOTE"] = "Если при включении индекса вы увидите ошибку с кодом 1214, то нужно обновить MySql до версии >=5.6.4.";
 ?>

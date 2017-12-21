@@ -92,7 +92,9 @@ $jsLangMesIds = array(
 	"SCALE_PANEL_JS_BX_VER_ERROR",
 	"SCALE_PANEL_JS_BX_ENV_NEED_UPDATE2",
 	"SCALE_PANEL_JS_PROVIDER_ORDER_SUCCESS",
-	"SCALE_PANEL_JS_PROVIDER_ORDER_SUCCESS_TITLE"
+	"SCALE_PANEL_JS_PROVIDER_ORDER_SUCCESS_TITLE",
+	"SCALE_PANEL_JS_WARNING",
+	"SCALE_PANEL_JS_LOAD_FILE"
 );
 
 $dataRefreshTimeInterval = 300000; //ms how often we want to refresh monitoring info.
@@ -107,6 +109,9 @@ if(empty($serversList))
 	if(is_array($netIfaces) && count($netIfaces) > 1)
 		$pullCreateAction = "CREATE_PULL_NET_IFACE";
 }
+
+\CUserCounter::Increment($USER->GetID(),'SCALE_PANEL_VISITS', SITE_ID, false);
+\CUserCounter::Set($USER->GetID(),'SCALE_SERVERS_COUNT',count($serversList), SITE_ID, '', false);
 
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
 
@@ -148,6 +153,7 @@ if(\Bitrix\Scale\Helper::checkBxEnvVersion())
 			BX.Scale.rolesList = <?=CUtil::PhpToJSObject( \Bitrix\Scale\RolesData::getList())?>;
 			BX.Scale.sitesList = <?=CUtil::PhpToJSObject( \Bitrix\Scale\SitesData::getList())?>;
 			BX.Scale.monitoringEnabled = <?=Bitrix\Scale\Monitoring::isEnabled() ? "true" : "false"?>;
+			BX.Scale.bitrixEnvType = "<?=getenv('BITRIX_ENV_TYPE')?>";
 			BX.Scale.monitoringCategories = {};
 			BX.Scale.isMonitoringDbCreated = {};
 
@@ -183,7 +189,7 @@ else
 	?>
 	<div class="adm-scale-page-wrap" id="adm-scale-page-wrap">
 		<div class="adm-scale-blocks-wrapper" id="adm-scale-blocks-wrapper">
-			<?=Loc::getMessage("SCALE_PANEL_BVM_TOO_OLD")?>
+			<?=Loc::getMessage("SCALE_PANEL_BVM_TOO_OLD").". ".Loc::getMessage("SCALE_PANEL_BVM_TOO_OLD_DOC")?>
 		</div>
 	</div>
 <?

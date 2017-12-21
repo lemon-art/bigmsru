@@ -266,7 +266,7 @@ foreach ($arResult["MESSAGE_LIST"] as $key => $res)
 		"DELETE" => $arResult["USER"]["RIGHTS"]["EDIT"],
 		"EDIT" => $arResult["USER"]["RIGHTS"]["EDIT"]);
 	if ($res["PANELS"]["EDIT"] != "Y" && $USER->IsAuthorized() && $res["AUTHOR_ID"] == $USER->GetId()):
-		if (COption::GetOptionString("forum", "USER_EDIT_OWN_POST", "N") == "Y"):
+		if (COption::GetOptionString("forum", "USER_EDIT_OWN_POST", "Y") == "Y"):
 			$res["PANELS"]["EDIT"] = "Y";
 		else:
 			// get last message in topic

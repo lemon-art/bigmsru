@@ -635,7 +635,7 @@ abstract class Connector extends Entity\DataManager
 	* @throws ArgumentNullException
 	* @throws NotImplementedException
 	*
-	* @return Bitrix\Main\DB\Result list of locations
+	* @return \Bitrix\Main\DB\Result list of locations
 	*/
 	public static function getConnectedGroups($entityPrimary, $parameters = array())
 	{

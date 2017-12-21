@@ -12,79 +12,81 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 		$bCorrectPayment = False;
 		$techMessage = GetMessage("SALE_RBK_REC_ORDER");
 	}
-
-	CSalePaySystemAction::InitParamArrays($arOrder, $arOrder["ID"]);
-
-	$secretKeyB = CSalePaySystemAction::GetParamValue("SECRET_KEY");
-
-	if ($bCorrectPayment && strlen($secretKeyB) > 0)
+	else
 	{
-		$statusPay = CSalePaySystemAction::GetParamValue("CHANGE_STATUS_PAY");
-		$eshopIdB = CSalePaySystemAction::GetParamValue("ESHOP_ID");
-		$recipientAmountB = number_format(CSalePaySystemAction::GetParamValue("SHOULD_PAY"), 2, '.', '');
-		$recipientCurrencyB = CSalePaySystemAction::GetParamValue("CURRENCY");
+		CSalePaySystemAction::InitParamArrays($arOrder, $arOrder["ID"]);
 
-		if ($recipientCurrencyB == "RUB")
-			$recipientCurrencyB = "RUR";
-		
-		$eshopId = trim($_POST["eshopId"]);
-		$paymentId = trim($_POST["paymentId"]);
-		$serviceName = trim($_POST["serviceName"]);
-		$eshopAccount = trim($_POST["eshopAccount"]);
-		$recipientAmount = trim($_POST["recipientAmount"]);
-		$recipientCurrency = trim($_POST["recipientCurrency"]);
-		$paymentStatus = trim($_POST["paymentStatus"]);
-		$userName = trim($_POST["userName"]);
-		$userEmail = trim($_POST["userEmail"]);
-		$paymentData = trim($_POST["paymentData"]);
-		$hash = trim($_POST["hash"]);
-		$paymentAmount = trim($_POST["paymentAmount"]);
-		$paymentCurrency = trim($_POST["paymentCurrency"]);
-		
-		if($eshopId == $eshopIdB)
+		$secretKeyB = CSalePaySystemAction::GetParamValue("SECRET_KEY");
+
+		if ($bCorrectPayment && strlen($secretKeyB) > 0)
 		{
-			$checkB = md5($eshopId."::".$orderId."::".$serviceName."::".$eshopAccount."::".$recipientAmount."::".$recipientCurrency."::".$paymentStatus."::".$userName."::".$userEmail."::".$paymentData."::".$secretKeyB);
-			
-			if($checkB == $hash)
+			$statusPay = CSalePaySystemAction::GetParamValue("CHANGE_STATUS_PAY");
+			$eshopIdB = CSalePaySystemAction::GetParamValue("ESHOP_ID");
+			$recipientAmountB = number_format(CSalePaySystemAction::GetParamValue("SHOULD_PAY"), 2, '.', '');
+			$recipientCurrencyB = CSalePaySystemAction::GetParamValue("CURRENCY");
+
+			if ($recipientCurrencyB == "RUB")
+				$recipientCurrencyB = "RUR";
+
+			$eshopId = trim($_POST["eshopId"]);
+			$paymentId = trim($_POST["paymentId"]);
+			$serviceName = trim($_POST["serviceName"]);
+			$eshopAccount = trim($_POST["eshopAccount"]);
+			$recipientAmount = trim($_POST["recipientAmount"]);
+			$recipientCurrency = trim($_POST["recipientCurrency"]);
+			$paymentStatus = trim($_POST["paymentStatus"]);
+			$userName = trim($_POST["userName"]);
+			$userEmail = trim($_POST["userEmail"]);
+			$paymentData = trim($_POST["paymentData"]);
+			$hash = trim($_POST["hash"]);
+			$paymentAmount = trim($_POST["paymentAmount"]);
+			$paymentCurrency = trim($_POST["paymentCurrency"]);
+
+			if($eshopId == $eshopIdB)
 			{
-				if($paymentStatus == 5)
+				$checkB = md5($eshopId."::".$orderId."::".$serviceName."::".$eshopAccount."::".$recipientAmount."::".$recipientCurrency."::".$paymentStatus."::".$userName."::".$userEmail."::".$paymentData."::".$secretKeyB);
+
+				if($checkB == $hash)
 				{
-					if($recipientAmountB == $recipientAmount && $recipientCurrencyB == $recipientCurrency)
+					if($paymentStatus == 5)
 					{
-						if($arOrder["PAYED"] != "Y" && $statusPay == "Y")
-							CSaleOrder::PayOrder($arOrder["ID"], "Y");
-						
-						$techMessage = GetMessage("SALE_RBK_PROCESS_OK");
+						if($recipientAmountB == $recipientAmount && $recipientCurrencyB == $recipientCurrency)
+						{
+							if($arOrder["PAYED"] != "Y" && $statusPay == "Y")
+								CSaleOrder::PayOrder($arOrder["ID"], "Y");
+
+							$techMessage = GetMessage("SALE_RBK_PROCESS_OK");
+						}
+						else
+							$techMessage = GetMessage("SALE_RBK_REC_SUMM");
 					}
+					elseif($paymentStatus == 3)
+						$techMessage = GetMessage("SALE_RBK_PROCESS_PAY");
 					else
-						$techMessage = GetMessage("SALE_RBK_REC_SUMM");
+						$techMessage = GetMessage("SALE_RBK_REC_TRANS");
 				}
-				elseif($paymentStatus == 3)
-					$techMessage = GetMessage("SALE_RBK_PROCESS_PAY");
 				else
-					$techMessage = GetMessage("SALE_RBK_REC_TRANS");
+					$techMessage = GetMessage("SALE_RBK_REC_SIGN");
 			}
 			else
-				$techMessage = GetMessage("SALE_RBK_REC_SIGN");
+				$techMessage = GetMessage("SALE_RBK_REC_PRODUCT");
+
+			$strPS_STATUS_DESCRIPTION = GetMessage('SALE_RBK_CUSTOMER').": ".$userName." (".$userEmail."); ";
+			$strPS_STATUS_DESCRIPTION .= GetMessage('SALE_RBK_PAYMENT').": ".$paymentId."; ";
+			$strPS_STATUS_DESCRIPTION .= GetMessage('SALE_RBK_DATE').": ".$paymentData.";";
+
+			$arFields = array(
+					"PS_STATUS" => "Y",
+					"PS_STATUS_CODE" => $paymentStatus,
+					"PS_STATUS_DESCRIPTION" => $strPS_STATUS_DESCRIPTION,
+					"PS_STATUS_MESSAGE" => $techMessage,
+					"PS_SUM" => $recipientAmount,
+					"PS_CURRENCY" => $recipientCurrency,
+					"PS_RESPONSE_DATE" => Date(CDatabase::DateFormatToPHP(CLang::GetDateFormat("FULL", LANG))),
+				);
+
+			CSaleOrder::Update($arOrder["ID"], $arFields);
 		}
-		else
-			$techMessage = GetMessage("SALE_RBK_REC_PRODUCT");
-		
-		$strPS_STATUS_DESCRIPTION = GetMessage('SALE_RBK_CUSTOMER').": ".$userName." (".$userEmail."); ";
-		$strPS_STATUS_DESCRIPTION .= GetMessage('SALE_RBK_PAYMENT').": ".$paymentId."; ";
-		$strPS_STATUS_DESCRIPTION .= GetMessage('SALE_RBK_DATE').": ".$paymentData.";";
-
-		$arFields = array(
-				"PS_STATUS" => "Y",
-				"PS_STATUS_CODE" => $paymentStatus,
-				"PS_STATUS_DESCRIPTION" => $strPS_STATUS_DESCRIPTION,
-				"PS_STATUS_MESSAGE" => $techMessage,
-				"PS_SUM" => $recipientAmount,
-				"PS_CURRENCY" => $recipientCurrency,
-				"PS_RESPONSE_DATE" => Date(CDatabase::DateFormatToPHP(CLang::GetDateFormat("FULL", LANG))),
-			);
-
-		CSaleOrder::Update($arOrder["ID"], $arFields);
 	}
 }
 ?>

@@ -27,7 +27,7 @@ BX.date.format = function(format, timestamp, now, utc)
 	else if (!BX.type.isNotEmptyString(format))
 		return "";
 
-	var formatRegex = /\\?(sago|iago|isago|Hago|dago|mago|Yago|sdiff|idiff|Hdiff|ddiff|mdiff|Ydiff|yesterday|today|tommorow|[a-z])/gi;
+	var formatRegex = /\\?(sago|iago|isago|Hago|dago|mago|Yago|sdiff|idiff|Hdiff|ddiff|mdiff|Ydiff|yesterday|today|tommorow|tomorrow|[a-z])/gi;
 
 	var dateFormats = {
 		d : function() {
@@ -360,6 +360,10 @@ BX.date.format = function(format, timestamp, now, utc)
 			return BX.message("FD_TOMORROW");
 		},
 
+		tomorrow : function() {
+			return BX.message("FD_TOMORROW");
+		},
+
 		dago : function() {
 			return _formatDateMessage(intval((nowDate - date) / 60 / 60 / 24 / 1000), {
 				"0" : "FD_DAY_AGO_0",
@@ -427,20 +431,27 @@ BX.date.format = function(format, timestamp, now, utc)
 		},
 
 		x : function() {
+			var ampm = BX.isAmPmMode(true);
+			var timeFormat = (ampm === BX.AM_PM_LOWER? "g:i a" : (ampm === BX.AM_PM_UPPER? "g:i A" : "H:i"));
+
 			return BX.date.format([
-				["tommorow", "tommorow, H:i"],
-				["-", BX.date.convertBitrixFormat(BX.message("FORMAT_DATETIME")).replace(/:s$/g, "")],
+				["tomorrow", "tomorrow, "+timeFormat],
+				["-", BX.date.convertBitrixFormat(BX.message("FORMAT_DATETIME")).replace(/:s/g, "")],
 				["s", "sago"],
 				["i", "iago"],
-				["today", "today, H:i"],
-				["yesterday", "yesterday, H:i"],
-				["", BX.date.convertBitrixFormat(BX.message("FORMAT_DATETIME")).replace(/:s$/g, "")]
+				["today", "today, "+ampm],
+				["yesterday", "yesterday, "+ampm],
+				["", BX.date.convertBitrixFormat(BX.message("FORMAT_DATETIME")).replace(/:s/g, "")]
 			], date, nowDate, isUTC);
 		},
 
 		X : function() {
+
+			var ampm = BX.isAmPmMode(true);
+			var timeFormat = (ampm === BX.AM_PM_LOWER? "g:i a" : (ampm === BX.AM_PM_UPPER? "g:i A" : "H:i"));
+
 			var day = BX.date.format([
-				["tommorow", "tommorow"],
+				["tomorrow", "tomorrow"],
 				["-", BX.date.convertBitrixFormat(BX.message("FORMAT_DATE"))],
 				["today", "today"],
 				["yesterday", "yesterday"],
@@ -448,9 +459,9 @@ BX.date.format = function(format, timestamp, now, utc)
 			], date, nowDate, isUTC);
 
 			var time = BX.date.format([
-				["tommorow", "H:i"],
-				["today", "H:i"],
-				["yesterday", "H:i"],
+				["tomorrow", timeFormat],
+				["today", timeFormat],
+				["yesterday", timeFormat],
 				["", ""]
 			], date, nowDate, isUTC);
 
@@ -506,55 +517,130 @@ BX.date.format = function(format, timestamp, now, utc)
 				if (secondsAgo < 60)
 					return BX.date.format(formatValue, date, nowDate, isUTC);
 			}
-			else if ((match = /^s(\d+)/.exec(formatInterval)) != null)
+			else if ((match = /^s(\d+)\>?(\d+)?/.exec(formatInterval)) != null)
 			{
-				if (secondsAgo < match[1])
+				if (match[1] && match[2])
+				{
+					if (
+						secondsAgo < match[1]
+						&& secondsAgo > match[2]
+					)
+					{
+						return BX.date.format(formatValue, date, nowDate, isUTC);
+					}
+				}
+				else if (secondsAgo < match[1])
+				{
 					return BX.date.format(formatValue, date, nowDate, isUTC);
+				}
 			}
 			else if (formatInterval == "i")
 			{
 				if (secondsAgo < 60 * 60)
 					return BX.date.format(formatValue, date, nowDate, isUTC);
 			}
-			else if ((match = /^i(\d+)/.exec(formatInterval)) != null)
+			else if ((match = /^i(\d+)\>?(\d+)?/.exec(formatInterval)) != null)
 			{
-				if (secondsAgo < match[1]*60)
+				if (match[1] && match[2])
+				{
+					if (
+						secondsAgo < match[1] * 60
+						&& secondsAgo > match[2] * 60
+					)
+					{
+						return BX.date.format(formatValue, date, nowDate, isUTC);
+					}
+				}
+				else if (secondsAgo < match[1] * 60)
+				{
 					return BX.date.format(formatValue, date, nowDate, isUTC);
+				}
 			}
 			else if (formatInterval == "H")
 			{
 				if (secondsAgo < 24 * 60 * 60)
 					return BX.date.format(formatValue, date, nowDate, isUTC);
 			}
-			else if ((match = /^H(\d+)/.exec(formatInterval)) != null)
+			else if ((match = /^H(\d+)\>?(\d+)?/.exec(formatInterval)) != null)
 			{
-				if (secondsAgo < match[1] * 60 * 60)
+				if (match[1] && match[2])
+				{
+					if (
+						secondsAgo < match[1] * 60 * 60
+						&& secondsAgo > match[2] * 60 * 60
+					)
+					{
+						return BX.date.format(formatValue, date, nowDate, isUTC);
+					}
+				}
+				else if (secondsAgo < match[1] * 60 * 60)
+				{
 					return BX.date.format(formatValue, date, nowDate, isUTC);
+				}
 			}
 			else if (formatInterval == "d")
 			{
 				if (secondsAgo < 31 *24 * 60 * 60)
 					return BX.date.format(formatValue, date, nowDate, isUTC);
 			}
-			else if ((match = /^d(\d+)/.exec(formatInterval)) != null)
+			else if ((match = /^d(\d+)\>?(\d+)?/.exec(formatInterval)) != null)
 			{
-				if (secondsAgo < match[1] * 60 * 60)
+				if (match[1] && match[2])
+				{
+					if (
+						secondsAgo < match[1] * 24 * 60 * 60
+						&& secondsAgo > match[2] * 24 * 60 * 60
+					)
+					{
+						return BX.date.format(formatValue, date, nowDate, isUTC);
+					}
+				}
+				else if (secondsAgo < match[1] * 24 * 60 * 60)
+				{
 					return BX.date.format(formatValue, date, nowDate, isUTC);
+				}
 			}
 			else if (formatInterval == "m")
 			{
 				if (secondsAgo < 365 * 24 * 60 * 60)
 					return BX.date.format(formatValue, date, nowDate, isUTC);
 			}
-			else if ((match = /^m(\d+)/.exec(formatInterval)) != null)
+			else if ((match = /^m(\d+)\>?(\d+)?/.exec(formatInterval)) != null)
 			{
-				if (secondsAgo < match[1] * 31 * 24 * 60 * 60)
+				if (match[1] && match[2])
+				{
+					if (
+						secondsAgo < match[1] * 31 * 24 * 60 * 60
+						&& secondsAgo > match[2] * 31 * 24 * 60 * 60
+					)
+					{
+						return BX.date.format(formatValue, date, nowDate, isUTC);
+					}
+				}
+				else if (secondsAgo < match[1] * 31 * 24 * 60 * 60)
+				{
 					return BX.date.format(formatValue, date, nowDate, isUTC);
+				}
+			}
+			else if (formatInterval == "now")
+			{
+				if (date.getTime() == nowDate.getTime())
+				{
+					return BX.date.format(formatValue, date, nowDate, isUTC);
+				}
 			}
 			else if (formatInterval == "today")
 			{
 				var year = getFullYear(nowDate), month = getMonth(nowDate), day = getDate(nowDate);
 				var todayStart = isUTC ? new Date(Date.UTC(year, month, day, 0, 0, 0, 0)) : new Date(year, month, day, 0, 0, 0, 0);
+				var todayEnd = isUTC ? new Date(Date.UTC(year, month, day+1, 0, 0, 0, 0)) : new Date(year, month, day+1, 0, 0, 0, 0);
+				if (date >= todayStart && date < todayEnd)
+					return BX.date.format(formatValue, date, nowDate, isUTC);
+			}
+			else if (formatInterval == "todayFuture")
+			{
+				var year = getFullYear(nowDate), month = getMonth(nowDate), day = getDate(nowDate);
+				var todayStart = nowDate.getTime();
 				var todayEnd = isUTC ? new Date(Date.UTC(year, month, day+1, 0, 0, 0, 0)) : new Date(year, month, day+1, 0, 0, 0, 0);
 				if (date >= todayStart && date < todayEnd)
 					return BX.date.format(formatValue, date, nowDate, isUTC);
@@ -567,12 +653,12 @@ BX.date.format = function(format, timestamp, now, utc)
 				if (date >= yesterdayStart && date < yesterdayEnd)
 					return BX.date.format(formatValue, date, nowDate, isUTC);
 			}
-			else if (formatInterval == "tommorow")
+			else if (formatInterval == "tommorow" || formatInterval == "tomorrow")
 			{
 				year = getFullYear(nowDate); month = getMonth(nowDate); day = getDate(nowDate);
-				var tommorowStart = isUTC ? new Date(Date.UTC(year, month, day+1, 0, 0, 0, 0)) : new Date(year, month, day+1, 0, 0, 0, 0);
-				var tommorowEnd = isUTC ? new Date(Date.UTC(year, month, day+2, 0, 0, 0, 0)) : new Date(year, month, day+2, 0, 0, 0, 0);
-				if (date >= tommorowStart && date < tommorowEnd)
+				var tomorrowStart = isUTC ? new Date(Date.UTC(year, month, day+1, 0, 0, 0, 0)) : new Date(year, month, day+1, 0, 0, 0, 0);
+				var tomorrowEnd = isUTC ? new Date(Date.UTC(year, month, day+2, 0, 0, 0, 0)) : new Date(year, month, day+2, 0, 0, 0, 0);
+				if (date >= tomorrowStart && date < tomorrowEnd)
 					return BX.date.format(formatValue, date, nowDate, isUTC);
 			}
 			else if (formatInterval == "-")
@@ -582,7 +668,8 @@ BX.date.format = function(format, timestamp, now, utc)
 			}
 		}
 
-		return formats.length > 0 ? BX.date.format(formats.pop()[1], date, nowDate, isUTC) : "";
+		//return formats.length > 0 ? BX.date.format(formats.pop()[1], date, nowDate, isUTC) : "";
+		return formats.length > 0 ? BX.date.format(formats[formats.length - 1][1], date, nowDate, isUTC) : "";
 	}
 
 
@@ -702,6 +789,56 @@ BX.date.getServerTimestamp = function(timestamp)
 	return Math.round(timestamp / 1000 - (parseInt(BX.message('SERVER_TZ_OFFSET'), 10) + parseInt(browserOffset, 10)));
 };
 
+BX.date.formatLastActivityDate = function(timestamp, now, utc)
+{
+	var ampm = BX.isAmPmMode(true);
+	var timeFormat = (ampm === BX.AM_PM_LOWER? "g:i a" : (ampm === BX.AM_PM_UPPER? "g:i A" : "H:i"));
+
+	var format = [
+	   ["tomorrow", "#01#"+timeFormat],
+	   ["now" , "#02#"],
+	   ["todayFuture", "#03#"+timeFormat],
+	   ["yesterday", "#04#"+timeFormat],
+	   ["-", BX.date.convertBitrixFormat(BX.message("FORMAT_DATETIME")).replace(/:s/g, "")],
+	   ["s60", "sago"],
+	   ["i60", "iago"],
+	   ["H5", "Hago"],
+	   ["H24", "#03#"+timeFormat],
+	   ["d31", "dago"],
+	   ["m12>1", "mago"],
+	   ["m12>0", "dago"],
+	   ["", "#05#"]
+	];
+	var formattedDate = BX.date.format(format, timestamp, now, utc);
+
+	if ((match = /^#(\d+)#(.*)/.exec(formattedDate)) != null)
+	{
+		switch (match[1])
+		{
+			case "01":
+				formattedDate = BX.message('FD_LAST_SEEN_TOMORROW').replace("#TIME#", match[2]);
+			break;
+			case "02":
+				formattedDate = BX.message('FD_LAST_SEEN_NOW');
+			break;
+			case "03":
+				formattedDate = BX.message('FD_LAST_SEEN_TODAY').replace("#TIME#", match[2]);
+			break;
+			case "04":
+				formattedDate = BX.message('FD_LAST_SEEN_YESTERDAY').replace("#TIME#", match[2]);
+			break;
+			case "05":
+				formattedDate = BX.message('FD_LAST_SEEN_MORE_YEAR');
+			break;
+			default:
+				formattedDate = match[2];
+			break;
+		}
+	}
+
+	return formattedDate;
+};
+
 /************************************** calendar class **********************************/
 
 var obCalendarSingleton = null;
@@ -761,6 +898,16 @@ BX.calendar.ValueToString = function(value, bTime, bUTC)
 {
 	return BX.date.format(
 		BX.date.convertBitrixFormat(BX.message(bTime ? 'FORMAT_DATETIME' : 'FORMAT_DATE')),
+		value,
+		null,
+		!!bUTC
+	);
+};
+
+BX.calendar.ValueToStringFormat = function(value, bitrixFormat, bUTC)
+{
+	return BX.date.format(
+		BX.date.convertBitrixFormat(bitrixFormat),
 		value,
 		null,
 		!!bUTC
@@ -972,6 +1119,8 @@ BX.JCCalendar = function()
 	this.popup = null;
 	this.popup_month = null;
 	this.popup_year = null;
+	this.month_popup_classname = '';
+	this.year_popup_classname = '';
 
 	this.value = null;
 
@@ -1385,12 +1534,12 @@ BX.JCCalendar = function()
 	this._menu_month_content = function()
 	{
 		var months = '', cur_month = this.value.getMonth(), i;
-		for (i=0; i<12; i++)
+		for (i = 0; i < 12; i++)
 		{
-			months += '<a href="javascript:void(0)" class="bx-calendar-month'+(i == cur_month ? ' bx-calendar-month-active' : '')+'" onclick="BX.calendar.get().SetMonth('+i+')">'+BX.message('MONTH_' + (i+1))+'</a>';
+			months += '<span class="bx-calendar-month'+(i == cur_month ? ' bx-calendar-month-active' : '')+'" data-bx-month="' + i + '">' + BX.message('MONTH_' + (i + 1)) + '</span>';
 		}
 
-		return '<div class="bx-calendar-month-popup"><div class="bx-calendar-month-title" onclick="BX.calendar.get().popup_month.close();">'+BX.message('MONTH_' + (this.value.getUTCMonth()+1))+'</div><div class="bx-calendar-month-content">'+months+'</div></div>';
+		return '<div class="bx-calendar-month-popup"><div class="bx-calendar-month-title" data-bx-month="' + this.value.getUTCMonth() + '">' + BX.message('MONTH_' + (this.value.getUTCMonth() + 1)) + '</div><div class="bx-calendar-month-content">' + months + '</div></div>';
 	};
 
 	this._menu_month = function()
@@ -1406,6 +1555,7 @@ BX.JCCalendar = function()
 					autoHide: true,
 					offsetTop: -29,
 					offsetLeft: -1,
+					className: this.month_popup_classname,
 					events: {
 						onPopupShow: BX.delegate(function() {
 							if (this.popup_year)
@@ -1417,6 +1567,7 @@ BX.JCCalendar = function()
 				}
 			);
 
+			BX.bind(this.popup_month.popupContainer, 'click', BX.proxy(this.month_popup_click, this));
 			this.popup_month.BXMONTH = this.value.getUTCMonth();
 		}
 		else if (this.popup_month.BXMONTH != this.value.getUTCMonth())
@@ -1428,16 +1579,26 @@ BX.JCCalendar = function()
 		this.popup_month.show();
 	};
 
+	this.month_popup_click = function(e)
+	{
+		var target = e.target || e.srcElement;
+		if (target && target.getAttribute && target.getAttribute('data-bx-month'))
+		{
+			this.SetMonth(parseInt(target.getAttribute('data-bx-month')));
+			this.popup_month.close();
+		}
+	};
+
 	this._menu_year_content = function()
 	{
-		var s = '<div class="bx-calendar-year-popup"><div class="bx-calendar-year-title" onclick="BX.calendar.get().popup_year.close();">'+this.value.getUTCFullYear()+'</div><div class="bx-calendar-year-content" id="bx-calendar-year-content">';
+		var s = '<div class="bx-calendar-year-popup"><div class="bx-calendar-year-title" data-bx-year="' + this.value.getUTCFullYear() + '">' + this.value.getUTCFullYear() + '</div><div class="bx-calendar-year-content" id="bx-calendar-year-content">';
 
 		for (var i=-3; i <= 3; i++)
 		{
-			s += '<a href="javascript:void(0)" class="bx-calendar-year-number'+(i==0?' bx-calendar-year-active':'')+'" onclick="BX.calendar.get().SetYear('+(this.value.getUTCFullYear()-i)+')">'+(this.value.getUTCFullYear()-i)+'</a>';
+			s += '<span class="bx-calendar-year-number' + (i == 0?' bx-calendar-year-active' : '') + '" data-bx-year="' + (this.value.getUTCFullYear() - i) + '">' + (this.value.getUTCFullYear() - i)+'</span>';
 		}
 
-		s += '</div><input type="text" class="bx-calendar-year-input" onkeyup="if(this.value>=1900&&this.value<=2100)BX.calendar.get().SetYear(this.value);" maxlength="4" /></div>';
+		s += '</div><input data-bx-year-input="Y" type="text" class="bx-calendar-year-input" maxlength="4" /></div>';
 
 		return s;
 	};
@@ -1455,6 +1616,7 @@ BX.JCCalendar = function()
 					autoHide: true,
 					offsetTop: -29,
 					offsetLeft: -1,
+					className: this.year_popup_classname,
 					events: {
 						onPopupShow: BX.delegate(function() {
 							if (this.popup_month)
@@ -1466,6 +1628,8 @@ BX.JCCalendar = function()
 				}
 			);
 
+			BX.bind(this.popup_year.popupContainer, 'click', BX.proxy(this.year_popup_click, this));
+			BX.bind(this.popup_year.popupContainer, 'keyup', BX.proxy(this.year_popup_keyup, this));
 			this.popup_year.BXYEAR = this.value.getUTCFullYear();
 		}
 		else if (this.popup_year.BXYEAR != this.value.getUTCFullYear())
@@ -1475,6 +1639,29 @@ BX.JCCalendar = function()
 		}
 
 		this.popup_year.show();
+	};
+
+	this.year_popup_click = function(e)
+	{
+		var target = e.target || e.srcElement;
+		if (target && target.getAttribute && target.getAttribute('data-bx-year'))
+		{
+			this.SetYear(parseInt(target.getAttribute('data-bx-year')));
+			this.popup_year.close();
+		}
+	};
+	this.year_popup_keyup = function(e)
+	{
+		var target = e.target || e.srcElement;
+		if (target && target.getAttribute && target.getAttribute('data-bx-year-input') == 'Y')
+		{
+			var value = parseInt(target.value);
+			if(value >= 1900 && value <= 2100)
+			{
+				this.SetYear(value);
+				this.popup_year.close();
+			}
+		}
 	};
 
 	this._check_date = function(v)
@@ -1579,6 +1766,7 @@ BX.JCCalendar.prototype.Show = function(params)
 
 	this.params.bTime = typeof this.params.bTime == 'undefined' ? true : !!this.params.bTime;
 	this.params.bHideTime = typeof this.params.bHideTime == 'undefined' ? true : !!this.params.bHideTime;
+	this.params.bUseSecond = typeof this.params.bUseSecond == 'undefined' ? true : !!this.params.bUseSecond;
 
 	this.weekStart = parseInt(this.params.weekStart || this.params.weekStart || BX.message('WEEK_START'));
 	if (isNaN(this.weekStart))
@@ -1632,7 +1820,22 @@ BX.JCCalendar.prototype.Show = function(params)
 
 	this.params.bSetFocus = typeof this.params.bSetFocus == 'undefined' ? true : !!this.params.bSetFocus;
 	if(this.params.bSetFocus)
+	{
 		params.node.blur();
+	}
+	else
+	{
+		BX.bind(params.node, 'keyup', BX.defer(function(){
+			this.SetValue(params.node.value);
+			if(!!this.params.bTime)
+			{
+				if(this.value.getUTCHours() <= 0 && this.value.getUTCMinutes() <= 0)
+					BX.removeClass(this.PARTS.TIME, 'bx-calendar-set-time-opened');
+				else
+					BX.addClass(this.PARTS.TIME, 'bx-calendar-set-time-opened');
+			}
+		}, this));
+	}
 
 	return this;
 };
@@ -1747,7 +1950,14 @@ BX.JCCalendar.prototype.SaveValue = function()
 
 		if (this.params.field)
 		{
-			this.params.field.value = BX.calendar.ValueToString(this.value, bTime, true);
+			var format = BX.message(bTime ? 'FORMAT_DATETIME' : 'FORMAT_DATE');
+
+			if(bTime && !this.params.bUseSecond)
+			{
+				format = format.replace(':SS', '');
+			}
+
+			this.params.field.value = BX.calendar.ValueToStringFormat(this.value, format, true);
 			BX.fireEvent(this.params.field, 'change');
 		}
 

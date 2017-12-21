@@ -2,6 +2,11 @@
 
 namespace Bitrix\Main\Grid;
 
+
+/**
+ * Class Types. Column data types
+ * @package Bitrix\Main\Grid
+ */
 class Types
 {
 	const GRID_CHECKBOX = "checkbox";
@@ -11,6 +16,11 @@ class Types
 	const GRID_LIST = "list";
 	const GRID_GRID = "grid";
 
+
+	/**
+	 * Gets types list
+	 * @return array
+	 */
 	public static function getList()
 	{
 		$reflection = new \ReflectionClass(__CLASS__);

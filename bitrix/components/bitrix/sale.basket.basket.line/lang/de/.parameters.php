@@ -29,4 +29,7 @@ $MESS["SBBL_SHOW_AUTHOR"] = "Anmeldung im Warenkorb erlauben";
 $MESS["SBBL_LIST"] = "Produktliste";
 $MESS["SBBL_HIDE_ON_BASKET_PAGES"] = "Auf den Warenkorb- und Checkout-Seiten nicht anzeigen";
 $MESS["HIDE_ON_BASKET_PAGES_TIP"] = "Die Option blendet die Komponente auf den Warenkorb- und Checkout-Seiten aus. Es wird ausdrücklich empfohlen, diese Option zu aktivieren, damit eine zu große Belastung auf diese Seiten vermieden wird. ";
+$MESS["SBBL_PATH_TO_AUTHORIZE"] = "Seite der Authentifizierung";
+$MESS["PATH_TO_REGISTER_TIP"] = "Lassen Sie dieses Feld leer, damit dort der Pfad zur Registrierungsseite von den Einstellungen des Hauptmoduls übermittelt wird";
+$MESS["PATH_TO_AUTHORIZE_TIP"] = "Dieses Feld ist erforderlich, nur wenn Sie eine spezielle Authentifizierungsseite brauchen. Lassen Sie das Feld leer, wenn Sie die Registrierungsseite nutzen";
 ?>

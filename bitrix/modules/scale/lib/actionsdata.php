@@ -138,6 +138,21 @@ class ActionsData
 						}
 					}
 				}
+
+				if(getenv('BITRIX_ENV_TYPE') === 'crm')
+				{
+					unset(
+						$def['MONITORING_ENABLE'],
+						$def['SITE_CREATE'],
+						$def['SITE_CREATE_LINK'],
+						$def['SITE_CREATE_KERNEL'],
+						$def['SITE_DEL'],
+						$def['MEMCACHED_ADD_ROLE'],
+						$def['MEMCACHED_DEL_ROLE'],
+						$def['SPHINX_ADD_ROLE'],
+						$def['PUSH_DEL_ROLE']
+					);
+				}
 			}
 			else
 			{

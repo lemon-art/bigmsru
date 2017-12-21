@@ -227,7 +227,7 @@ function __runsnips()
 			}
 		},
 
-		OnTemplateChanged: function(templateId)
+		OnTemplateChanged: function()
 		{
 			this.ReloadList(false);
 		}
@@ -275,7 +275,7 @@ function __runsnips()
 	{
 		var _this = this;
 
-		var arItems = [
+		return [
 			{
 				text : BX.message('BXEdAddSnippet'),
 				title : BX.message('BXEdAddSnippet'),
@@ -306,8 +306,7 @@ function __runsnips()
 					BX.PopupMenu.destroy(_this.uniqueId + "_menu");
 				}
 			}
-		]
-		return arItems;
+		];
 	};
 
 	SnippetsControl.prototype.HandleElementEx = function(wrap, dd, params)
@@ -450,34 +449,6 @@ function __runsnips()
 		}));
 		this.arTabs[0].cont.appendChild(pBaseTbl);
 
-		//r.className = 'bxhtmled-add-row';
-		//c1.className = 'bxhtmled-left-c';
-
-
-		//BX.bind(this.pCatSelect, "change", BX.proxy(this.ChangeCat, this));
-
-		// Additional params
-		// Site templatesnippet_remove_category
-//		r = addRow(pAddTbl, {label: BX.message('BXEdSnipSiteTemplate') + ':', id: this.id + '-template'});
-//		this.pTemplate = r.rightCell.appendChild(BX.create('SELECT', {props:
-//		{
-//			id: this.id + '-template'
-//		}}));
-
-		// File name
-//		r = addRow(pAddTbl, {label: BX.message('BXEdSnipFileName') + ':', id: this.id + '-file-name'});
-//		this.pFileName = r.rightCell.appendChild(BX.create('INPUT', {props:
-//			{
-//				type: 'text',
-//				id: this.id + '-file-name'
-//			},
-//			style: {
-//				width: '150px',
-//				textAlign: 'right'
-//			}
-//		}));
-//		r.rightCell.appendChild(document.createTextNode(' .snp'));
-
 		// Category
 		r = addRow(pAddTbl, {label: BX.message('BXEdSnipCategory') + ':', id: this.id + '-category'});
 		this.pCatSelect = r.rightCell.appendChild(BX.create('SELECT', {
@@ -586,33 +557,6 @@ function __runsnips()
 			this.pCatSelect.options.add(new Option(name, plainList[i].key, false, false));
 		}
 	};
-
-	EditSnippetDialog.prototype.ChangeCat = function(changeFileName)
-	{
-		var
-			defFilename = '',
-			path = this.pCatSelect.value;
-
-//		changeFileName = changeFileName !== false;
-//		if (path == '')
-//		{
-//			defFilename = this.editor.snippets.GetList().rootDefaultFilename;
-//		}
-//		else
-//		{
-//			var section = this.editor.snippetsTaskbar.treeSectionIndex[path];
-//			if (section && section.sect  && section.sect.section)
-//			{
-//				defFilename = section.sect.section.default_name;
-//			}
-//		}
-//
-//		if (changeFileName && defFilename)
-//		{
-//			this.pFileName.value = defFilename;
-//		}
-	};
-
 
 	function SnippetsCategoryDialog(editor, params)
 	{
@@ -874,13 +818,6 @@ function __runsnips()
 			BX.addClass(icon, "bxhtmled-tskbr-sect-icon-" + depth);
 		}
 
-		this.InitDragDrop({
-			group: pGroupTitle
-		});
-//		pGroup.setAttribute('data-bx-type', 'taskbargroup');
-//		pGroup.setAttribute('data-bx-path', key);
-//		pGroup.setAttribute('data-bx-taskbar', this.id);
-
 		parentCont.appendChild(pGroup);
 	};
 
@@ -971,102 +908,9 @@ function __runsnips()
 		BX.unbind(document, 'mouseup', BX.proxy(this.EnableDD, this));
 	};
 
-	SnippetsCategoryDialog.prototype.InitDragDrop = function(params)
-	{
-		// TODO: Do correct drag & drop + sorting of categories
-		return;
-		var
-			_this = this,
-			obj = params.group;
-		jsDD.registerObject(obj);
-
-		obj.style.cursor = 'move';
-		obj.onbxdragstart = function()
-		{
-			_this.dragCat = obj.cloneNode(true);
-			BX.addClass(obj, 'bxhtmled-tskbr-sect-old');
-			BX.addClass(_this.dragCat, 'bxhtmled-tskbr-sect-drag');
-			document.body.appendChild(_this.dragCat);
-			_this.dragCat.style.top = '-1000px';
-			_this.dragCat.style.left = '-1000px';
-		};
-
-		obj.onbxdrag = function(x, y)
-		{
-			if (_this.dragCat)
-			{
-				_this.dragCat.style.left = (x - 20) + 'px';
-				_this.dragCat.style.top = (y - 10) + 'px';
-			}
-		};
-
-		obj.onbxdragstop = function(x, y)
-		{
-			if (_this.dragCat)
-			{
-				setTimeout(function()
-				{
-					BX.remove(_this.dragCat);
-					_this.dragCat = null;
-				}, 100);
-			}
-			_this.OnDragFinish();
-		};
-
-		obj.onbxdragfinish = function(destination, x, y)
-		{
-			_this.OnDragFinish();
-			return true;
-		};
-
-		jsDD.registerDest(obj);
-
-
-		obj.onbxdestdragfinish = function(currentNode, x, y)
-		{
-			var
-				pos = BX.pos(obj),
-				beforeNode = y < pos.top + pos.height / 2;
-
-			if (beforeNode)
-			{
-				BX.addClass(obj, 'bxhtmled-tskbr-sect-dest-top');
-				BX.removeClass(obj, 'bxhtmled-tskbr-sect-dest-bottom');
-			}
-			else
-			{
-				BX.addClass(obj, 'bxhtmled-tskbr-sect-dest-bottom');
-				BX.removeClass(obj, 'bxhtmled-tskbr-sect-dest-top');
-			}
-
-			return true;
-		};
-
-		obj.onbxdestdraghover = function(currentNode, x, y)
-		{
-			var pos = BX.pos(obj);
-			if (y < pos.top + pos.height / 2)
-			{
-				BX.addClass(obj, 'bxhtmled-tskbr-sect-dest-top');
-				BX.removeClass(obj, 'bxhtmled-tskbr-sect-dest-bottom');
-			}
-			else
-			{
-				BX.addClass(obj, 'bxhtmled-tskbr-sect-dest-bottom');
-				BX.removeClass(obj, 'bxhtmled-tskbr-sect-dest-top');
-			}
-		};
-		obj.onbxdestdraghout = function(currentNode, x, y)
-		{
-			BX.removeClass(obj, 'bxhtmled-tskbr-sect-dest-bottom');
-			BX.removeClass(obj, 'bxhtmled-tskbr-sect-dest-top');
-		};
-	};
-
 	SnippetsCategoryDialog.prototype.OnDragFinish = function()
 	{
 	};
-
 
 	SnippetsCategoryDialog.prototype.GetCategoryContByPath = function(path)
 	{

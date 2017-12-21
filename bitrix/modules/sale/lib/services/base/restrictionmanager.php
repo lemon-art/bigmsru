@@ -4,8 +4,8 @@ namespace Bitrix\Sale\Services\Base;
 use Bitrix\Main\ArgumentNullException;
 use Bitrix\Main\Event;
 use Bitrix\Main\Loader;
+use Bitrix\Sale\Internals\Entity;
 use Bitrix\Sale\Internals\ServiceRestrictionTable;
-use Bitrix\Sale\Internals\CollectableEntity;
 use Bitrix\Main\NotImplementedException;
 use Bitrix\Main\SystemException;
 use Bitrix\Main\EventResult;
@@ -24,6 +24,8 @@ class RestrictionManager
 
 	const SERVICE_TYPE_SHIPMENT = 0;
 	const SERVICE_TYPE_PAYMENT = 1;
+	const SERVICE_TYPE_COMPANY = 2;
+	const SERVICE_TYPE_CASHBOX = 3;
 
 	protected static function init()
 	{
@@ -31,9 +33,7 @@ class RestrictionManager
 			return;
 
 		$classes = static::getBuildInRestrictions();
-
 		Loader::registerAutoLoadClasses('sale', $classes);
-
 		$event = new Event('sale', static::getEventName());
 		$event->send();
 		$resultList = $event->getResults();
@@ -87,12 +87,12 @@ class RestrictionManager
 
 	/**
 	 * @param $serviceId
-	 * @param CollectableEntity $entity
+	 * @param Entity $entity
 	 * @param int $mode
 	 * @return int
 	 * @throws SystemException
 	 */
-	public static function checkService($serviceId, CollectableEntity $entity, $mode = self::MODE_CLIENT)
+	public static function checkService($serviceId, Entity $entity, $mode = self::MODE_CLIENT)
 	{
 		if(intval($serviceId) <= 0)
 			return self::SEVERITY_NONE;
@@ -206,8 +206,9 @@ class RestrictionManager
 		if(empty($servicesIds))
 			return;
 
-		$ids = array_diff($servicesIds, array_keys(static::$cachedFields));
 		$serviceType = static::getServiceType();
+		$cachedServices = is_array(static::$cachedFields[$serviceType]) ? array_keys(static::$cachedFields[$serviceType]) : array();
+		$ids = array_diff($servicesIds, $cachedServices);
 		$idsForDb = array_diff($ids, array_keys($fields));
 
 		if(!empty($idsForDb))
@@ -241,18 +242,49 @@ class RestrictionManager
 			$className::prepareData($ids);
 	}
 
+	/**
+	 * @param int $serviceId
+	 * @param int $serviceType
+	 * @param array $fields
+	 * @throws ArgumentNullException
+	 */
 	protected static function setCache($serviceId, $serviceType, array $fields = array())
 	{
-		if($serviceId <= 0)
-			throw new ArgumentNullException('serviceId');
+		if(intval($serviceId) <= 0)
+			throw new  ArgumentNullException('serviceId');
 
-		$cacheId = $serviceId."_".$serviceType;
+		if(!isset(static::$cachedFields[$serviceType]))
+			static::$cachedFields[$serviceType] = array();
 
-		if(!isset(static::$cachedFields[$cacheId]))
-			static::$cachedFields[$cacheId] = array();
+		if(!isset(static::$cachedFields[$serviceType][$serviceId]))
+			static::$cachedFields[$serviceType][$serviceId] = array();
 
 		if(!empty($fields))
-			static::$cachedFields[$cacheId][$fields["ID"]] = $fields;
+			static::$cachedFields[$serviceType][$serviceId][$fields["ID"]] = $fields;
+	}
+
+	/**
+	 * @param int $serviceId
+	 * @param int $serviceType
+	 * @return array
+	 * @throws ArgumentNullException
+	 */
+	protected static function getCache($serviceId, $serviceType)
+	{
+		$result = array();
+
+		if(intval($serviceId) > 0)
+		{
+			if(isset(static::$cachedFields[$serviceType][$serviceId]))
+				$result = static::$cachedFields[$serviceType][$serviceId];
+		}
+		else
+		{
+			if(isset(static::$cachedFields[$serviceType]))
+				$result = static::$cachedFields[$serviceType];
+		}
+
+		return $result;
 	}
 
 	/**
@@ -262,5 +294,29 @@ class RestrictionManager
 	public static function getBuildInRestrictions()
 	{
 		throw new NotImplementedException;
+	}
+
+	/**
+	 * @param array $params
+	 * @return \Bitrix\Main\DB\Result
+	 * @throws \Bitrix\Main\ArgumentException
+	 */
+	public static function getList(array $params)
+	{
+		if (!$params['filter'])
+			$params['filter'] = array();
+
+		$params['filter']['SERVICE_TYPE'] = static::getServiceType();
+
+		return ServiceRestrictionTable::getList($params);
+	}
+
+	/**
+	 * @param $id
+	 * @return \Bitrix\Main\DB\Result
+	 */
+	public static function getById($id)
+	{
+		return ServiceRestrictionTable::getById($id);
 	}
 }

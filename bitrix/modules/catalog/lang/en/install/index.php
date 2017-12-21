@@ -20,4 +20,34 @@ $MESS["CATALOG_UNINS_CURRENCY"] = "Commercial Catalog module requires Currency m
 $MESS["CATALOG_UNINS_IBLOCK"] = "The \"Catalog\" module requires the installation of the \"Information Blocks\" module.";
 $MESS["CATALOG_INSTALL_DESCRIPTION2"] = "The Commercial Catalog module is ideal for creating product catalogs, prices, markups and discounts; and for exporting and importing data.";
 $MESS["CATALOG_INSTALL_PROFILE_IRR2"] = "irr.ru";
+$MESS["CATALOG_PRODUCT_SUBSCRIBE_LIST_NAME"] = "Confirmation code";
+$MESS["CATALOG_PRODUCT_SUBSCRIBE_LIST_DESC"] = "
+#TOKEN# - Confirmation code
+#TOKEN_URL# - Confirmation code link
+#LIST_SUBSCRIBES# - Available subscriptions
+";
+$MESS["CATALOG_PRODUCT_SUBSCRIBE_LIST_SUBJECT"] = "#SITE_NAME#: Confirmation code";
+$MESS["CATALOG_PRODUCT_SUBSCRIBE_LIST_MESSAGE"] = "
+This message was sent from #SITE_NAME#
+------------------------------------------------
+
+Hello,
+
+You are receiving this message because your e-mail was specified 
+to access subscriptions available at #SERVER_NAME#.
+
+Your subscription confirmation code: #TOKEN#
+
+Click this link to access your subscriptions:
+#TOKEN_URL#
+
+Alternatively, you can enter the confirmation code manually here:
+#LIST_SUBSCRIBES#
+
+---------------------------------------------------------------------
+This message contains authentication details.
+Use the confirmation code to access your subscriptions.
+---------------------------------------------------------------------
+
+This message was sent by robot.";
 ?>

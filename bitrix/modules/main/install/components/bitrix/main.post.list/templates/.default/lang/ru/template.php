@@ -1,5 +1,6 @@
 <?
 $MESS["B_B_MS_LINK"] = "Ссылка на комментарий";
+$MESS["B_B_MS_LINK2"] = "Скопировать ссылку";
 $MESS["MPL_MES_HREF"] = "Перейти к комментарию";
 $MESS["BPC_MES_EDIT"] = "Редактировать";
 $MESS["BPC_MES_SHOW"] = "Показать";
@@ -20,4 +21,5 @@ $MESS["MPL_HAVE_WRITTEN"] = "написал:";
 $MESS["MPL_SAFE_EDIT"] = "Вы пишете сообщение. Сбросить изменения?";
 $MESS["MPL_ERROR_OCCURRED"] = "Произошла ошибка";
 $MESS["MPL_CLOSE"] = "Закрыть";
+$MESS["MPL_LINK_COPIED"] = "Ссылка скопирована";
 ?>

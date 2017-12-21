@@ -134,33 +134,6 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_aft
 if (is_object($message))
 	echo $message->Show();
 
-if (CBitrixCloudCDN::IsActive())
-{
-	try
-	{
-		if ($cdn_config->getQuota()->isExpired())
-			$cdn_config->updateQuota();
-
-		$cdn_quota = $cdn_config->getQuota();
-		if ($cdn_quota->getAllowedSize() > 0.0 || $cdn_quota->getTrafficSize() > 0.0)
-		{
-			CAdminMessage::ShowMessage(array(
-				"TYPE" => "PROGRESS",
-				"DETAILS" => '<p><b>'.GetMessage("BCL_CDN_USAGE", array(
-					"#TRAFFIC#" => CFile::FormatSize($cdn_quota->getTrafficSize()),
-					"#ALLOWED#" => CFile::FormatSize($cdn_quota->getAllowedSize()),
-				)).'</b></p>#PROGRESS_BAR#',
-				"HTML" => true,
-				"PROGRESS_TOTAL" => $cdn_quota->getAllowedSize(),
-				"PROGRESS_VALUE" => $cdn_quota->getTrafficSize(),
-			));
-		}
-	}
-	catch (Exception $e)
-	{
-		CAdminMessage::ShowMessage($e->getMessage());
-	}
-}
 if ($bVarsFromForm)
 {
 	$active = $_POST["cdn_active"] === "Y";

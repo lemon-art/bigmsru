@@ -41,16 +41,6 @@ class Manager extends Base\RestrictionManager
 		return parent::SERVICE_TYPE_PAYMENT;
 	}
 
-	public static function getList(array $params)
-	{
-		if (!$params['filter'])
-			$params['filter'] = array();
-
-		$params['filter']['SERVICE_TYPE'] = self::getServiceType();
-
-		return ServiceRestrictionTable::getList($params);
-	}
-
 	public static function getPriceRange(Payment $payment, $paySystemId)
 	{
 		$result = array();

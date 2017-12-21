@@ -560,12 +560,10 @@ class YandexDirect extends Engine\YandexBase implements IEngine
 		else
 		{
 			$result = $this->getProxy()->getInterface()->getClientsSettings(static::ENGINE_ID);
-			$cacheManager->set(self::CACHE_ID, $result);
-		}
-		
-		if (!empty($result['error']))
-		{
-			throw new YandexDirectException($result);
+			if (!empty($result['error']))
+				throw new YandexDirectException($result);
+			else
+				$cacheManager->set(self::CACHE_ID, $result);
 		}
 		
 		return $result;
@@ -959,11 +957,6 @@ class YandexDirect extends Engine\YandexBase implements IEngine
 						)
 					)
 				);
-			}
-			
-			if (count($newCampaigns) <= static::MAX_CAMPAIGNS_BANNER_UPDATE)
-			{
-				$res['banner'] = $this->updateBannersManual($newCampaigns);
 			}
 		}
 		

@@ -98,7 +98,7 @@ if(!defined("BX_COMP_MANAGED_CACHE") && COption::GetOptionString("main", "compon
 require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/filter_tools.php");
 require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/ajax_tools.php");
 
-/*ZDUyZmZZTQ2MDZlMTFmNzBhYWZjOWMwNWYyMzZhMzFjMmYwNmM=*/$GLOBALS['_____1597291751']= array(base64_decode('R2'.'V'.'0TW9kd'.'WxlRXZlbnRz'),base64_decode('R'.'XhlY3V0Z'.'U1v'.'ZHVs'.'Z'.'UV2ZW50RXg='));; $GLOBALS['____1286721934']= array(base64_decode('ZG'.'Vma'.'W5l'),base64_decode(''.'c'.'3RybGVu'),base64_decode('YmFzZ'.'TY0X2'.'R'.'l'.'Y29k'.'ZQ='.'='),base64_decode('dW5'.'zZXJp'.'Y'.'WxpemU'.'='),base64_decode('aXN'.'fYXJyYX'.'k'.'='),base64_decode('Y2'.'9'.'1bn'.'Q='),base64_decode('aW5fY'.'XJyYX'.'k='),base64_decode('c2'.'VyaWF'.'saXpl'),base64_decode('YmFz'.'ZTY0X2'.'Vu'.'Y'.'2'.'9k'.'Z'.'Q='.'='),base64_decode('c'.'3Ry'.'bGVu'),base64_decode('Y'.'X'.'Jy'.'YX'.'lfa2V5X2V4aXN0cw=='),base64_decode('aW5f'.'YXJy'.'YXk='),base64_decode(''.'c3RybG'.'Vu'),base64_decode('YXJyYXlfa'.'2V5X2V4aXN0c'.'w=='),base64_decode('bWV0'.'a'.'G9kX2V4a'.'XN0cw=='),base64_decode('Y2Fsb'.'F'.'91c2VyX2Z1b'.'mN'.'fYXJyY'.'Xk'.'='),base64_decode('aW'.'5'.'fYXJ'.'yYXk='),base64_decode('ZGV'.'m'.'aW5l'));; function ___516941361($_1251991944){static $_153852646= false; if($_153852646 == false) $_153852646=array(''.'Q'.'lVTSU5'.'F'.'U1'.'NfRURJ'.'VE'.'lPTg==','W'.'Q==',''.'bWFp'.'bg==','fm'.'Nw'.'Zl9tY'.'XB'.'fdmFsdW'.'U=','',''.'U'.'21hbGw=','U21hbGw'.'=',''.'bW'.'Fpbg==','fmNwZl9tY'.'XBf'.'dmFsdWU=','bWFp'.'bg==','T24=','U2V0dGluZ3NDaG'.'FuZ2U=',''.'VFl'.'QRQ==','Rg==','WA==','R'.'EFUR'.'Q==','','Rk'.'V'.'BVF'.'VSRVM=',''.'RVhQSV'.'J'.'FRA==','RkVBVFVS'.'RVM=','R'.'g==','RU5DT0RF','WQ==');return base64_decode($_153852646[$_1251991944]);}; $GLOBALS['____1286721934'][0](___516941361(0), ___516941361(1)); class CBXFeatures{ private static $_778685797= array( "Small" => array(), "Big" => array( "CatMultiPrice", "CatMultiStore", "CatDiscountSave", "SaleAffiliate", "SaleAccounts", "SaleCCards", "SaleReports", "SaleRecurring", "CatCompleteSet", "CatMultiFactor",),); private static $_1190807126= false; private static $_1106121014= false; private static function Initialize(){ if(self::$_1190807126 == false){ self::$_1190807126= array(); foreach(self::$_778685797 as $_736996168 => $_1950537613){ foreach($_1950537613 as $_1850095050) self::$_1190807126[$_1850095050]= $_736996168;}} if(self::$_1106121014 == false){ self::$_1106121014= array(); $_1800798142= COption::GetOptionString(___516941361(2), ___516941361(3), ___516941361(4)); if($GLOBALS['____1286721934'][1]($_1800798142)>(840-2*420)){ $_1800798142= $GLOBALS['____1286721934'][2]($_1800798142); self::$_1106121014= $GLOBALS['____1286721934'][3]($_1800798142); if(!$GLOBALS['____1286721934'][4](self::$_1106121014)) self::$_1106121014= array(___516941361(5));} if($GLOBALS['____1286721934'][5](self::$_1106121014) <=(976-2*488)) self::$_1106121014= array(___516941361(6));}} public static function InitiateEditionsSettings($_1510957835){ self::Initialize(); $_710238101= array(); foreach(self::$_778685797 as $_736996168 => $_1950537613){ if($GLOBALS['____1286721934'][6]($_736996168, $_1510957835)){ self::$_1106121014[]= $_736996168;} else{ foreach($_1950537613 as $_1850095050) $_710238101[]= $_1850095050;}} $_1180586978= $GLOBALS['____1286721934'][7](self::$_1106121014); $_1180586978= $GLOBALS['____1286721934'][8]($_1180586978); COption::SetOptionString(___516941361(7), ___516941361(8), $_1180586978); foreach($_710238101 as $_989047456) self::ExecuteEvent($_989047456, false);} public static function IsFeatureEnabled($_1850095050){ if($GLOBALS['____1286721934'][9]($_1850095050) <= 0) return true; self::Initialize(); if(!$GLOBALS['____1286721934'][10]($_1850095050, self::$_1190807126)) return true; return $GLOBALS['____1286721934'][11](self::$_1190807126[$_1850095050], self::$_1106121014);} public static function IsFeatureInstalled($_1850095050){ return self::IsFeatureEnabled($_1850095050);} public static function IsFeatureEditable($_1850095050){ if($GLOBALS['____1286721934'][12]($_1850095050) <= 0) return true; self::Initialize(); if(!$GLOBALS['____1286721934'][13]($_1850095050, self::$_1190807126)) return true; return false;} private static function ExecuteEvent($_1850095050, $_270818667){ if($GLOBALS['____1286721934'][14]("CBXFeatures", "On".$_1850095050."SettingsChange")) $GLOBALS['____1286721934'][15](array("CBXFeatures", "On".$_1850095050."SettingsChange"), array($_1850095050, $_270818667)); $_932105677= $GLOBALS['_____1597291751'][0](___516941361(9), ___516941361(10).$_1850095050.___516941361(11)); while($_990429773= $_932105677->Fetch()) $GLOBALS['_____1597291751'][1]($_990429773, array($_1850095050, $_270818667));} public static function SetFeatureEnabled($_1850095050, $_270818667= true, $_79529631= true){} public static function SaveFeaturesSettings($_1054126621, $_1541855311){} public static function GetFeaturesList(){ self::Initialize(); $_2033592056= array(); foreach(self::$_778685797 as $_736996168 => $_1950537613){ $_2033592056[$_736996168]= array( ___516941361(12) => $GLOBALS['____1286721934'][16]($_736996168, self::$_1106121014)? ___516941361(13): ___516941361(14), ___516941361(15) => ___516941361(16), ___516941361(17) => array(), ___516941361(18) => false,); foreach($_1950537613 as $_1850095050) $_2033592056[$_736996168][___516941361(19)][$_1850095050]=($_2033592056[$_736996168] == ___516941361(20));} return $_2033592056;}} $GLOBALS['____1286721934'][17](___516941361(21), ___516941361(22));/**/			//Do not remove this
+/*ZDUyZmZMjgwYjM4ZTM3NDhlMjkyZDk1MWJiZjgzYjUyMWVmZGU=*/$GLOBALS['_____595589953']= array(base64_decode('R2'.'V0TW'.'9kdW'.'xlRXZlbnRz'),base64_decode('RXh'.'l'.'Y3'.'V0ZU1'.'vZHVs'.'ZU'.'V2ZW50RXg='));$GLOBALS['____1932283274']= array(base64_decode('Z'.'GVmaW5l'),base64_decode('c3RybG'.'Vu'),base64_decode('YmFzZTY0X'.'2RlY29'.'kZQ=='),base64_decode('dW'.'5'.'zZXJpYWxp'.'emU='),base64_decode('aX'.'N'.'fYX'.'JyYXk='),base64_decode('Y291bnQ='),base64_decode('aW'.'5fYXJyYXk='),base64_decode('c2'.'VyaWFs'.'aXpl'),base64_decode('YmFzZTY0'.'X2'.'V'.'uY29k'.'ZQ=='),base64_decode('c3'.'RybG'.'Vu'),base64_decode('YXJyY'.'Xlf'.'a2V5X2V4aXN0cw'.'=='),base64_decode('aW5fYX'.'JyYXk'.'='),base64_decode(''.'c3Ry'.'bGVu'),base64_decode('YXJ'.'yY'.'Xlfa2V5X2V4'.'aXN'.'0c'.'w=='),base64_decode('b'.'WV0aG9kX'.'2V4'.'aXN0cw='.'='),base64_decode('Y'.'2FsbF'.'91c2VyX'.'2Z1bmNf'.'YXJyYX'.'k='),base64_decode('aW5fYXJyYXk='),base64_decode('ZGVmaW5l'));if(!function_exists(__NAMESPACE__.'\\___833996194')){function ___833996194($_1516657458){static $_1006349236= false; if($_1006349236 == false) $_1006349236=array(''.'Q'.'lVTSU5'.'FU'.'1N'.'fRURJVE'.'lP'.'Tg='.'=','W'.'Q='.'=','bWFpbg='.'=','fmNwZl'.'9'.'tY'.'XBfdmFsd'.'WU=','','U2'.'1h'.'b'.'Gw=','U'.'21'.'hbGw=','bW'.'F'.'pbg'.'==','fmNwZl9tYXBf'.'dmFsdWU'.'=','bWFp'.'bg==','T2'.'4=','U2V0dGluZ3'.'N'.'DaG'.'FuZ'.'2U=','VFl'.'QRQ='.'=','Rg='.'=','W'.'A='.'=',''.'REFURQ==','','RkVBVFVSRV'.'M=',''.'RV'.'hQSVJFRA='.'=','RkV'.'BVFVSRVM=',''.'Rg==',''.'RU'.'5DT0RF','WQ==');return base64_decode($_1006349236[$_1516657458]);}};$GLOBALS['____1932283274'][0](___833996194(0), ___833996194(1));class CBXFeatures{ private static $_399863190= array( "Small" => array(), "Big" => array( "CatMultiPrice", "CatMultiStore", "CatDiscountSave", "SaleAffiliate", "SaleAccounts", "SaleCCards", "SaleReports", "SaleRecurring", "CatCompleteSet", "CatMultiFactor",),); private static $_1208799837= false; private static $_990665980= false; private static function __1546095902(){ if(self::$_1208799837 == false){ self::$_1208799837= array(); foreach(self::$_399863190 as $_1330693519 => $_1709601003){ foreach($_1709601003 as $_365179752) self::$_1208799837[$_365179752]= $_1330693519;}} if(self::$_990665980 == false){ self::$_990665980= array(); $_1568101013= COption::GetOptionString(___833996194(2), ___833996194(3), ___833996194(4)); if($GLOBALS['____1932283274'][1]($_1568101013)>(238*2-476)){ $_1568101013= $GLOBALS['____1932283274'][2]($_1568101013); self::$_990665980= $GLOBALS['____1932283274'][3]($_1568101013); if(!$GLOBALS['____1932283274'][4](self::$_990665980)) self::$_990665980= array(___833996194(5));} if($GLOBALS['____1932283274'][5](self::$_990665980) <=(1024/2-512)) self::$_990665980= array(___833996194(6));}} public static function InitiateEditionsSettings($_962581798){ self::__1546095902(); $_1454810614= array(); foreach(self::$_399863190 as $_1330693519 => $_1709601003){ if($GLOBALS['____1932283274'][6]($_1330693519, $_962581798)){ self::$_990665980[]= $_1330693519;} else{ foreach($_1709601003 as $_365179752) $_1454810614[]= $_365179752;}} $_1923811269= $GLOBALS['____1932283274'][7](self::$_990665980); $_1923811269= $GLOBALS['____1932283274'][8]($_1923811269); COption::SetOptionString(___833996194(7), ___833996194(8), $_1923811269); foreach($_1454810614 as $_143192199) self::__361817903($_143192199, false);} public static function IsFeatureEnabled($_365179752){ if($GLOBALS['____1932283274'][9]($_365179752) <= 0) return true; self::__1546095902(); if(!$GLOBALS['____1932283274'][10]($_365179752, self::$_1208799837)) return true; return $GLOBALS['____1932283274'][11](self::$_1208799837[$_365179752], self::$_990665980);} public static function IsFeatureInstalled($_365179752){ return self::IsFeatureEnabled($_365179752);} public static function IsFeatureEditable($_365179752){ if($GLOBALS['____1932283274'][12]($_365179752) <= 0) return true; self::__1546095902(); if(!$GLOBALS['____1932283274'][13]($_365179752, self::$_1208799837)) return true; return false;} private static function __361817903($_365179752, $_2001700586){ if($GLOBALS['____1932283274'][14]("CBXFeatures", "On".$_365179752."SettingsChange")) $GLOBALS['____1932283274'][15](array("CBXFeatures", "On".$_365179752."SettingsChange"), array($_365179752, $_2001700586)); $_1706557336= $GLOBALS['_____595589953'][0](___833996194(9), ___833996194(10).$_365179752.___833996194(11)); while($_696536963= $_1706557336->Fetch()) $GLOBALS['_____595589953'][1]($_696536963, array($_365179752, $_2001700586));} public static function SetFeatureEnabled($_365179752, $_2001700586= true, $_1721014076= true){} public static function SaveFeaturesSettings($_2048636602, $_140185263){} public static function GetFeaturesList(){ self::__1546095902(); $_650051993= array(); foreach(self::$_399863190 as $_1330693519 => $_1709601003){ $_650051993[$_1330693519]= array( ___833996194(12) => $GLOBALS['____1932283274'][16]($_1330693519, self::$_990665980)? ___833996194(13): ___833996194(14), ___833996194(15) => ___833996194(16), ___833996194(17) => array(), ___833996194(18) => false,); foreach($_1709601003 as $_365179752) $_650051993[$_1330693519][___833996194(19)][$_365179752]=($_650051993[$_1330693519] == ___833996194(20));} return $_650051993;}} $GLOBALS['____1932283274'][17](___833996194(21), ___833996194(22));/**/			//Do not remove this
 
 //component 2.0 template engines
 $GLOBALS["arCustomTemplateEngines"] = array();
@@ -176,11 +176,13 @@ require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/classes/general/ur
 		"CAdminInformer" => "classes/general/admin_informer.php",
 		"CSiteCheckerTest" => "classes/general/site_checker.php",
 		"CSqlUtil" => "classes/general/sql_util.php",
-		"CHTMLPagesCache" => "classes/general/cache_html.php",
 		"CFileUploader" => "classes/general/uploader.php",
 		"LPA" => "classes/general/lpa.php",
 		"CAdminFilter" => "interface/admin_filter.php",
 		"CAdminList" => "interface/admin_list.php",
+		"CAdminUiList" => "interface/admin_ui_list.php",
+		"CAdminUiResult" => "interface/admin_ui_list.php",
+		"CAdminUiContextMenu" => "interface/admin_ui_list.php",
 		"CAdminListRow" => "interface/admin_list.php",
 		"CAdminTabControl" => "interface/admin_tabcontrol.php",
 		"CAdminForm" => "interface/admin_form.php",
@@ -192,6 +194,21 @@ require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/classes/general/ur
 		"CAdminCalendar" => "interface/admin_calendar.php",
 		"CAdminViewTabControl" => "interface/admin_viewtabcontrol.php",
 		"CAdminTabEngine" => "interface/admin_tabengine.php",
+
+		//deprecated
+		"CHTMLPagesCache" => "lib/composite/helper.php",
+		"StaticHtmlMemcachedResponse" => "lib/composite/responder.php",
+		"StaticHtmlFileResponse" => "lib/composite/responder.php",
+		"Bitrix\\Main\\Page\\Frame" => "lib/composite/engine.php",
+		"Bitrix\\Main\\Page\\FrameStatic" => "lib/composite/staticarea.php",
+		"Bitrix\\Main\\Page\\FrameBuffered" => "lib/composite/bufferarea.php",
+		"Bitrix\\Main\\Page\\FrameHelper" => "lib/composite/bufferarea.php",
+		"Bitrix\\Main\\Data\\StaticHtmlCache" => "lib/composite/page.php",
+		"Bitrix\\Main\\Data\\StaticHtmlStorage" => "lib/composite/data/abstractstorage.php",
+		"Bitrix\\Main\\Data\\StaticHtmlFileStorage" => "lib/composite/data/filestorage.php",
+		"Bitrix\\Main\\Data\\StaticHtmlMemcachedStorage" => "lib/composite/data/memcachedstorage.php",
+		"Bitrix\\Main\\Data\\StaticCacheProvider" => "lib/composite/data/cacheprovider.php",
+		"Bitrix\\Main\\Data\\AppCacheManifest" => "lib/composite/appcache.php",
 	)
 );
 
@@ -207,38 +224,6 @@ if(file_exists(($_fname = $_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/class
 	$US_HOST_PROCESS_MAIN = False;
 	include($_fname);
 }
-
-$GLOBALS["APPLICATION"]->AddJSKernelInfo(
-	'main',
-	array(
-		'/bitrix/js/main/core/core.js', '/bitrix/js/main/core/core_ajax.js', '/bitrix/js/main/json/json2.min.js',
-		'/bitrix/js/main/core/core_ls.js', '/bitrix/js/main/core/core_popup.js', '/bitrix/js/main/core/core_tooltip.js',
-		'/bitrix/js/main/core/core_date.js','/bitrix/js/main/core/core_timer.js', '/bitrix/js/main/core/core_fx.js',
-		'/bitrix/js/main/core/core_window.js', '/bitrix/js/main/core/core_autosave.js', '/bitrix/js/main/rating_like.js',
-		'/bitrix/js/main/session.js', '/bitrix/js/main/dd.js', '/bitrix/js/main/utils.js',
-		'/bitrix/js/main/core/core_dd.js', '/bitrix/js/main/core/core_webrtc.js'
-	)
-);
-
-
-$GLOBALS["APPLICATION"]->AddCSSKernelInfo(
-	'main',
-	array(
-		'/bitrix/js/main/core/css/core.css', '/bitrix/js/main/core/css/core_popup.css',
-		'/bitrix/js/main/core/css/core_tooltip.css', '/bitrix/js/main/core/css/core_date.css'
-	)
-);
-
-//Park core uploader
-$GLOBALS["APPLICATION"]->AddJSKernelInfo(
-	'coreuploader',
-	array(
-		'/bitrix/js/main/core/core_uploader/common.js',
-		'/bitrix/js/main/core/core_uploader/uploader.js',
-		'/bitrix/js/main/core/core_uploader/file.js',
-		'/bitrix/js/main/core/core_uploader/queue.js',
-	)
-);
 
 if(file_exists(($_fname = $_SERVER["DOCUMENT_ROOT"]."/bitrix/init.php")))
 	include_once($_fname);
@@ -262,15 +247,6 @@ if((!(defined("STATISTIC_ONLY") && STATISTIC_ONLY && substr($GLOBALS["APPLICATIO
 
 if(COption::GetOptionString("main", "set_p3p_header", "Y")=="Y")
 	header("P3P: policyref=\"/bitrix/p3p.xml\", CP=\"NON DSP COR CUR ADM DEV PSA PSD OUR UNR BUS UNI COM NAV INT DEM STA\"");
-
-//licence key
-$LICENSE_KEY = "";
-if(file_exists(($_fname = $_SERVER["DOCUMENT_ROOT"].BX_ROOT."/license_key.php")))
-	include($_fname);
-if($LICENSE_KEY == "" || strtoupper($LICENSE_KEY) == "DEMO")
-	define("LICENSE_KEY", "DEMO");
-else
-	define("LICENSE_KEY", $LICENSE_KEY);
 
 header("X-Powered-CMS: Bitrix Site Manager (".(LICENSE_KEY == "DEMO"? "DEMO" : md5("BITRIX".LICENSE_KEY."LICENCE")).")");
 if (COption::GetOptionString("main", "update_devsrv", "") == "Y")
@@ -343,7 +319,7 @@ if(
 	||
 	(
 		//session manually expired, e.g. in $User->LoginHitByHash
-	isSessionExpired()
+		isSessionExpired()
 	)
 )
 {
@@ -494,6 +470,9 @@ if(!defined("NOT_CHECK_PERMISSIONS") || NOT_CHECK_PERMISSIONS!==true)
 	}
 }
 
+//logout or re-authorize the user if something importand has changed
+$GLOBALS["USER"]->CheckAuthActions();
+
 //application password scope control
 if(($applicationID = $GLOBALS["USER"]->GetParam("APPLICATION_ID")) !== null)
 {
@@ -572,7 +551,7 @@ if($GLOBALS["USER"]->IsAuthorized())
 }
 
 //magic cache
-\Bitrix\Main\Page\Frame::shouldBeEnabled();
+\Bitrix\Main\Composite\Engine::shouldBeEnabled();
 
 //magic short URI
 if(defined("BX_CHECK_SHORT_URI") && BX_CHECK_SHORT_URI && CBXShortUri::CheckUri())

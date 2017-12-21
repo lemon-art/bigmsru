@@ -6,15 +6,23 @@ define("DisableEventsCheck", true);
 define("NO_AGENT_CHECK", true);
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
 
-$url = urldecode($_GET['url']);
-$arTag = \Bitrix\Main\Mail\Tracking::parseTag($_GET['tag']);
-$arTag['FIELDS']['IP'] = $_SERVER['REMOTE_ADDR'];
-$arTag['FIELDS']['URL'] = $url;
-\Bitrix\Main\Mail\Tracking::click($arTag);
+use Bitrix\Main\Context;
+use Bitrix\Main\Mail\Tracking;
 
+$request = Context::getCurrent()->getRequest();
+$url = $request->get('url');
+$sign = $request->get('sign');
+$tag = $request->get('tag');
+
+$tag = Tracking::parseTag($tag);
+$tag['FIELDS']['IP'] = $request->getRemoteAddress();
+$tag['FIELDS']['URL'] = $url;
+Tracking::click($tag);
+
+$skipSecCheck = ($sign && $url && Tracking::validateSign($url, $sign));
 if ($url)
 {
-	LocalRedirect($url);
+	LocalRedirect($url, $skipSecCheck);
 }
 else
 {

@@ -4,6 +4,7 @@ $GLOBALS["BLOG_COMMENT"] = Array();
 
 class CAllBlogComment
 {
+	const UF_NAME = 'UF_BLOG_COMMENT_DOC';
 	/*************** ADD, UPDATE, DELETE *****************/
 	function CheckFields($ACTION, &$arFields, $ID = 0)
 	{
@@ -241,6 +242,7 @@ class CAllBlogComment
 						else
 							$serverName = COption::GetOptionString("main", "server_name", "");
 					}
+					$serverName = \Bitrix\Main\Text\HtmlFilter::encode($serverName);
 
 					if (strlen($charset) <= 0)
 					{
@@ -251,14 +253,14 @@ class CAllBlogComment
 					}
 
 					if(strlen($arPathTemplate["PATH_TO_BLOG"])>0)
-						$blogURL = htmlspecialcharsbx("http://".$serverName.CComponentEngine::MakePathFromTemplate($arPathTemplate["PATH_TO_BLOG"], array("blog" => $arBlog["URL"], "user_id" => $arBlog["OWNER_ID"], "group_id" => $arBlog["SOCNET_GROUP_ID"])));
+						$blogURL = "http://".$serverName.htmlspecialcharsbx(CComponentEngine::MakePathFromTemplate($arPathTemplate["PATH_TO_BLOG"], array("blog" => $arBlog["URL"], "user_id" => $arBlog["OWNER_ID"], "group_id" => $arBlog["SOCNET_GROUP_ID"])));
 					else
-						$blogURL = htmlspecialcharsbx("http://".$serverName.CBlog::PreparePath($arBlog["URL"], $arGroup["SITE_ID"]));
+						$blogURL = "http://".$serverName.htmlspecialcharsbx(CBlog::PreparePath($arBlog["URL"], $arGroup["SITE_ID"]));
 
 					if(strlen($arPathTemplate["PATH_TO_POST"])>0)
-						$url = htmlspecialcharsbx("http://".$serverName.CComponentEngine::MakePathFromTemplate($arPathTemplate["PATH_TO_POST"], array("blog" => $arBlog["URL"], "post_id" => CBlogPost::GetPostID($arPost["ID"], $arPost["CODE"], $arPathTemplate["ALLOW_POST_CODE"]), "user_id" => $arBlog["OWNER_ID"], "group_id" => $arBlog["SOCNET_GROUP_ID"])));
+						$url = "http://".$serverName.htmlspecialcharsbx(CComponentEngine::MakePathFromTemplate($arPathTemplate["PATH_TO_POST"], array("blog" => $arBlog["URL"], "post_id" => CBlogPost::GetPostID($arPost["ID"], $arPost["CODE"], $arPathTemplate["ALLOW_POST_CODE"]), "user_id" => $arBlog["OWNER_ID"], "group_id" => $arBlog["SOCNET_GROUP_ID"])));
 					else
-						$url = htmlspecialcharsbx("http://".$serverName.CBlogPost::PreparePath($arBlog["URL"], $arPost["ID"], $arGroup["SITE_ID"]));
+						$url = "http://".$serverName.htmlspecialcharsbx(CBlogPost::PreparePath($arBlog["URL"], $arPost["ID"], $arGroup["SITE_ID"]));
 
 					$dbUser = CUser::GetByID($arPost["AUTHOR_ID"]);
 					$arUser = $dbUser->Fetch();
@@ -301,7 +303,7 @@ class CAllBlogComment
 					}
 					elseif ($type == "atom.03")
 					{
-						$atomID = "tag:".htmlspecialcharsbx($serverName).",".date("Y-m-d").":".$postID;
+						$atomID = "tag:".$serverName.",".date("Y-m-d").":".$postID;
 
 						$rssText .= "<"."?xml version=\"1.0\" encoding=\"".$charset."\"?".">\n\n";
 						$rssText .= "<feed version=\"0.3\" xmlns=\"http://purl.org/atom/ns#\" xml:lang=\"".$language."\">\n";
@@ -314,9 +316,9 @@ class CAllBlogComment
 						$BlogUser = CBlogUser::GetByID($arPost["AUTHOR_ID"], BLOG_BY_USER_ID);
 						$authorP = htmlspecialcharsex(CBlogUser::GetUserName($BlogUser["ALIAS"], $arUser["NAME"], $arUser["LAST_NAME"], $arUser["LOGIN"], $arUser["SECOND_NAME"]));
 						if(strLen($arPathTemplate["PATH_TO_USER"])>0)
-							$authorURLP = htmlspecialcharsbx("http://".$serverName.CComponentEngine::MakePathFromTemplate($arPathTemplate["PATH_TO_USER"], array("user_id"=>$arPost["AUTHOR_ID"])));
+							$authorURLP = "http://".$serverName.htmlspecialcharsbx(CComponentEngine::MakePathFromTemplate($arPathTemplate["PATH_TO_USER"], array("user_id"=>$arPost["AUTHOR_ID"])));
 						else
-							$authorURLP = "http://".$serverName.CBlogUser::PreparePath($arPost["AUTHOR_ID"], $arGroup["SITE_ID"]);
+							$authorURLP = "http://".$serverName.htmlspecialcharsbx(CBlogUser::PreparePath($arPost["AUTHOR_ID"], $arGroup["SITE_ID"]));
 
 						$rssText .= "  <author>\n";
 						$rssText .= "  		<name>".$authorP."</name>\n";
@@ -378,9 +380,9 @@ class CAllBlogComment
 							{
 								$author = CBlogUser::GetUserName($arComments["BLOG_USER_ALIAS"], $arComments["USER_NAME"], $arComments["USER_LAST_NAME"], $arComments["USER_LOGIN"], $arComments["USER_SECOND_NAME"]);
 								if(strLen($arPathTemplate["PATH_TO_USER"])>0)
-									$authorURL = htmlspecialcharsbx("http://".$serverName.CComponentEngine::MakePathFromTemplate($arPathTemplate["PATH_TO_USER"], array("user_id"=>$arComments["AUTHOR_ID"])));
+									$authorURL = "http://".$serverName.htmlspecialcharsbx(CComponentEngine::MakePathFromTemplate($arPathTemplate["PATH_TO_USER"], array("user_id"=>$arComments["AUTHOR_ID"])));
 								else
-									$authorURL = htmlspecialcharsbx("http://".$serverName.CBlogUser::PreparePath($arComments["AUTHOR_ID"], $arGroup["SITE_ID"]));
+									$authorURL = "http://".$serverName.htmlspecialcharsbx(CBlogUser::PreparePath($arComments["AUTHOR_ID"], $arGroup["SITE_ID"]));
 							}
 							else
 								$author = $arComments["AUTHOR_NAME"];
@@ -430,7 +432,7 @@ class CAllBlogComment
 							}
 							elseif ($type == "atom.03")
 							{
-								$atomID = "tag:".htmlspecialcharsbx($serverName).":".$arBlog["URL"]."/".$arPost["ID"];
+								$atomID = "tag:".$serverName.":".$arBlog["URL"]."/".$arPost["ID"];
 
 								$timeISO = mktime($arDate["HH"], $arDate["MI"], $arDate["SS"], $arDate["MM"], $arDate["DD"], $arDate["YYYY"]);
 								$dateISO = date("Y-m-d\TH:i:s", $timeISO).substr(date("O", $timeISO), 0, 3).":".substr(date("O", $timeISO), -2, 2);
@@ -650,9 +652,19 @@ class CAllBlogComment
 
 	public static function GetSocNetUserPerms($postId = 0, $authorId = 0, $userId = 0)
 	{
+		$permsBySG = false;
+		return self::GetSocNetUserPermsNew($postId, $authorId, $userId, $permsBySG);
+	}
+
+	public static function GetSocNetUserPermsNew($postId = 0, $authorId = 0, $userId = 0, &$permsBySG)
+	{
 		global $APPLICATION, $USER, $AR_BLOG_PERMS;
 
 		$bCurrent = false;
+		if ($permsBySG === null)
+		{
+			$permsBySG = false;
+		}
 
 		if (
 			!isset($userId)
@@ -673,15 +685,8 @@ class CAllBlogComment
 		$perms = BLOG_PERMS_DENY;
 
 		$blogModulePermissions = $APPLICATION->GetGroupRight("blog", ($bCurrent ? false : CUser::GetUserGroup($userId)));
-		if (
-			$authorId > 0
-			&& $userId == $authorId
-		)
-		{
-			$perms = BLOG_PERMS_FULL;
-		}
 
-		elseif (
+		if (
 			$blogModulePermissions >= "W"
 			|| ($bCurrent ? CSocNetUser::IsCurrentUserModuleAdmin() : CSocNetUser::IsUserModuleAdmin($userId))
 		)
@@ -691,9 +696,31 @@ class CAllBlogComment
 			reset($AR_BLOG_PERMS);
 		}
 
+		$arPerms = CBlogPost::GetSocNetPerms($postId);
+		$arGroupsId = array();
+		if (
+			!empty($arPerms["SG"])
+			&& is_array($arPerms["SG"])
+		)
+		{
+			foreach($arPerms["SG"] as $gid => $val)
+			{
+				//if(!empty($arEntities["SG"][$gid]))
+				$arGroupsId[] = $gid;
+			}
+		}
+
+		if (
+			empty($arGroupsId)
+			&& $authorId > 0
+			&& $userId == $authorId
+		)
+		{
+			$perms = BLOG_PERMS_MODERATE;
+		}
+
 		if($perms <= BLOG_PERMS_DENY)
 		{
-			$arPerms = CBlogPost::GetSocNetPerms($postId);
 			$arEntities = Array();
 
 			if (!empty(CBlogPost::$arUACCache[$userId]))
@@ -783,69 +810,63 @@ class CAllBlogComment
 				}
 			}
 
-			if ($perms <= BLOG_PERMS_FULL)
+			if (
+				$perms <= BLOG_PERMS_FULL
+				&& !empty($arGroupsId)
+			)
 			{
-				$arGroupsId = $operation = Array();
-
-				if(!empty($arPerms["SG"]))
+				$operation = Array("full_comment", "moderate_comment", "write_comment", "premoderate_comment");
+				if ($perms < BLOG_PERMS_READ)
 				{
-					foreach($arPerms["SG"] as $gid => $val)
-					{
-						//if(!empty($arEntities["SG"][$gid]))
-						$arGroupsId[] = $gid;
-					}
-
-					$operation = Array("full_comment", "moderate_comment", "write_comment", "premoderate_comment");
-					if ($perms < BLOG_PERMS_READ)
-					{
-						$operation[] = "view_comment";
-					}
+					$operation[] = "view_comment";
 				}
 
-				if (!empty($arGroupsId))
+				foreach ($operation as $v)
 				{
-					foreach ($operation as $v)
+					if ($perms <= BLOG_PERMS_READ)
 					{
-						if ($perms <= BLOG_PERMS_READ)
+						$f = CSocNetFeaturesPerms::GetOperationPerm(SONET_ENTITY_GROUP, $arGroupsId, "blog", $v);
+						if (
+							is_array($f)
+							&& !empty($f)
+						)
 						{
-							$f = CSocNetFeaturesPerms::GetOperationPerm(SONET_ENTITY_GROUP, $arGroupsId, "blog", $v);
-							if (
-								is_array($f)
-								&& !empty($f)
-							)
+							foreach($f as $gid => $val)
 							{
-								foreach($f as $gid => $val)
-								{
-									if (
-										(
-											!empty($arEntities["SG"][$gid])
-											&& in_array($val, $arEntities["SG"][$gid])
-										)
-										|| $val == SONET_ROLES_ALL
-										|| (
-											$userId > 0
-											&& $val == SONET_ROLES_AUTHORIZED
-										)
+								if (
+									(
+										!empty($arEntities["SG"][$gid])
+										&& in_array($val, $arEntities["SG"][$gid])
 									)
+									|| $val == SONET_ROLES_ALL
+									|| (
+										$userId > 0
+										&& $val == SONET_ROLES_AUTHORIZED
+									)
+								)
+								{
+									switch($v)
 									{
-										switch($v)
-										{
-											case "full_comment":
-												$perms = BLOG_PERMS_FULL;
-												break;
-											case "moderate_comment":
-												$perms = BLOG_PERMS_MODERATE;
-												break;
-											case "write_comment":
-												$perms = BLOG_PERMS_WRITE;
-												break;
-											case "premoderate_comment":
-												$perms = BLOG_PERMS_PREMODERATE;
-												break;
-											case "view_comment":
-												$perms = BLOG_PERMS_READ;
-												break;
-										}
+										case "full_comment":
+											$perms = BLOG_PERMS_FULL;
+											$permsBySG = true;
+											break;
+										case "moderate_comment":
+											$perms = BLOG_PERMS_MODERATE;
+											$permsBySG = true;
+											break;
+										case "write_comment":
+											$perms = BLOG_PERMS_WRITE;
+											$permsBySG = true;
+											break;
+										case "premoderate_comment":
+											$perms = BLOG_PERMS_PREMODERATE;
+											$permsBySG = true;
+											break;
+										case "view_comment":
+											$perms = BLOG_PERMS_READ;
+											$permsBySG = true;
+											break;
 									}
 								}
 							}

@@ -3,7 +3,17 @@ use Bitrix\Main\Localization\Loc;
 
 Loc::loadMessages(__FILE__);
 
-$description = Loc::getMessage('SALE_HPS_YANDEX_DESCRIPTION');
+$description = array(
+	'RETURN' => Loc::getMessage('SALE_HPS_YANDEX_RETURN'),
+	'RESTRICTION' => Loc::getMessage('SALE_HPS_YANDEX_RESTRICTION'),
+	'COMMISSION' => Loc::getMessage('SALE_HPS_YANDEX_COMMISSION'),
+	'MAIN' => Loc::getMessage('SALE_HPS_YANDEX_DESCRIPTION')
+);
+
+if (IsModuleInstalled('bitrix24'))
+{
+	$description['REFERRER'] = Loc::getMessage('SALE_HPS_YANDEX_REFERRER');
+}
 
 $data = array(
 	'NAME' => Loc::getMessage('SALE_HPS_YANDEX'),

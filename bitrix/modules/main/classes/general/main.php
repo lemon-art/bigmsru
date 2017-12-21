@@ -7,11 +7,11 @@
  */
 
 use Bitrix\Main;
+use Bitrix\Main\Composite;
 use Bitrix\Main\Localization\CultureTable;
 use Bitrix\Main\Page\Asset;
 use Bitrix\Main\Page\AssetLocation;
 use Bitrix\Main\Page\AssetMode;
-use Bitrix\Main\Page\Frame;
 
 define('BX_SPREAD_SITES', 2);
 define('BX_SPREAD_DOMAIN', 4);
@@ -304,6 +304,12 @@ abstract class CAllMain
 		else
 		{
 			include($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/interface/auth/wrapper.php");
+		}
+
+		$autoCompositeArea = \Bitrix\Main\Composite\Internals\AutomaticArea::getCurrentArea();
+		if ($autoCompositeArea)
+		{
+			$autoCompositeArea->end();
 		}
 
 		if($show_epilog)
@@ -884,7 +890,7 @@ abstract class CAllMain
 	{
 		global $USER;
 
-		if(!$USER->IsAuthorized() || defined('ADMIN_SECTION') && ADMIN_SECTION == true)
+		if(!is_object($USER) || !$USER->IsAuthorized() || defined('ADMIN_SECTION') && ADMIN_SECTION == true)
 			return false;
 		if(isset($_SESSION["SESS_INCLUDE_AREAS"]) && $_SESSION["SESS_INCLUDE_AREAS"])
 			return true;
@@ -3061,7 +3067,7 @@ abstract class CAllMain
 	{
 		global $USER;
 
-		$isFrameAjax = Bitrix\Main\Page\Frame::getUseHTMLCache() && Bitrix\Main\Page\Frame::isAjaxRequest();
+		$isFrameAjax = Composite\Engine::getUseHTMLCache() && Composite\Engine::isAjaxRequest();
 		if (isset($GLOBALS["USER"]) && is_object($USER) && $USER->IsAuthorized() && !isset($_REQUEST["bx_hit_hash"]) && !$isFrameAjax)
 		{
 			echo CTopPanel::GetPanelHtml();
@@ -3072,7 +3078,7 @@ abstract class CAllMain
 	{
 		global $USER;
 
-		$isFrameAjax = Bitrix\Main\Page\Frame::getUseHTMLCache() && Bitrix\Main\Page\Frame::isAjaxRequest();
+		$isFrameAjax = Composite\Engine::getUseHTMLCache() && Composite\Engine::isAjaxRequest();
 		if (isset($GLOBALS["USER"]) && is_object($USER) && $USER->IsAuthorized() && !isset($_REQUEST["bx_hit_hash"]) && !$isFrameAjax)
 		{
 			$this->showPanelWasInvoked = true;
@@ -3107,6 +3113,8 @@ abstract class CAllMain
 	{
 		static $index = null;
 		static $view = null;
+
+		
 
 		if ($start)
 		{
@@ -3189,6 +3197,8 @@ abstract class CAllMain
 
 	public function &EndBufferContentMan()
 	{
+		
+
 		if(!$this->buffered)
 			return null;
 		$content = ob_get_contents();
@@ -3214,7 +3224,7 @@ abstract class CAllMain
 			return "";
 		}
 
-		Frame::checkAdminPanel();
+		Composite\Engine::checkAdminPanel();
 
 		if (function_exists("getmoduleevents"))
 		{
@@ -3243,8 +3253,7 @@ abstract class CAllMain
 			}
 		}
 
-		$composite = Frame::getInstance();
-		$compositeContent = $composite->startBuffering($content);
+		$compositeContent = Composite\Engine::startBuffering($content);
 		$content = implode("", $this->buffer_content).$content;
 
 		if (function_exists("getmoduleevents"))
@@ -3255,7 +3264,7 @@ abstract class CAllMain
 			}
 		}
 
-		$wasContentModified = $composite->endBuffering($content, $compositeContent);
+		$wasContentModified = Composite\Engine::endBuffering($content, $compositeContent);
 		if (!$wasContentModified && $asset->canMoveJsToBody())
 		{
 			$asset->moveJsToBody($content);
@@ -3525,6 +3534,8 @@ abstract class CAllMain
 			}
 		}
 
+		
+
 		//user auto time zone via js cookies
 		if(CTimeZone::Enabled() && (!defined("BX_SKIP_TIMEZONE_COOKIE") || BX_SKIP_TIMEZONE_COOKIE === false))
 		{
@@ -3578,7 +3589,14 @@ abstract class CAllMain
 		//files cleanup
 		CMain::FileAction();
 
-		if (CUserCounter::CheckLiveMode())
+		if (
+			(
+				!defined('BX_SENDPULL_COUNTER_QUEUE_DISABLE')
+				|| BX_SENDPULL_COUNTER_QUEUE_DISABLE !== true
+			)
+			&& CUserCounter::CheckLiveMode()
+
+		)
 		{
 			CUserCounterPage::checkSendCounter();
 		}
@@ -5288,6 +5306,11 @@ class CApplicationException
 	public function GetID()
 	{
 		return $this->id;
+	}
+
+	public function __toString()
+	{
+		return $this->GetString();
 	}
 }
 

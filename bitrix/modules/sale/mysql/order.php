@@ -321,7 +321,16 @@ class CSaleOrder extends CAllSaleOrder
 		}
 	}
 
-	function GetList($arOrder = array("ID"=>"DESC"), $arFilter = array(), $arGroupBy = false, $arNavStartParams = false, $arSelectFields = array(), $arOptions = array())
+	/**
+	 * @param array $arOrder
+	 * @param array $arFilter
+	 * @param bool|array $arGroupBy
+	 * @param bool|array $arNavStartParams
+	 * @param array $arSelectFields
+	 * @param array $arOptions
+	 * @return bool|CDBResult
+	 */
+	public static function GetList($arOrder = array("ID"=>"DESC"), $arFilter = array(), $arGroupBy = false, $arNavStartParams = false, $arSelectFields = array(), $arOptions = array())
 	{
 		global $DB, $USER_FIELD_MANAGER;
 
@@ -485,7 +494,6 @@ class CSaleOrder extends CAllSaleOrder
 				$result->addFetchAdapter(new \Bitrix\Sale\Compatible\OrderFetchAdapter());
 			return $result;
 		}
-
 
 		if (empty($arSelectFields))
 		{
@@ -1014,4 +1022,3 @@ class CSaleOrder extends CAllSaleOrder
 		return true;
 	}
 }
-?>

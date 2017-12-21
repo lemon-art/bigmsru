@@ -649,6 +649,50 @@ BX.ajax.post = function(url, data, callback)
 	});
 };
 
+/**
+ * BX.ajax with BX.Promise
+ * 
+ * @param config
+ * @returns {BX.Promise|false}
+ */
+BX.ajax.promise = function(config)	
+{
+	var result = new BX.Promise();
+	
+	config.onsuccess = function(data)
+	{
+		result.fulfill(data);
+	};
+	config.onfailure = function(reason, data)
+	{
+		result.reject({
+			reason: reason, 
+			data: data
+		});
+	};
+	config.onprogress = function(data) 
+	{
+		if (data.position == 0 && data.totalSize == 0)
+		{
+			result.reject({
+				reason: 'progress', 
+				data: data
+			});
+		}
+	};
+	
+	var xhr = BX.ajax(config);
+	if (!xhr)
+	{
+		result.reject({
+			reason: "init",
+			data: false
+		});
+	}
+	
+	return result;
+};
+
 /* load and execute external file script with onload emulation */
 BX.ajax.loadScriptAjax = function(script_src, callback, bPreload)
 {
@@ -983,7 +1027,16 @@ BX.ajax.submitAjax = function(obForm, config)
 {
 	config = (config !== null && typeof config == "object" ? config : {});
 	config.url = (config["url"] || obForm.getAttribute("action"));
+
+	var additionalData = (config["data"] || {});
 	config.data = BX.ajax.prepareForm(obForm).data;
+	for (var ii in additionalData)
+	{
+		if (additionalData.hasOwnProperty(ii))
+		{
+			config.data[ii] = additionalData[ii];
+		}
+	}
 
 	if (!window["FormData"])
 	{

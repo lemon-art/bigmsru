@@ -133,7 +133,7 @@
 
 	BX.Recorder.prototype.resume = function()
 	{
-		if(this.state !== states.recording)
+		if(this.state !== states.paused)
 			throw "recording can not be resumed right now";
 
 		this.state = states.recording;

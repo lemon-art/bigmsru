@@ -19,7 +19,9 @@ class CBlogPostCategory extends CAllBlogPostCategory
 		}
 
 		if (!CBlogPostCategory::CheckFields("ADD", $arFields))
+		{
 			return false;
+		}
 
 		$arInsert = $DB->PrepareInsert("b_blog_post_category", $arFields);
 

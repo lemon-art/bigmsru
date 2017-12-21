@@ -42,7 +42,7 @@ CREATE TABLE b_subscription_rubric
 CREATE TABLE b_posting
 (
 	ID		INT(11)		NOT NULL auto_increment,
-	TIMESTAMP_X	TIMESTAMP	NOT NULL,
+	TIMESTAMP_X	TIMESTAMP	NOT NULL default current_timestamp on update current_timestamp,
 	STATUS		CHAR(1)		DEFAULT 'D' NOT NULL,
 	VERSION		CHAR(1)		NULL,
 	DATE_SENT	DATETIME	NULL,

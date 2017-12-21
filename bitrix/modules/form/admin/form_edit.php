@@ -103,7 +103,7 @@ while ($ar = $rs->Fetch())
 
 if ((strlen($_REQUEST['save'])>0 || strlen($_REQUEST['apply'])>0) && $_SERVER['REQUEST_METHOD']=="POST" && ($F_RIGHT>=30 || $ID<=0) && check_bitrix_sessid())
 {
-	$arIMAGE_ID = $HTTP_POST_FILES["IMAGE_ID"];
+	$arIMAGE_ID = $_FILES["IMAGE_ID"];
 	$arIMAGE_ID["MODULE_ID"] = "form";
 	$arIMAGE_ID["del"] = $_REQUEST["IMAGE_ID_del"];
 
@@ -142,8 +142,6 @@ if ((strlen($_REQUEST['save'])>0 || strlen($_REQUEST['apply'])>0) && $_SERVER['R
 		"SHOW_RESULT_TEMPLATE"		=> $_REQUEST['SHOW_RESULT_TEMPLATE'],
 		"PRINT_RESULT_TEMPLATE"		=> $_REQUEST['PRINT_RESULT_TEMPLATE'],
 		"EDIT_RESULT_TEMPLATE"		=> $_REQUEST['EDIT_RESULT_TEMPLATE'],
-		"FILTER_RESULT_TEMPLATE"	=> $_REQUEST['FILTER_RESULT_TEMPLATE'],
-		"TABLE_RESULT_TEMPLATE"		=> $_REQUEST['TABLE_RESULT_TEMPLATE'],
 		"USE_RESTRICTIONS"			=> $_REQUEST['USE_RESTRICTIONS'] == "Y" ? "Y" : "N",
 		"RESTRICT_USER"				=> $RESTRICT_USER,
 		"RESTRICT_TIME"				=> $RESTRICT_TIME,
@@ -158,6 +156,9 @@ if ((strlen($_REQUEST['save'])>0 || strlen($_REQUEST['apply'])>0) && $_SERVER['R
 
 	if ($bEditTemplate)
 	{
+		$arFields['FILTER_RESULT_TEMPLATE'] = $_REQUEST['FILTER_RESULT_TEMPLATE'];
+		$arFields['TABLE_RESULT_TEMPLATE'] = $_REQUEST['TABLE_RESULT_TEMPLATE'];
+
 		$FORM_TEMPLATE = $_REQUEST['FORM_TEMPLATE'];
 		$USE_DEFAULT_TEMPLATE = $_REQUEST['USE_DEFAULT_TEMPLATE'] == "N" && strlen($FORM_TEMPLATE) > 0 ? "N" : "Y";
 
@@ -556,8 +557,8 @@ $tabControl->BeginNextTab();
 			$checked = ((is_array($arSITE) && in_array($sid, $arSITE)) || ($ID<=0 && $def_site_id==$sid)) ? "checked" : "";
 			?>
 			<div class="adm-list-item">
-				<div class="adm-list-control"><input type="checkbox" name="arSITE[]" value="<?=htmlspecialcharsex($sid)?>" id="<?=htmlspecialcharsex($sid)?>" <?=$checked?>></div>
-				<div class="adm-list-label"><label for="<?=$sid?>"><?echo "[<a class=tablebodylink href='/bitrix/admin/site_edit.php?LID=".$sid."&lang=".LANGUAGE_ID."'>".htmlspecialcharsex($sid)."</a>]&nbsp;".htmlspecialcharsex($arrS["NAME"])?></label></div>
+				<div class="adm-list-control"><input type="checkbox" name="arSITE[]" value="<?=htmlspecialcharsbx($sid)?>" id="<?=htmlspecialcharsbx($sid)?>" <?=$checked?>></div>
+				<div class="adm-list-label"><label for="<?=htmlspecialcharsbx($sid)?>"><?echo "[<a class=tablebodylink href='/bitrix/admin/site_edit.php?LID=".htmlspecialcharsbx($sid)."&lang=".LANGUAGE_ID."'>".htmlspecialcharsbx($sid)."</a>]&nbsp;".htmlspecialcharsbx($arrS["NAME"])?></label></div>
 			</div>
 			<?
 		endwhile;
@@ -1088,9 +1089,9 @@ function set_event2()
 				foreach ($arrMAIL as $mail_id => $mail_name):
 					$checked = (is_array($arMAIL_TEMPLATE) && in_array($mail_id, $arMAIL_TEMPLATE)) ? "checked" : "";
 				?>
-					<tr id="ft_<?=$mail_id?>">
-						<td nowrap style="padding:0px"><input type="checkbox" name="arMAIL_TEMPLATE[]" value="<?=htmlspecialcharsex($mail_id)?>" id="<?=htmlspecialcharsex($mail_id)?>" <?=$checked?>><?echo "[<a class=tablebodylink href='/bitrix/admin/message_edit.php?ID=".$mail_id."&lang=".LANGUAGE_ID."'>".htmlspecialcharsex($mail_id). "</a>]";?>&nbsp;<label for="<?=$mail_id?>"><?=htmlspecialcharsex($mail_name)?></label></td>
-						<td nowrap style="padding:0px">&nbsp;[&nbsp;<a href="javascript:void(0)" onclick="DeleteMailTemplate('<?=$mail_id?>')"><?=GetMessage("FORM_DELETE_MAIL_TEMPLATE")?></a>&nbsp;]</td>
+					<tr id="ft_<?=htmlspecialcharsbx($mail_id)?>">
+						<td nowrap style="padding:0px"><input type="checkbox" name="arMAIL_TEMPLATE[]" value="<?=htmlspecialcharsbx($mail_id)?>" id="<?=htmlspecialcharsbx($mail_id)?>" <?=$checked?>><?echo "[<a class=tablebodylink href='/bitrix/admin/message_edit.php?ID=".htmlspecialcharsbx($mail_id)."&lang=".LANGUAGE_ID."'>".htmlspecialcharsbx($mail_id). "</a>]";?>&nbsp;<label for="<?=htmlspecialcharsbx($mail_id)?>"><?=htmlspecialcharsbx($mail_name)?></label></td>
+						<td nowrap style="padding:0px">&nbsp;[&nbsp;<a href="javascript:void(0)" onclick="DeleteMailTemplate('<?=htmlspecialcharsbx($mail_id)?>')"><?=GetMessage("FORM_DELETE_MAIL_TEMPLATE")?></a>&nbsp;]</td>
 					</tr>
 				<?endforeach;?>
 				<?
@@ -1117,6 +1118,8 @@ function set_event2()
 	</tr>
 	<?endif;?>
 		<?
+
+	if($bEditTemplate):
 		CAdminFileDialog::ShowScript(Array(
 			"event" => "BtnClick1",
 			"arResultDest" => Array("FORM_NAME" => "form1", "FORM_ELEMENT_NAME" => "FILTER_RESULT_TEMPLATE"),
@@ -1139,12 +1142,15 @@ function set_event2()
 	?>
 	<tr>
 		<td><?=GetMessage("FORM_FILTER_RESULT_TEMPLATE")?></td>
-		<td><input type="text" name="FILTER_RESULT_TEMPLATE" size="37" value="<?echo $str_FILTER_RESULT_TEMPLATE?>">&nbsp;<input type="button" name="browse" value="..." onClick="BtnClick1()"></td>
+		<td><input type="text" name="FILTER_RESULT_TEMPLATE" size="37" value="<?echo htmlspecialcharsbx($str_FILTER_RESULT_TEMPLATE)?>">&nbsp;<input type="button" name="browse" value="..." onClick="BtnClick1()"></td>
 	</tr>
 	<tr>
 		<td><?=GetMessage("FORM_TABLE_RESULT_TEMPLATE")?></td>
-		<td><input type="text" name="TABLE_RESULT_TEMPLATE" size="37" value="<?echo $str_TABLE_RESULT_TEMPLATE?>">&nbsp;<input type="button" name="browse" value="..." onClick="BtnClick2()"></td>
+		<td><input type="text" name="TABLE_RESULT_TEMPLATE" size="37" value="<?echo htmlspecialcharsbx($str_TABLE_RESULT_TEMPLATE)?>">&nbsp;<input type="button" name="browse" value="..." onClick="BtnClick2()"></td>
 	</tr>
+	<?
+	endif;
+	?>
 	<tr>
 		<td>
 <?
@@ -1157,15 +1163,15 @@ $tabControl->BeginNextTab();
 ?>
 	<tr>
 		<td width="40%">event1:</td>
-		<td width="60%"><input type="text" name="STAT_EVENT1" maxlength="255" size="30" value="<?=$str_STAT_EVENT1?>"></td>
+		<td width="60%"><input type="text" name="STAT_EVENT1" maxlength="255" size="30" value="<?=htmlspecialcharsbx($str_STAT_EVENT1)?>"></td>
 	</tr>
 	<tr>
 		<td>event2:</td>
-		<td><input type="text" name="STAT_EVENT2" maxlength="255" size="30" value="<?=$str_STAT_EVENT2?>"><br><?echo GetMessage("FORM_EVENT12")?></td>
+		<td><input type="text" name="STAT_EVENT2" maxlength="255" size="30" value="<?=htmlspecialcharsbx($str_STAT_EVENT2)?>"><br><?echo GetMessage("FORM_EVENT12")?></td>
 	</tr>
 	<tr>
 		<td>event3:</td>
-		<td><input type="text" name="STAT_EVENT3" maxlength="255" size="30" value="<?=$str_STAT_EVENT3?>"><br><?echo GetMessage("FORM_EVENT3")?></td>
+		<td><input type="text" name="STAT_EVENT3" maxlength="255" size="30" value="<?=htmlspecialcharsbx($str_STAT_EVENT3)?>"><br><?echo GetMessage("FORM_EVENT3")?></td>
 	</tr>
 <?
 //********************
@@ -1262,7 +1268,7 @@ function showCrmForm(data)
 
 	data = data || {ID:'new_' + popup_id}
 
-	var content = '<div class="form-crm-settings"><form name="form_'+popup_id+'"><table cellpadding="0" cellspacing="2" border="0"><tr><td align="right"><?=CUtil::JSEscape(GetMessage('FORM_TAB_CRM_ROW_TITLE'))?>:</td><td><input type="text" name="NAME" value="'+(data.NAME||'')+'"></td></tr><tr><td align="right"><?=CUtil::JSEscape(GetMessage('FORM_TAB_CRM_FORM_URL_SERVER'))?>:</td><td><input type="text" name="URL_SERVER" value="'+(data.URL_SERVER||'')+'"></td></tr><tr><td align="right"><?=CUtil::JSEscape(GetMessage('FORM_TAB_CRM_FORM_URL_PATH'))?>:</td><td><input type="text" name="URL_PATH" value="'+(data.URL_PATH||'<?=FORM_CRM_DEFAULT_PATH?>')+'"></td></tr><tr><td colspan="2" align="center"><b><?=CUtil::JSEscape(GetMessage('FORM_TAB_CRM_ROW_AUTH'))?></b></td></tr><tr><td align="right"><?=CUtil::JSEscape(GetMessage('FORM_TAB_CRM_ROW_AUTH_LOGIN'))?>:</td><td><input type="text" name="LOGIN" value="'+(data.LOGIN||'')+'"></td></tr><tr><td align="right"><?=CUtil::JSEscape(GetMessage('FORM_TAB_CRM_ROW_AUTH_PASSWORD'))?>:</td><td><input type="password" name="PASSWORD" value="'+(data.PASSWORD||'')+'"></td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="_showPass(document.forms[\'form_'+popup_id+'\'].PASSWORD); BX.hide(this.parentNode);"><?=CUtil::JSEscape(GetMessage('FORM_TAB_CRM_ROW_AUTH_PASSWORD_SHOW'))?></a></td></tr></table></form></div>';
+	var content = '<div class="form-crm-settings"><form name="form_'+popup_id+'"><table cellpadding="0" cellspacing="2" border="0"><tr><td align="right"><?=CUtil::JSEscape(GetMessage('FORM_TAB_CRM_ROW_TITLE'))?>:</td><td><input type="text" name="NAME" value="'+BX.util.htmlspecialchars(data.NAME||'')+'"></td></tr><tr><td align="right"><?=CUtil::JSEscape(GetMessage('FORM_TAB_CRM_FORM_URL_SERVER'))?>:</td><td><input type="text" name="URL_SERVER" value="'+BX.util.htmlspecialchars(data.URL_SERVER||'')+'"></td></tr><tr><td align="right"><?=CUtil::JSEscape(GetMessage('FORM_TAB_CRM_FORM_URL_PATH'))?>:</td><td><input type="text" name="URL_PATH" value="'+BX.util.htmlspecialchars(data.URL_PATH||'<?=FORM_CRM_DEFAULT_PATH?>')+'"></td></tr><tr><td colspan="2" align="center"><b><?=CUtil::JSEscape(GetMessage('FORM_TAB_CRM_ROW_AUTH'))?></b></td></tr><tr><td align="right"><?=CUtil::JSEscape(GetMessage('FORM_TAB_CRM_ROW_AUTH_LOGIN'))?>:</td><td><input type="text" name="LOGIN" value="'+BX.util.htmlspecialchars(data.LOGIN||'')+'"></td></tr><tr><td align="right"><?=CUtil::JSEscape(GetMessage('FORM_TAB_CRM_ROW_AUTH_PASSWORD'))?>:</td><td><input type="password" name="PASSWORD" value="'+BX.util.htmlspecialchars(data.PASSWORD||'')+'"></td></tr><tr><td></td><td><a href="javascript:void(0)" onclick="_showPass(document.forms[\'form_'+popup_id+'\'].PASSWORD); BX.hide(this.parentNode);"><?=CUtil::JSEscape(GetMessage('FORM_TAB_CRM_ROW_AUTH_PASSWORD_SHOW'))?></a></td></tr></table></form></div>';
 
 	var wnd = new BX.PopupWindow('popup_' + popup_id, window, {
 		titleBar: {content: BX.create('SPAN', {text: '<?=CUtil::JSEscape(GetMessage('FORM_CRM_TITLEBAR_NEW'))?>'})},

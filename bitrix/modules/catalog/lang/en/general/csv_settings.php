@@ -17,7 +17,6 @@ $MESS["CATI_FI_ID"] = "Primary key";
 $MESS["CATI_FI_QUANT"] = "In stock";
 $MESS["CATI_FI_QUANTITY_TRACE"] = "Trace quantity in stock";
 $MESS["CATI_FI_CAN_BUY_ZERO"] = "Make out-of-stock items available for purchase";
-$MESS["CATI_FI_NEGATIVE_AMOUNT_TRACE"] = "Allow negative product quantity";
 $MESS["CATI_FI_WEIGHT"] = "Weight";
 $MESS["CATI_FI_WIDTH"] = "Width";
 $MESS["CATI_FI_HEIGHT"] = "Height";

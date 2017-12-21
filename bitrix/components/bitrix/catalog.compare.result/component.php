@@ -1,5 +1,5 @@
 <?
-if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 /** @var CBitrixComponent $this */
 /** @var array $arParams */
 /** @var array $arResult */
@@ -9,10 +9,11 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 /** @global CDatabase $DB */
 /** @global CUser $USER */
 /** @global CMain $APPLICATION */
-use Bitrix\Main\Loader,
-	Bitrix\Currency\CurrencyTable,
+use Bitrix\Main,
+	Bitrix\Main\Loader,
 	Bitrix\Iblock\InheritedProperty\ElementValues,
-	Bitrix\Iblock;
+	Bitrix\Iblock,
+	Bitrix\Currency;
 
 $this->setFrameMode(false);
 
@@ -54,38 +55,38 @@ $arParams["SECTION_ID_VARIABLE"] = trim($arParams["SECTION_ID_VARIABLE"]);
 if ($arParams["SECTION_ID_VARIABLE"] == '' || !preg_match("/^[A-Za-z_][A-Za-z01-9_]*$/", $arParams["SECTION_ID_VARIABLE"]))
 	$arParams["SECTION_ID_VARIABLE"] = "SECTION_ID";
 
-if(!is_array($arParams["PROPERTY_CODE"]))
+if (!is_array($arParams["PROPERTY_CODE"]))
 	$arParams["PROPERTY_CODE"] = array();
 foreach($arParams["PROPERTY_CODE"] as $k=>$v)
-	if($v==="")
+	if ($v==="")
 		unset($arParams["PROPERTY_CODE"][$k]);
 
-if(!is_array($arParams["FIELD_CODE"]))
+if (!is_array($arParams["FIELD_CODE"]))
 	$arParams["FIELD_CODE"] = array();
 foreach($arParams["FIELD_CODE"] as $k=>$v)
-	if($v==="")
+	if ($v==="")
 		unset($arParams["FIELD_CODE"][$k]);
 
-if(!is_array($arParams["OFFERS_FIELD_CODE"]))
+if (!is_array($arParams["OFFERS_FIELD_CODE"]))
 	$arParams["OFFERS_FIELD_CODE"] = array();
 foreach($arParams["OFFERS_FIELD_CODE"] as $k=>$v)
-	if($v==="")
+	if ($v==="")
 		unset($arParams["OFFERS_FIELD_CODE"][$k]);
 
-if(!is_array($arParams["OFFERS_PROPERTY_CODE"]))
+if (!is_array($arParams["OFFERS_PROPERTY_CODE"]))
 	$arParams["OFFERS_PROPERTY_CODE"] = array();
 foreach($arParams["OFFERS_PROPERTY_CODE"] as $k=>$v)
-	if($v==="")
+	if ($v==="")
 		unset($arParams["OFFERS_PROPERTY_CODE"][$k]);
 
-if(!in_array("NAME", $arParams["FIELD_CODE"]))
+if (!in_array("NAME", $arParams["FIELD_CODE"]))
 	$arParams["FIELD_CODE"][]="NAME";
-if(!is_array($arParams["PRICE_CODE"]))
+if (!is_array($arParams["PRICE_CODE"]))
 	$arParams["PRICE_CODE"] = array();
 
 $arParams["USE_PRICE_COUNT"] = $arParams["USE_PRICE_COUNT"]=="Y";
 $arParams["SHOW_PRICE_COUNT"] = intval($arParams["SHOW_PRICE_COUNT"]);
-if($arParams["SHOW_PRICE_COUNT"]<=0)
+if ($arParams["SHOW_PRICE_COUNT"]<=0)
 	$arParams["SHOW_PRICE_COUNT"]=1;
 
 $arParams["DISPLAY_ELEMENT_SELECT_BOX"] = $arParams["DISPLAY_ELEMENT_SELECT_BOX"]=="Y";
@@ -122,7 +123,7 @@ if (!isset($_SESSION[$arParams["NAME"]][$arParams["IBLOCK_ID"]]))
 *************************************************************************/
 if (isset($_REQUEST[$arParams['ACTION_VARIABLE']]))
 {
-	switch($_REQUEST[$arParams['ACTION_VARIABLE']])
+	switch (ToUpper($_REQUEST[$arParams['ACTION_VARIABLE']]))
 	{
 		case "ADD_TO_COMPARE_LIST":
 		case "ADD_TO_COMPARE_RESULT":
@@ -256,7 +257,8 @@ if (isset($_REQUEST[$arParams['ACTION_VARIABLE']]))
 					else
 						$addResult = array('STATUS' => 'ERROR', 'MESSAGE' => $errorMessage);
 					$APPLICATION->RestartBuffer();
-					echo CUtil::PhpToJSObject($addResult);
+					header('Content-Type: application/json');
+					echo Main\Web\Json::encode($addResult);
 					die();
 				}
 			}
@@ -264,18 +266,29 @@ if (isset($_REQUEST[$arParams['ACTION_VARIABLE']]))
 		case "DELETE_FROM_COMPARE_LIST":
 		case "DELETE_FROM_COMPARE_RESULT":
 			$arID = array();
-			if (isset($_REQUEST["ID"]))
+
+			if (isset($_REQUEST[$arParams['PRODUCT_ID_VARIABLE']]))
+			{
+				$arID = $_REQUEST[$arParams['PRODUCT_ID_VARIABLE']];
+			}
+			elseif (isset($_REQUEST["ID"]))
 			{
 				$arID = $_REQUEST["ID"];
-				if(!is_array($arID))
-					$arID = array($arID);
 			}
+
+			if (!is_array($arID))
+			{
+				$arID = array($arID);
+			}
+
 			if (!empty($arID))
 			{
 				foreach($arID as $ID)
 				{
 					if (isset($_SESSION[$arParams["NAME"]][$arParams["IBLOCK_ID"]]["ITEMS"][$ID]))
+					{
 						unset($_SESSION[$arParams["NAME"]][$arParams["IBLOCK_ID"]]["ITEMS"][$ID]);
+					}
 				}
 				unset($ID);
 			}
@@ -295,19 +308,19 @@ if (isset($_REQUEST[$arParams['ACTION_VARIABLE']]))
 			if (isset($_REQUEST["pr_code"]))
 			{
 				$arPR = $_REQUEST["pr_code"];
-				if(!is_array($arPR))
+				if (!is_array($arPR))
 					$arPR = array($arPR);
 			}
 			if (isset($_REQUEST["of_code"]))
 			{
 				$arOF = $_REQUEST["of_code"];
-				if(!is_array($arOF))
+				if (!is_array($arOF))
 					$arOF = array($arOF);
 			}
 			if (isset($_REQUEST["op_code"]))
 			{
 				$arOP = $_REQUEST["op_code"];
-				if(!is_array($arOP))
+				if (!is_array($arOP))
 					$arOP = array($arOP);
 			}
 
@@ -363,19 +376,19 @@ if (isset($_REQUEST[$arParams['ACTION_VARIABLE']]))
 			if (isset($_REQUEST["pr_code"]))
 			{
 				$arPR = $_REQUEST["pr_code"];
-				if(!is_array($arPR))
+				if (!is_array($arPR))
 					$arPR = array($arPR);
 			}
 			if (isset($_REQUEST["of_code"]))
 			{
 				$arOF = $_REQUEST["of_code"];
-				if(!is_array($arOF))
+				if (!is_array($arOF))
 					$arOF = array($arOF);
 			}
 			if (isset($_REQUEST["op_code"]))
 			{
 				$arOP = $_REQUEST["op_code"];
-				if(!is_array($arOP))
+				if (!is_array($arOP))
 					$arOP = array($arOP);
 			}
 
@@ -420,8 +433,8 @@ if (isset($_REQUEST["DIFFERENT"]))
 $arResult["DIFFERENT"] = $_SESSION[$arParams["NAME"]][$arParams["IBLOCK_ID"]]["DIFFERENT"];
 
 /*************************************************************************
-			Processing of the Buy link
-*************************************************************************/
+Processing of the Buy link
+ *************************************************************************/
 $strError = "";
 if (isset($_REQUEST[$arParams["ACTION_VARIABLE"]]) && isset($_REQUEST[$arParams["PRODUCT_ID_VARIABLE"]]))
 {
@@ -433,13 +446,13 @@ if (isset($_REQUEST[$arParams["ACTION_VARIABLE"]]) && isset($_REQUEST[$arParams[
 		{
 			$QUANTITY = 1;
 			$product_properties = array();
-			if(is_array($arParams["OFFERS_CART_PROPERTIES"]))
+			if (is_array($arParams["OFFERS_CART_PROPERTIES"]))
 			{
 				foreach($arParams["OFFERS_CART_PROPERTIES"] as $i => $pid)
-					if($pid === "")
+					if ($pid === "")
 						unset($arParams["OFFERS_CART_PROPERTIES"][$i]);
 
-				if(!empty($arParams["OFFERS_CART_PROPERTIES"]))
+				if (!empty($arParams["OFFERS_CART_PROPERTIES"]))
 				{
 					$product_properties = CIBlockPriceTools::GetOfferProperties(
 						$productID,
@@ -466,7 +479,7 @@ if (isset($_REQUEST[$arParams["ACTION_VARIABLE"]]) && isset($_REQUEST[$arParams[
 		}
 	}
 }
-if(strlen($strError)>0)
+if (strlen($strError)>0)
 {
 	ShowError($strError);
 	return;
@@ -510,31 +523,26 @@ if (!empty($arCompare) && is_array($arCompare))
 	$arResult['PRICES_ALLOW'] = CIBlockPriceTools::GetAllowCatalogPrices($arResult['PRICES']);
 
 	$arConvertParams = array();
+	$basePrice = '';
 	if ($arParams['CONVERT_CURRENCY'] == 'Y')
 	{
-		if (!Loader::includeModule('currency'))
+		$correct = false;
+		if (Loader::includeModule('currency'))
+		{
+			$correct = Currency\CurrencyManager::isCurrencyExist($arParams['CURRENCY_ID']);
+			$basePrice = Currency\CurrencyManager::getBaseCurrency();
+		}
+
+		if ($correct)
+		{
+			$arConvertParams['CURRENCY_ID'] = $arParams['CURRENCY_ID'];
+		}
+		else
 		{
 			$arParams['CONVERT_CURRENCY'] = 'N';
 			$arParams['CURRENCY_ID'] = '';
 		}
-		else
-		{
-			$currencyIterator = CurrencyTable::getList(array(
-				'select' => array('CURRENCY'),
-				'filter' => array('=CURRENCY' => $arParams['CURRENCY_ID'])
-			));
-			if ($currency = $currencyIterator->fetch())
-			{
-				$arParams['CURRENCY_ID'] = $currency['CURRENCY'];
-				$arConvertParams['CURRENCY_ID'] = $currency['CURRENCY'];
-			}
-			else
-			{
-				$arParams['CONVERT_CURRENCY'] = 'N';
-				$arParams['CURRENCY_ID'] = '';
-			}
-			unset($currency, $currencyIterator);
-		}
+		unset($correct);
 	}
 
 	$arResult['CONVERT_CURRENCY'] = $arConvertParams;
@@ -565,7 +573,7 @@ if (!empty($arCompare) && is_array($arCompare))
 		"CHECK_PERMISSIONS" => "Y",
 	);
 	$arFilter["IBLOCK_ID"] = (
-		$arResult["OFFERS_IBLOCK_ID"] > 0
+	$arResult["OFFERS_IBLOCK_ID"] > 0
 		? array($arParams["IBLOCK_ID"], $arResult["OFFERS_IBLOCK_ID"])
 		: $arParams["IBLOCK_ID"]
 	);
@@ -676,7 +684,7 @@ if (!empty($arCompare) && is_array($arCompare))
 				);
 				$rsMaster->SetUrlTemplates($arParams["DETAIL_URL"]);
 				$obElement = $rsMaster->GetNextElement();
-				if(!is_object($obElement))
+				if (!is_object($obElement))
 					continue;
 			}
 			else
@@ -684,6 +692,12 @@ if (!empty($arCompare) && is_array($arCompare))
 				continue;
 			}
 
+			Iblock\Component\Tools::getFieldImageData(
+				$arItem,
+				array('PREVIEW_PICTURE', 'DETAIL_PICTURE'),
+				Iblock\Component\Tools::IPROPERTY_ENTITY_ELEMENT,
+				'IPROPERTY_VALUES'
+			);
 			$arOffer = $arItem;
 			$arItem = $obElement->GetFields();
 		}
@@ -691,26 +705,12 @@ if (!empty($arCompare) && is_array($arCompare))
 		$ipropValues = new ElementValues($arItem["IBLOCK_ID"], $arItem["ID"]);
 		$arItem["IPROPERTY_VALUES"] = $ipropValues->getValues();
 
-		$arItem["PREVIEW_PICTURE"] = (0 < $arItem["PREVIEW_PICTURE"] ? CFile::GetFileArray($arItem["PREVIEW_PICTURE"]) : false);
-		if ($arItem["PREVIEW_PICTURE"])
-		{
-			$arItem["PREVIEW_PICTURE"]["ALT"] = $arItem["IPROPERTY_VALUES"]["ELEMENT_PREVIEW_PICTURE_FILE_ALT"];
-			if ($arItem["PREVIEW_PICTURE"]["ALT"] == "")
-				$arItem["PREVIEW_PICTURE"]["ALT"] = $arItem["NAME"];
-			$arItem["PREVIEW_PICTURE"]["TITLE"] = $arItem["IPROPERTY_VALUES"]["ELEMENT_PREVIEW_PICTURE_FILE_TITLE"];
-			if ($arItem["PREVIEW_PICTURE"]["TITLE"] == "")
-				$arItem["PREVIEW_PICTURE"]["TITLE"] = $arItem["NAME"];
-		}
-		$arItem["DETAIL_PICTURE"] = (0 < $arItem["DETAIL_PICTURE"] ? CFile::GetFileArray($arItem["DETAIL_PICTURE"]) : false);
-		if ($arItem["DETAIL_PICTURE"])
-		{
-			$arItem["DETAIL_PICTURE"]["ALT"] = $arItem["IPROPERTY_VALUES"]["ELEMENT_DETAIL_PICTURE_FILE_ALT"];
-			if ($arItem["DETAIL_PICTURE"]["ALT"] == "")
-				$arItem["DETAIL_PICTURE"]["ALT"] = $arItem["NAME"];
-			$arItem["DETAIL_PICTURE"]["TITLE"] = $arItem["IPROPERTY_VALUES"]["ELEMENT_DETAIL_PICTURE_FILE_TITLE"];
-			if ($arItem["DETAIL_PICTURE"]["TITLE"] == "")
-				$arItem["DETAIL_PICTURE"]["TITLE"] = $arItem["NAME"];
-		}
+		Iblock\Component\Tools::getFieldImageData(
+			$arItem,
+			array('PREVIEW_PICTURE', 'DETAIL_PICTURE'),
+			Iblock\Component\Tools::IPROPERTY_ENTITY_ELEMENT,
+			'IPROPERTY_VALUES'
+		);
 
 		$arItem["FIELDS"] = array();
 		if (!empty($arParams["FIELD_CODE"]))
@@ -800,7 +800,7 @@ if (!empty($arCompare) && is_array($arCompare))
 					{
 						$prop = &$arOffer['PROPERTIES'][$pid];
 						$boolArr = is_array($prop['VALUE']);
-						if(
+						if (
 							($boolArr && !empty($prop["VALUE"]))
 							|| (!$boolArr && strlen($prop["VALUE"]) > 0)
 						)
@@ -844,7 +844,7 @@ if (!empty($arCompare) && is_array($arCompare))
 				{
 					$prop = &$arItem['PROPERTIES'][$pid];
 					$boolArr = is_array($prop['VALUE']);
-					if(
+					if (
 						($boolArr && !empty($prop["VALUE"]))
 						|| (!$boolArr && strlen($prop["VALUE"]) > 0)
 					)
@@ -881,8 +881,61 @@ if (!empty($arCompare) && is_array($arCompare))
 					$arItem["PRICE_MATRIX"] = CatalogGetPriceTableEx($arOffer["ID"], 0, $arPriceTypeID, 'Y', $arConvertParams);
 					if (isset($arItem["PRICE_MATRIX"]["COLS"]) && is_array($arItem["PRICE_MATRIX"]["COLS"]))
 					{
-						foreach($arItem["PRICE_MATRIX"]["COLS"] as $keyColumn=>$arColumn)
-							$arItem["PRICE_MATRIX"]["COLS"][$keyColumn]["NAME_LANG"] = htmlspecialcharsbx($arColumn["NAME_LANG"]);
+						$arItem['PRICE_MATRIX']['MIN_PRICES'] = array();
+						$rows = $arItem['PRICE_MATRIX']['ROWS'];
+						$matrix = $arItem['PRICE_MATRIX']['MATRIX'];
+
+						foreach(array_keys($rows) as $keyColumn)
+							$arItem["PRICE_MATRIX"]["COLS"][$keyColumn]["NAME_LANG"] = htmlspecialcharsbx($arItem["PRICE_MATRIX"]["COLS"][$keyColumn]["NAME_LANG"]);
+
+						foreach (array_keys($rows) as $index)
+						{
+							$minPrice = null;
+							foreach (array_keys($matrix) as $priceType)
+							{
+								if (empty($matrix[$priceType][$index]))
+									continue;
+								if ($arParams['CONVERT_CURRENCY'] == 'Y')
+								{
+									if ($minPrice === null || $minPrice['PRICE_SCALE'] > $matrix[$priceType][$index]['PRICE'])
+									{
+										$minPrice = array(
+											'PRICE_SCALE' => $matrix[$priceType][$index]['PRICE'],
+											'PRICE' => $matrix[$priceType][$index]['PRICE'],
+											'CURRENCY' => $matrix[$priceType][$index]['CURRENCY']
+										);
+									}
+								}
+								else
+								{
+									$priceScale = ($matrix[$priceType][$index]['CURRENCY'] == $basePrice
+										? $matrix[$priceType][$index]['PRICE']
+										: \CCurrencyRates::ConvertCurrency(
+											$matrix[$priceType][$index]['PRICE'],
+											$matrix[$priceType][$index]['CURRENCY'],
+											$basePrice
+										)
+									);
+									if ($minPrice === null || $minPrice['PRICE_SCALE'] > $priceScale)
+									{
+										$minPrice = array(
+											'PRICE_SCALE' => $priceScale,
+											'PRICE' => $matrix[$priceType][$index]['PRICE'],
+											'CURRENCY' => $matrix[$priceType][$index]['CURRENCY']
+										);
+									}
+								}
+							}
+							unset($priceType);
+							if (is_array($minPrice))
+							{
+								unset($minPrice['PRICE_SCALE']);
+								$arItem['PRICE_MATRIX']['MIN_PRICES'][$index] = $minPrice;
+							}
+							unset($minPrice);
+						}
+						unset($index);
+						unset($matrix, $rows);
 					}
 				}
 			}
@@ -901,15 +954,68 @@ if (!empty($arCompare) && is_array($arCompare))
 		}
 		else
 		{
-			if($arParams["USE_PRICE_COUNT"])
+			if ($arParams["USE_PRICE_COUNT"])
 			{
 				if ($catalogIncluded)
 				{
 					$arItem["PRICE_MATRIX"] = CatalogGetPriceTableEx($arItem["ID"], 0, $arPriceTypeID, 'Y', $arConvertParams);
 					if (isset($arItem["PRICE_MATRIX"]["COLS"]) && is_array($arItem["PRICE_MATRIX"]["COLS"]))
 					{
-						foreach($arItem["PRICE_MATRIX"]["COLS"] as $keyColumn=>$arColumn)
-							$arItem["PRICE_MATRIX"]["COLS"][$keyColumn]["NAME_LANG"] = htmlspecialcharsbx($arColumn["NAME_LANG"]);
+						$arItem['PRICE_MATRIX']['MIN_PRICES'] = array();
+						$rows = $arItem['PRICE_MATRIX']['ROWS'];
+						$matrix = $arItem['PRICE_MATRIX']['MATRIX'];
+
+						foreach(array_keys($rows) as $keyColumn)
+							$arItem["PRICE_MATRIX"]["COLS"][$keyColumn]["NAME_LANG"] = htmlspecialcharsbx($arItem["PRICE_MATRIX"]["COLS"][$keyColumn]["NAME_LANG"]);
+
+						foreach (array_keys($rows) as $index)
+						{
+							$minPrice = null;
+							foreach (array_keys($matrix) as $priceType)
+							{
+								if (empty($matrix[$priceType][$index]))
+									continue;
+								if ($arParams['CONVERT_CURRENCY'] == 'Y')
+								{
+									if ($minPrice === null || $minPrice['PRICE_SCALE'] > $matrix[$priceType][$index]['PRICE'])
+									{
+										$minPrice = array(
+											'PRICE_SCALE' => $matrix[$priceType][$index]['PRICE'],
+											'PRICE' => $matrix[$priceType][$index]['PRICE'],
+											'CURRENCY' => $matrix[$priceType][$index]['CURRENCY']
+										);
+									}
+								}
+								else
+								{
+									$priceScale = ($matrix[$priceType][$index]['CURRENCY'] == $basePrice
+										? $matrix[$priceType][$index]['PRICE']
+										: \CCurrencyRates::ConvertCurrency(
+											$matrix[$priceType][$index]['PRICE'],
+											$matrix[$priceType][$index]['CURRENCY'],
+											$basePrice
+										)
+									);
+									if ($minPrice === null || $minPrice['PRICE_SCALE'] > $priceScale)
+									{
+										$minPrice = array(
+											'PRICE_SCALE' => $priceScale,
+											'PRICE' => $matrix[$priceType][$index]['PRICE'],
+											'CURRENCY' => $matrix[$priceType][$index]['CURRENCY']
+										);
+									}
+								}
+							}
+							unset($priceType);
+							if (is_array($minPrice))
+							{
+								unset($minPrice['PRICE_SCALE']);
+								$arItem['PRICE_MATRIX']['MIN_PRICES'][$index] = $minPrice;
+							}
+							unset($minPrice);
+						}
+						unset($index);
+						unset($matrix, $rows);
 					}
 				}
 			}
@@ -1079,7 +1185,7 @@ if (!empty($arCompare) && is_array($arCompare))
 		if ($bIBlockCatalog && 'Y' == $arParams['HIDE_NOT_AVAILABLE'])
 			$arFilter['CATALOG_AVAILABLE'] = 'Y';
 
-		if($arResult["OFFERS_IBLOCK_ID"] > 0)
+		if ($arResult["OFFERS_IBLOCK_ID"] > 0)
 		{
 			$arFilter["IBLOCK_ID"] = array($arParams["IBLOCK_ID"], $arResult["OFFERS_IBLOCK_ID"]);
 			$arFilter["!=ID"] = CIBlockElement::SubQuery("PROPERTY_".$arResult["OFFERS_PROPERTY_ID"], array(
@@ -1101,11 +1207,14 @@ if (!empty($arCompare) && is_array($arCompare))
 			$arResult["ITEMS_TO_ADD"][$arElement["ID"]]=$arElement["NAME"];
 		}
 	}
-	$this->IncludeComponentTemplate();
+	$this->includeComponentTemplate();
 }
 else
 {
-	$actionByAjax = (isset($_REQUEST['ajax_action']) && $_REQUEST['ajax_action'] == 'Y');
+	$actionByAjax = (
+		(isset($_REQUEST['ajax_action']) && $_REQUEST['ajax_action'] == 'Y')
+		|| (isset($_REQUEST['compare_result_reload']) && $_REQUEST['compare_result_reload'] == 'Y')
+	);
 	if ($actionByAjax)
 	{
 		$APPLICATION->RestartBuffer();

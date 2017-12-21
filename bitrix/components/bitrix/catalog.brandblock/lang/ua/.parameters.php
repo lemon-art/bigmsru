@@ -11,4 +11,5 @@ $MESS["IBLOCK_CB_WIDTH_SMALL"] = "Максимальна ширина зобра
 $MESS["IBLOCK_CB_HEIGHT_SMALL"] = "Максимальна висота зображення з описом (пікс)";
 $MESS["IBLOCK_CB_ELEMENT_COUNT"] = "Кількість елементів на сторінці";
 $MESS["IBLOCK_CB_SINGLE_COMPONENT"] = "Виводити як список";
+$MESS["IBLOCK_CB_SHOW_DEACTIVATED"] = "Показувати бренди також і деактивованих товарів";
 ?>

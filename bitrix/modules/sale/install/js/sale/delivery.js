@@ -212,7 +212,7 @@
 			if(rstrParams.class == '\\Bitrix\\Sale\\Delivery\\Restrictions\\ByLocation')
 				var width = 1030;
 			else
-				width = 400;
+				width = 600;
 
 			var	dialog = new BX.CDialog({
 					'content': '<form id="sale-delivery-restriction-edit-form">'+
@@ -378,6 +378,9 @@
 
 		addRestrictionProductSection: function(id, name)
 		{
+			name = BX.util.htmlspecialcharsback(name);
+			name = name.replace(/&#039;/g, "'").replace(/&nbsp;/g, ' ');
+
 			var alreadyExist = BX('sale-admin-delivery-restriction-cat-'+id);
 
 			if(alreadyExist)
@@ -392,7 +395,7 @@
 					BX.create('td',{
 						children:[
 							BX.create('span',{
-								html: " - "+name
+								html: " - "+ BX.util.htmlspecialchars(name)
 							}),
 							BX.create('input',{
 								props:{

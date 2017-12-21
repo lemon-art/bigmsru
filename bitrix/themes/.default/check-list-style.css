@@ -259,3 +259,7 @@ span.checklist-popup-test-link:visited {color:#6593d6;}
 
 .checklist-body {background: #FCFCFC; padding: 2px 16px; border: solid 1px #ccc; margin: 0px auto}
 .checklist-body-1024 {background: #FCFCFC; padding: 2px 16px; border: solid 1px #ccc; max-width: 1024px}
+
+#add_extra_site {
+    text-decoration: none;
+}

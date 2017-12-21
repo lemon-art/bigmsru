@@ -13,8 +13,6 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 /** @var string $parentComponentPath */
 /** @var string $parentComponentTemplate */
 $this->setFrameMode(false);
-global $aspellResult;
-global $iStem;
 
 if(!CModule::IncludeModule("search"))
 {
@@ -172,6 +170,9 @@ if($obCache->StartDataCache($arParams["CACHE_TIME"], $this->GetCacheID(), "/".SI
 						break;
 					case "crm":
 						$arrDropdown[$code] = GetMessage("SEARCH_CRM");
+						break;
+					case "disk":
+						$arrDropdown[$code] = GetMessage("SEARCH_DISK");
 						break;
 				}
 			}
@@ -344,9 +345,6 @@ if($this->InitComponentTemplate($templatePage))
 			while($ar)
 			{
 				$arReturn[$ar["ID"]] = $ar["ITEM_ID"];
-				if(isset($_COOKIE['test'])){
-					//print_r($arReturn);
-				}
 				$ar["CHAIN_PATH"] = $APPLICATION->GetNavChain($ar["URL"], 0, $folderPath."/chain_template.php", true, false);
 				$ar["URL"] = htmlspecialcharsbx($ar["URL"]);
 				$ar["TAGS"] = array();
@@ -372,7 +370,6 @@ if($this->InitComponentTemplate($templatePage))
 				}
 				$arResult["SEARCH"][]=$ar;
 				$ar = $obSearch->GetNext();
-
 			}
 
 			$navComponentObject = null;
@@ -403,23 +400,5 @@ else
 {
 	$this->__ShowError(str_replace("#PAGE#", $templatePage, str_replace("#NAME#", $this->__templateName, "Can not find '#NAME#' template with page '#PAGE#'")));
 }
-
-global $aspellResult;
-global $iStem;
-if(isset($_COOKIE['test'])){
-
-	//print_r($arReturn);
-
-	/*if(!count($arReturn)){
-		if(count($aspellResult) + 1 >= $iStem){
-			$iStem++;
-			print_r();
-
-
-			//return $obSearch->Search($arFilter, $aSort, $exFILTER);;
-		}
-	}*/
-}
-
 return $arReturn;
 ?>

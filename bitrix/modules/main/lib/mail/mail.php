@@ -682,7 +682,11 @@ class Mail
 			return $matches[0];
 
 		$srcTrimmed = trim($src);
-		if(substr($srcTrimmed,0, 1) == "/")
+		if(substr($srcTrimmed,0, 2) == "//")
+		{
+			$src = $this->trackLinkProtocol . ":" . $srcTrimmed;
+		}
+		else if(substr($srcTrimmed,0, 1) == "/")
 		{
 			$srcModified = false;
 			if(count($this->attachment)>0)
@@ -818,7 +822,11 @@ class Mail
 				$parsedHref[0] .= (strpos($parsedHref[0], '?') === false ? '?' : '&') . substr($hrefAddParam, 1);
 				$href = implode("#", $parsedHref);
 			}
-			$href = $this->trackLinkProtocol . '://' . $this->settingServerName . $this->trackClickLink . '&url=' . urlencode($href);
+
+			$href = $this->trackLinkProtocol . '://'
+				. $this->settingServerName . $this->trackClickLink
+				. '&url=' . urlencode($href)
+				. '&sign=' . urlencode(Tracking::getSign($href));
 		}
 
 		return $matches[1].$matches[2].$href.$matches[4].$matches[5];

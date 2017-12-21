@@ -255,6 +255,15 @@ class MultiControlString extends Input\Base
 	{
 		return array();
 	}
+
+	/** Get single value.
+	 * @param $value
+	 * @return mixed - if value is multiple, get first meaningful value (which is not null)
+	 */
+	static function asSingle($value)
+	{
+		return $value;
+	}
 }
 
 Input\Manager::register('DELIVERY_MULTI_CONTROL_STRING', array(
@@ -312,30 +321,23 @@ class LocationMulti extends Input\Base
 
 		$result = ob_get_contents();
 		$result = '
-			<script>
-
+			<script type="text/javascript">				
 				var bxInputdeliveryLocMultiStep3 = function()
-				{
+				{				
 					BX.loadScript("/bitrix/components/bitrix/sale.location.selector.system/templates/.default/script.js", function(){
 						BX.onCustomEvent("deliveryGetRestrictionHtmlScriptsReady");
 					});
 				};
 
-				var bxInputdeliveryLocMultiStep2Count = 0;
-
-				var bxInputdeliveryLocMultiStep2CB = function(){
-
-					bxInputdeliveryLocMultiStep2Count++;
-
-					if(bxInputdeliveryLocMultiStep2Count >= 3)
-						bxInputdeliveryLocMultiStep3();
-				};
-
 				var bxInputdeliveryLocMultiStep2 = function()
-				{
-					BX.loadScript("/bitrix/js/sale/core_ui_etc.js", bxInputdeliveryLocMultiStep2CB);
-					BX.loadScript("/bitrix/js/sale/core_ui_autocomplete.js", bxInputdeliveryLocMultiStep2CB);
-					BX.loadScript("/bitrix/js/sale/core_ui_itemtree.js", bxInputdeliveryLocMultiStep2CB);
+				{									
+					BX.load([
+						"/bitrix/js/sale/core_ui_etc.js", 
+						"/bitrix/js/sale/core_ui_autocomplete.js", 
+						"/bitrix/js/sale/core_ui_itemtree.js"
+						], 
+						bxInputdeliveryLocMultiStep3
+					);
 				};
 
 				BX.loadScript("/bitrix/js/sale/core_ui_widget.js", bxInputdeliveryLocMultiStep2);
@@ -437,7 +439,7 @@ class ProductCategories extends Input\Base
 		));
 
 		while($section = $res->fetch())
-			$result[$section['ID']]  = $section['NAME'];
+			$result[$section['ID']]  = htmlspecialcharsbx($section['NAME']);
 
 		return $result;
 	}

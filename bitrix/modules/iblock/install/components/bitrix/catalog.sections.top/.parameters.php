@@ -327,21 +327,14 @@ if ($boolCatalog)
 
 		if (isset($arCurrentValues['CONVERT_CURRENCY']) && 'Y' == $arCurrentValues['CONVERT_CURRENCY'])
 		{
-			$arCurrencyList = array();
-			$rsCurrencies = CCurrency::GetList(($by = 'SORT'), ($order = 'ASC'));
-			while ($arCurrency = $rsCurrencies->Fetch())
-			{
-				$arCurrencyList[$arCurrency['CURRENCY']] = $arCurrency['CURRENCY'];
-			}
 			$arComponentParameters['PARAMETERS']['CURRENCY_ID'] = array(
 				'PARENT' => 'PRICES',
 				'NAME' => GetMessage('CP_BCST_CURRENCY_ID'),
 				'TYPE' => 'LIST',
-				'VALUES' => $arCurrencyList,
-				'DEFAULT' => CCurrency::GetBaseCurrency(),
+				'VALUES' => \Bitrix\Currency\CurrencyManager::getCurrencyList(),
+				'DEFAULT' => \Bitrix\Currency\CurrencyManager::getBaseCurrency(),
 				"ADDITIONAL_VALUES" => "Y",
 			);
 		}
 	}
 }
-?>

@@ -37,7 +37,7 @@ if(!empty($arParams["~AUTH_RESULT"])):
 <?endif?>
 
 <noindex>
-	<form method="post" action="<?=$arResult["AUTH_URL"]?>" name="bform">
+	<form method="post" action="<?=$arResult["AUTH_URL"]?>" name="bform" enctype="multipart/form-data">
 <?if($arResult["BACKURL"] <> ''):?>
 		<input type="hidden" name="backurl" value="<?=$arResult["BACKURL"]?>" />
 <?endif?>
@@ -138,6 +138,33 @@ $APPLICATION->IncludeComponent(
 		</div>
 
 <?endif?>
+		<div class="bx-authform-formgroup-container">
+			<div class="bx-authform-label-container">
+			</div>
+			<div class="bx-authform-input-container">
+				<?$APPLICATION->IncludeComponent("bitrix:main.userconsent.request", "",
+					array(
+						"ID" => COption::getOptionString("main", "new_user_agreement", ""),
+						"IS_CHECKED" => "Y",
+						"AUTO_SAVE" => "N",
+						"IS_LOADED" => "Y",
+						"ORIGINATOR_ID" => $arResult["AGREEMENT_ORIGINATOR_ID"],
+						"ORIGIN_ID" => $arResult["AGREEMENT_ORIGIN_ID"],
+						"INPUT_NAME" => $arResult["AGREEMENT_INPUT_NAME"],
+						"REPLACE" => array(
+							"button_caption" => GetMessage("AUTH_REGISTER"),
+							"fields" => array(
+								rtrim(GetMessage("AUTH_NAME"), ":"),
+								rtrim(GetMessage("AUTH_LAST_NAME"), ":"),
+								rtrim(GetMessage("AUTH_LOGIN_MIN"), ":"),
+								rtrim(GetMessage("AUTH_PASSWORD_REQ"), ":"),
+								rtrim(GetMessage("AUTH_EMAIL"), ":"),
+							)
+						),
+					)
+				);?>
+			</div>
+		</div>
 		<div class="bx-authform-formgroup-container">
 			<input type="submit" class="btn btn-primary" name="Register" value="<?=GetMessage("AUTH_REGISTER")?>" />
 		</div>

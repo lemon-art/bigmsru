@@ -4,10 +4,9 @@ if(!CModule::IncludeModule("blog"))
 
 $arTemplateParameters = array(
 	"SEO_USER" => array(
-	        "NAME" => GetMessage("B_SEO_USER"),
+		"NAME" => GetMessage("B_SEO_USER"),
 		"TYPE" => "CHECKBOX",
-		"DEFAULT" => "N", 
-    ),
-
+		"DEFAULT" => "N",
+	),
 );
 ?>

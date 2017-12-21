@@ -20,6 +20,7 @@ if (!\Bitrix\Main\Loader::includeModule('sale'))
 	$arResult["ERROR"] = Loc::getMessage("SALE_MODULE_NOT_INSTALLED");
 
 $ebay = Ebay::getInstance();
+$errorMessages = array();
 
 if(!$ebay->isInstalled())
 	$ebay->install();
@@ -88,44 +89,51 @@ if($ebay->isActive())
 
 	$arPersonTypes = Helper::getPersonTypesList($SITE_ID);
 
-	if(isset($siteSettings["PERSON_TYPE"]) && array_key_exists($siteSettings["PERSON_TYPE"], $arPersonTypes))
+	if(!empty($arPersonTypes))
 	{
-		$personTypeId= $siteSettings["PERSON_TYPE"];
+		if(isset($siteSettings["PERSON_TYPE"]) && array_key_exists($siteSettings["PERSON_TYPE"], $arPersonTypes))
+		{
+			$personTypeId= $siteSettings["PERSON_TYPE"];
+		}
+		else
+		{
+			reset($arPersonTypes);
+			$personTypeId = $siteSettings["PERSON_TYPE"] = key($arPersonTypes);
+		}
+
+		$orderPropsList = Helper::getOrderPropsList($personTypeId);
+		$requiredOrderProperties = Helper::getRequiredOrderProps();
+		$bitrixStatuses = Helper::getBitrixStatuses($SITE_ID);
+
+		$arTabs = array(
+			array(
+				"DIV" => "sale_ebay_main",
+				"TAB" => Loc::getMessage("SALE_EBAY_TAB_MAIN"),
+				"TITLE" => Loc::getMessage("SALE_EBAY_TAB_MAIN_TITLE"),
+			),
+			array(
+				"DIV" => "sale_ebay_orderprops",
+				"TAB" => Loc::getMessage("SALE_EBAY_TAB_MATCH"),
+				"TITLE" =>Loc::getMessage("SALE_EBAY_TAB_MATCH_TITLE"),
+			),
+			array(
+				"DIV" => "sale_ebay_connect",
+				"TAB" => Loc::getMessage("SALE_EBAY_TAB_CONNECT"),
+				"TITLE" => Loc::getMessage("SALE_EBAY_TAB_CONNECT_TITLE"),
+			),
+			array(
+				"DIV" => "sale_ebay_categories",
+				"TAB" => Loc::getMessage("SALE_EBAY_TAB_CATEGORIES"),
+				"TITLE" => Loc::getMessage("SALE_EBAY_TAB_CATEGORIES_TITLE"),
+			)
+		);
+
+		$tabControl = new CAdminTabControl("tabControl", $arTabs);
 	}
 	else
 	{
-		reset($arPersonTypes);
-		$personTypeId = $siteSettings["PERSON_TYPE"] = key($arPersonTypes);
+		$errorMessages[] = Loc::getMessage('SALE_EBAY_TP_EMPTY_ERROR');
 	}
-
-	$orderPropsList = Helper::getOrderPropsList($personTypeId);
-	$requiredOrderProperties = Helper::getRequiredOrderProps();
-	$bitrixStatuses = Helper::getBitrixStatuses($SITE_ID);
-
-	$arTabs = array(
-		array(
-			"DIV" => "sale_ebay_main",
-			"TAB" => Loc::getMessage("SALE_EBAY_TAB_MAIN"),
-			"TITLE" => Loc::getMessage("SALE_EBAY_TAB_MAIN_TITLE"),
-		),
-		array(
-			"DIV" => "sale_ebay_orderprops",
-			"TAB" => Loc::getMessage("SALE_EBAY_TAB_MATCH"),
-			"TITLE" =>Loc::getMessage("SALE_EBAY_TAB_MATCH_TITLE"),
-		),
-		array(
-			"DIV" => "sale_ebay_connect",
-			"TAB" => Loc::getMessage("SALE_EBAY_TAB_CONNECT"),
-			"TITLE" => Loc::getMessage("SALE_EBAY_TAB_CONNECT_TITLE"),
-		),
-		array(
-			"DIV" => "sale_ebay_categories",
-			"TAB" => Loc::getMessage("SALE_EBAY_TAB_CATEGORIES"),
-			"TITLE" => Loc::getMessage("SALE_EBAY_TAB_CATEGORIES_TITLE"),
-		)
-	);
-
-	$tabControl = new CAdminTabControl("tabControl", $arTabs);
 }
 
 $APPLICATION->SetTitle(GetMessage("SALE_EBAY_TITLE"));
@@ -141,7 +149,14 @@ if($bSaved)
 <?=bitrix_sessid_post();?>
 <?
 
-if($ebay->isActive())
+if(!empty($errorMessages))
+{
+	$adminMessage = new CAdminMessage(
+		array("MESSAGE" => implode("<br>\n", $errorMessages), "TYPE" => "ERROR")
+	);
+	echo $adminMessage->Show();
+}
+elseif($ebay->isActive())
 {
 	?>
 		<input type="hidden" name="SITE_ID_INITIAL" value="<?=$SITE_ID?>">
@@ -186,6 +201,10 @@ if($ebay->isActive())
 	<tr>
 		<td width="40%"><?=Loc::getMessage("SALE_EBAY_EMAIL_ERRORS")?>:</td>
 		<td width="60%"><input type="text" name="EBAY_SETTINGS[EMAIL_ERRORS]" size="45" maxlength="255" value="<?=isset($siteSettings["EMAIL_ERRORS"]) ? htmlspecialcharsbx($siteSettings["EMAIL_ERRORS"]) : ""?>"></td>
+	</tr>
+	<tr>
+		<td width="40%"><?=Loc::getMessage("SALE_EBAY_MAX_PRODUCT_QUANTITY")?>:</td>
+		<td width="60%"><input type="text" name="EBAY_SETTINGS[MAX_PRODUCT_QUANTITY]" size="10" maxlength="10" value="<?=isset($siteSettings["MAX_PRODUCT_QUANTITY"]) ? intval($siteSettings["MAX_PRODUCT_QUANTITY"]) : "0"?>"></td>
 	</tr>
 	<tr class="heading"><td colspan="2"><?=Loc::getMessage("SALE_EBAY_IBLOCK");?></td></tr>
 	<tr>
@@ -284,13 +303,13 @@ if($ebay->isActive())
 	<tr>
 		<td width="40%"><span class="adm-required-field"><?=Loc::getMessage("SALE_EBAY_API_AUTH_TOKEN")?>:</span></td>
 		<td width="60%">
-			<textarea id="SALE_EBAY_SETTINGS_API_TOKEN" name="EBAY_SETTINGS[API][AUTH_TOKEN]" cols="45" rows="7"><?=isset($siteSettings["API"]["AUTH_TOKEN"]) ? $siteSettings["API"]["AUTH_TOKEN"] : ""?></textarea>
+			<textarea id="SALE_EBAY_SETTINGS_API_TOKEN" name="EBAY_SETTINGS[API][AUTH_TOKEN]" cols="45" rows="7"><?=isset($siteSettings["API"]["AUTH_TOKEN"]) ? htmlspecialcharsbx($siteSettings["API"]["AUTH_TOKEN"]) : ""?></textarea>
 		</td>
 	</tr>
 	<tr>
 		<td width="40%"><span><?=Loc::getMessage("SALE_EBAY_API_AUTH_TOKEN_EXP")?>:</span></td>
 		<td width="60%">
-			<input id="SALE_EBAY_SETTINGS_API_TOKEN_EXP" type="text" name="EBAY_SETTINGS[API][AUTH_TOKEN_EXP]" size="20" value="<?=isset($siteSettings["API"]["AUTH_TOKEN_EXP"]) ? $siteSettings["API"]["AUTH_TOKEN_EXP"] : ""?>" disabled>
+			<input id="SALE_EBAY_SETTINGS_API_TOKEN_EXP" type="text" name="EBAY_SETTINGS[API][AUTH_TOKEN_EXP]" size="20" value="<?=isset($siteSettings["API"]["AUTH_TOKEN_EXP"]) ? htmlspecialcharsbx($siteSettings["API"]["AUTH_TOKEN_EXP"]) : ""?>" readonly>
 			<input type="hidden" name="EBAY_SETTINGS[API][SITE_ID]" value="215">
 		</td>
 	</tr>
@@ -308,6 +327,17 @@ if($ebay->isActive())
 	</tr>
 	<tr class="heading"><td colspan="2"><?=Loc::getMessage("SALE_EBAY_SFTP")?></td></tr>
 	<tr>
+		<td width="40%"><span class="adm-required-field"><?=Loc::getMessage("SALE_EBAY_SFTP_HOST_PORT");?></span></td>
+		<td width="60%">
+			<input type="text" name="EBAY_SETTINGS[SFTP_HOST]" size="30" maxlength="255" value="<?=isset($siteSettings["SFTP_HOST"]) ? htmlspecialcharsbx($siteSettings["SFTP_HOST"]) : "mip.ebay.com"?>">&nbsp:&nbsp;
+			<input type="text" name="EBAY_SETTINGS[SFTP_PORT]" size="10" maxlength="255" value="<?=isset($siteSettings["SFTP_PORT"]) ? htmlspecialcharsbx($siteSettings["SFTP_PORT"]) : "22"?>">
+		</td>
+	</tr>
+	<tr>
+		<td width="40%"><span class="adm-required-field"><?=Loc::getMessage("SALE_EBAY_SFTP_HOST_FINGERPRINT");?>:</span></td>
+		<td width="60%"><input type="text" name="EBAY_SETTINGS[SFTP_HOST_FINGERPRINT]" size="45" maxlength="255" value="<?=isset($siteSettings["SFTP_HOST_FINGERPRINT"]) ? htmlspecialcharsbx($siteSettings["SFTP_HOST_FINGERPRINT"]) : "DD1FEE728C2E1FF2AACC2724929C3CF1"?>"></td>
+	</tr>
+	<tr>
 		<td width="40%"><span class="adm-required-field"><?=Loc::getMessage("SALE_EBAY_SFTP_LOGIN");?>:</span></td>
 		<td width="60%"><input id="SALE_EBAY_SETTINGS_SFTP_USER_NAME" type="text" name="EBAY_SETTINGS[SFTP_LOGIN]" size="45" maxlength="255" value="<?=isset($siteSettings["SFTP_LOGIN"]) ? htmlspecialcharsbx($siteSettings["SFTP_LOGIN"]) : ""?>"></td>
 	</tr>
@@ -317,7 +347,7 @@ if($ebay->isActive())
 	</tr>
 	<tr>
 		<td width="40%"><span class="adm-required-field"><?=Loc::getMessage("SALE_EBAY_SFTP_PASS_EXP")?>:</span></td>
-		<td width="60%"><input id="SALE_EBAY_SETTINGS_SFTP_TOKEN_EXP" name="EBAY_SETTINGS[SFTP_TOKEN_EXP]" value="<?=isset($siteSettings["SFTP_TOKEN_EXP"]) ? htmlspecialcharsbx($siteSettings["SFTP_TOKEN_EXP"]) : ""?>" disabled size="30"></td>
+		<td width="60%"><input id="SALE_EBAY_SETTINGS_SFTP_TOKEN_EXP" name="EBAY_SETTINGS[SFTP_TOKEN_EXP]" value="<?=isset($siteSettings["SFTP_TOKEN_EXP"]) ? htmlspecialcharsbx($siteSettings["SFTP_TOKEN_EXP"]) : ""?>" readonly size="30"></td>
 	</tr>
 	<tr>
 		<td width="40%"><span>&nbsp;</span></td>
@@ -392,25 +422,29 @@ if($ebay->isActive())
 	<table border="0" cellpadding="0" cellspacing="0" class="internal" style="width:80%;">
 	<tr class="heading"><td><?=Loc::getMessage("SALE_EBAY_CAT_BITRIX_NAME")?></td><td><?=Loc::getMessage("SALE_EBAY_CAT_EBAY_NAME")?></td></tr>
 	<?
-
-	foreach($maps as $map)
+	if(!empty($maps))
 	{
-		?><tr>
-		<td>
-			<a
-				href="/bitrix/admin/cat_section_edit.php?IBLOCK_ID=<?=$map["IBLOCK_ID"]?>&type=catalog&ID=<?=$map["VALUE_INTERNAL"]?>&lang=<?=LANGUAGE_ID?>&find_section_section=0&form_section_2_active_tab=SALE_TRADING_PLATFORM_edit_trading_platforms"
-				title="<?=Loc::getMessage("SALE_EBAY_CAT_SETT_EDIT")?>"
-			>
-				<?=$map["CATEGORY_BITRIX_NAME"]?></a> [<?=$map["VALUE_INTERNAL"]?>]
-		</td>
-		<td>
-			<?=$map["CATEGORY_EBAY_NAME"]?> [<?=$map["VALUE_EXTERNAL"]?>]
-		</td>
-		</tr><?
+		foreach($maps as $map)
+		{
+			?><tr>
+			<td>
+				<a
+					href="/bitrix/admin/cat_section_edit.php?IBLOCK_ID=<?=$map["IBLOCK_ID"]?>&type=catalog&ID=<?=$map["VALUE_INTERNAL"]?>&lang=<?=LANGUAGE_ID?>&find_section_section=0&form_section_2_active_tab=SALE_TRADING_PLATFORM_edit_trading_platforms"
+					title="<?=Loc::getMessage("SALE_EBAY_CAT_SETT_EDIT")?>"
+				>
+					<?=htmlspecialcharsbx($map["CATEGORY_BITRIX_NAME"])?></a> [<?=htmlspecialcharsbx($map["VALUE_INTERNAL"])?>]
+			</td>
+			<td>
+				<?=htmlspecialcharsbx($map["CATEGORY_EBAY_NAME"])?> [<?=htmlspecialcharsbx($map["VALUE_EXTERNAL"])?>]
+			</td>
+			</tr><?
+		}
 	}
-
+	else
+	{
+		?><tr><td colspan="2"><?=Loc::getMessage("SALE_EBAY_CAT_MAP_EMPTY")?></td></tr><?
+	}
 	?>
-		<!--<tr><td colspan="2"><a href=""><?=Loc::getMessage("SALE_EBAY_CAT_MAP_ADD")?></a></td></tr>-->
 	</table>
 	</td></tr>
 

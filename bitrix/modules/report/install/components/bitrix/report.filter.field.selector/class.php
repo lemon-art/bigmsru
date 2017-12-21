@@ -130,7 +130,7 @@ class CReportComponent extends \CBitrixComponent
 			$nPermittedEntityTypes++;
 		if ($ufInfo['SETTINGS']['PRODUCT'] == 'Y' && $CCrmPerms->HavePerm('CONFIG', BX_CRM_PERM_CONFIG, 'READ'))
 			$nPermittedEntityTypes++;
-		$usePrefix = true;/*$nPermittedEntityTypes > 1;*/
+		$usePrefix = $nPermittedEntityTypes > 1;
 
 		// last 50 entity
 		$entityTypes = array();

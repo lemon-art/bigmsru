@@ -303,7 +303,7 @@ AND RA.USER_FILE_HASH = '".$DB->ForSql($HASH, 255)."'
 	function Add($WEB_FORM_ID, $arrVALUES=false, $CHECK_RIGHTS="Y", $USER_ID=false)
 	{
 		$err_mess = (CAllFormResult::err_mess())."<br>Function: Add<br>Line: ";
-		global $DB, $USER, $_REQUEST, $HTTP_POST_VARS, $HTTP_GET_VARS, $HTTP_POST_FILES, $strError, $APPLICATION;
+		global $DB, $USER, $strError, $APPLICATION;
 		if ($arrVALUES===false) $arrVALUES = $_REQUEST;
 
 		if ($CHECK_RIGHTS != "N") $CHECK_RIGHTS = "Y";
@@ -600,7 +600,7 @@ AND RA.USER_FILE_HASH = '".$DB->ForSql($HASH, 255)."'
 
 											$fname = "form_".$FIELD_TYPE."_".$arAnswer["ID"];
 											$ANSWER_ID = intval($arAnswer["ID"]);
-											$arIMAGE = isset($arrVALUES[$fname]) ? $arrVALUES[$fname] : $HTTP_POST_FILES[$fname];
+											$arIMAGE = isset($arrVALUES[$fname]) ? $arrVALUES[$fname] : $_FILES[$fname];
 											$arIMAGE["MODULE_ID"] = "form";
 											$fid = 0;
 											if (strlen(CFile::CheckImageFile($arIMAGE))<=0)
@@ -644,7 +644,7 @@ AND RA.USER_FILE_HASH = '".$DB->ForSql($HASH, 255)."'
 
 											$fname = "form_".$FIELD_TYPE."_".$arAnswer["ID"];
 											$ANSWER_ID = intval($arAnswer["ID"]);
-											$arFILE = isset($arrVALUES[$fname]) ? $arrVALUES[$fname] : $HTTP_POST_FILES[$fname];
+											$arFILE = isset($arrVALUES[$fname]) ? $arrVALUES[$fname] : $_FILES[$fname];
 											$arFILE["MODULE_ID"] = "form";
 
 											if (strlen($arFILE["name"])>0)
@@ -730,7 +730,7 @@ AND RA.USER_FILE_HASH = '".$DB->ForSql($HASH, 255)."'
 	function Update($RESULT_ID, $arrVALUES=false, $UPDATE_ADDITIONAL="N", $CHECK_RIGHTS="Y")
 	{
 		$err_mess = (CAllFormResult::err_mess())."<br>Function: Update<br>Line: ";
-		global $DB, $USER, $_REQUEST, $HTTP_POST_VARS, $HTTP_GET_VARS, $HTTP_POST_FILES, $strError, $APPLICATION;
+		global $DB, $USER, $strError, $APPLICATION;
 		if ($arrVALUES===false) $arrVALUES = $_REQUEST;
 
 		InitBvar($UPDATE_ADDITIONAL);
@@ -1006,7 +1006,7 @@ AND RA.USER_FILE_HASH = '".$DB->ForSql($HASH, 255)."'
 
 													$fname = "form_".$FIELD_TYPE."_".$arAnswer["ID"];
 													$ANSWER_ID = intval($arAnswer["ID"]);
-													$arIMAGE = isset($arrVALUES[$fname]) ? $arrVALUES[$fname] : $HTTP_POST_FILES[$fname];
+													$arIMAGE = isset($arrVALUES[$fname]) ? $arrVALUES[$fname] : $_FILES[$fname];
 													$arIMAGE["old_file"] = $arrFILES[$ANSWER_ID]["USER_FILE_ID"];
 													$arIMAGE["del"] = $arrVALUES[$fname."_del"];
 													$arIMAGE["MODULE_ID"] = "form";
@@ -1065,7 +1065,7 @@ AND RA.USER_FILE_HASH = '".$DB->ForSql($HASH, 255)."'
 
 													$fname = "form_".$FIELD_TYPE."_".$arAnswer["ID"];
 													$ANSWER_ID = intval($arAnswer["ID"]);
-													$arFILE = isset($arrVALUES[$fname]) ? $arrVALUES[$fname] : $HTTP_POST_FILES[$fname];
+													$arFILE = isset($arrVALUES[$fname]) ? $arrVALUES[$fname] : $_FILES[$fname];
 													$arFILE["old_file"] = $arrFILES[$ANSWER_ID]["USER_FILE_ID"];
 													$arFILE["del"] = $arrVALUES[$fname."_del"];
 													$arFILE["MODULE_ID"] = "form";

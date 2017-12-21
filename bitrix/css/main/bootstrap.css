@@ -5963,7 +5963,7 @@ button.close {
 .modal-footer .btn-group .btn + .btn {
 	margin-left: -1px;
 }
-.modal-footer .btn-block + .btn-block {
+.modal-footer .im-phone-btn-block + .im-phone-btn-block {
 	margin-left: 0;
 }
 .modal-scrollbar-measure {

@@ -142,7 +142,7 @@ class DiscountGroupTable extends Main\Entity\DataManager
 	}
 
 	/**
-	 * Change active flag in table by diiscount.
+	 * Change active flag in table by discount.
 	 *
 	 * @param int $discount			Discount id.
 	 * @param string $active		Discount active flag.

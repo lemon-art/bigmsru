@@ -67,4 +67,10 @@ $MESS["SALE_DSE_TAB_TRACKING_DESCR"] = "Tracking parameters";
 $MESS["SALE_DSE_TAB_TRACKING_PARAMS"] = "Parameters";
 $MESS["SALE_DSE_TAB_TRACKING_PARAMS_EMPTY"] = "No additional configuration required";
 $MESS["SALE_DSE_FORM_ALLOW_EDIT_SHIPMENT"] = "Auto update shipment in initial status when respective order changes";
+$MESS["SALE_DSE_REQUIRED_FIELD"] = "This field is required:";
+$MESS["SALE_DSE_2DS_EDIT"] = "Back to delivery service";
+$MESS["SALE_DSE_BUSINESS_VALUES"] = "Business meanings";
+$MESS["SALE_DSE_FORM_VAT_ID"] = "Tax rate";
+$MESS["SALE_DSE_FORM_NO_VAT"] = "Tax excluded";
+$MESS["SALE_DSE_DELIVERY_SERVICE_CREATE_ERROR"] = "Cannot create delivery service object!";
 ?>

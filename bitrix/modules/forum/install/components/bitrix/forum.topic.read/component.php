@@ -329,9 +329,8 @@ elseif (!empty($arNote["link"]) && !($arParams['AJAX_POST'] == 'Y' && $action ==
 /************** Topic **********************************************/
 foreach ($arResult["TOPIC"] as $key => $val):
 	$arResult["TOPIC"]["~".$key] = $val;
-	$arResult["TOPIC"][$key] = htmlspecialcharsbx($val);
-	if (!is_array($val))
-		$arResult["TOPIC"][$key] = $parser->wrap_long_words($arResult["TOPIC"][$key]);
+	if (is_string($val))
+		$arResult["TOPIC"][$key] = $parser->wrap_long_words(htmlspecialcharsbx($val));
 endforeach;
 $arResult["TOPIC"]["iLAST_TOPIC_MESSAGE"] = "";
 /************** Forum **********************************************/
@@ -361,7 +360,7 @@ if ($USER->IsAuthorized()):
 else:
 	$arResult["USER"]["RIGHTS"]["EDIT_MESSAGE"] = "N";
 endif;
-$arResult["USER"]["RIGHTS"]["EDIT_OWN_POST"] = COption::GetOptionString("forum", "USER_EDIT_OWN_POST", "N");
+$arResult["USER"]["RIGHTS"]["EDIT_OWN_POST"] = COption::GetOptionString("forum", "USER_EDIT_OWN_POST", "Y");
 /************** Edit panels info ***********************************/
 $arResult["PANELS"] = array(
 	"MODERATE" => $arResult["USER"]["RIGHTS"]["MODERATE"],
@@ -396,7 +395,7 @@ $arAllow = forumTextParser::GetFeatures($arResult["FORUM"]);
 
 // LAST MESSAGE
 $arResult["TOPIC"]["iLAST_TOPIC_MESSAGE"] = 0;
-if ($arResult["USER"]["RIGHTS"]["EDIT"] != "Y" && $USER->IsAuthorized() && COption::GetOptionString("forum", "USER_EDIT_OWN_POST", "N") != "Y"):
+if ($arResult["USER"]["RIGHTS"]["EDIT"] != "Y" && $USER->IsAuthorized() && COption::GetOptionString("forum", "USER_EDIT_OWN_POST", "Y") != "Y"):
 	if ($arResult["FORUM"]["MODERATION"] == "Y"):
 		$db_res = CForumMessage::GetList(array("ID" => "DESC"), array("TOPIC_ID" => $arParams["TID"], "APPROVED" => "N",
 			">ID" => $arResult["TOPIC"]["LAST_MESSAGE_ID"]), false, 1);

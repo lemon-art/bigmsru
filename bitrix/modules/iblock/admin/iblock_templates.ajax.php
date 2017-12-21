@@ -47,12 +47,18 @@ if (check_bitrix_sessid())
 	{
 		$ipropTemplates = new \Bitrix\Iblock\InheritedProperty\ElementTemplates($_REQUEST["IBLOCK_ID"], $_REQUEST["ENTITY_ID"]);
 
-		if ($_POST["IBLOCK_ELEMENT_SECTION_ID"] > 0)
-			$section_id = intval($_POST["IBLOCK_ELEMENT_SECTION_ID"]);
-		elseif (is_array($_POST["IBLOCK_SECTION"]))
-			$section_id = min(array_filter($_POST["IBLOCK_SECTION"], "strlen"));
-		else
-			$section_id = 0;
+		$section_id = 0;
+		if (isset($_POST["IBLOCK_ELEMENT_SECTION_ID"]) && (int)$_POST["IBLOCK_ELEMENT_SECTION_ID"] > 0)
+		{
+			$section_id = (int)$_POST["IBLOCK_ELEMENT_SECTION_ID"];
+		}
+		elseif (!empty($_POST["IBLOCK_SECTION"]) && is_array($_POST["IBLOCK_SECTION"]))
+		{
+			$postSections = array_filter($_POST["IBLOCK_SECTION"], "strlen");
+			if (!empty($postSections))
+				$section_id = min($postSections);
+			unset($postSections);
+		}
 
 		$arFields = array(
 			"IBLOCK_ID" => $_REQUEST["IBLOCK_ID"],
@@ -161,6 +167,8 @@ if (check_bitrix_sessid())
 			$result[] = array(
 				"htmlId" => "RESULT_IBLOCK_ELEMENT_SECTION_ID",
 				"value" => $html,
+				"hiddenId" => "IBLOCK_ELEMENT_SECTION_ID",
+				"hiddenValue" => $arFields["IBLOCK_SECTION_ID"],
 			);
 		}
 

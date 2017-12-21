@@ -680,7 +680,7 @@ class CCloudStorage
 			");
 			return false;
 		}
-
+		$obBucket->IncFileCounter($fileToStore["size"]);
 		$DB->Query("
 			UPDATE b_clouds_file_resize
 			SET ERROR_CODE = '9'
@@ -761,12 +761,20 @@ class CCloudStorage
 		$arCloudFiles = $bucket->ListFiles($path, true);
 		if (is_array($arCloudFiles["file"]))
 		{
+			$delete_size = 0;
 			foreach ($arCloudFiles["file"] as $i => $file_name)
 			{
 				$tmp = $bucket->DeleteFile($path.$file_name);
 				if ($tmp)
+				{
 					$bucket->DecFileCounter($arCloudFiles["file_size"][$i]);
+					$delete_size += $arCloudFiles["file_size"][$i];
+				}
 			}
+			/****************************** QUOTA ******************************/
+			if($delete_size > 0 && COption::GetOptionInt("main", "disk_space") > 0)
+				CDiskQuota::updateDiskQuota("file", $delete_size, "delete");
+			/****************************** QUOTA ******************************/
 		}
 
 		$DB->Query("
@@ -1155,6 +1163,8 @@ class CCloudStorage
 		}
 		elseif ($copySize !== false)
 		{
+			$arFile["WIDTH"] = $arFile["width"];
+			$arFile["HEIGHT"] = $arFile["height"];
 			$arFile["size"] = $copySize;
 			$bucket->IncFileCounter($copySize);
 		}

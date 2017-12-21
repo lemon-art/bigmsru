@@ -10,7 +10,7 @@ namespace
 	Loc::loadMessages(__FILE__);
 	global $APPLICATION;
 	$APPLICATION->SetTitle(Loc::getMessage("SALE_EBAY_W_TITLE"));
-	$cleanCache = isset($_REQUEST['CLEAN_CACHE']) && $_REQUEST['CLEAN_CACHE'] == 'Y' ? true : false;
+	$cleanCache = isset($_REQUEST['CLEAN_CACHE']) && $_REQUEST['CLEAN_CACHE'] == 'Y'? true : false;
 
 	if (!CModule::IncludeModule('sale'))
 	{
@@ -157,6 +157,7 @@ namespace
 
 
 		</style>
+		<span id="adm-sale-ebay-wiazard-admin-msg"></span>
 		<table>
 			<tr><td style="vertical-align: top;">
 				<form method="POST" action="<?echo $APPLICATION->GetCurPageParam('', array('STEP', 'SITE_ID', 'CLEAN_CACHE'))?>" name="form">
@@ -165,7 +166,7 @@ namespace
 					<table width="100%">
 						<tr>
 							<td width="120px">
-								<img alt="eBay logo" src="/bitrix/images/sale/ebay-logo.png" style="width: 100px; height: 67px;">
+								<img alt="eBay logo" src="/bitrix/images/sale/ebay/logo.png" style="width: 100px; height: 67px;">
 							</td><td style="vertical-align: middle; text-align: left;">
 								<span style="font-weight: bold; font-size: 16px;"><?=$wizardStep->getName();?></span>
 							</td>
@@ -229,6 +230,14 @@ namespace
 				<br><input type="button" value="<?=Loc::getMessage('SALE_EBAY_W_CLEAN_CACHE')?>" class="adm-btn-save" name="CLEAN_CACHE_BUTT" onclick="window.location.href='<?=$APPLICATION->GetCurPageParam('lang='.LANGUAGE_ID.'&STEP='.$step.'&SITE_ID='.$siteId.'&CLEAN_CACHE=Y', array('SITE_ID', 'STEP', 'lang', 'CLEAN_CACHE'))?>';">
 			</td></tr>
 		</table>
+
+		<?if($adminMessage = $wizardStep->getAdminMessage()):?>
+			<script type="text/javascript">
+				BX.ready( function(){
+					BX("adm-sale-ebay-wiazard-admin-msg").innerHTML = "<?=CUtil::JSEscape($adminMessage->Show())?>";
+				});
+			</script>
+		<?endif;?>
 	<?
 	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");
 }
@@ -250,12 +259,14 @@ namespace Bitrix\Sale\TradingPlatform\Ebay\Wizard
 		protected $siteId = "";
 		protected $ebaySettings = array();
 		public static $useCache = true;
+		protected static $errors = array();
 
 		abstract public function getHtml();
 		public static function hasState() { return false; }
 		public static function isSucceed($siteId, array $ebaySettings) { return true; }
 		public static function mustBeCompletedBeforeNext() { return false; }
 		public static function getName() { return ""; }
+
 
 		public function __construct($siteId, array $ebaySettings, $cleanCache = false)
 		{
@@ -267,6 +278,21 @@ namespace Bitrix\Sale\TradingPlatform\Ebay\Wizard
 				Step::$useCache = false;
 				self::cleanCache();
 			}
+		}
+
+		/**
+		 * @return \CAdminMessage|null
+		 */
+		public function getAdminMessage()
+		{
+			if(empty(self::$errors))
+				return null;
+
+			return new \CAdminMessage(array(
+				"TYPE" => "ERROR",
+				"MESSAGE" => implode("<br>\n", self::$errors),
+				"HTML" => true
+			));
 		}
 
 		public function save()
@@ -347,6 +373,24 @@ namespace Bitrix\Sale\TradingPlatform\Ebay\Wizard
 				$xmpRes = $caller->sendRequest("GetUser", $data);
 				$result = Xml2Array::convert($xmpRes);
 				$cacheManager->set($cacheId, $result);
+			}
+
+			if(!empty($result['Errors']) && empty(self::$errors[__METHOD__]))
+			{
+				$errorMessage = '';
+
+				if(!empty($result['Errors']['LongMessage']))
+					$errorMessage .= htmlspecialcharsbx($result['Errors']['LongMessage']);
+				elseif(!empty($result['Errors']['ShortMessage']))
+					$errorMessage .= htmlspecialcharsbx($result['Errors']['ShortMessage']);
+
+				if(!empty($result['Errors']['ErrorCode']))
+					$errorMessage .= ' (ErrorCode: '.htmlspecialcharsbx($result['Errors']['ErrorCode']).')';
+
+				if(!empty($errorMessage))
+					self::$errors[__METHOD__] = $errorMessage;
+				else
+					self::$errors[__METHOD__] = Loc::getMessage('SALE_EBAY_W_USER_INFO_ERROR');
 			}
 
 			return $result;
@@ -753,7 +797,17 @@ namespace Bitrix\Sale\TradingPlatform\Ebay\Wizard
 		public static function isSucceed($siteId, array $ebaySettings)
 		{
 			$data = self::getUserInfo($siteId, $ebaySettings);
-			return !empty($data["User"]["SellerInfo"]["PaymentMethod"]) &&  $data["User"]["SellerInfo"]["PaymentMethod"] == "PayPal";
+			$result = !empty($data["User"]["SellerInfo"]["PaymentMethod"]) &&  $data["User"]["SellerInfo"]["PaymentMethod"] == "PayPal";
+
+			if(!$result && empty(self::$errors['PaymentMethod']))
+			{
+				self::$errors['PaymentMethod'] = Loc::getMessage(
+					'SALE_EBAY_W_PAYMENT_METHOD_ERROR',
+					array('#PAYMENT_METHOD#' => $data["User"]["SellerInfo"]["PaymentMethod"])
+				);
+			}
+
+			return $result;
 		}
 	}
 
@@ -784,7 +838,18 @@ namespace Bitrix\Sale\TradingPlatform\Ebay\Wizard
 		public static function isSucceed($siteId, array $ebaySettings)
 		{
 			$data = self::getUserInfo($siteId, $ebaySettings);
-			return !empty($data["User"]["Site"]) && $data["User"]["Site"] == "Russia";
+			$result = !empty($data["User"]["Site"]) && $data["User"]["Site"] == "Russia";
+
+			if(!$result && empty(self::$errors['Site']))
+			{
+				self::$errors['Site'] = Loc::getMessage(
+					'SALE_EBAY_W_SITE_ERROR',
+					array('#SITE#' => $data["User"]["Site"])
+				);
+			}
+
+			return $result;
+
 		}
 	}
 

@@ -37,6 +37,9 @@ try
 		$arFilterTitles[] = $fld['title'];
 	}
 
+	$arFilterFields[] = 'find_level';
+	$arFilterTitles[] = GetMessage('SALE_LOCATION_L_LEVEL');
+
 	$sTableID = "tbl_location_node_list";
 
 	// spike for filter
@@ -56,6 +59,34 @@ try
 
 	// order, select and filter for the list
 	$listParams = Helper::proxyListRequest('list');
+
+	if(strlen($find_level) > 0)
+	{
+		if($find_level == 'ANY')
+		{
+			unset($listParams['filter']['=PARENT_ID']);
+		}
+		elseif($find_level == 'CURRENT_AND_LOWER')
+		{
+			if(intval($listParams['filter']['=PARENT_ID']) > 0)
+			{
+				$res = Location\LocationTable::getList(array(
+					'filter' => array(
+						'ID' => intval($listParams['filter']['=PARENT_ID'])
+					),
+					'select' => array('ID', 'LEFT_MARGIN', 'RIGHT_MARGIN')
+				));
+
+				if($loc = $res->fetch())
+				{
+					$listParams['filter']['>LEFT_MARGIN'] = $loc['LEFT_MARGIN'];
+					$listParams['filter']['<RIGHT_MARGIN'] = $loc['RIGHT_MARGIN'];
+				}
+			}
+
+			unset($listParams['filter']['=PARENT_ID']);
+		}
+	}
 
 	#####################################
 	#### ACTIONS
@@ -213,8 +244,17 @@ if(empty($fatal))
 			"LINK"	=> Helper::getEditUrl(false, array('parent_id' => $itemId)),
 			"TITLE"	=> Loc::getMessage('SALE_LOCATION_L_ADD_ITEM'),
 			"ICON"	=> "btn_new"
-		),
+		)
 	);
+
+	if($_REQUEST[Helper::URL_PARAM_PARENT_ID] > 0)
+	{
+		$aContext[] = array(
+			"TEXT"	=> GetMessage('SALE_LOCATION_L_EDIT_CURRENT'),
+			"LINK"	=> Helper::getEditUrl(false, array('id' => $_REQUEST[Helper::URL_PARAM_PARENT_ID])),
+			"TITLE"	=> GetMessage('SALE_LOCATION_L_EDIT_CURRENT')
+		);
+	};
 	$lAdmin->AddAdminContextMenu($aContext);
 	$lAdmin->CheckListMode();
 
@@ -252,7 +292,7 @@ if(empty($fatal))
 			<?foreach($columns as $code => $fld):?>
 				<tr>
 
-					<td><?=htmlspecialcharsbx($fld['title'])?><?if($fld['data_type'] == 'integer' && $code != 'PARENT_ID'):?> (<?=Loc::getMessage('SALE_LOCATION_L_FROM_AND_TO')?>)<?endif?>:</td>
+					<td><?=htmlspecialcharsEx($fld['title'])?><?if($fld['data_type'] == 'integer' && $code != 'PARENT_ID'):?> (<?=Loc::getMessage('SALE_LOCATION_L_FROM_AND_TO')?>)<?endif?>:</td>
 					<td>
 
 					<?if($code == 'TYPE_ID'):?>
@@ -308,7 +348,17 @@ if(empty($fatal))
 					</td>
 				</tr>
 			<?endforeach?>
+		<tr>
+			<td><?=GetMessage('SALE_LOCATION_L_LEVEL')?>:</td>
+			<td>
+				<select name="find_level">
+					<option value="ANY"<?if($find_level == "ANY") echo " selected"?>><?=GetMessage('SALE_LOCATION_L_ANY')?></option>
+					<option value="CURRENT_AND_LOWER"<?if($find_level == "CURRENT_AND_LOWER") echo " selected"?>><?=GetMessage('SALE_LOCATION_L_CURRENT_AND_LOWER')?></option>
+					<option value="CURRENT"<?if($find_level == "CURRENT") echo " selected"?>><?=GetMessage('SALE_LOCATION_L_CURRENT')?></option>
+				</select>
+		</tr>
 		<?
+
 		$oFilter->Buttons(array("table_id" => $sTableID, "url" => $APPLICATION->GetCurPageParam(), "form" => "filter_form"));
 		$oFilter->End();
 		?>

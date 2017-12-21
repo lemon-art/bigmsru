@@ -92,6 +92,7 @@ class GroupTable extends Entity\DataManager
 		if($delResult->isSuccess())
 		{
 			Name\GroupTable::deleteMultipleForOwner($primary);
+			GroupLocationTable::deleteByGroupId($primary);
 
 			// set flag that indicates whether project still uses groups or not
 			self::checkGroupUsage();

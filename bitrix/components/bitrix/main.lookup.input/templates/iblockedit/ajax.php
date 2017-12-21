@@ -1,9 +1,10 @@
 <?
 define("STOP_STATISTICS", true);
 define("BX_SECURITY_SHOW_MESSAGE", true);
-define('NO_AGENT_CHECK', true);
 
-use Bitrix\Main\Localization\Loc;
+use Bitrix\Main,
+	Bitrix\Main\Localization\Loc,
+	Bitrix\Main\Loader;
 
 if (isset($_REQUEST['admin']) && is_string($_REQUEST['admin']) && $_REQUEST['admin'] == 'Y')
 	define('ADMIN_SECTION', true);
@@ -20,7 +21,7 @@ Loc::loadMessages(__FILE__);
 
 global $APPLICATION;
 
-if(!CModule::IncludeModule('iblock'))
+if(!Loader::includeModule('iblock'))
 {
 	echo Loc::getMessage("BT_COMP_MLI_AJAX_ERR_MODULE_ABSENT");
 	die();
@@ -28,27 +29,59 @@ if(!CModule::IncludeModule('iblock'))
 
 CUtil::JSPostUnescape();
 
-$IBlockID = intval($_REQUEST["IBLOCK_ID"]);
-if(!CIBlockRights::UserHasRightTo($IBlockID, $IBlockID, "iblock_admin_display"))
+$iblockId = (isset($_REQUEST['IBLOCK_ID']) && is_string($_REQUEST['IBLOCK_ID']) ? (int)$_REQUEST['IBLOCK_ID'] : 0);
+$withoutIblock = (isset($_REQUEST['WITHOUT_IBLOCK']) && $_REQUEST['WITHOUT_IBLOCK'] == 'Y');
+$bSection = (isset($_REQUEST['TYPE']) && $_REQUEST['TYPE'] == 'SECTION');
+$resultCount = (isset($_REQUEST['RESULT_COUNT']) && is_string($_REQUEST['RESULT_COUNT']) ? (int)$_REQUEST['RESULT_COUNT'] : 0);
+if ($resultCount <= 0)
+	$resultCount = 20;
+
+if (defined('ADMIN_SECTION') && ADMIN_SECTION === true)
+{
+	$iblockAccessLevel = 'iblock_admin_display';
+	$filter = array(
+		'CHECK_PERMISSIONS' => 'Y',
+		'MIN_PERMISSION' => 'S'
+	);
+}
+else
+{
+	if ($bSection)
+		$iblockAccessLevel = 'section_read';
+	else
+		$iblockAccessLevel = 'element_read';
+	$filter = array(
+		'CHECK_PERMISSIONS' => 'Y',
+		'MIN_PERMISSION' => 'R'
+	);
+}
+if ($iblockId > 0)
+	$filter['IBLOCK_ID'] = $iblockId;
+
+if ($withoutIblock && $iblockId == 0)
+{
+	$iblockAccess = true;
+}
+elseif ($iblockId >= 0)
+{
+	$iblockAccess = CIBlockRights::UserHasRightTo($iblockId, $iblockId, $iblockAccessLevel);
+}
+else
+{
+	$iblockAccess = false;
+}
+if (!$iblockAccess)
 {
 	echo Loc::getMessage('BT_COMP_MLI_AJAX_ERR_IBLOCK_ACCESS_DENIED');
 	die();
 }
 
-$arIBlock = CIBlock::GetArrayByID($IBlockID);
-
 $strBanSym = trim($_REQUEST['BAN_SYM']);
-$arBanSym = str_split($strBanSym,1);
+$arBanSym = str_split($strBanSym, 1);
 $strRepSym = trim($_REQUEST['REP_SYM']);
-$arRepSym = array_fill(0,sizeof($arBanSym),$strRepSym);
+$arRepSym = array_fill(0, sizeof($arBanSym), $strRepSym);
 
-$bSection = false;
-if (isset($_REQUEST['TYPE']) && 'SECTION' == $_REQUEST['TYPE'])
-{
-	$bSection = true;
-}
-
-if($_REQUEST['MODE'] == 'SEARCH')
+if (isset($_REQUEST['MODE']) && $_REQUEST['MODE'] == 'SEARCH')
 {
 	$APPLICATION->RestartBuffer();
 
@@ -56,50 +89,27 @@ if($_REQUEST['MODE'] == 'SEARCH')
 	$search = trim($_REQUEST['search']);
 
 	$matches = array();
-	if(preg_match('/^(.*?)\[([\d]+?)\]/i', $search, $matches))
+	if (preg_match('/^(.*?)\[([\d]+?)\]/i', $search, $matches))
 	{
-		$matches[2] = intval($matches[2]);
+		$matches[2] = (int)$matches[2];
 		if($matches[2] > 0)
 		{
+			$filter['=ID'] = $matches[2];
 			if ($bSection)
-			{
-				$dbRes = CIBlockSection::GetList(
-					array(),
-					array(
-						"=ID" => $matches[2],
-						"IBLOCK_ID" => $arIBlock["ID"],
-						"CHECK_PERMISSIONS" => "Y",
-						"MIN_PERMISSION" => "R",
-					),
-					false,
-					array("ID", "NAME")
-				);
-			}
+				$dbRes = CIBlockSection::GetList(array(), $filter, false, array('ID', 'NAME'));
 			else
-			{
-				$dbRes = CIBlockElement::GetList(
-					array(),
-					array(
-						"=ID" => $matches[2],
-						"IBLOCK_ID" => $arIBlock["ID"],
-						"CHECK_PERMISSIONS" => "Y",
-						"MIN_PERMISSION" => "R",
-					),
-					false,
-					false,
-					array("ID", "NAME")
-				);
-			}
-			if($arRes = $dbRes->Fetch())
+				$dbRes = CIBlockElement::GetList(array(), $filter, false, false, array('ID', 'NAME'));
+
+			if ($arRes = $dbRes->Fetch())
 			{
 				$arResult[] = array(
 					'ID' => $arRes['ID'],
-					'NAME' => str_replace($arBanSym,$arRepSym,$arRes['NAME']),
+					'NAME' => str_replace($arBanSym, $arRepSym, $arRes['NAME']),
 					'READY' => 'Y',
 				);
 
-				Header('Content-Type: application/x-javascript; charset='.LANG_CHARSET);
-				echo CUtil::PhpToJsObject($arResult);
+				header('Content-Type: application/json');
+				echo Main\Web\Json::encode($arResult);
 				die();
 			}
 		}
@@ -109,55 +119,21 @@ if($_REQUEST['MODE'] == 'SEARCH')
 		}
 	}
 
+	$filter['%NAME'] = $search;
 	if ($bSection)
-	{
-		$dbRes = CIBlockSection::GetList(
-			array(),
-			array(
-				"IBLOCK_ID" => $arIBlock["ID"],
-				"%NAME" => $search,
-				"CHECK_PERMISSIONS" => "Y",
-				"MIN_PERMISSION" => "R",
-			),
-			false,
-			array("ID", "NAME")
-		);
-		$i = 0;
-		while($arRes = $dbRes->Fetch())
-		{
-			$arResult[] = array(
-				'ID' => $arRes['ID'],
-				'NAME' => str_replace($arBanSym,$arRepSym,$arRes['NAME']),
-			);
-			$i++;
-			if (20 < $i)
-				break;
-		}
-	}
+		$dbRes = CIBlockSection::GetList(array(), $filter, false, array("ID", "NAME"), array("nTopCount" => $resultCount));
 	else
+		$dbRes = CIBlockElement::GetList(array(), $filter, false, array("nTopCount" => $resultCount), array("ID", "NAME"));
+
+	while($arRes = $dbRes->Fetch())
 	{
-		$dbRes = CIBlockElement::GetList(
-			array(),
-			array(
-				"IBLOCK_ID" => $arIBlock["ID"],
-				"%NAME" => $search,
-				"CHECK_PERMISSIONS" => "Y",
-				"MIN_PERMISSION" => "R",
-			),
-			false,
-			array("nTopCount" => 20),
-			array("ID", "NAME")
+		$arResult[] = array(
+			'ID' => $arRes['ID'],
+			'NAME' => str_replace($arBanSym, $arRepSym, $arRes['NAME']),
 		);
-		while($arRes = $dbRes->Fetch())
-		{
-			$arResult[] = array(
-				'ID' => $arRes['ID'],
-				'NAME' => str_replace($arBanSym,$arRepSym,$arRes['NAME']),
-			);
-		}
 	}
 
-	Header('Content-Type: application/x-javascript; charset='.LANG_CHARSET);
-	echo CUtil::PhpToJsObject($arResult);
+	header('Content-Type: application/json');
+	echo Main\Web\Json::encode($arResult);
 	die();
 }

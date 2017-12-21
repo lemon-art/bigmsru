@@ -160,7 +160,7 @@ class CCloudStorageService_OpenStackStorage extends CCloudStorageService
 					if(preg_match("#^http://(.*?)(|:\d+)(/.*)\$#", $obRequest->headers["X-Storage-Url"], $arStorage))
 					{
 						$result = $obRequest->headers;
-						$result["X-Storage-NoProtoUrl"] = $arStorage[1].$arStorage[2].$arStorage[3];
+						$result["X-Storage-NoProtoUrl"] = $arStorage[1].($arStorage[2] == ':80'? '': $arStorage[2]).$arStorage[3];
 						$result["X-Storage-Host"] = $arStorage[1];
 						$result["X-Storage-Port"] = $arStorage[2]? substr($arStorage[2], 1): 80;
 						$result["X-Storage-Urn"] = $arStorage[3];
@@ -618,8 +618,9 @@ class CCloudStorageService_OpenStackStorage extends CCloudStorageService
 
 		$NS = array(
 			"filePath" => $filePath,
-			"fileTemp" => CCloudStorage::translit("/tmp".$filePath, "/"),
+			"fileTemp" => CCloudStorage::translit("/tmp".str_replace(' ', '_', $filePath), "/"),
 			"partsCount" => 0,
+			"Parts" => array(),
 			"Content-Type" => $ContentType,
 		);
 
@@ -631,9 +632,9 @@ class CCloudStorageService_OpenStackStorage extends CCloudStorageService
 		return 5*1024*1024; //5MB
 	}
 
-	function UploadPart($arBucket, &$NS, $data)
+	function UploadPartNo($arBucket, &$NS, $data, $part_no)
 	{
-		$filePath = $NS["fileTemp"]."/".sprintf("%06d", $NS["partsCount"]+1);
+		$filePath = $NS["fileTemp"]."/".sprintf("%06d", $part_no + 1);
 		$filePath = CCloudUtil::URLEncode($filePath, "UTF-8");
 
 		$obRequest = $this->SendRequest(
@@ -648,6 +649,7 @@ class CCloudStorageService_OpenStackStorage extends CCloudStorageService
 		if(is_object($obRequest) && $this->status == 201)
 		{
 			$NS["partsCount"]++;
+			$NS["Parts"][$part_no] = $filePath;
 			return true;
 		}
 		else
@@ -656,9 +658,13 @@ class CCloudStorageService_OpenStackStorage extends CCloudStorageService
 		}
 	}
 
+	function UploadPart($arBucket, &$NS, $data)
+	{
+		return $this->UploadPartNo($arBucket, $NS, $data, count($NS["Parts"]));
+	}
+
 	function CompleteMultipartUpload($arBucket, &$NS)
 	{
-		global $APPLICATION;
 		$filePath = CCloudUtil::URLEncode($NS["fileTemp"], "UTF-8");
 
 		$obRequest = $this->SendRequest(
@@ -689,14 +695,23 @@ class CCloudStorageService_OpenStackStorage extends CCloudStorageService
 				)
 			);
 
-			if(is_object($obRequest) && $this->status == 201)
+			if(
+				is_object($obRequest)
+				&& (
+					$this->status == 201
+					|| $this->status == 200
+				)
+			)
 				$result = true;
 			else
 				$result = false;
 
 			$this->DeleteFile($arBucket, $NS["fileTemp"]);
-			for($part = $NS["partsCount"]; $part > 0; $part--)
-				$this->DeleteFile($arBucket, $NS["fileTemp"]."/".sprintf("%06d", $part));
+			ksort($NS["Parts"]);
+			foreach ($NS["Parts"] as $tmpPath)
+			{
+				$this->DeleteFile($arBucket, $tmpPath);
+			}
 
 			return $result;
 		}

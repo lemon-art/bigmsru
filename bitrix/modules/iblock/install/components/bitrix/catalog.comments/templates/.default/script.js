@@ -198,7 +198,7 @@ window.JCCatalogSocnetsComments.prototype.loadFB = function()
 	if (this.services.facebook.obFBParentCont && this.services.facebook.obFBContWidth)
 	{
 		width = parseInt(this.services.facebook.obFBParentCont.offsetWidth, 10);
-		if (!isNaN(width))
+		if (!isNaN(width) && width > 20)
 		{
 			BX.adjust(this.services.facebook.obFBContWidth, { attrs: { 'data-width': (width-20) } });
 			this.services.facebook.currentWidth = width;

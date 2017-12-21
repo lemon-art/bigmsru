@@ -5,7 +5,7 @@
 
 class CForm extends CAllForm
 {
-	function err_mess()
+	public static function err_mess()
 	{
 		$module_id = "form";
 		@include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$module_id."/install/version.php");
@@ -13,7 +13,7 @@ class CForm extends CAllForm
 	}
 
 	// список веб-форм
-	function GetList(&$by, &$order, $arFilter=Array(), &$is_filtered, $min_permission=10)
+	public static function GetList(&$by, &$order, $arFilter=Array(), &$is_filtered, $min_permission=10)
 	{
 		$err_mess = (CForm::err_mess())."<br>Function: GetList<br>Line: ";
 		global $DB, $USER, $strError;
@@ -157,7 +157,7 @@ class CForm extends CAllForm
 		return $res;
 	}
 
-	function GetByID($ID, $GET_BY_SID="N")
+	public static function GetByID($ID, $GET_BY_SID="N")
 	{
 		$err_mess = (CForm::err_mess())."<br>Function: GetByID<br>Line: ";
 		global $DB, $strError;
@@ -187,7 +187,7 @@ class CForm extends CAllForm
 		return $res;
 	}
 
-	function GetFormTemplateByID($ID, $GET_BY_SID="N")
+	public static function GetFormTemplateByID($ID, $GET_BY_SID="N")
 	{
 		$err_mess = (CForm::err_mess())."<br>Function: GetFormTemplateByID<br>Line: ";
 		global $DB, $strError;

@@ -316,7 +316,7 @@ class CAllCatalogDiscountCoupon
 	* @see \Bitrix\Sale\DiscountCouponsManager::get
 	*
 	* @param int $intUserID			User id.
-	* @return bool
+	* @return bool|array
 	*/
 	public static function GetCouponsByManage($intUserID)
 	{

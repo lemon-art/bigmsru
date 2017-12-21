@@ -18,4 +18,5 @@ $MESS["SALE_DH_RPF_FEATURE_ENABLED"] = " ";
 $MESS["SALE_DH_RPF_WRP_LESS_100_DECLARED_VALUE"] = "Small packet up to 100g, declared value.";
 $MESS["SALE_DH_RPF_SET_DEFAULT_TARIF_SET"] = "set";
 $MESS["SALE_DH_RPF_SET_DEFAULT_TARIF"] = "Default tariffs";
+$MESS["SALE_DH_RPF_DEPRECATED_MESSAGE"] = "This delivery service handler is outdated and no longer supported. Please use the #A1#new handler#A2#.";
 ?>

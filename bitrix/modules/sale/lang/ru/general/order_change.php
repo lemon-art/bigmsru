@@ -178,4 +178,10 @@ $MESS["SOC_SHIPMENT_ITEM_BASKET_ITEM_EMPTY_ERROR_TITLE"] = "Ошибка обн�
 $MESS["SOC_SHIPMENT_ITEM_BASKET_ITEM_EMPTY_ERROR_INFO"] = "При обновлении элемента отгрузки возникла ошибка \"#ERROR#\"";
 
 
+$MESS["SOC_MARKER_SHIPMENT_INFO"] = "отгрузки";
+$MESS["SOC_MARKER_ORDER_INFO"] = "заказа";
+$MESS["SOC_MARKER_PAYMENT_INFO"] = "оплаты";
+$MESS["SOC_MARKER_SUCCESS"] = "Исправление ошибки";
+$MESS["SOC_MARKER_SUCCESS_INFO"] = "Ошибка \"#MESSAGE#\" у #ENTITY_NAME# (##ENTITY_ID#) исправлена.";
+
 ?>

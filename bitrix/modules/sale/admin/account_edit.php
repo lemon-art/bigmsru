@@ -83,12 +83,15 @@ if ($REQUEST_METHOD=="POST" && strlen($Update)>0 && $saleModulePermissions>="U" 
 
 		$updateSum = $CURRENT_BUDGET - $OLD_BUDGET;
 
-		if (!CSaleUserAccount::UpdateAccount($USER_ID, $updateSum, $CURRENCY, "MANUAL", 0, $CHANGE_REASON))
+		if ($updateSum != 0)
 		{
-			if ($ex = $APPLICATION->GetException())
-				$errorMessage .= $ex->GetString().".<br>";
-			else
-				$errorMessage .= GetMessage("SAE_ERROR_SAVING").".<br>";
+			if (!CSaleUserAccount::UpdateAccount($USER_ID, $updateSum, $CURRENCY, "MANUAL", 0, $CHANGE_REASON))
+			{
+				if ($ex = $APPLICATION->GetException())
+					$errorMessage .= $ex->GetString().".<br>";
+				else
+					$errorMessage .= GetMessage("SAE_ERROR_SAVING").".<br>";
+			}
 		}
 	}
 

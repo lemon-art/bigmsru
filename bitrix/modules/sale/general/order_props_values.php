@@ -146,13 +146,14 @@ class CSaleOrderPropsValue
 	function GetOrderProps($ORDER_ID)
 	{
 		return self::GetList(
-			array('GROUP_SORT', 'GROUP_NAME', 'PROP_SORT', 'PROPERTY_NAME', 'PROP_ID'),
+			array('GROUP_SORT' => 'ASC', 'GROUP_NAME' => 'ASC', 'PROP_SORT' => 'ASC', 'PROPERTY_NAME' => 'ASC', 'PROP_ID' => 'ASC'),
 			array('ORDER_ID' => $ORDER_ID),
 			false, false,
 			array(
 				'ID', 'ORDER_ID', 'ORDER_PROPS_ID', 'NAME', 'VALUE', 'CODE',
 				'PROPERTY_NAME', 'TYPE', 'PROPS_GROUP_ID', 'INPUT_FIELD_LOCATION', 'IS_LOCATION', 'IS_EMAIL', 'IS_PROFILE_NAME', 'IS_PAYER', 'IS_ZIP', 'ACTIVE', 'UTIL',
 				'GROUP_NAME', 'GROUP_SORT',
+				'PROP_SORT', 'PROP_ID'
 			)
 		);
 	}
@@ -163,13 +164,14 @@ class CSaleOrderPropsValue
 			$arFilter = array();
 
 		return self::GetList(
-			array('GROUP_SORT', 'GROUP_NAME', 'PROP_SORT', 'PROPERTY_NAME', 'PROP_ID'),
+			array('GROUP_SORT' => 'ASC', 'GROUP_NAME' => 'ASC', 'PROP_SORT' => 'ASC', 'PROPERTY_NAME' => 'ASC', 'PROP_ID' => 'ASC'),
 			array('ORDER_ID' => $ORDER_ID, 'PAYSYSTEM_ID' => $arFilter['PAYSYSTEM_ID'], 'DELIVERY_ID' => $arFilter['DELIVERY_ID']),
 			false, false,
 			array(
 				'ID', 'ORDER_ID', 'ORDER_PROPS_ID', 'NAME', 'VALUE', 'CODE',
-				'PROPERTY_NAME', 'TYPE', 'PROPS_GROUP_ID', 'INPUT_FIELD_LOCATION', 'IS_LOCATION', 'IS_EMAIL', 'IS_PROFILE_NAME', 'IS_PAYER', 'ACTIVE', 'UTIL',
+				'PROPERTY_NAME', 'TYPE', 'PROPS_GROUP_ID', 'INPUT_FIELD_LOCATION', 'IS_LOCATION', 'IS_EMAIL', 'IS_PROFILE_NAME', 'IS_PAYER', 'IS_ZIP', 'ACTIVE', 'UTIL',
 				'GROUP_NAME', 'GROUP_SORT',
+				'PROP_SORT', 'PROP_ID'
 			)
 		);
 	}
@@ -240,6 +242,14 @@ class CSaleOrderPropsValue
 		if((string) $arFields['VALUE'] != '')
 			$arFields['VALUE'] = self::translateLocationIDToCode($arFields['VALUE'], $arFields['ORDER_PROPS_ID']);
 
+		if (!empty($arFields['ORDER_PROPS_ID']) && intval($arFields['ORDER_PROPS_ID']) > 0 && !empty($arFields['VALUE']))
+		{
+			if ($value = self::correctValueToMultiple($arFields['ORDER_PROPS_ID'], $arFields['VALUE']))
+			{
+				$arFields['VALUE'] = $value;
+			}
+		}
+
 		return Internals\OrderPropsValueTable::add(array_intersect_key($arFields, CSaleOrderPropsValueAdapter::$allFields))->getId();
 	}
 
@@ -277,7 +287,50 @@ class CSaleOrderPropsValue
 			$arFields['VALUE'] = self::translateLocationIDToCode($arFields['VALUE'], $propId);
 		}
 
+		if (!empty($arFields['ORDER_PROPS_ID']) && intval($arFields['ORDER_PROPS_ID']) > 0 && !empty($arFields['VALUE']))
+		{
+			if ($value = self::correctValueToMultiple($arFields['ORDER_PROPS_ID'], $arFields['VALUE']))
+			{
+				$arFields['VALUE'] = $value;
+			}
+		}
+
 		return Internals\OrderPropsValueTable::update($ID, array_intersect_key($arFields, CSaleOrderPropsValueAdapter::$allFields))->getId();
+	}
+
+	/**
+	 * @param $id
+	 * @param $value
+	 *
+	 * @return array|null
+	 * @throws \Bitrix\Main\ArgumentException
+	 */
+	private static function correctValueToMultiple($id, $value)
+	{
+		$output = null;
+
+		$res = Internals\OrderPropsTable::getList(array(
+													  'select' => array('TYPE', 'MULTIPLE'),
+													  'filter' => array(
+														  'ID' => $id
+													  ),
+													  'limit' => 1));
+		if($propertyData = $res->fetch())
+		{
+			if (($propertyData["MULTIPLE"] == 'Y' || $propertyData["TYPE"] == 'MULTISELECT') && !is_array($value))
+			{
+				$values = explode(',', $value);
+				if (!empty($values) && is_array($values))
+				{
+					$output = array();
+					foreach ($values as $value)
+					{
+						$output[] = trim($value);
+					}
+				}
+			}
+		}
+		return $output;
 	}
 
 	public static function translateLocationIDToCode($id, $orderPropId)
@@ -347,11 +400,25 @@ final class CSaleOrderPropsValueAdapter implements Compatible\FetchAdapter
 
 		$oldProperty = CSaleOrderPropsAdapter::convertNewToOld($newProperty);
 
-		$oldProperty['VALUE'     ] = CSaleOrderPropsAdapter::getOldValue($newProperty['VALUE'], $newProperty['TYPE']);
-		$oldProperty['PROP_TYPE' ] = $oldProperty['TYPE' ];
-		$oldProperty['PROP_SIZE1'] = $oldProperty['SIZE1'];
-		$oldProperty['PROP_SIZE2'] = $oldProperty['SIZE2'];
+		if (array_key_exists('VALUE', $newProperty))
+		{
+			$oldProperty['VALUE'] = CSaleOrderPropsAdapter::getOldValue($newProperty['VALUE'], $newProperty['TYPE']);
+		}
 
+		if (array_key_exists('TYPE', $oldProperty))
+		{
+			$oldProperty['PROP_TYPE' ] = $oldProperty['TYPE' ];
+		}
+
+		if (array_key_exists('SIZE1', $oldProperty))
+		{
+			$oldProperty['PROP_SIZE1'] = $oldProperty['SIZE1'];
+		}
+
+		if (array_key_exists('SIZE2', $oldProperty))
+		{
+			$oldProperty['PROP_SIZE2'] = $oldProperty['SIZE2'];
+		}
 		return array_intersect_key($oldProperty, $this->select);
 	}
 

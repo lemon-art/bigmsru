@@ -312,8 +312,7 @@ $arParams["WATERMARK"] = ($arParams["WATERMARK"] == "N" ? "N" : "Y");
 //
 /****************** COMPONENTS *************************************/
 // Upload
-if (empty($arParams["UPLOADER_TYPE"]))
-	$arParams["UPLOADER_TYPE"] = "form";
+$arParams["UPLOADER_TYPE"] = "form";
 //$arParams["UPLOAD_MAX_FILE"]
 //$arParams["UPLOAD_MAX_FILE_SIZE"]
 //$arParams["JPEG_QUALITY1"]
@@ -397,7 +396,5 @@ $arParams["PERMISSION"] = $oPhoto->User["Permission"];
 				/Input params
 ********************************************************************/
 CUtil::InitJSCore(array('window', 'ajax'));
-
-$oPhoto::CheckUploaderType($arParams["UPLOADER_TYPE"]);
 $this->IncludeComponentTemplate($componentPage);
 ?>

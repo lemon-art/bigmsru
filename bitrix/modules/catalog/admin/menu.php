@@ -167,7 +167,7 @@ if ($boolRead || $boolDiscount)
 
 if ($boolRead || $boolStore)
 {
-	if(COption::GetOptionString('catalog','default_use_store_control','N') == 'Y')
+	if (COption::GetOptionString('catalog','default_use_store_control') == 'Y')
 	{
 		$arSubItems[] = array(
 			"text" => GetMessage("CM_STORE_DOCS"),
@@ -205,30 +205,47 @@ if ($boolRead || $boolMeasure)
 	);
 }
 
-if ($boolRead || $boolGroup)
+$showPrices = $boolRead || $boolGroup;
+$showExtra = (CBXFeatures::IsFeatureEnabled('CatMultiPrice') && ($boolRead || $boolPrice));
+if ($showPrices || $showExtra)
 {
-	$arSubItems[] = array(
-		"text" => GetMessage("GROUP"),
-		"url" => "cat_group_admin.php?lang=".LANGUAGE_ID,
-		"more_url" => array("cat_group_edit.php"),
-		"title" => GetMessage("GROUP_ALT"),
-		"readonly" => !$boolGroup,
+	$section = array(
+		'text' => GetMessage('PRICES_SECTION'),
+		'title' => GetMessage('PRICES_SECTION_TITLE'),
+		'items_id' => 'menu_catalog_prices',
+		'items' => array()
 	);
-}
-
-if (CBXFeatures::IsFeatureEnabled('CatMultiPrice'))
-{
-	if ($boolRead || $boolPrice)
+	if ($showPrices)
 	{
-		$arSubItems[] = array(
-			"text" => GetMessage("EXTRA"),
-			"url" => "cat_extra.php?lang=".LANGUAGE_ID,
-			"more_url" => array("cat_extra_edit.php"),
-			"title" => GetMessage("EXTRA_ALT"),
-			"readonly" => !$boolPrice,
+		$section['items'][] = array(
+			"text" => GetMessage("GROUP"),
+			"title" => GetMessage("GROUP_ALT"),
+			"url" => "cat_group_admin.php?lang=".LANGUAGE_ID,
+			"more_url" => array("cat_group_edit.php"),
+			"readonly" => !$boolGroup
+		);
+		$section['items'][] = array(
+			'text' => GetMessage('PRICE_ROUND'),
+			'title' => GetMessage('PRICE_ROUND_TITLE'),
+			'url' => 'cat_round_list.php?lang='.LANGUAGE_ID,
+			'more_url' => array('cat_round_edit.php'),
+			'readonly' => !$boolGroup
 		);
 	}
+	if ($showExtra)
+	{
+		$section['items'][] = array(
+			"text" => GetMessage("EXTRA"),
+			"title" => GetMessage("EXTRA_ALT"),
+			"url" => "cat_extra.php?lang=".LANGUAGE_ID,
+			"more_url" => array("cat_extra_edit.php"),
+			"readonly" => !$boolPrice
+		);
+	}
+	$arSubItems[] = $section;
+	unset($section);
 }
+unset($showExtra, $showPrices);
 
 if ($boolRead || $boolVat)
 {
@@ -271,21 +288,28 @@ if ($boolRead || $boolImportEdit || $boolImportExec)
 	);
 }
 
-if (!empty($arSubItems))
+if ($boolRead)
 {
-	$aMenu = array(
-		"parent_menu" => "global_menu_store",
-		"section" => "catalog",
-		"sort" => 200,
-		"text" => GetMessage("CATALOG_CONTROL"),
-		"title" => GetMessage("CATALOG_MNU_TITLE"),
-		"icon" => "trade_catalog_menu_icon",
-		"page_icon" => "catalog_page_icon",
-		"items_id" => "mnu_catalog",
-		"items" => $arSubItems,
+	$arSubItems[] = array(
+		"text" => GetMessage("SUBSCRIPTION_PRODUCT"),
+		"url" => "cat_subscription_list.php?lang=".LANGUAGE_ID,
+		"more_url" => array("cat_subscription_list.php"),
+		"title" => GetMessage("SUBSCRIPTION_PRODUCT"),
 	);
-	return $aMenu;
 }
-else
+
+if (empty($arSubItems))
 	return false;
-?>
+
+$aMenu = array(
+	"parent_menu" => "global_menu_store",
+	"section" => "catalog",
+	"sort" => 200,
+	"text" => GetMessage("CATALOG_CONTROL"),
+	"title" => GetMessage("CATALOG_MNU_TITLE"),
+	"icon" => "trade_catalog_menu_icon",
+	"page_icon" => "catalog_page_icon",
+	"items_id" => "mnu_catalog",
+	"items" => $arSubItems,
+);
+return $aMenu;

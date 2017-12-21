@@ -1,5 +1,5 @@
 <?
-$MESS["COMPANY_TITLE_UPDATE"] = "Edit Company #ID#";
+$MESS["COMPANY_TITLE_UPDATE"] = "Edit Company #NAME#";
 $MESS["COMPANY_TITLE_ADD"] = "New company";
 $MESS["COMPANY_SECTION_TITLE"] = "Companies";
 $MESS["COMPANY_TAB"] = "Companies";
@@ -9,7 +9,6 @@ $MESS["COMPANY_ID"] = "ID:";
 $MESS["COMPANY_NAME"] = "Name:";
 $MESS["COMPANY_LOCATION_ID"] = "Location:";
 $MESS["COMPANY_CODE"] = "Code:";
-$MESS["COMPANY_XML_ID"] = "XML_ID:";
 $MESS["COMPANY_ADD_NEW"] = "Add Company";
 $MESS["COMPANY_ADD_NEW_ALT"] = "Add Company";
 $MESS["COMPANY_EDIT"] = "Edit";
@@ -27,4 +26,19 @@ $MESS["COMPANY_DATE_CREATE"] = "Created on:";
 $MESS["COMPANY_DATE_MODIFY"] = "Modified on:";
 $MESS["COMPANY_CREATED_BY"] = "Created by:";
 $MESS["COMPANY_MODIFIED_BY"] = "Edited by:";
+$MESS["COMPANY_USER_FIELD_TAB"] = "Custom fields";
+$MESS["COMPANY_USER_FIELD_TAB_DESCR"] = "Custom field preferences";
+$MESS["COMPANY_RULES_USE_TAB"] = "Rules";
+$MESS["COMPANY_RULES_USE_TAB_DESCR"] = "Configure company assignment rules";
+$MESS["COMPANY_RULES"] = "Company rules";
+$MESS["COMPANY_SORT"] = "Sort order:";
+$MESS["SALE_COMPANY_RULE_TITLE"] = "Rule";
+$MESS["SALE_COMPANY_RULE_SAVE"] = "Save";
+$MESS["SALE_COMPANY_LINK_TO_ENTITY"] = "Link to";
+$MESS["SALE_COMPANY_LINK_TO_PAYMENT"] = "Payment";
+$MESS["SALE_COMPANY_LINK_TO_SHIPMENT"] = "Shipment";
+$MESS["SALE_COMPANY_LINK_NOT"] = "None";
+$MESS["SALE_COMPANY_CHANGE_FORM_VALUE"] = "'Attention! Form data have been changed. All unsaved data will be lost. Do you really want to leave this page?'";
+$MESS["COMPANY_GROUPS"] = "Company groups:";
+$MESS["COMPANY_RESPONSIBLE_GROUPS"] = "Responsible person's groups:";
 ?>

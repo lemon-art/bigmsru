@@ -233,7 +233,7 @@ $tabControl->BeginNextTab();
 				$db_TAX = CSaleTax::GetList(array("NAME" => "ASC"), array());
 				while ($db_TAX_arr = $db_TAX->NavNext(true, "fp_"))
 				{
-					?><option value="<?echo $fp_ID ?>" <?if (IntVal($fp_ID)==IntVal($str_TAX_ID)) echo "selected";?>><?echo $fp_NAME ?> (<?echo $fp_LID ?>)</option><?
+					?><option value="<?echo intval($fp_ID) ?>" <?if (IntVal($fp_ID)==IntVal($str_TAX_ID)) echo "selected";?>><?echo htmlspecialcharsbx($fp_NAME) ?> (<?echo $fp_LID ?>)</option><?
 				}
 				?>
 			</select>

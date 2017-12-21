@@ -24,23 +24,6 @@ $entity_id = "USER";
 if(!($USER->CanDoOperation('view_subordinate_users') || $USER->CanDoOperation('view_all_users') || $USER->CanDoOperation('edit_all_users') || $USER->CanDoOperation('edit_subordinate_users')))
 	$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
 
-$arUserSubordinateGroups = array();
-$uid = $USER->GetID();
-$handle_subord = (
-	($USER->CanDoOperation('edit_subordinate_users') && !$USER->CanDoOperation('edit_all_users'))
-	|| ($USER->CanDoOperation('view_subordinate_users') && !$USER->CanDoOperation('view_all_users'))
-);
-if($handle_subord)
-{
-	$arUserGroups = CUser::GetUserGroup($uid);
-	for ($j = 0, $len = count($arUserGroups); $j < $len; $j++)
-	{
-		$arSubordinateGroups = CGroup::GetSubordinateGroups($arUserGroups[$j]);
-		$arUserSubordinateGroups = array_merge ($arUserSubordinateGroups, $arSubordinateGroups);
-	}
-	$arUserSubordinateGroups = array_unique($arUserSubordinateGroups);
-}
-
 IncludeModuleLangFile(__FILE__);
 
 //authorize as user
@@ -54,7 +37,7 @@ if($_REQUEST["action"] == "authorize" && check_bitrix_sessid() && $USER->CanDoOp
 $sTableID = "tbl_user";
 
 $oSort = new CAdminSorting($sTableID, "TIMESTAMP_X", "desc");
-$lAdmin = new CAdminList($sTableID, $oSort);
+$lAdmin = new CAdminUiList($sTableID, $oSort);
 
 $bIntranetEdition = IsModuleInstalled("intranet");//(defined("INTRANET_EDITION") && INTRANET_EDITION == "Y");
 
@@ -147,11 +130,105 @@ if(CheckFilter($arFilterFields))
 	$USER_FIELD_MANAGER->AdminListAddFilter($entity_id, $arFilter);
 }
 
-if($handle_subord)
+/* Prepare data for new filter */
+$queryObject = CGroup::GetDropDownList("AND ID!=2");
+$listGroup = array();
+while($group = $queryObject->fetch())
+	$listGroup[$group["REFERENCE_ID"]] = $group["REFERENCE"];
+$filterFields = array(
+	array(
+		"id" => "ID",
+		"name" => GetMessage("MAIN_USER_ADMIN_FIELD_ID"),
+		"filterable" => "",
+		"default" => true
+	),
+	array(
+		"id" => "TIMESTAMP_1",
+		"name" => GetMessage("MAIN_F_TIMESTAMP"),
+		"type" => "date",
+	),
+	array(
+		"id" => "LAST_LOGIN_1",
+		"name" => GetMessage("MAIN_F_LAST_LOGIN"),
+		"type" => "date",
+	),
+	array(
+		"id" => "ACTIVE",
+		"name" => GetMessage("F_ACTIVE"),
+		"type" => "list",
+		"items" => array(
+			"Y" => GetMessage("MAIN_YES"),
+			"N" => GetMessage("MAIN_NO")
+		),
+		"filterable" => ""
+	),
+	array(
+		"id" => "LOGIN",
+		"name" => GetMessage("F_LOGIN"),
+		"filterable" => "",
+		"default" => true
+	),
+	array(
+		"id" => "EMAIL",
+		"name" => GetMessage("MAIN_F_EMAIL"),
+		"filterable" => "",
+		"default" => true
+	),
+	array(
+		"id" => "NAME",
+		"name" => GetMessage("F_NAME"),
+		"filterable" => "",
+		"quickSearch" => "",
+		"default" => true
+	),
+	array(
+		"id" => "KEYWORDS",
+		"name" => GetMessage("MAIN_F_KEYWORDS"),
+		"filterable" => ""
+	),
+	array(
+		"id" => "GROUPS_ID",
+		"name" => GetMessage("F_GROUP"),
+		"type" => "list",
+		"items" => $listGroup,
+		"params" => array("multiple" => "Y"),
+		"filterable" => ""
+	),
+);
+if ($bIntranetEdition)
 {
+	$filterFields[] = array(
+		"id" => "INTRANET_USERS",
+		"name" => GetMessage("F_FIND_INTRANET_USERS"),
+		"type" => "list",
+		"items" => array(
+			"" => GetMessage("MAIN_ALL"),
+			"Y" => GetMessage("MAIN_YES")
+		),
+		"filterable" => ""
+	);
+}
+$USER_FIELD_MANAGER->AdminListAddFilterFieldsV2($entity_id, $filterFields);
+$arFilter = array();
+$lAdmin->AddFilter($filterFields, $arFilter);
+
+$USER_FIELD_MANAGER->AdminListAddFilterV2($entity_id, $arFilter, $sTableID, $filterFields);
+
+$arUserSubordinateGroups = array();
+if(!$USER->CanDoOperation('edit_all_users') && !$USER->CanDoOperation('view_all_users'))
+{
+	$arUserGroups = CUser::GetUserGroup($USER->GetID());
+	for ($j = 0, $len = count($arUserGroups); $j < $len; $j++)
+	{
+		$arSubordinateGroups = CGroup::GetSubordinateGroups($arUserGroups[$j]);
+		$arUserSubordinateGroups = array_merge ($arUserSubordinateGroups, $arSubordinateGroups);
+	}
+	$arUserSubordinateGroups = array_unique($arUserSubordinateGroups);
+
 	$arFilter["CHECK_SUBORDINATE"] = $arUserSubordinateGroups;
+
 	if($USER->CanDoOperation('edit_own_profile'))
-		$arFilter["CHECK_SUBORDINATE_AND_OWN"] = $uid;
+		$arFilter["CHECK_SUBORDINATE_AND_OWN"] = $USER->GetID();
 }
 
 if (!$USER->CanDoOperation('edit_php'))
@@ -223,10 +300,10 @@ if($lAdmin->EditAction())
 
 if(($arID = $lAdmin->GroupAction()) && ($USER->CanDoOperation('edit_all_users') || $USER->CanDoOperation('edit_subordinate_users')))
 {
-	if($_REQUEST['action_target']=='selected')
+	if (!empty($_REQUEST["action_all_rows_".$sTableID]) && $_REQUEST["action_all_rows_".$sTableID] === "Y")
 	{
-		$arID = Array();
-		$rsData = CUser::GetList($by, $order, $arFilter);
+		$arID = array();
+		$rsData = CUser::GetList($by, $order, $arFilter, array("FIELDS" => array("ID")));
 		while($arRes = $rsData->Fetch())
 			$arID[] = $arRes['ID'];
 	}
@@ -359,13 +436,13 @@ $lAdmin->AddHeaders($arHeaders);
 
 $rsData = CUser::GetList($by, $order, $arFilter, array(
 	"SELECT" => $lAdmin->GetVisibleHeaderColumns(),
-	"NAV_PARAMS"=> array("nPageSize"=>CAdminResult::GetNavSize($sTableID)),
+	"NAV_PARAMS"=> array("nPageSize"=>CAdminUiResult::GetNavSize($sTableID)),
 ));
 
-$rsData = new CAdminResult($rsData, $sTableID);
+$rsData = new CAdminUiResult($rsData, $sTableID);
 $rsData->NavStart();
 
-$lAdmin->NavText($rsData->GetNavPrint(GetMessage("PAGES")));
+$lAdmin->SetNavigationParams($rsData);
 while($arRes = $rsData->NavNext(true, "f_"))
 {
 	$row =& $lAdmin->AddRow($f_ID, $arRes);
@@ -392,7 +469,7 @@ while($arRes = $rsData->NavNext(true, "f_"))
 		$row->AddViewField("PERSONAL_WWW", TxtToHtml($arRes["PERSONAL_WWW"]));
 		$row->AddInputField("PERSONAL_WWW");
 		$row->AddInputField("PERSONAL_ICQ");
-		$row->AddInputField("PERSONAL_GENDER");
+		$row->AddSelectField("PERSONAL_GENDER", array(""=>GetMessage("USER_DONT_KNOW"), "M"=>GetMessage("USER_MALE"), "F"=>GetMessage("USER_FEMALE")));
 		$row->AddInputField("PERSONAL_PHONE");
 		$row->AddInputField("PERSONAL_MOBILE");
 		$row->AddInputField("PERSONAL_CITY");
@@ -435,21 +512,28 @@ $aContext = Array();
 
 if ($USER->CanDoOperation('edit_subordinate_users') || $USER->CanDoOperation('edit_all_users'))
 {
-	$groups = CGroup::GetDropDownList("AND ID<>2");
-	$sGr = '';
-	while($gr = $groups->Fetch())
-		$sGr .= '<option value="'.$gr["REFERENCE_ID"].'">'.htmlspecialcharsex($gr["REFERENCE"]).'</option>'."\n";
+	$sGr = array();
+	foreach($listGroup as $referenceId => $reference)
+		$sGr[] = array("NAME" => $reference, "VALUE" => $referenceId);
 
 	$ar = Array(
-		"delete"=>true,
-		"activate"=>GetMessage("MAIN_ADMIN_LIST_ACTIVATE"),
-		"deactivate"=>GetMessage("MAIN_ADMIN_LIST_DEACTIVATE"),
-		"add_group"=>GetMessage("MAIN_ADMIN_LIST_ADD_GROUP"),
-		"remove_group"=>GetMessage("MAIN_ADMIN_LIST_REM_GROUP"),
-		"groups"=>array(
-			"type"=>"html",
-			"value"=>'<div id="bx_user_groups" style="display:none"><select name="groups"><option>'.GetMessage("MAIN_ADMIN_LIST_GROUP").'</option>'.$sGr.'</select></div>',
+		"edit" => true,
+		"delete" => true,
+		"for_all" => true,
+		"activate" => GetMessage("MAIN_ADMIN_LIST_ACTIVATE"),
+		"deactivate" => GetMessage("MAIN_ADMIN_LIST_DEACTIVATE"),
+		"add_group" => array(
+			"lable" => GetMessage("MAIN_ADMIN_LIST_ADD_GROUP"),
+			"type" => "select",
+			"name" => "groups",
+			"items" => $sGr
 		),
+		"remove_group"=>array(
+			"lable" => GetMessage("MAIN_ADMIN_LIST_REM_GROUP"),
+			"type" => "select",
+			"name" => "groups",
+			"items" => $sGr
+		)
 	);
 
 	//for Intranet editions: structure group operations and last authorization time
@@ -463,7 +547,7 @@ if ($USER->CanDoOperation('edit_subordinate_users') || $USER->CanDoOperation('ed
 			$arUserField['SETTINGS']['LIST_HEIGHT'] = 1;
 
 			$sStruct = call_user_func_array(
-				array($arUserField["USER_TYPE"]["CLASS_NAME"], "geteditformhtml"),
+				array($arUserField["USER_TYPE"]["CLASS_NAME"], "GetGroupActionData"),
 				array(
 					$arUserField,
 					array(
@@ -472,15 +556,19 @@ if ($USER->CanDoOperation('edit_subordinate_users') || $USER->CanDoOperation('ed
 					),
 				)
 			);
-
-			$ar["add_structure"] = GetMessage("MAIN_ADMIN_LIST_ADD_STRUCT");
-			$ar["remove_structure"] = GetMessage("MAIN_ADMIN_LIST_REM_STRUCT");
-			$ar["structure"] = array(
-				"type"=>"html",
-				"value"=>'<div id="bx_user_structure" style="display:none">'.$sStruct.'</div>',
+			$ar["add_structure"] = array(
+				"lable" => GetMessage("MAIN_ADMIN_LIST_ADD_STRUCT"),
+				"type" => "select",
+				"name" => "UF_DEPARTMENT",
+				"items" => $sStruct
+			);
+			$ar["remove_structure"] = array(
+				"lable" => GetMessage("MAIN_ADMIN_LIST_REM_STRUCT"),
+				"type" => "select",
+				"name" => "UF_DEPARTMENT",
+				"items" => $sStruct
 			);
 		}
-
 		$ar["intranet_deactivate"] = GetMessage("MAIN_ADMIN_LIST_INTRANET_DEACTIVATE");
 	}
 
@@ -502,6 +590,11 @@ $lAdmin->CheckListMode();
 $APPLICATION->SetTitle(GetMessage("TITLE"));
 
 require($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/include/prolog_admin_after.php");
+
+$lAdmin->DisplayFilter($filterFields);
+$lAdmin->DisplayList();
+require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");
+__halt_compiler();
 ?>
 <form name="find_form" method="GET" action="<?echo $APPLICATION->GetCurPage()?>?">
 <?

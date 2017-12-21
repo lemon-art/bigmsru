@@ -1,7 +1,9 @@
 <?
+use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\Loader;
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
-require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/include.php");
-require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/general/admin_tool.php");
+Loader::includeModule('sale');
+require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/prolog.php");
 
 IncludeModuleLangFile(__FILE__);
 ClearVars("u_");
@@ -41,6 +43,10 @@ if(!CBXFeatures::IsFeatureEnabled('SaleAccounts'))
 }
 
 $ID = IntVal($_GET["USER_ID"]);
+
+$catalogSubscribeEnabled = false;
+if(Bitrix\Main\Loader::includeModule("catalog"))
+	$catalogSubscribeEnabled = class_exists('\Bitrix\Catalog\SubscribeTable');
 
 //reorder
 if(isset($_REQUEST["reorder"]) && IntVal($_REQUEST["reorder"]) > 0)
@@ -425,11 +431,8 @@ $APPLICATION->SetTitle(GetMessage("BUYER_TITLE").$pageTitle);
 
 if(!empty($arUser))
 {
-	$dbStatus = CSaleStatus::GetList(array(), array(), false, false, array('ID', 'NAME', 'LID'));
-	$arStatusOrder = array();
-	while ($arStatus = $dbStatus->Fetch())
-		$arStatusOrder[$arStatus["ID"]] = $arStatus;
 
+	$orderStatusNames = \Bitrix\Sale\OrderStatus::getAllStatusesNames(LANGUAGE_ID);
 
 	//MAIN INFORMATION
 	$sTableID_tab1 = "tbl_sale_buyers_profile_tab1";
@@ -482,7 +485,7 @@ if(!empty($arUser))
 				$basketCount++;
 		}
 
-		$status = "[".$arOrderMain["STATUS_ID"]."] ".htmlspecialcharsbx($arStatusOrder[$arOrderMain["STATUS_ID"]]["NAME"])."<br />".$arOrderMain["DATE_STATUS"];
+		$status = "[".$arOrderMain["STATUS_ID"]."] ".htmlspecialcharsbx($orderStatusNames[$arOrderMain["STATUS_ID"]])."<br />".$arOrderMain["DATE_STATUS"];
 		$row->AddField("STATUS_ID", $status);
 
 		$payed = (($arOrderMain["PAYED"] == "Y") ? GetMessage("BUYERS_PAY_YES") : GetMessage("BUYERS_PAY_NO"));
@@ -764,7 +767,6 @@ if(!empty($arUser))
 
 	$orderHeader = array(
 		array("id"=>"ID", "content"=>"ID", "sort"=>"ID", "default"=>true),
-		array("id"=>"STATUS_ID","content"=>GetMessage("BUYERS_H_STATUS"), "sort"=>"STATUS_ID", "default"=>true),
 		array("id"=>"PAYED", "content"=>GetMessage("BUYERS_H_PAID"), "sort"=>"PAYED", "default"=>true),
 		array("id"=>"ALLOW_DELIVERY", "content"=>GetMessage("BUYER_LAST_H_ALLOW_DELIVERY"), "sort"=>"", "default"=>true),
 		array("id"=>"PRODUCT", "content"=>GetMessage("BUYERS_H_ALL_PRODUCT"), "sort"=>"", "default"=>true),
@@ -856,7 +858,7 @@ if(!empty($arUser))
 
 		$row->AddField("ALLOW_DELIVERY", $allowDelivery);
 
-		$status = "[".$arOrder["STATUS_ID"]."] ".htmlspecialcharsbx($arStatusOrder[$arOrder["STATUS_ID"]]["NAME"])."<br />".$arOrder["DATE_STATUS"];
+		$status = "[".$arOrder["STATUS_ID"]."] ".htmlspecialcharsbx($orderStatusNames[$arOrder["STATUS_ID"]])."<br />".$arOrder["DATE_STATUS"];
 		$row->AddField("STATUS_ID", $status);
 
 		$orderProduct = "";
@@ -873,7 +875,7 @@ if(!empty($arUser))
 
 		foreach ($arBasketItems as $arBasketOrder)
 		{
-			$measure = isset($arBasketOrder["MEASURE_TEXT"]) ? $arBasketOrder["MEASURE_TEXT"] : GetMessage("BUYERS_UNIT");
+			$measure = isset($arBasketOrder["MEASURE_TEXT"]) ? htmlspecialcharsEx($arBasketOrder["MEASURE_TEXT"]) : GetMessage("BUYERS_UNIT");
 
 			$class = "";
 			$hidden = "";
@@ -924,7 +926,6 @@ if(!empty($arUser))
 
 	//FILTER BASKET
 	$arFilterFields = array(
-		"basket_status",
 		"filter_basket_lid",
 		"basket_name_product",
 	);
@@ -944,29 +945,6 @@ if(!empty($arUser))
 	if (strlen($filter_basket_lid)>0)
 		$arBasketFilter["LID"] = trim($filter_basket_lid);
 
-	if (strlen(trim($basket_status)) > 0)
-	{
-		if ($basket_status == "avail")
-		{
-			$arBasketFilter["CAN_BUY"] = "Y";
-			$arBasketFilter["DELAY"] = "N";
-		}
-		elseif ($basket_status == "no")
-		{
-			$arBasketFilter["CAN_BUY"] = "N";
-			$arBasketFilter["SUBSCRIBE"] = "N";
-		}
-		elseif ($basket_status == "delay")
-		{
-			$arBasketFilter["CAN_BUY"] = "Y";
-			$arBasketFilter["DELAY"] = "Y";
-		}
-		elseif ($basket_status == "subscribe")
-		{
-			$arBasketFilter["CAN_BUY"] = "N";
-			$arBasketFilter["SUBSCRIBE"] = "Y";
-		}
-	}
 	if (strlen(trim($basket_name_product)) > 0)
 		$arBasketFilter["%NAME"] = $basket_name_product;
 
@@ -1008,7 +986,6 @@ if(!empty($arUser))
 	$BasketHeader = array(
 		array("id"=>"DATE_INSERT", "content"=>GetMessage("BUYER_BH_DATE_INSERT"), "sort"=>"DATE_INSERT", "default"=>true),
 		array("id"=>"NAME","content"=>GetMessage("BUYER_BH_NAME"), "sort"=>"NAME", "default"=>true),
-		array("id"=>"DELAY", "content"=>GetMessage("BUYER_BH_DELAY"), "sort"=>"DELAY", "default"=>true),
 		array("id"=>"PRICE", "content"=>GetMessage("BUYER_BH_PRICE"), "sort"=>"PRICE", "default"=>true),
 		array("id"=>"QUANTITY", "content"=>GetMessage("BUYER_BH_QUANTITY"), "sort"=>"QUANTITY", "default"=>true),
 	);
@@ -1033,17 +1010,6 @@ if(!empty($arUser))
 	foreach ($arBasketData as $arBasket)
 	{
 		$row =& $lAdmin_tab4->AddRow($arBasket["PRODUCT_ID"], $arBasket, '', '');
-
-		$status = "";
-		if($arBasket["DELAY"] == "N" && $arBasket["CAN_BUY"] == "Y")
-			$status = GetMessage("BUYER_B_STATUS_ADD");
-		if($arBasket["DELAY"] == "Y" && $arBasket["CAN_BUY"] == "Y")
-			$status = GetMessage("BUYER_B_STATUS_DELAY");
-		if($arBasket["CAN_BUY"] == "N" && $arBasket["SUBSCRIBE"] == "N")
-			$status = GetMessage("BUYER_B_STATUS_NO");
-		if($arBasket["CAN_BUY"] == "N" && $arBasket["SUBSCRIBE"] == "Y")
-			$status = GetMessage("BUYER_B_STATUS_NOTIFY");
-		$row->AddField("DELAY", $status);
 
 		$name = "<a href=\"".$arBasket["DETAIL_PAGE_URL"]."\">".$arBasket["NAME"]."</a>
 			<input type=\"hidden\" value=\"".$arBasket["PRODUCT_ID"]."\" name=\"PRODUCT_ID[".$arBasket["LID"]."][]\" />";
@@ -1256,7 +1222,7 @@ if(!empty($arUser))
 	{
 		$row =& $lAdmin_tab5->AddRow($arViews["PRODUCT_ID"], $arViews, '', '');
 
-		$name = "[".$arViews["PRODUCT_ID"]."] <a href=\"".$arViews["DETAIL_PAGE_URL"]."\">".$arViews["NAME"]."</a>";
+		$name = "[".$arViews["PRODUCT_ID"]."] <a href=\"".$arViews["DETAIL_PAGE_URL"]."\">".htmlspecialcharsEx($arViews["NAME"])."</a>";
 		if (floatVal($arViews["PRICE"]) <= 0)
 			$name .= "<div class=\"dont_can_buy\">(".GetMessage('BUYER_DONT_CAN_BUY').")</div>";
 		$name .= "<input type=\"hidden\" name=\"table_id\" value=\"".$sTableID_tab5."\">";
@@ -1332,6 +1298,238 @@ if(!empty($arUser))
 		$lAdmin_tab5->CheckListMode();
 
 	//END VIEWED
+
+	//SUBSCRIPTION PRODUCTS
+	if($catalogSubscribeEnabled)
+	{
+		$sTableID_tab6 = "t_stat_list_tab6";
+		$oSort_tab6 = new CAdminSorting($sTableID_tab6, false, false, 'byS', 'orderS');
+		$lAdmin_tab6 = new CAdminList($sTableID_tab6, $oSort_tab6);
+		$arFilterFields = array(
+			'find_id',
+			'find_user_contact',
+			'find_item_id',
+			'find_date_from_1',
+			'find_date_from_2',
+			'find_date_to_1',
+			'find_date_to_2',
+			'find_contact_type',
+			'find_active'
+		);
+		$lAdmin_tab6->InitFilter($arFilterFields);
+		$filter = array('=USER_ID' => $ID);
+		if($find_id)
+			$filter['=ID'] = $find_id;
+		if($find_user_contact)
+			$filter['%USER_CONTACT'] = $find_user_contact;
+		if($find_item_id)
+			$filter['=ITEM_ID'] = $find_item_id;
+		if($find_date_from_1)
+			$filter['>=DATE_FROM'] = $find_date_from_1;
+		if($find_date_to_1)
+			$filter['>=DATE_TO'] = $find_date_to_1;
+		if($find_contact_type)
+			$filter['=CONTACT_TYPE'] = $find_contact_type;
+		if($find_active)
+		{
+			global $DB;
+			if($find_active == 'Y')
+			{
+				$filter[] = array(
+					'LOGIC' => 'OR',
+					array('=DATE_TO' => false),
+					array('>DATE_TO' => date($DB->dateFormatToPHP(CLang::getDateFormat('FULL')), time()))
+				);
+			}
+			else
+			{
+				$filter[] = array(
+					'LOGIC' => 'AND',
+					array('!=DATE_TO' => false),
+					array('<DATE_TO' => date($DB->dateFormatToPHP(CLang::getDateFormat('FULL')), time()))
+				);
+			}
+		}
+		if(!empty($find_date_from_2))
+		{
+			$filter['<=DATE_FROM'] = CIBlock::isShortDate($find_date_from_2) ?
+				ConvertTimeStamp(AddTime(MakeTimeStamp($find_date_from_2), 1, 'D'), 'FULL'): $find_date_from_2;
+		}
+		if(!empty($find_date_to_2))
+		{
+			$filter['<=DATE_TO'] = CIBlock::isShortDate($find_date_to_2) ?
+				ConvertTimeStamp(AddTime(MakeTimeStamp($find_date_to_2), 1, 'D'), 'FULL'): $find_date_to_2;
+		}
+
+		$subscribeManager = new \Bitrix\Catalog\Product\SubscribeManager();
+		if(($listRowId = $lAdmin_tab6->groupAction()))
+		{
+			switch($_REQUEST['action'])
+			{
+				case 'delete':
+					$itemId = 0;
+					if(isset($_REQUEST['itemId']))
+						$itemId = $_REQUEST['itemId'];
+					$subscribeManager->deleteManySubscriptions($listRowId, $itemId);
+					break;
+				case 'activate':
+					$subscribeManager->activateSubscription($listRowId);
+					break;
+				case 'deactivate':
+					$subscribeManager->deactivateSubscription($listRowId);
+					break;
+			}
+
+			$errorObject = current($subscribeManager->getErrors());
+			if($errorObject)
+			{
+				$lAdmin_tab6->addGroupError($errorObject->getMessage());
+			}
+		}
+
+		$subscriptionHeaders = array();
+		$subscriptionHeaders['ID'] = array('id' => 'ID', 'content' => 'ID', 'sort' => 'ID', 'default' => true, 'align' => 'center');
+		$subscriptionHeaders['DATE_FROM'] = array('id' => 'DATE_FROM','content' => Loc::getMessage('CS_DATE_FROM'),
+			'sort' => 'DATE_FROM', 'default' => true);
+		$subscriptionHeaders['USER_CONTACT'] = array('id' => 'USER_CONTACT','content' => Loc::getMessage('CS_USER_CONTACT'),
+			'sort' => 'USER_CONTACT', 'default' => true);
+		$subscriptionHeaders['USER_ID'] = array('id' => 'USER_ID', 'content' => Loc::getMessage('CS_USER'),
+			'default' => true);
+		$subscriptionHeaders['CONTACT_TYPE'] = array('id' => 'CONTACT_TYPE','content' => Loc::getMessage('CS_CONTACT_TYPE'),
+			'sort' => 'CONTACT_TYPE', 'default' => true, 'align' => 'center');
+		$subscriptionHeaders['ACTIVE'] = array('id' => 'ACTIVE', 'content' => Loc::getMessage('CS_ACTIVE'),
+			'default' => true, 'align' => 'center');
+		$subscriptionHeaders['DATE_TO'] = array('id' => 'DATE_TO','content' => Loc::getMessage('CS_DATE_TO'),
+			'sort' => 'DATE_TO', 'default' => true);
+		$subscriptionHeaders['ITEM_ID'] = array('id' => 'ITEM_ID','content' => Loc::getMessage('CS_ITEM_ID'),
+			'sort' => 'ITEM_ID', 'default' => false, 'align' => 'right');
+		$subscriptionHeaders['PRODUCT_NAME'] = array('id' => 'PRODUCT_NAME','content' => Loc::getMessage('CS_PRODUCT_NAME'),
+			'sort' => 'PRODUCT_NAME', 'default' => true);
+		$subscriptionHeaders['SITE_ID'] = array('id' => 'SITE_ID','content' => Loc::getMessage('CS_SITE_ID'),
+			'sort' => 'SITE_ID', 'default' => true, 'align' => 'center');
+
+		$lAdmin_tab6->addHeaders($subscriptionHeaders);
+		$select = array();
+		$ignoreFields = array('ACTIVE');
+		$selectFields = array_keys($subscriptionHeaders);
+		$selectFields = array_diff($selectFields, $ignoreFields);
+		foreach($selectFields as $fieldName)
+		{
+			$select[$fieldName] = $fieldName;
+		}
+		$select['PRODUCT_NAME'] = 'IBLOCK_ELEMENT.NAME';
+		$select['IBLOCK_ID'] = 'IBLOCK_ELEMENT.IBLOCK_ID';
+
+		$byS = (!empty($_REQUEST['byS']) ? trim($_REQUEST['byS']) : 'DATE_FROM');
+		$orderS = (!empty($_REQUEST['orderS']) ? trim($_REQUEST['orderS']) : 'DESC');
+
+		if (!isset($_REQUEST['byS']))
+			$queryOrder = array('DATE_FROM' => 'DESC');
+		else
+			$queryOrder[$byS] = $orderS;
+
+		$nav = new Bitrix\Main\UI\AdminPageNavigation('buyers-subscription-list');
+		$queryObject = Bitrix\Catalog\SubscribeTable::getList(array(
+			'select' => $select,
+			'filter' => $filter,
+			'order' => $queryOrder,
+			'count_total'=>true,
+			'offset' => $nav->getOffset(),
+			'limit' => $nav->getLimit()
+		));
+		$nav->setRecordCount($queryObject->getCount());
+		$lAdmin_tab6->setNavigation($nav, Loc::getMessage('CS_PAGES'));
+
+		$contactType = Bitrix\Catalog\SubscribeTable::getContactTypes();
+		$actionUrl = '&USER_ID='.$ID.'&lang='.LANGUAGE_ID;
+		$listUserData = array();
+		while($subscribe = $queryObject->fetch())
+		{
+			$subscribe['CONTACT_TYPE'] = $contactType[$subscribe['CONTACT_TYPE']]['NAME'];
+			if(!empty($subscribe['USER_ID']))
+			{
+				$listUserData[$subscribe['USER_ID']][] = $subscribe['ID'];
+			}
+
+			$rowList[$subscribe['ID']] = $row = &$lAdmin_tab6->addRow($subscribe['ID'], $subscribe);
+
+			if($subscribeManager->checkSubscriptionActivity($subscribe['DATE_TO']))
+			{
+				$row->addField('ACTIVE', Loc::getMessage('CS_FILTER_YES'));
+			}
+			else
+			{
+				$row->addField('ACTIVE', Loc::getMessage('CS_FILTER_NO'));
+			}
+
+			if(defined('CATALOG_PRODUCT'))
+			{
+				$editUrl = CIBlock::getAdminElementEditLink($subscribe['IBLOCK_ID'], $subscribe['ITEM_ID'], array(
+					'find_section_section' => -1, 'WF' => 'Y',
+					'return_url' => $APPLICATION->getCurPageParam()));
+			}
+			else
+			{
+				$editUrl = CIBlock::getAdminElementEditLink($subscribe['IBLOCK_ID'], $subscribe['ITEM_ID'], array(
+					'find_section_section' => -1, 'WF' => 'Y'));
+			}
+			$row->addField('PRODUCT_NAME',
+				'<a href="'.$editUrl.'" target="_blank">'.htmlspecialcharsbx($subscribe['PRODUCT_NAME']).'</a>');
+
+			$actions = array();
+			$actionUrl .= '&itemId='.$subscribe['ITEM_ID'];
+			$actions[] = array(
+				'ICON' => 'delete',
+				'TEXT' => Loc::getMessage('CS_ACTION_DELETE'),
+				'ACTION' => "if(confirm('".GetMessageJS('CS_ACTION_DELETE_CONFIRM')."')) ".
+					$lAdmin_tab6->actionDoGroup($subscribe['ID'], 'delete', $actionUrl)
+			);
+			$actions[] = array(
+				'TEXT' => Loc::getMessage('CS_ACTION_ACTIVATE'),
+				'ACTION' => $lAdmin_tab6->actionDoGroup($subscribe['ID'], 'activate', $actionUrl)
+			);
+			$actions[] = array(
+				'TEXT' => Loc::getMessage('CS_ACTION_DEACTIVATE'),
+				'ACTION' => $lAdmin_tab6->actionDoGroup($subscribe['ID'], 'deactivate', $actionUrl)
+			);
+
+			$row->addActions($actions);
+		}
+		if (!empty($listUserData))
+		{
+			$listUserId = array_keys($listUserData);
+			$listUsers = implode(' | ', $listUserId);
+			$userQuery = CUser::getList($byUser = 'ID', $orderUser = 'ASC',
+				array('ID' => $listUsers) ,
+				array('FIELDS' => array('ID' ,'LOGIN', 'NAME', 'LAST_NAME')));
+			while($user = $userQuery->fetch())
+			{
+				if(is_array($listUserData[$user['ID']]))
+				{
+					foreach($listUserData[$user['ID']] as $subscribeId)
+					{
+						$userString='<a href="/bitrix/admin/user_edit.php?ID='.$user['ID'].'&lang='.LANGUAGE_ID.'" target="_blank">'.
+							CUser::formatName(CSite::getNameFormat(false), $user, true, true).'</a>';
+						$rowList[$subscribeId]->addField('USER_ID', $userString);
+					}
+				}
+			}
+		}
+
+		$footerArray = array(array('title' => Loc::getMessage('CS_LIST_SELECTED'),
+			'value' => $queryObject->getCount()));
+		$lAdmin_tab6->addFooter($footerArray);
+
+		$lAdmin_tab6->addGroupActionTable(array(
+			'delete' => Loc::getMessage('CS_ACTION_DELETE'),
+			'activate' => Loc::getMessage('CS_ACTION_ACTIVATE'),
+			'deactivate' => Loc::getMessage('CS_ACTION_DEACTIVATE'),
+		));
+
+		if($_REQUEST["table_id"] == $sTableID_tab6)
+			$lAdmin_tab6->checkListMode();
+	}
+	//END SUBSCRIPTION PRODUCTS
 
 
 	require_once ($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
@@ -1420,8 +1618,17 @@ if(!empty($arUser))
 			"ICON"=>"",
 			"TITLE"=>GetMessage("BUYER_LOOKED_DESC"),
 		),
-
 	);
+
+	if($catalogSubscribeEnabled)
+	{
+		$aTabs[] = array(
+			"DIV" => "tab6",
+			"TAB" => GetMessage("CS_TAB_TITLE"),
+			"ICON" => "",
+			"TITLE" => GetMessage("CS_TAB_DESC"),
+		);
+	}
 
 	$tabControl = new CAdminTabControl("tabControl", $aTabs, true, true);
 	$tabControl->Begin();
@@ -1592,7 +1799,6 @@ if(!empty($arUser))
 					$arFilterFieldsTmp = array(
 						GetMessage("BUYER_F_DATE_UPDATE"),
 						GetMessage("BUYER_F_LID"),
-						GetMessage("BUYER_F_STATUS"),
 						GetMessage("BUYER_F_PAYED"),
 						GetMessage("BUYER_F_DELIVERY"),
 						GetMessage("BUYER_F_PRICE"),
@@ -1633,27 +1839,6 @@ if(!empty($arUser))
 						<td>
 							<?echo $selectLID?>
 							<input type="hidden" name="USER_ID" value="<?=$ID?>" >
-						</td>
-					</tr>
-					<tr>
-						<td valign="top"><?echo GetMessage("BUYER_F_STATUS")?>:<br /><img src="/bitrix/images/sale/mouse.gif" width="44" height="21" border="0" alt=""></td>
-						<td valign="top">
-							<select name="filter_order_status[]" multiple size="3">
-								<option value="">(<?=GetMessage('BUYER_BASKET_F_STATUS_ALL')?>)</option>
-								<?
-								$dbStatusList = CSaleStatus::GetList(
-										array("SORT" => "ASC"),
-										array("LID" => LANGUAGE_ID),
-										false,
-										false,
-										array("ID", "NAME", "SORT")
-									);
-								while ($arStatusList = $dbStatusList->GetNext())
-								{
-									?><option value="<?=$arStatusList["ID"] ?>"<?if (is_array($filter_order_status) && in_array($arStatusList["ID"], $filter_order_status)) echo " selected"?>>[<?= $arStatusList["ID"] ?>] <?= $arStatusList["NAME"] ?></option><?
-								}
-								?>
-							</select>
 						</td>
 					</tr>
 					<tr>
@@ -1721,21 +1906,6 @@ if(!empty($arUser))
 						$arFilterFieldsTmp
 					);
 					$oFilter4->Begin();
-					?>
-					<tr>
-						<td><?=GetMessage('BUYER_BASKET_F_STATUS')?>:</td>
-						<td>
-							<select name="basket_status">
-								<option value="">(<?=GetMessage('BUYER_BASKET_F_STATUS_ALL')?>)</option>
-								<option value="avail" <?=($basket_status=="avail" ? 'selected' : '')?> ><?=GetMessage('BUYER_BASKET_F_STATUS_AVAIL')?></option>
-								<option value="delay" <?=($basket_status=="delay" ? 'selected' : '')?>><?=GetMessage('BUYER_BASKET_F_STATUS_DELAY')?></option>
-								<option value="no" <?=($basket_status=="no" ? 'selected' : '')?>><?=GetMessage('BUYER_BASKET_F_STATUS_NO')?></option>
-								<option value="subscribe" <?=($basket_status=="subscribe" ? 'selected' : '')?>><?=GetMessage('BUYER_BASKET_F_STATUS_SUB')?></option>
-							</select>
-							<input type="hidden" name="USER_ID" value="<?=$ID?>" >
-						</td>
-					</tr>
-					<?
 					$selectLID = "<select name=\"filter_basket_lid\">";
 					$selectLID .= "<option value=\"\">(".GetMessage('BUYER_VIEW_F_ALL').")</option>";
 					foreach ($arSites as $arSite)
@@ -2081,6 +2251,89 @@ if(!empty($arUser))
 			</td>
 		</tr>
 		<?$tabControl->EndTab();?>
+
+		<?if($catalogSubscribeEnabled):?>
+		<?$tabControl->BeginNextTab();?>
+		<tr>
+			<td colspan="2">
+				<form method="GET" name="find_subscribe_form" id="find_subscribe_form" 
+				      action="<?=$APPLICATION->getCurPage()?>">
+					<?
+						$findFields = array(
+							Loc::getMessage('CS_FILTER_ID'),
+							Loc::getMessage('CS_FILTER_USER_CONTACT'),
+							Loc::getMessage('CS_FILTER_ITEM_ID'),
+							Loc::getMessage('CS_FILTER_DATE_FROM'),
+							Loc::getMessage('CS_FILTER_DATE_TO'),
+							Loc::getMessage('CS_FILTER_CONTACT_TYPE'),
+							Loc::getMessage('CS_FILTER_ACTIVE'),
+						);
+						$filterObject = new CAdminFilter($sTableID_tab6.'_filter', $findFields,
+							array('table_id' => $sTableID_tab6));
+						$filterObject->begin();
+					?>
+					<tr>
+						<td><?=Loc::getMessage('CS_FILTER_ID')?></td>
+						<td><input type="text" name="find_id" size="11" value="<?=htmlspecialcharsbx($find_id)?>"></td>
+					</tr>
+					<tr>
+						<td><?=Loc::getMessage('CS_FILTER_USER_CONTACT')?></td>
+						<td><input type="text" name="find_user_contact" size="40" value="<?=htmlspecialcharsbx($find_user_contact)?>"></td>
+					</tr>
+					<tr>
+						<td><?=Loc::getMessage('CS_FILTER_ITEM_ID')?></td>
+						<td><input type="text" name="find_item_id" size="11" value="<?=htmlspecialcharsbx($find_item_id)?>"></td>
+					</tr>
+					<tr>
+						<td><?=Loc::getMessage('CS_FILTER_DATE_FROM')?></td>
+						<td><?=CalendarPeriod('find_date_from_1', htmlspecialcharsbx($find_date_from_1),
+								'find_date_from_2', htmlspecialcharsbx($find_date_from_2), 'find_subscribe_form', 'Y')?></td>
+					</tr>
+					<tr>
+						<td><?=Loc::getMessage('CS_FILTER_DATE_TO')?></td>
+						<td><?=CalendarPeriod('find_date_to_1', htmlspecialcharsbx($find_date_to_1),
+								'find_date_to_2', htmlspecialcharsbx($find_date_to_2), 'find_subscribe_form', 'Y')?></td>
+					</tr>
+					<tr>
+						<td><?=Loc::getMessage('CS_FILTER_CONTACT_TYPE')?></td>
+						<td>
+							<select name="find_contact_type[]">
+								<option value=""><?=Loc::getMessage('CS_FILTER_ANY')?></option>
+								<?
+								$contactTypes = !empty($find_contact_type) ? $find_contact_type : array();
+								foreach ($contactType as $contactTypeId => $contactTypeData):?>
+									<option value="<?=$contactTypeId?>"<?=in_array($contactTypeId, $contactTypes) ? ' selected' : ''?>>
+										<?=htmlspecialcharsbx($contactTypeData['NAME']); ?>
+									</option>
+								<?endforeach; ?>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td><?=Loc::getMessage('CS_FILTER_ACTIVE')?></td>
+						<td>
+							<select name="find_active">
+								<option value=""><?=Loc::getMessage('CS_FILTER_ANY')?></option>
+								<option value="Y"<?if($find_active=="Y")echo " selected"?>>
+									<?=Loc::getMessage('CS_FILTER_YES')?>
+								</option>
+								<option value="N"<?if($find_active=="N")echo " selected"?>>
+									<?=Loc::getMessage('CS_FILTER_NO')?>
+								</option>
+							</select>
+						</td>
+					</tr>
+					<?
+						$filterObject->buttons(array('table_id' => $sTableID_tab6,
+							'url' => $APPLICATION->getCurPageParam(), 'form' => 'find_subscribe_form'));
+						$filterObject->end();
+					?>
+				</form>
+				<?$lAdmin_tab6->displayList(array('FIX_HEADER' => false, 'FIX_FOOTER' => false));?>
+			</td>
+		</tr>
+		<?$tabControl->EndTab();?>
+		<?endif;?>
 
 	<?$tabControl->End();?>
 <?

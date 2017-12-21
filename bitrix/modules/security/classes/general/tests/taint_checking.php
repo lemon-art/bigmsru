@@ -47,7 +47,7 @@ class CSecurityTaintCheckingTest
 	 * @param array $params
 	 * @return array
 	 */
-	public function check($params)
+	public function check(array $params = array())
 	{
 		$dirtyResults = CQAACheckListTests::checkVulnerabilities($params);
 		$result = $this->formatResults($dirtyResults);

@@ -72,6 +72,15 @@ if (!$templateData['BLOG']['BLOG_FROM_AJAX'])
 			'TEMPLATE_THEME' => $arParams['~TEMPLATE_THEME'],
 			'SHOW_DEACTIVATED' => $arParams['SHOW_DEACTIVATED'],
 		);
+		
+		if(isset($arParams["USER_CONSENT"]))
+			$templateData['BLOG']['AJAX_PARAMS']["USER_CONSENT"] = $arParams["USER_CONSENT"];
+		if(isset($arParams["USER_CONSENT_ID"]))
+			$templateData['BLOG']['AJAX_PARAMS']["USER_CONSENT_ID"] = $arParams["USER_CONSENT_ID"];
+		if(isset($arParams["USER_CONSENT_IS_CHECKED"]))
+			$templateData['BLOG']['AJAX_PARAMS']["USER_CONSENT_IS_CHECKED"] = $arParams["USER_CONSENT_IS_CHECKED"];
+		if(isset($arParams["USER_CONSENT_IS_LOADED"]))
+			$templateData['BLOG']['AJAX_PARAMS']["USER_CONSENT_IS_LOADED"] = $arParams["USER_CONSENT_IS_LOADED"];
 
 		$arJSParams['serviceList']['blog'] = true;
 		$arJSParams['settings']['blog'] = array(
@@ -93,7 +102,7 @@ if (!$templateData['BLOG']['BLOG_FROM_AJAX'])
 		$arJSParams['settings']['facebook'] = array(
 			'parentContID' => $templateData['TABS_ID'],
 			'contID' => 'bx-cat-soc-comments-fb_'.$arResult['ELEMENT']['ID'],
-			'facebookPath' => '//connect.facebook.net/'.(strtolower(LANGUAGE_ID)."_".strtoupper(LANGUAGE_ID)).'/all.js#xfbml=1'
+			'facebookPath' => 'https://connect.facebook.net/'.(strtolower(LANGUAGE_ID)."_".strtoupper(LANGUAGE_ID)).'/sdk.js#xfbml=1&version=v2.8'
 		);
 		$arData["FB"] = array(
 			"NAME" => isset($arParams["FB_TITLE"]) && trim($arParams["FB_TITLE"]) != "" ? $arParams["FB_TITLE"] : "Facebook",
@@ -114,7 +123,7 @@ if (!$templateData['BLOG']['BLOG_FROM_AJAX'])
 			"CONTENT" => '
 				<div id="vk_comments"></div>
 				<script type="text/javascript">
-					BX.load([\'//vk.com/js/api/openapi.js\'], function(){
+					BX.load([\'https://vk.com/js/api/openapi.js?142\'], function(){
 						if (!!window.VK)
 						{
 							VK.init({

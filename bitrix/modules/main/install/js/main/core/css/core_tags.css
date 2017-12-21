@@ -34,7 +34,17 @@
 .popup-tags-window .popup-tags-middle-cell { vertical-align: middle; }
 .popup-tags-window .popup-tags-left-bottom-cell {}
 .popup-tags-window .popup-tags-right-bottom-cell { }
-.popup-tags-button-edit { width: 20px; height: 20px; position:absolute; left:0; top: 5px; cursor: pointer; outline: none; background: url(../images/controls-sprite.png?2) no-repeat 0 -402px; }
+
+.popup-tags-button-edit {
+	width: 20px;
+	height: 20px;
+	position: absolute;
+	left: 0;
+	top: 30px;
+	cursor: pointer;
+	outline: none;
+	background: url(../images/controls-sprite.png?2) no-repeat 0 -402px;
+}
 .popup-tags-button-edit:hover { background: url(../images/controls-sprite.png?2) no-repeat 0 -425px; }
 .popup-tags-button-edit-pressed { display: none; }
 .popup-tags-button-edit-pressed, .popup-tags-button-edit-pressed:hover { background: url(../images/controls-sprite.png?2) no-repeat 0 -448px; cursor: default; }

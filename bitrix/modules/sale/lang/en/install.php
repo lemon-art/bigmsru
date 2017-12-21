@@ -34,4 +34,5 @@ $MESS ['SINS_PERM_U'] = "Manage orders";
 $MESS ['SINS_PERM_W'] = "Full access";
 $MESS ['SALE_INSTALL_CURRENCY'] = "e-Store module requires the Currency module to be installed.<br />Please install the Currency module first.
 ";
+$MESS["SALE_UPDATER_16036_MIGRATE_NOTIFY"] = "Commercial Catalog discounts <a href=\"#LINK#\">can be converted</a> to e-Store discounts.";
 ?>

@@ -437,18 +437,19 @@ class CUserCounter extends CAllUserCounter
 					$arSites[] = $row['ID'];
 				}
 
+				$isLF = substr($code, 0, 2) == '**' && strlen($code) > 2;
+
 				$strSQL = "
 					SELECT pc.CHANNEL_ID, uc.USER_ID, uc.SITE_ID, uc.CODE, uc.CNT
 					FROM b_user_counter uc
 					INNER JOIN b_pull_channel pc ON pc.USER_ID = uc.USER_ID
-					WHERE uc.CODE LIKE '**%'
-				";
+					WHERE uc.CODE ".($isLF ? " LIKE '**%'" : " = '".$code."'");
 
 				$res = $DB->Query($strSQL, false, "FILE: ".__FILE__."<br> LINE: ".__LINE__);
 
 				while($row = $res->Fetch())
 				{
-					if ($row["CODE"] == $code)
+					if ($isLF && $row["CODE"] == $code)
 					{
 						continue;
 					}
@@ -507,13 +508,6 @@ class CUserCounterPage extends CAllUserCounterPage
 			return;
 		}
 
-		$arSites = array();
-		$res = CSite::GetList($b = "", $o = "", array("ACTIVE" => "Y"));
-		while($row = $res->Fetch())
-		{
-			$arSites[] = $row['ID'];
-		}
-
 		$userSQL = "SELECT USER_ID FROM b_user_counter WHERE SENT='0' GROUP BY USER_ID LIMIT ".intval(CAllUserCounterPage::getPageSizeOption(100));
 		$res = $DB->Query($userSQL, false, "FILE: ".__FILE__."<br> LINE: ".__LINE__);
 
@@ -527,6 +521,13 @@ class CUserCounterPage extends CAllUserCounterPage
 
 		if ($userString <> '')
 		{
+			$arSites = array();
+			$res = CSite::GetList($b = "", $o = "", array("ACTIVE" => "Y"));
+			while($row = $res->Fetch())
+			{
+				$arSites[] = $row['ID'];
+			}
+
 			$strSQL = "
 				SELECT pc.CHANNEL_ID, uc.USER_ID, uc.SITE_ID, uc.CODE, uc.CNT
 				FROM b_user_counter uc

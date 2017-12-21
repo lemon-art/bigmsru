@@ -64,21 +64,26 @@ class CAllPullWatch
 		if (empty(self::$arUpdate) && empty(self::$arInsert))
 			return false;
 
-		if (defined('PULL_USER_ID'))
+		$userId = intval($userId);
+		if (!$userId)
 		{
-			$userId = PULL_USER_ID;
+			if (defined('PULL_USER_ID'))
+			{
+				$userId = PULL_USER_ID;
+			}
+			else if ($GLOBALS['USER'] && $GLOBALS['USER']->GetID() > 0)
+			{
+				$userId = $GLOBALS['USER']->GetId();
+			}
+			else if (intval($_SESSION["SESS_SEARCHER_ID"]) <= 0 && intval($_SESSION["SESS_GUEST_ID"]) > 0 && \CPullOptions::GetGuestStatus())
+			{
+				$userId = intval($_SESSION["SESS_GUEST_ID"])*-1;
+			}
 		}
-		else if ($GLOBALS['USER'] && $GLOBALS['USER']->GetID() > 0)
-		{
-			$userId = $GLOBALS['USER']->GetId();
-		}
-		else if (IsModuleInstalled('statistic') && intval($_SESSION["SESS_SEARCHER_ID"]) <= 0 && intval($_SESSION["SESS_GUEST_ID"]) > 0 && COption::GetOptionString("pull", "guest") == 'Y')
-		{
-			$userId = intval($_SESSION["SESS_GUEST_ID"])*-1;
-		}
-
 		if ($userId === 0)
+		{
 			return false;
+		}
 		
 		$arChannel = CPullChannel::Get($userId);
 		if (!empty(self::$arUpdate))
@@ -183,6 +188,9 @@ class CAllPullWatch
 		$dbRes = $DB->Query($strSql, false, "File: ".__FILE__."<br>Line: ".__LINE__);
 		while ($arRes = $dbRes->Fetch())
 		{
+			if (isset($arMessage['skip_users']) && in_array($arRes['USER_ID'], $arMessage['skip_users']))
+				continue;
+			
 			$channels[$arRes['USER_ID']] = $arRes['CHANNEL_ID'];
 		}
 

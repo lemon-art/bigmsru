@@ -85,6 +85,11 @@ class GroupHelper extends NameHelper
 		return $result;
 	}
 
+	public static function updateFields($gId, $data)
+	{
+		return parent::update($gId, $data);
+	}
+
 	public static function delete($gId)
 	{
 		$result = parent::delete($gId);

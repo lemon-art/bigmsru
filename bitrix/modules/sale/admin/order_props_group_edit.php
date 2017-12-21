@@ -45,6 +45,10 @@ if ($REQUEST_METHOD=="POST" && strlen($Update)>0 && $saleModulePermissions>="W" 
 			else
 				$errorMessage .= GetMessage("SOPGEN_ERROR_SAVING_PROPS_GRP").". ";
 		}
+		else
+		{
+			LocalRedirect("/bitrix/admin/sale_order_props_group_edit.php?ID=$ID&lang=".LANG.GetFilterParams("filter_", false));
+		}
 	}
 
 	if (strlen($errorMessage) <= 0)
@@ -110,7 +114,7 @@ $context->Show();
 
 <?CAdminMessage::ShowMessage($errorMessage);?>
 
-<form method="POST" action="<?echo $APPLICATION->GetCurPage()?>?" name="form1">
+<form method="POST" action="<?=$APPLICATION->GetCurPage()."?ID=".$ID."&lang=".LANGUAGE_ID.GetFilterParams("filter_", false)?>" name="form1">
 <?echo GetFilterHiddens("filter_");?>
 <input type="hidden" name="Update" value="Y">
 <input type="hidden" name="lang" value="<?echo LANG ?>">

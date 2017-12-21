@@ -27,4 +27,6 @@ $MESS["CURRENCY_AGENTS_ACTIVATE"] = "Activate agent";
 $MESS["CURRENCY_AGENTS_DEACTIVATE"] = "Deactivate agent";
 $MESS["CURRENCY_BASE_RATE_AGENT_ABSENT"] = "Attention! Currency-to-base exchange rate calculation agent is missing!";
 $MESS["CURRENCY_AGENTS_CREATE_AGENT"] = "Create agent";
+$MESS["CUR_OPTIONS_BTN_SAVE_TITLE"] = "Save changes";
+$MESS["CUR_OPTIONS_BTN_RESET_TITLE"] = "Undo all unsaved changes";
 ?>

@@ -16,7 +16,7 @@ Loc::loadMessages(__FILE__);
 
 Loader::IncludeModule('conversion');
 
-if ($APPLICATION->GetGroupRight('conversion') < 'W')
+if ($APPLICATION->GetGroupRight('conversion') < 'R')
 	$APPLICATION->AuthForm(Loc::getMessage('ACCESS_DENIED'));
 
 $userOptions = CUserOptions::GetOption('conversion', 'filter', array());
@@ -473,6 +473,12 @@ Bitrix\Conversion\AdminHelpers\renderFilter($filter);
 					// scale
 					scaleConversionElement.innerHTML = topConversionElement.innerHTML = '<?=number_format($conversion, 2)?>%';
 					scaleShiftElement.style.left = getShift(<?=$conversion?>, scale) + '%';
+
+					calcFixSize1.increase();
+					calcFixSize1.decrease();
+					calcFixSize2.increase();
+					calcFixSize2.decrease();
+
 					// funnel
 					var length = funnelData.length, i = 0;
 					for (; i < length; i++)
@@ -485,6 +491,38 @@ Bitrix\Conversion\AdminHelpers\renderFilter($filter);
 			var costRecount = true,
 				averageBillNoMargin = <?=$averageBill?>;
 
+			var calcFixSize1 = new BX.FixFontSize({
+				objList: [
+					{
+						node: topGrossElement,
+						maxFontSize: 45,
+						smallestValue: true
+					},
+					{
+						node: topProfitElement,
+						maxFontSize: 45,
+						smallestValue: true
+					}
+				],
+				onresize: true
+			});
+
+			var calcFixSize2 = new BX.FixFontSize({
+				objList: [
+					{
+						node: topOtherExpenseElement,
+						maxFontSize: 29,
+						smallestValue: true
+					},
+					{
+						node: topAdvertExpenseElement,
+						maxFontSize: 29,
+						smallestValue: true
+					}
+				],
+				onresize: true
+			});
+
 			BX.bind(calcElement, 'keyup', function ()
 			{
 				var advertExpense = advertExpense2Element.value = advertExpense3Element.value = topAdvertExpenseElement.innerHTML = parseFloat(advertExpenseElement.value) || 0,
@@ -493,7 +531,7 @@ Bitrix\Conversion\AdminHelpers\renderFilter($filter);
 						? trafficElement.value = traffic2Element.value = clickPrice ? Math.ceil(advertExpense / clickPrice) : 0
 						: parseFloat(trafficElement.value) || 0,
 					conversion    = parseFloat(conversionElement.value) || 0,
-					quantity      = quantityElement.value = quantity2Element.value = quantity3Element.value = Math.ceil(conversion * traffic / 100),
+					quantity      = quantityElement.value = quantity2Element.value = quantity3Element.value = Math.round(conversion * traffic / 100),
 					// 3
 					averageBill   = parseFloat(averageBillElement.value) || 0,
 					gross         = grossElement.value = topGrossElement.innerHTML = (averageBill * quantity).toFixed(),
@@ -511,6 +549,11 @@ Bitrix\Conversion\AdminHelpers\renderFilter($filter);
 					profit        = topProfitElement.innerHTML = (gross - expense).toFixed();
 
 				costRecount = true;
+
+				calcFixSize1.increase();
+				calcFixSize1.decrease();
+				calcFixSize2.increase();
+				calcFixSize2.decrease();
 
 				// scale
 				scaleConversionElement.innerHTML = topConversionElement.innerHTML = conversion.toFixed(2).substr(0, 5) + '%';
@@ -617,6 +660,7 @@ Bitrix\Conversion\AdminHelpers\renderFilter($filter);
 						= forecastMode
 					);
 			});
+
 		});
 
 	</script>

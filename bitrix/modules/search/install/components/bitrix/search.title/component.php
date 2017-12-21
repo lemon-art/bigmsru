@@ -48,6 +48,26 @@ if(
 
 	for($i = 0; $i < $arParams["NUM_CATEGORIES"]; $i++)
 	{
+		$bCustom = true;
+		if(is_array($arParams["CATEGORY_".$i]))
+		{
+			foreach($arParams["CATEGORY_".$i] as $categoryCode)
+			{
+				if ((strpos($categoryCode, 'custom_') !== 0))
+				{
+					$bCustom = false;
+					break;
+				}
+			}
+		}
+		else
+		{
+			$bCustom = (strpos($arParams["CATEGORY_".$i], 'custom_') === 0);
+		}
+
+		if ($bCustom)
+			continue;
+
 		$category_title = trim($arParams["CATEGORY_".$i."_TITLE"]);
 		if(empty($category_title))
 		{
@@ -246,7 +266,7 @@ if (
 
 	if(!empty($query))
 		$this->IncludeComponentTemplate('ajax');
-	require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/include/epilog_after.php");
+	CMain::FinalActions();
 	die();
 }
 else

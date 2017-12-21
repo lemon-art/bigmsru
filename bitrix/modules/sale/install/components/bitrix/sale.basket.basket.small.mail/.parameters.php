@@ -26,7 +26,7 @@ $arColumns = array(
 	"TYPE" => GetMessage("SBB_BTYPE"),
 	"PRICE_FORMATED" => GetMessage("SBB_BPRICE"),
 	"QUANTITY_FORMATED" => GetMessage("SBB_BQUANTITY"),
-	#"SUM" => GetMessage("SBB_BSUM"),
+	"SUM" => GetMessage("SBB_BSUM"),
 );
 
 if (CModule::IncludeModule("catalog"))
@@ -120,9 +120,9 @@ $arComponentParameters = Array(
 			"TYPE" => "LIST",
 			"MULTIPLE" => "N",
 			"VALUES" => Array(
-				"={#USER_ID#}" => "={#USER_ID#}",
-				"={#ORDER_USER_ID#}" => "={#ORDER_USER_ID#}",
-				"={#ID#}" => "={#ID#}",
+				"{#USER_ID#}" => "={#USER_ID#}",
+				"{#ORDER_USER_ID#}" => "={#ORDER_USER_ID#}",
+				"{#ID#}" => "={#ID#}",
 			),
 			"ADDITIONAL_VALUES" => "Y",
 			"DEFAULT" => Array(

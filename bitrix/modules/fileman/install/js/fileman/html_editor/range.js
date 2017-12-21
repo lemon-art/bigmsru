@@ -9,6 +9,12 @@
  */
 
 (function(global) {
+
+	if(window.rangy)
+	{
+		return;
+	}
+
     var amdSupported = (typeof global.define == "function" && global.define.amd);
 
     var OBJECT = "object", FUNCTION = "function", UNDEFINED = "undefined";

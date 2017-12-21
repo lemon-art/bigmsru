@@ -7,6 +7,16 @@ use Bitrix\B24Connector\Connection;
 
 Loc::loadMessages(__FILE__);
 
+$listParams = array(
+	'FILTER' => array(
+		'TYPE' => 'openline'
+	),
+	'EMPTY_BUTTON' => array(
+		'TITLE' => Loc::getMessage('B24C_CHAT_BUTT_GET_B24'),
+		'URL_METHOD' => '\Bitrix\B24Connector\Connection::getWidgetsConfigUrl'
+	)
+);
+
 $APPLICATION->SetTitle(Loc::getMessage("B24C_CHAT_TITLE"));
 
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
@@ -39,15 +49,7 @@ if(!empty($errorMsgs))
 		$APPLICATION->IncludeComponent(
 			"bitrix:b24connector.button.list",
 			".default",
-			array(
-				'FILTER' => array(
-					'TYPE' => 'openline'
-				),
-				'EMPTY_BUTTON' => array(
-					'TITLE' => Loc::getMessage('B24C_CHAT_BUTT_GET_B24'),
-					'URL' => 'https://'.htmlspecialcharsbx(Connection::getDomain()).'/crm/button/'
-				)
-			),
+			$listParams,
 			false
 		);
 	?> 

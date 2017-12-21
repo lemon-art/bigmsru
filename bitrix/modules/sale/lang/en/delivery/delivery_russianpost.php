@@ -18,4 +18,5 @@ $MESS["SALE_DH_RUSSIANPOST_ERROR_CONNECT"] = "Cannot calculate the delivery cost
 $MESS["SALE_DH_RUSSIANPOST_ERROR_RESPONSE"] = "Cannot calculate the delivery cost: bad server response";
 $MESS["SALE_DH_RUSSIANPOST_ERROR_NOZIP"] = "Cannot calculate the delivery cost: cannot identify zip code";
 $MESS["SALE_DH_RUSSIANPOST_DESCRIPTION_INNER2"] = "<br /><b>Note</b> that the services requires that the order property <b>Use as zip code</b> exists.";
+$MESS["SALE_DH_RUSSIANPOST_MESSAGE"] = "This delivery service handler is outdated and no longer supported. Please use the #A1#new handler#A2#.";
 ?>

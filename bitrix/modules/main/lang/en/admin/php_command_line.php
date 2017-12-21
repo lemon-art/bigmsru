@@ -8,4 +8,6 @@ $MESS["php_cmd_button_clear"] = "Clear";
 $MESS["php_cmd_result"] = "Command Execution Result";
 $MESS["php_cmd_error"] = "Error executing a command.";
 $MESS["php_cmd_text_result"] = "Show command output as text";
+$MESS["php_cmd_exec_time"] = "Execution time:";
+$MESS["php_cmd_note"] = "To change the tab title, start the code with a single line PHP comment: //title: YourTitle";
 ?>

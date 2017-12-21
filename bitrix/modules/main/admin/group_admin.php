@@ -206,7 +206,7 @@ while($arRes = $rsData->NavNext(true, "f_"))
 	}
 
 	if ($f_ID!=2)
-		$row->AddViewField("USERS", "<a href='user_admin.php?lang=".LANGUAGE_ID."&find_group_id[]=".$f_ID."&set_filter=Y' title='".GetMessage("USERS_OF_GROUP")."'>".$f_USERS."</a>");
+		$row->AddViewField("USERS", "<a href='user_admin.php?lang=".LANGUAGE_ID."&GROUPS_ID[]=".$f_ID."&apply_filter=Y' title='".GetMessage("USERS_OF_GROUP")."'>".$f_USERS."</a>");
 
 	$arActions = Array();
 

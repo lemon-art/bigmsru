@@ -1,129 +1,11 @@
 <?
+use Bitrix\Sale\Discount\Index;
 use Bitrix\Sale\Internals;
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/sale/general/discount.php');
 
 class CSaleDiscount extends CAllSaleDiscount
 {
-	public function Add($arFields)
-	{
-		global $DB;
-
-		$boolNewVersion = true;
-		if (!array_key_exists('CONDITIONS', $arFields) && !array_key_exists('ACTIONS', $arFields))
-		{
-			$boolConvert = CSaleDiscount::__ConvertOldFormat('ADD', $arFields);
-			if (!$boolConvert)
-				return false;
-			$boolNewVersion = false;
-		}
-
-		if (!CSaleDiscount::CheckFields("ADD", $arFields))
-			return false;
-
-		if ($boolNewVersion)
-		{
-			$boolConvert = CSaleDiscount::__SetOldFields('ADD', $arFields);
-			if (!$boolConvert)
-				return false;
-		}
-
-		$arInsert = $DB->PrepareInsert("b_sale_discount", $arFields);
-
-		$strSql = "insert into b_sale_discount(".$arInsert[0].") values(".$arInsert[1].")";
-		$DB->Query($strSql, false, "File: ".__FILE__."<br>Line: ".__LINE__);
-
-		$ID = (int)$DB->LastID();
-
-		if ($ID > 0)
-		{
-			Internals\DiscountGroupTable::updateByDiscount($ID, $arFields['USER_GROUPS'], $arFields['ACTIVE'], true);
-			if (isset($arFields['HANDLERS']))
-				self::updateDiscountHandlers($ID, $arFields['HANDLERS'], false);
-			if (isset($arFields['ENTITIES']))
-				Internals\DiscountEntitiesTable::updateByDiscount($ID, $arFields['ENTITIES'], false);
-			if(isset($arFields['ACTIONS']) && is_string($arFields['ACTIONS']))
-			{
-				$giftManager = \Bitrix\Sale\Discount\Gift\Manager::getInstance();
-				if($giftManager->isContainGiftAction($arFields))
-				{
-					if(!$giftManager->existsDiscountsWithGift())
-					{
-						$giftManager->enableExistenceDiscountsWithGift();
-					}
-					\Bitrix\Sale\Discount\Gift\RelatedDataTable::fillByDiscount($arFields + array('ID' => $ID));
-				}
-			}
-		}
-
-		return $ID;
-	}
-
-	public function Update($ID, $arFields)
-	{
-		global $DB;
-
-		$ID = (int)$ID;
-		if ($ID <= 0)
-			return false;
-
-		$boolNewVersion = true;
-		$arFields['ID'] = $ID;
-		if (!array_key_exists('CONDITIONS', $arFields) && !array_key_exists('ACTIONS', $arFields))
-		{
-			$boolConvert = CSaleDiscount::__ConvertOldFormat('UPDATE', $arFields);
-			if (!$boolConvert)
-				return false;
-			$boolNewVersion = false;
-		}
-
-		if (!CSaleDiscount::CheckFields("UPDATE", $arFields))
-			return false;
-
-		if ($boolNewVersion)
-		{
-			$boolConvert = CSaleDiscount::__SetOldFields('UPDATE', $arFields);
-			if (!$boolConvert)
-				return false;
-		}
-
-		$strUpdate = $DB->PrepareUpdate("b_sale_discount", $arFields);
-		if (!empty($strUpdate))
-		{
-			$strSql = "update b_sale_discount set ".$strUpdate." where ID = ".$ID;
-			$DB->Query($strSql, false, "File: ".__FILE__."<br>Line: ".__LINE__);
-		}
-
-		if (isset($arFields['USER_GROUPS']))
-		{
-			Internals\DiscountGroupTable::updateByDiscount($ID, $arFields['USER_GROUPS'], (isset($arFields['ACTIVE']) ? $arFields['ACTIVE'] : ''), true);
-		}
-		elseif (isset($arFields['ACTIVE']))
-		{
-			Internals\DiscountGroupTable::changeActiveByDiscount($ID, $arFields['ACTIVE']);
-		}
-		if (isset($arFields['HANDLERS']))
-			self::updateDiscountHandlers($ID, $arFields['HANDLERS'], true);
-		if (isset($arFields['ENTITIES']))
-			Internals\DiscountEntitiesTable::updateByDiscount($ID, $arFields['ENTITIES'], true);
-		if(isset($arFields['ACTIONS']) && is_string($arFields['ACTIONS']))
-		{
-			\Bitrix\Sale\Discount\Gift\RelatedDataTable::deleteByDiscount($ID);
-
-			$giftManager = \Bitrix\Sale\Discount\Gift\Manager::getInstance();
-			if($giftManager->isContainGiftAction($arFields))
-			{
-				if(!$giftManager->existsDiscountsWithGift())
-				{
-					$giftManager->enableExistenceDiscountsWithGift();
-				}
-				\Bitrix\Sale\Discount\Gift\RelatedDataTable::fillByDiscount($arFields + array('ID' => $ID));
-			}
-		}
-
-		return $ID;
-	}
-
 	public function GetList($arOrder = array(), $arFilter = array(), $arGroupBy = false, $arNavStartParams = false, $arSelectFields = array())
 	{
 		global $DB;
@@ -171,19 +53,21 @@ class CSaleDiscount extends CAllSaleDiscount
 			"CREATED_BY" => array("FIELD" => "D.CREATED_BY", "TYPE" => "int"),
 			"PRIORITY" => array("FIELD" => "D.PRIORITY", "TYPE" => "int"),
 			"LAST_DISCOUNT" => array("FIELD" => "D.LAST_DISCOUNT", "TYPE" => "char"),
+			"LAST_LEVEL_DISCOUNT" => array("FIELD" => "D.LAST_LEVEL_DISCOUNT", "TYPE" => "char"),
 			"VERSION" => array("FIELD" => "D.VERSION", "TYPE" => "int"),
 			"CONDITIONS" => array("FIELD" => "D.CONDITIONS", "TYPE" => "string"),
 			"UNPACK" => array("FIELD" => "D.UNPACK", "TYPE" => "string"),
 			"APPLICATION" => array("FIELD" => "D.APPLICATION", "TYPE" => "string"),
 			"ACTIONS" => array("FIELD" => "D.ACTIONS", "TYPE" => "string"),
+			"PRESET_ID" => array("FIELD" => "D.PRESET_ID", "TYPE" => "string"),
 			"USE_COUPONS" => array("FIELD" => "D.USE_COUPONS", "TYPE" => "char"),
 			"USER_GROUPS" => array("FIELD" => "DG.GROUP_ID", "TYPE" => "int","FROM" => "LEFT JOIN b_sale_discount_group DG ON (D.ID = DG.DISCOUNT_ID)")
 		);
 
 		if (empty($arSelectFields))
-			$arSelectFields = array('ID','LID','SITE_ID','PRICE_FROM','PRICE_TO','CURRENCY','DISCOUNT_VALUE','DISCOUNT_TYPE','ACTIVE','SORT','ACTIVE_FROM','ACTIVE_TO','PRIORITY','LAST_DISCOUNT','VERSION','NAME');
+			$arSelectFields = array('ID','LID','SITE_ID','PRICE_FROM','PRICE_TO','CURRENCY','DISCOUNT_VALUE','DISCOUNT_TYPE','ACTIVE','SORT','ACTIVE_FROM','ACTIVE_TO','PRIORITY','LAST_DISCOUNT', 'LAST_LEVEL_DISCOUNT','VERSION','NAME');
 		elseif (is_array($arSelectFields) && in_array('*',$arSelectFields))
-			$arSelectFields = array('ID','LID','SITE_ID','PRICE_FROM','PRICE_TO','CURRENCY','DISCOUNT_VALUE','DISCOUNT_TYPE','ACTIVE','SORT','ACTIVE_FROM','ACTIVE_TO','PRIORITY','LAST_DISCOUNT','VERSION','NAME');
+			$arSelectFields = array('ID','LID','SITE_ID','PRICE_FROM','PRICE_TO','CURRENCY','DISCOUNT_VALUE','DISCOUNT_TYPE','ACTIVE','SORT','ACTIVE_FROM','ACTIVE_TO','PRIORITY','LAST_DISCOUNT', 'LAST_LEVEL_DISCOUNT','VERSION','NAME');
 
 		$arSqls = CSaleOrder::PrepareSql($arFields, $arOrder, $arFilter, $arGroupBy, $arSelectFields);
 
@@ -333,4 +217,3 @@ class CSaleDiscount extends CAllSaleDiscount
 		return $dbRes;
 	}
 }
-?>

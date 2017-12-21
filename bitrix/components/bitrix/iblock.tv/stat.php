@@ -31,5 +31,4 @@ if(
 		$_SESSION["player_files"][$_REQUEST["id"]]["WAS_SHOW_COUNTER_EVENT"] = true;
 	}
 }
-require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/include/epilog_after.php");
-?>
+CMain::FinalActions();

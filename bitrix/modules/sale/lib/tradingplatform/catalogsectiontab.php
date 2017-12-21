@@ -128,7 +128,7 @@ class CatalogSectionTab
 				$body = $handler->showTabSection($divName, $arArgs, $bVarsFromForm);
 
 				if(strlen($body) <= 0)
-					$body = '<tr><td colspan="2">'.Loc::getMessage('SALE_TRADING_PLATFORMS_NOT_ACTIVE').'</td></tr>';
+					$body = '<tr><td colspan="2">'.Loc::getMessage('SALE_TRADING_PLATFORMS_NOT_ACTIVE').' ('.$siteId = $arArgs["IBLOCK"]["LID"].')</td></tr>';
 
 				$result .= $header.$body;
 			}

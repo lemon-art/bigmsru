@@ -379,6 +379,7 @@ while($arType = $rsTypes->Fetch())
 $bHasXRight = false;
 $bHasWRight = false;
 $bHasSRight = false;
+$bHasERight = false;
 
 if ($bUserIsAdmin)
 {
@@ -401,6 +402,8 @@ if ($bUserIsAdmin)
 		$bHasWRight = true;
 		$arTypes[$arIBlock["IBLOCK_TYPE_ID"]]["IBLOCKS"]["S"][] = $arItem;
 		$bHasSRight = true;
+		$arTypes[$arIBlock["IBLOCK_TYPE_ID"]]["IBLOCKS"]["E"][] = $arItem;
+		$bHasERight = true;
 	}
 }
 else
@@ -449,6 +452,22 @@ else
 		);
 		$bHasSRight = true;
 	}
+
+	$rsIBlocks = CIBlock::GetList(array("SORT"=>"asc", "NAME"=>"ASC"), array("OPERATION" => "iblock_export"));
+	while($arIBlock = $rsIBlocks->Fetch())
+	{
+		if(!$arIBlock["ELEMENTS_NAME"])
+			$arIBlock["ELEMENTS_NAME"] = $arTypes[$arIBlock["IBLOCK_TYPE_ID"]]["ELEMENT_NAME"]?: GetMessage("IBLOCK_MENU_ELEMENTS");
+
+		$arTypes[$arIBlock["IBLOCK_TYPE_ID"]]["IBLOCKS"]["E"][] = array(
+			"ID" => $arIBlock["ID"],
+			"NAME" => $arIBlock["NAME"],
+			"NAME~" => htmlspecialcharsex($arIBlock["NAME"]),
+			"ELEMENTS_NAME" => $arIBlock["ELEMENTS_NAME"],
+			"URL_PART" => "type=".$arIBlock["IBLOCK_TYPE_ID"]."&lang=".LANGUAGE_ID."&IBLOCK_ID=".$arIBlock["ID"],
+		);
+		$bHasERight = true;
+	}
 }
 
 //Build menu items
@@ -476,10 +495,10 @@ foreach($arTypes as $type_id => $arType)
 	}
 }
 
-if($bUserIsAdmin || $bHasWRight || $bHasXRight || $bHasSRight)
+if($bUserIsAdmin || $bHasWRight || $bHasXRight || $bHasSRight || $bHasERight)
 {
 	$arItems = array();
-	if($bHasXRight)
+	if($bHasXRight || $bHasERight)
 	{
 		$arItems[] = array(
 			"text" => GetMessage("IBLOCK_MENU_EXPORT"),

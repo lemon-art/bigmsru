@@ -1,5 +1,13 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
-
+/**
+ * @var array $arParams
+ * @var array $arResult
+ * @var string $strErrorMessage
+ * @param CBitrixComponent $component
+ * @param CBitrixComponentTemplate $this
+ * @global CMain $APPLICATION
+ */
+$request = \Bitrix\Main\Context::getCurrent()->getRequest();
 if ($arParams['AJAX_POST']=='Y' && ($_REQUEST["save_product_review"] == "Y"))
 {
 	$response = ob_get_clean();
@@ -15,7 +23,7 @@ if ($arParams['AJAX_POST']=='Y' && ($_REQUEST["save_product_review"] == "Y"))
 
 		if (
 			(
-				(isset($_REQUEST['pageNumber']) && intval($_REQUEST['pageNumber']) != $arResult['PAGE_NUMBER']) || 
+				(isset($_REQUEST['pageNumber']) && intval($_REQUEST['pageNumber']) != $arResult['PAGE_NUMBER']) ||
 				(isset($_REQUEST['pageCount']) && intval($_REQUEST['pageCount']) != $arResult['PAGE_COUNT'])
 			) && 
 			$result > 0)
@@ -97,8 +105,20 @@ if ($arParams['AJAX_POST']=='Y' && ($_REQUEST["save_product_review"] == "Y"))
 	}
 
 	$APPLICATION->RestartBuffer();
-	$res = CUtil::PhpToJSObject($JSResult);
-	echo "<script>top.SetReviewsAjaxPostTmp(".$res.");</script>";
+	while (ob_end_clean());
+
+	if ($request->getPost("dataType") == "json")
+	{
+		header('Content-Type:application/json; charset=UTF-8');
+		echo \Bitrix\Main\Web\Json::encode($JSResult);
+
+	}
+	else
+	{
+		echo "<script>top.SetReviewsAjaxPostTmp(".CUtil::PhpToJSObject($JSResult).");</script>";
+	}
+
+	\CMain::FinalActions();
 	die();
 }
 ?>

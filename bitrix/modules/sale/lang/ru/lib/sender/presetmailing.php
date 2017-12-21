@@ -147,7 +147,7 @@ $MESS["PRESET_DONT_AUTH_LETTER_2_SUBJECT"] = "А я предупреждал..."
 $MESS["PRESET_DONT_AUTH_LETTER_2_MESSAGE"] = "Началось!
 <br>Вы еще можете спасти мою семью! Современные инженеры творят чудеса, они легко заменят несколько утерянных запчастей, но скоро может быть слишком поздно!
 <br>Не заставляйте этих мучителей ждать, возвращайтесь прямо сейчас!
-<br><br><img src=\"/bitrix/images/sale/sender/bolt.png\">
+<br><br><img src=\"/bitrix/images/sale/sale/sender/bolt.png\">
 <br><br>С надеждой и верой,
 <br>Печальный робот ХХ";
 $MESS["PRESET_DONT_AUTH_LETTER_3_SUBJECT"] = "Кошелек или жизнь?";
@@ -160,6 +160,6 @@ $MESS["PRESET_DONT_AUTH_LETTER_3_MESSAGE"] = "Я очень рисковал и 
 $MESS["PRESET_DONT_AUTH_LETTER_4_SUBJECT"] = "Что ж вы наделали...";
 $MESS["PRESET_DONT_AUTH_LETTER_4_MESSAGE"] = "Всё.
 <br>А я до последнего надеялся и верил.
-<br><br><img src=\"/bitrix/images/sale/sender/bolts.png\">
+<br><br><img src=\"/bitrix/images/sale/sale/sender/bolts.png\">
 <br><br>Отчаявшийся робот ХХ.";
 ?>

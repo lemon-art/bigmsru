@@ -4,9 +4,14 @@ use \Bitrix\Main\Localization\Loc;
 
 CJSCore::Init(array('ajax', 'popup'));
 
+$templateFolder = $this->getFolder();
+$this->addExternalJs($templateFolder."/utils.js");
+
 /**
  * Main buttons container required attrs
  * @property {string} id Container id
+ * @var $arResult
+ * @var $arParams
  *
  */
 
@@ -76,7 +81,7 @@ CJSCore::Init(array('ajax', 'popup'));
 				<? endif; ?>
 			</div><!--main-buttons-item-->
 		<? endforeach; ?>
-		<div class="main-buttons-item <?=$arResult["MORE_BUTTON"]["CLASS"]?> main-buttons-item-more" id="<?=$arResult["ID"]?>_more_button">
+		<div class="main-buttons-item <?=$arResult["MORE_BUTTON"]["CLASS"]?> main-buttons-item-more" id="<?=$arResult["ID"]?>_more_button"<?=$arParams["DISABLE_SETTINGS"] ? " style=\"display: none;\"" : ""?>>
 			<? if (!$arResult["MORE_BUTTON"]["HTML"]) : ?>
 				<a href="#" class="main-buttons-item-link<?=$arParams["CLASS_ITEM_LINK"] ? " ".$arParams["CLASS_ITEM_LINK"] : ""?>">
 					<span class="main-buttons-item-icon<?=$arParams["CLASS_ITEM_ICON"] ? " ".$arParams["CLASS_ITEM_ICON"] : ""?>"></span><?
@@ -88,47 +93,13 @@ CJSCore::Init(array('ajax', 'popup'));
 			<? endif; ?>
 		</div><!--main-buttons-item-->
 	</div><!--main-buttons-inner-container-->
+	<iframe height="100%" width="100%" id="maininterfacebuttons-tmp-frame-<?=$arResult["ID"]?>" name="maininterfacebuttonstmpframe-<?=$arResult["ID"]?>" style="position: absolute; z-index: -1; opacity: 0;"></iframe>
 </div><!--main-buttons-->
 
 <script>
-	/**
-	 * First arg. is params object
-	 * @property {string} containerId @required
-	 * @property {object} classes
-	 * @property {string} classes.item Class for list item
-	 * @property {string} classes.itemSublink Class for sublink (ex. Add link)
-	 * @property {string} classes.itemText Class for item text and submenu item text
-	 * @property {string} classes.itemCounter Class for list item counter and submenu item counter
-	 * @property {string} classes.itemIcon Class for list item icon and submenu item icon
-	 * @property {string} classes.itemMore Class for more button
-	 * @property {string} classes.itemOver Class for hovered item
-	 * @property {string} classes.itemActive Class for active item
-	 * @property {string} classes.itemDisabled Class for disabled elements
-	 * @property {string} classes.itemLocked Class for locked item. Added for list and submenu item
-	 * @property {string} classes.onDrag Class added for container on dragstart event and removed on drag end event
-	 * @property {string} classes.dropzone Class for dropzone in submenu
-	 * @property {string} classes.seporator Class for submenu seporator before diabled items
-	 * @property {string} classes.submenuItem Class for submenu item
-	 * @property {string} classes.submenu Class for submenu container
-	 * @property {string} classes.secret Class for hidden alias items (set display: none; for items)
-	 * @property {object} messages Messages object. Contains localization strings
-	 * @property {string} messages.MIB_DROPZONE_TEXT Dropzone text
-	 * @property {string} messages.MIB_LICENSE_BUY_BUTTON License window Buy button text
-	 * @property {string} messages.MIB_LICENSE_TRIAL_BUTTON License window Trial button text
-	 * @property {string} messages.MIB_LICENSE_WINDOW_HEADER_TEXT License window header text
-	 * @property {string} messages.MIB_LICENSE_WINDOW_TEXT License window content text
-	 * @property {string} messaget.MIB_LICENSE_WINDOW_TRIAL_SUCCESS_TEXT Trial success text
-	 * @property {string} licenseWindow Settings for license window
-	 * @property {string} licenseWindow.isFullDemoExists Y|N
-	 * @property {string} licenseWindow.hostname Hostname for license window ajax calls
-	 * @property {string} licenseWindow.ajaxUrl Ajax handler url
-	 * @property {string} licenseWindow.licenseAllPath
-	 * @property {string} licenseWindow.licenseDemoPath
-	 * @property {string} licenseWindow.featureGroupName
-	 * @property {string} licenseWindow.ajaxActionsUrl
-	 */
 	BX.Main.interfaceButtonsManager.init({
 		containerId: '<?=$arResult["ID"]?>',
+		disableSettings: '<?=CUtil::PhpToJSObject($arParams["DISABLE_SETTINGS"])?>',
 		classes: {
 			itemMore: 'main-buttons-item-more',
 			itemActive: '<?=$arParams["CLASS_ITEM_ACTIVE"]?>'

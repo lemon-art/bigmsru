@@ -85,6 +85,8 @@ $MESS["IBEL_E_SEO_FOR_ELEMENTS_DETAIL_PICTURE"] = "Настройки для д�
 $MESS["IBEL_E_SEO_CLEAR_VALUES"] = "Очистить кеш вычисленных значений";
 $MESS["IBEL_E_SEO_FOR_ELEMENTS"] = "Настройки для элементов";
 $MESS["IBEL_E_SEO_MANAGEMENT"] = "Управление";
+$MESS["IBLOCK_FIELD_CREATED"] = "Создан";
+$MESS["IBLOCK_FIELD_LAST_UPDATED"] = "Изменен";
 $MESS["IBLOCK_FIELD_ACTIVE"] = "Активность";
 $MESS["IBLOCK_FIELD_ACTIVE_PERIOD_FROM"] = "Начало активности";
 $MESS["IBLOCK_FIELD_ACTIVE_PERIOD_TO"] = "Окончание активности";
@@ -100,4 +102,5 @@ $MESS["IBLOCK_UPPER_LEVEL"] = "Верхний уровень";
 $MESS["IBLOCK_FIELD_STATUS"] = "Статус";
 $MESS["IBEL_E_MAIN_IBLOCK_SECTION_ID"] = "Основной раздел";
 $MESS["IBLOCK_LINKED_ELEMENT_TITLE"] = "Перейти в административный раздел";
+$MESS["IBLOCK_FIELD_HINT_XML_ID"] = "Для уже существующих элементов обязателен. При создании можно не указывать. В этом случае после создания внешний код будет содержать ID элемента";
 ?>

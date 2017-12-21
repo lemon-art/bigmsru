@@ -64,6 +64,7 @@ class Mobile
 				$this->setDeviceHeight($_COOKIE["MOBILE_RESOLUTION_HEIGHT"] / 2);
 			}
 		}
+
 		//detecting OS
 		if (array_key_exists("MOBILE_DEVICE", $_COOKIE))
 		{
@@ -101,7 +102,16 @@ class Mobile
 		{
 			self::$apiVersion = intval($_REQUEST["api_version"]);
 		}
+		else
+		{
+			$userAgent = \Bitrix\Main\Context::getCurrent()->getServer()->get("HTTP_USER_AGENT");
+			preg_match("/(?<=BitrixMobile\/Version=).*\d/i",$userAgent, $pregMatch);
 
+			if(count($pregMatch) == 1)
+			{
+				self::$apiVersion = $pregMatch[0];
+			}
+		}
 	}
 
 	/**
@@ -207,7 +217,7 @@ class Mobile
 		global $APPLICATION, $USER;
 
 		\CJSCore::Init();
-
+		\CJSCore::Init("db");
 		$jsVarsFormat = <<<JSCODE
 		<script type="text/javascript">
 			(window.BX||top.BX).message({ 'USER_ID': '%s'});
@@ -240,22 +250,26 @@ JSCODE;
 
 			$APPLICATION->AddHeadString($androidJS, false, true);
 		}
-
-		if (self::getInstance()->getBXScriptSupported())
+		$userAgent = \Bitrix\Main\Context::getCurrent()->getServer()->get("HTTP_USER_AGENT");
+		if(strpos($userAgent, "WKWebView/BitrixMobile") === false)
 		{
-			/**
-			 * If the application tells us bxscript-feature is available
-			 * it means that device can load cordova-scripts (including plugins) itself.
-			 */
-			$pgJsFile = "/bitrix/js/mobileapp/__deviceload__/cordova.js";
-			$APPLICATION->AddHeadString("<script type=\"text/javascript\" src=\"" . $pgJsFile . "\"></script>", false, true);
+			if (self::getInstance()->getBXScriptSupported())
+			{
+				/**
+				 * If the application tells us bxscript-feature is available
+				 * it means that device can load cordova-scripts (including plugins) itself.
+				 */
+				$pgJsFile = "/bitrix/js/mobileapp/__deviceload__/cordova.js?mod=1";
+				$APPLICATION->AddHeadString("<script type=\"text/javascript\" src=\"" . $pgJsFile . "\"></script>", false, true);
 
+			}
+			else
+			{
+				$pgJsFile = "/bitrix/js/mobileapp/" . self::$platform . "-cordova-" . self::$pgVersion . ".js";
+				$APPLICATION->AddHeadString("<script type=\"text/javascript\" src=\"" . \CUtil::GetAdditionalFileURL($pgJsFile) . "\"></script>", false, true);
+			}
 		}
-		else
-		{
-			$pgJsFile = "/bitrix/js/mobileapp/" . self::$platform . "-cordova-" . self::$pgVersion . ".js";
-			$APPLICATION->AddHeadString("<script type=\"text/javascript\" src=\"" . \CUtil::GetAdditionalFileURL($pgJsFile) . "\"></script>", false, true);
-		}
+
 
 		$APPLICATION->AddHeadString("<script type=\"text/javascript\" src=\"" . \CUtil::GetAdditionalFileURL("/bitrix/js/mobileapp/bitrix_mobile.js") . "\"></script>", false, true);
 		$APPLICATION->AddHeadString("<script type=\"text/javascript\" src=\"" . \CUtil::GetAdditionalFileURL("/bitrix/js/mobileapp/mobile_lib.js") . "\"></script>", false, true);
@@ -332,18 +346,16 @@ JSCODE;
 			$contentAttributes[] = "width=" . ($width / $this->getIniscale());
 		}
 
-
 		if (toUpper($this->getPlatform()) == "ANDROID")
 		{
 			if (!$this->getWidth())
 			{
 				$contentAttributes[] = "width=device-width";
 			}
-			$contentAttributes[] = "target-densitydpi=" . $this->getTargetDpi();
 		}
 
-
 		$contentAttributes[] = "user-scalable=" . $this->getUserScalable();
+		$contentAttributes[] = "viewport-fit=cover";
 
 		return str_replace("#content_value#", implode(", ", $contentAttributes), $viewPortMeta);
 	}
@@ -383,9 +395,6 @@ JSCODE;
 		}
 		$viewPortMeta = "<meta id=\"bx_mobile_viewport\" name=\"viewport\" content=\"#content_value#\">";
 		$contentAttributes = Array(
-			"initial-scale=" . $this->scale,
-			"maximum-scale=" . $this->scale,
-			"minimum-scale=" . $this->scale,
 			"width=" . ($width / $this->scale),
 			"user-scalable=no"
 		);

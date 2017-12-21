@@ -566,6 +566,10 @@
 			var _this = this;
 			this.editor.skipPasteHandler = true;
 			this.editor.skipPasteControl = true;
+
+			if (this.editor.iframeView.pasteHandlerTimeout)
+				this.editor.iframeView.pasteHandlerTimeout = clearTimeout(this.editor.iframeView.pasteHandlerTimeout);
+
 			setTimeout(function()
 			{
 				var dd = _this.editor.GetIframeElement(node.id);
@@ -578,6 +582,7 @@
 					}
 				}
 				_this.editor.synchro.FullSyncFromIframe();
+
 				_this.editor.skipPasteHandler = false;
 				_this.editor.skipPasteControl = false;
 			}, 20);
@@ -1744,7 +1749,7 @@
 			};
 		},
 
-		Show: function(e, target)
+		Show: function(e, target, collapsedSelection)
 		{
 			this.savedRange = this.editor.selection.GetBookmark();
 			this.Hide();
@@ -1863,7 +1868,7 @@
 
 			if (arItems.length == 0 && (!this.editor.bbCode || this.items['DEFAULT'].bbMode))
 			{
-				if (!this.savedRange || !this.savedRange.collapsed)
+				if (!this.savedRange || (!this.savedRange.collapsed && !collapsedSelection))
 				{
 					for (j = 0; j < this.items['DEFAULT'].length; j++)
 					{
@@ -3721,6 +3726,7 @@
 			var
 				isOpened = this.isOpened,
 				_this = this;
+
 			this.savedRange = this.editor.selection.GetBookmark();
 			this.isOpened = true;
 			this.lastPreviewMode = false;
@@ -3731,15 +3737,19 @@
 			{
 				var skipPasteHandler = _this.editor.skipPasteHandler;
 				_this.editor.skipPasteHandler = true;
-				_this.PreviewContent({mode: 'rich', doTimeout: false});
+				_this.PreviewContent({mode: 'rich', doTimeout: false, skipColors: true});
 				var richContent = _this.editor.iframeView.GetValue();
 				// Clear images before comparision
 				richContent = richContent.replace(/<img((?:\s|\S)*?)>/ig, '');
+				richContent = richContent.replace(/id="(\s|\S)*?"/ig, '');
+				richContent = richContent.replace(/\s+/ig, ' ');
 
 				_this.PreviewContent({mode: 'text', doTimeout: false});
 				var textContent = _this.editor.iframeView.GetValue();
 				// Clear images before comparision
 				textContent = textContent.replace(/<img((?:\s|\S)*?)>/ig, '');
+				textContent = textContent.replace(/id="(\s|\S)*?"/ig, '');
+				textContent = textContent.replace(/\s+/ig, ' ');
 
 				if (richContent != textContent)
 				{
@@ -3894,7 +3904,7 @@
 
 					if (params.mode == 'rich')
 					{
-						this.editor.config.pasteSetColors = false;
+						this.editor.config.pasteSetColors = !!params.skipColors;
 						this.editor.config.pasteSetBorders = false;
 						this.editor.config.pasteSetDecor = false;
 					}

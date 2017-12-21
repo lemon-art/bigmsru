@@ -118,7 +118,7 @@ class CWizardSolPanel
 			$arMenu = Array(
 				Array(		
 					"ACTION" => "jsUtils.Redirect([], '".CUtil::JSEscape(SITE_DIR)."?add_new_site_sol=sol&".bitrix_sessid_get()."')",
-					"TEXT" => "<b>".GetMessage("SOL_BUTTON_TEST_TEXT", Array("#BR#" => " "))."</b>",
+					"HTML" => "<b>".GetMessage("SOL_BUTTON_TEST_TEXT", Array("#BR#" => " "))."</b>",
 					"TITLE" => GetMessage("SOL_BUTTON_TEST_TITLE"),
 				),
 			);

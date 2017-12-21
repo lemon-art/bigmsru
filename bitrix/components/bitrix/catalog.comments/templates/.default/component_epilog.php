@@ -14,6 +14,7 @@ if (isset($templateData['BLOG_USE']) && $templateData['BLOG_USE'] == 'Y')
 {
 	if ($ajaxMode)
 	{
+		$APPLICATION->ShowAjaxHead();
 		$arBlogCommentParams = array(
 			'SEO_USER' => 'N',
 			'ID' => $arResult['BLOG_DATA']['BLOG_POST_ID'],
@@ -34,8 +35,16 @@ if (isset($templateData['BLOG_USE']) && $templateData['BLOG_USE'] == 'Y')
 			"PATH_TO_POST" => $arResult["URL_TO_COMMENT"],
 			"IBLOCK_ID" => $templateData['BLOG']['AJAX_PARAMS']['IBLOCK_ID'],
 			"ELEMENT_ID" => $templateData['BLOG']['AJAX_PARAMS']['ELEMENT_ID'],
-			"NO_URL_IN_COMMENTS" => "L"
+			"NO_URL_IN_COMMENTS" => "L",
 		);
+		if(isset($arParams["USER_CONSENT"]))
+			$arBlogCommentParams["USER_CONSENT"] = $arParams["USER_CONSENT"];
+		if(isset($arParams["USER_CONSENT_ID"]))
+			$arBlogCommentParams["USER_CONSENT_ID"] = $arParams["USER_CONSENT_ID"];
+		if(isset($arParams["USER_CONSENT_IS_CHECKED"]))
+			$arBlogCommentParams["USER_CONSENT_IS_CHECKED"] = $arParams["USER_CONSENT_IS_CHECKED"];
+		if(isset($arParams["USER_CONSENT_IS_LOADED"]))
+			$arBlogCommentParams["USER_CONSENT_IS_LOADED"] = $arParams["USER_CONSENT_IS_LOADED"];
 		$APPLICATION->IncludeComponent(
 			'bitrix:blog.post.comment',
 			'adapt',

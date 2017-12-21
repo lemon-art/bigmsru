@@ -202,6 +202,7 @@ if (!empty($arResult['ITEMS']))
 			$arNewOffers = array();
 			$boolSKUDisplayProperties = false;
 			$arItem['OFFERS_PROP'] = false;
+			$arItem['SKU_TREE_VALUES'] = array();
 
 			foreach ($arItem['OFFERS'] as $keyOffer => $arOffer)
 			{
@@ -284,26 +285,36 @@ if (!empty($arResult['ITEMS']))
 			$arUsedFields = array();
 			$arSortFields = array();
 
-			foreach ($arSKUPropIDs as $propkey => $strOneCode)
+			$matrixKeys = array_keys($arMatrix);
+			foreach ($arSKUPropIDs as $propkey => $propCode)
 			{
-				$boolExist = $arMatrixFields[$strOneCode];
-				foreach ($arMatrix as $keyOffer => $arRow)
+				$boolExist = $arMatrixFields[$propCode];
+				foreach ($matrixKeys as $keyOffer)
 				{
 					if ($boolExist)
 					{
 						if (!isset($arItem['OFFERS'][$keyOffer]['TREE']))
 							$arItem['OFFERS'][$keyOffer]['TREE'] = array();
-						$arItem['OFFERS'][$keyOffer]['TREE']['PROP_' . $arSKUPropList[$strOneCode]['ID']] = $arMatrix[$keyOffer][$strOneCode]['VALUE'];
-						$arItem['OFFERS'][$keyOffer]['SKU_SORT_' . $strOneCode] = $arMatrix[$keyOffer][$strOneCode]['SORT'];
-						$arUsedFields[$strOneCode] = true;
-						$arSortFields['SKU_SORT_' . $strOneCode] = SORT_NUMERIC;
+						$propId = $arSKUPropList[$propCode]['ID'];
+						$value = $arMatrix[$keyOffer][$propCode]['VALUE'];
+						if (!isset($arItem['SKU_TREE_VALUES'][$propId]))
+							$arItem['SKU_TREE_VALUES'][$propId] = array();
+						$arItem['SKU_TREE_VALUES'][$propId][$value] = true;
+						$arItem['OFFERS'][$keyOffer]['TREE']['PROP_'.$propId] = $value;
+						$arItem['OFFERS'][$keyOffer]['SKU_SORT_'.$propCode] = $arMatrix[$keyOffer][$propCode]['SORT'];
+						$arUsedFields[$propCode] = true;
+						$arSortFields['SKU_SORT_'.$propCode] = SORT_NUMERIC;
+						unset($value, $propId);
 					}
 					else
 					{
-						unset($arMatrix[$keyOffer][$strOneCode]);
+						unset($arMatrix[$keyOffer][$propCode]);
 					}
 				}
+				unset($keyOffer);
 			}
+			unset($propkey, $propCode);
+			unset($matrixKeys);
 			$arItem['OFFERS_PROP'] = $arUsedFields;
 
 			\Bitrix\Main\Type\Collection::sortByColumn($arItem['OFFERS'], $arSortFields);

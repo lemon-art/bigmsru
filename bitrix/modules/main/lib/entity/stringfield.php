@@ -67,4 +67,9 @@ class StringField extends ScalarField
 	{
 		return $this->size;
 	}
+
+	public function convertValueToDb($value)
+	{
+		return $this->getConnection()->getSqlHelper()->convertToDbString($value);
+	}
 }

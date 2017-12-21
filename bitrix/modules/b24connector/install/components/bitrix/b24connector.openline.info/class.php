@@ -75,6 +75,10 @@ class CB24ConnectorOpenlineInfoComponent extends \CBitrixComponent
 		{
 			$this->data['HASH'] = $cookieValue;
 		}
+		else if ($_SESSION['LIVECHAT_HASH'])
+		{
+			$this->data['HASH'] = $_SESSION['LIVECHAT_HASH'];
+		}
 		else
 		{
 			require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/update_client.php");
@@ -82,17 +86,20 @@ class CB24ConnectorOpenlineInfoComponent extends \CBitrixComponent
 			
 			if ($USER->GetID() > 0)
 			{
-				$this->data['HASH'] = md5($USER->GetID().$licence);
+				$this->data['HASH'] = md5('user'.$USER->GetID().$licence);
 			}
 			else if (\Bitrix\Main\ModuleManager::isModuleInstalled('statistic') && intval($_SESSION["SESS_SEARCHER_ID"]) <= 0 && intval($_SESSION["SESS_GUEST_ID"]) > 0)
 			{
-				$this->data['HASH'] = md5($_SESSION["SESS_GUEST_ID"].$licence);
+				$this->data['HASH'] = md5('stat_guest'.$_SESSION["SESS_GUEST_ID"].$licence);
 			}
 			else
 			{
-				$this->data['HASH'] = md5(\bitrix_sessid().$licence);
+				$this->data['HASH'] = md5('guest'.time().\bitrix_sessid().$licence);
 			}
 		}
+		
+		$_SESSION['LIVECHAT_HASH'] = $this->data['HASH'];
+		setcookie('LIVECHAT_HASH', $this->data['HASH'], time() + 31536000, '/');
 		
 		if ($USER->GetID() > 0)
 		{

@@ -1,18 +1,35 @@
 <?
+
+/**
+ * @var $arParams
+ * @var $arResult
+ * @var $component
+ * @global $APPLICATION
+ */
+
 	use Bitrix\Main\Localization\Loc;
 	use Bitrix\Main\UI\Filter\Type;
 	use Bitrix\Main\UI\Filter\DateType;
+	use Bitrix\Main\UI\Filter\NumberType;
 
 	if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true)
 	{
 		die();
 	}
 
+	global $USER;
+
+	$arParams["CONFIG"] = $component->prepareConfig();
 	$this->addExternalCss($this->GetFolder()."/system-styles.css");
 
-	CJSCore::Init(array('ui', 'drag_drop'));
+	CJSCore::Init(array('ui', 'dnd'));
 
-	$isCurrentPreset = is_array($arResult["CURRENT_PRESET"]) && !empty($arResult["CURRENT_PRESET"]);
+	$currentPreset = $arResult["CURRENT_PRESET"];
+	$isCurrentPreset = (
+			(($currentPreset["ID"] !== "default_filter" && $currentPreset["ID"] !== "tmp_filter") ||
+			 ($currentPreset["ID"] === "default_filter" && $currentPreset["FIELDS_COUNT"] > 0) ||
+			 ($currentPreset["ID"] === "tmp_filter" && $currentPreset["FIELDS_COUNT"] > 0))
+	);
 
 	if (!empty($arResult["TARGET_VIEW_ID"]))
 	{
@@ -20,288 +37,118 @@
 		$bodyClass = $APPLICATION->GetPageProperty("BodyClass");
 		$APPLICATION->SetPageProperty("BodyClass", ($bodyClass ? $bodyClass." " : "")."headerless-mode");
 	}
+
+	$placeholder = "MAIN_UI_FILTER__PLACEHOLDER_DEFAULT";
+
+	if ($arResult["DISABLE_SEARCH"] || !$arParams["CONFIG"]["SEARCH"])
+	{
+		$placeholder = "MAIN_UI_FILTER__PLACEHOLDER";
+	}
+
+	$arResult = array_merge($arResult, array(
+			"CONFIRM_MESSAGE" => Loc::getMessage("MAIN_UI_FILTER__CONFIRM_RESET_MESSAGE"),
+			"CONFIRM_APPLY" => Loc::getMessage("MAIN_UI_FILTER__CONFIRM_RESET_APPLY"),
+			"CONFIRM_CANCEL" => Loc::getMessage("MAIN_UI_FILTER__BUTTON_CANCEL")
+	));
 ?>
 
 <!-- Final :: Search -->
-<div class="main-ui-filter-search" id="<?=$arParams["FILTER_ID"]?>_search_container">
-	<? if ($isCurrentPreset && $arResult["CURRENT_PRESET"]["ID"] !== "default_filter") : ?>
-		<span class="main-ui-square main-ui-filter-search-square" data-id="{{ID}}">
-		<span class="main-ui-square-item"><?=$arResult["CURRENT_PRESET"]["TITLE"]?></span>
-		<span class="main-ui-item-icon main-ui-square-delete"></span>
-	</span>
-	<? endif; ?>
-	<input type="text" tabindex="1" name="FIND" placeholder="<?=$isCurrentPreset ? "Поиск" : "Поиск + Фильтр"?>" class="main-ui-filter-search-filter" id="<?=$arParams["FILTER_ID"]?>_search" autocomplete="off">
-	<span class="main-ui-item-icon main-ui-search"></span>
-	<span class="main-ui-item-icon main-ui-delete"></span>
+<div class="main-ui-filter-search<?=$arResult["DISABLE_SEARCH"] || !$arParams["CONFIG"]["SEARCH"] ? " main-ui-filter-no-search" : ""?> main-ui-filter-theme-<?=strtolower($arResult["THEME"])?><?=$arResult["COMPACT_STATE"] ? " main-ui-filter-compact-state" : ""?>" id="<?=$arParams["FILTER_ID"]?>_search_container">
+	<input
+			type="text"
+			tabindex="1"<?
+			if($arParams["CONFIG"]["AUTOFOCUS"]):?>autofocus=""<?endif;
+			?>value="<?=\Bitrix\Main\Text\HtmlFilter::encode(htmlspecialcharsback($arResult["CURRENT_PRESET"]["FIND"]))?>"
+			name="FIND"
+			placeholder="<?=Loc::getMessage($placeholder)?>"
+			class="main-ui-filter-search-filter"
+			id="<?=$arParams["FILTER_ID"]?>_search"
+			autocomplete="off">
+	<div class="main-ui-item-icon-block">
+		<span class="main-ui-item-icon main-ui-search"></span>
+		<span class="main-ui-item-icon main-ui-delete"></span>
+	</div>
 </div>
 
-
-<!-- Final :: NUMBER -->
-<script type="text/html" id="<?=$arParams["FILTER_ID"]?>_<?=Type::STRING?>_template">
-	<div class="main-ui-control-field">
-		<input class="main-ui-control" tabindex="{{TABINDEX}}" name="{{NAME}}" type="text" placeholder="{{PLACEHOLDER}}">
-		<div class="main-ui-control-value-delete">
-			<span class="main-ui-control-value-delete-item"></span>
-		</div>
-		<div class="main-ui-item-icon-container">
-			<span class="main-ui-item-icon main-ui-delete"></span>
-		</div>
-	</div>
-</script>
-
-
-<!-- Final :: Square -->
-<script type="text/html" id="<?=$arParams["FILTER_ID"]?>_SQUARE_template">
-	<span class="main-ui-square" data-id="{{ID}}">
-		<span class="main-ui-square-item">{{TITLE}}</span>
-		<span class="main-ui-item-icon main-ui-square-delete"></span>
-	</span>
-</script>
-
-
-<script type="text/html" id="<?=$arParams["FILTER_ID"]?>_<?=Type::DATE?>_template">
-	<div class="main-ui-control-field-group">
-		<div class="main-ui-item-icon-container">
-			<span class="main-ui-item-icon main-ui-delete"></span>
-		</div>
-	</div>
-</script>
-
-
-<script type="text/html" id="<?=$arParams["FILTER_ID"]?>_<?=Type::DATE?>_FIELD_template">
-	<div class="main-ui-control-field">
-		<div class="main-ui-control main-ui-date">
-			<span class="main-ui-date-button"></span>
-			<input class="main-ui-date-input main-ui-control-input" type="text" tabindex="{{TABINDEX}}" name="{{NAME}}" value="{{VALUE}}" placeholder="{{PLACEHOLDER}}">
-		</div>
-		<div class="main-ui-control-value-delete">
-			<span class="main-ui-control-value-delete-item"></span>
-		</div>
-	</div>
-</script>
-
-
-<script type="text/html" id="<?=$arParams["FILTER_ID"]?>_FIELD_LINE_template">
-	<div class="main-ui-filter-field-line">
-		<span class="main-ui-filter-field-line-item"></span>
-	</div>
-</script>
-
-
-<script type="text/html" id="<?=$arParams["FILTER_ID"]?>_<?=Type::NUMBER?>_template">
-	<div class="main-ui-filter-field-item">
-		<input tabindex="{{TABINDEX}}" class="main-ui-filter-field-item-control" name="{{NAME}}" type="text" placeholder="{{PLACEHOLDER}}">
-		<div class="main-ui-control-value-delete">
-			<span class="main-ui-control-value-delete-item"></span>
-		</div>
-		<div class="main-ui-item-icon-container">
-			<span class="main-ui-item-icon main-ui-delete"></span>
-		</div>
-	</div>
-</script>
-
-
-<script type="text/html" id="<?=$arParams["FILTER_ID"]?>_<?=Type::MULTI_SELECT?>_template">
-	<div class="main-ui-control-field">
-		<div class="main-ui-control main-ui-multi-select"
-			 data-name="{{NAME}}"
-			 data-params="{{PARAMS}}"
-			 data-values="{{VALUES}}"
-			 data-items="{{ITEMS}}">
-			<span class="main-ui-square-container">
-
-			</span>
-			<span class="main-ui-square-search">
-				<input tabindex="{{TABINDEX}}" placeholder="{{PLACEHOLDER}}" type="text" class="main-ui-square-search-item">
-			</span>
-			<span class="main-ui-square-search">
-					<input type="text" class="main-ui-square-search-item">
-				</span>
-			<div class="main-ui-control-value-delete">
-				<span class="main-ui-control-value-delete-item"></span>
-			</div>
-		</div>
-		<div class="main-ui-item-icon-container">
-			<span class="main-ui-item-icon main-ui-delete"></span>
-		</div>
-	</div>
-</script>
-
-
-<script type="text/html" id="<?=$arParams["FILTER_ID"]?>_<?=Type::SELECT?>_template">
-	<div class="main-ui-control-field">
-		<div class="main-ui-control main-ui-select"
-			 data-name="{{NAME}}"
-			 data-params="{{PARAMS}}"
-			 data-value="{{VALUE}}"
-			 data-items="{{ITEMS}}">
-			<span class="main-ui-select-name">{{VALUE_NAME}}</span>
-			<span class="main-ui-square-search">
-				<input tabindex="{{TABINDEX}}" placeholder="{{PLACEHOLDER}}" type="text" class="main-ui-square-search-item">
-			</span>
-			<div class="main-ui-control-value-delete">
-				<span class="main-ui-control-value-delete-item"></span>
-			</div>
-		</div>
-		<div class="main-ui-item-icon-container">
-			<span class="main-ui-item-icon main-ui-delete"></span>
-		</div>
-	</div>
-</script>
-
+<?
+	$frame = $this->createFrame()->begin(false);
+?>
 
 <script type="text/html" id="<?=$arParams["FILTER_ID"]?>_GENERAL_template">
-	<div class="main-ui-filter-wrapper">
+	<div class="main-ui-filter-wrapper<?=$arParams["VALUE_REQUIRED_MODE"] == true ? " main-ui-filter-value-required-mode" : ""?> main-ui-filter-theme-<?=strtolower($arResult["THEME"])?>">
 		<div class="main-ui-filter-inner-container">
 			<div class="main-ui-filter-sidebar">
 				<div class="main-ui-filter-sidebar-title">
-					<h5 class="main-ui-filter-sidebar-title-item">Фильтры</h5>
+					<h5 class="main-ui-filter-sidebar-title-item"><?=Loc::getMessage("MAIN_UI_FILTER__FILTER")?></h5>
 				</div><!--main-ui-filter-sidebar-->
 				<div class="main-ui-filter-sidebar-item-container">
 					<? if (is_array($arResult["PRESETS"])) : ?>
 						<? foreach ($arResult["PRESETS"] as $key => $preset) : ?>
-							<div class="main-ui-filter-sidebar-item<?=$preset["ID"] === $arResult["CURRENT_PRESET"]["ID"] ? " main-ui-filter-current-item" : ""?><?=$preset["ID"] === "default_filter" ? " main-ui-hide" : ""?>"
-								 data-id="<?=$preset["ID"]?>">
-								<span class="main-ui-item-icon main-ui-filter-icon-grab"></span>
+							<div class="main-ui-filter-sidebar-item<?=$preset["ID"] === $arResult["CURRENT_PRESET"]["ID"] ? " main-ui-filter-current-item" : ""?><?
+							?><?=$preset["ID"] === "default_filter" || $preset["ID"] === "tmp_filter" ? " main-ui-hide" : ""?><?
+							?><?=$preset["IS_PINNED"] && $arParams["CONFIG"]["DEFAULT_PRESET"] ? " main-ui-item-pin" : ""?>" data-id="<?=$preset["ID"]?>"<?
+							?><?=$preset["IS_PINNED"] && $arParams["CONFIG"]["DEFAULT_PRESET"] ? " title=\"".Loc::getMessage("MAIN_UI_FILTER__IS_SET_AS_DEFAULT_PRESET")."\"" : " "?>>
+								<span class="main-ui-item-icon main-ui-filter-icon-grab" title="<?=Loc::getMessage("MAIN_UI_FILTER__DRAG_TITLE")?>"></span>
 								<span class="main-ui-filter-sidebar-item-text-container">
-									<span class="main-ui-filter-sidebar-item-text"><?=$preset["TITLE"]?></span>
-									<input type="text" placeholder="<?=Loc::getMessage("MAIN_UI_FILTER__FILTER_NAME_PLACEHOLDER")?>" value="<?=$preset["TITLE"]?>" class="main-ui-filter-sidebar-item-input">
+									<span class="main-ui-filter-sidebar-item-text"><?=\Bitrix\Main\Text\HtmlFilter::encode(htmlspecialcharsback($preset["TITLE"]))?></span>
+									<input type="text" placeholder="<?=Loc::getMessage("MAIN_UI_FILTER__FILTER_NAME_PLACEHOLDER")?>" value="<?=\Bitrix\Main\Text\HtmlFilter::encode(htmlspecialcharsback($preset["TITLE"]))?>" class="main-ui-filter-sidebar-item-input">
+									<span class="main-ui-item-icon main-ui-filter-icon-pin" title="<?=Loc::getMessage("MAIN_UI_FILTER__IS_SET_AS_DEFAULT_PRESET")?>"></span>
 								</span>
-								<span class="main-ui-item-icon main-ui-filter-icon-edit"></span>
-								<span class="main-ui-item-icon main-ui-delete"></span>
+								<? if ($arParams["CONFIG"]["DEFAULT_PRESET"]) : ?>
+									<span class="main-ui-item-icon main-ui-filter-icon-pin" title="<?=Loc::getMessage("MAIN_UI_FILTER__IS_SET_AS_DEFAULT_PRESET")?>"></span>
+								<? endif; ?>
+								<span class="main-ui-item-icon main-ui-filter-icon-edit" title="<?=Loc::getMessage("MAIN_UI_FILTER__EDIT_PRESET_TITLE")?>"></span>
+								<span class="main-ui-item-icon main-ui-delete" title="<?=Loc::getMessage("MAIN_UI_FILTER__REMOVE_PRESET")?>"></span>
+								<div class="main-ui-filter-edit-mask"></div>
 							</div>
 						<? endforeach; ?>
 					<? endif; ?>
 					<div class="main-ui-filter-sidebar-item main-ui-filter-new-filter">
 						<div class="main-ui-filter-edit-mask"></div>
-						<input class="main-ui-filter-sidebar-edit-control" type="text" placeholder="Название фильтра">
+						<input class="main-ui-filter-sidebar-edit-control" type="text" placeholder="<?=Loc::getMessage("MAIN_UI_FILTER__FILTER_NAME_PLACEHOLDER")?>">
 					</div>
 				</div><!--main-ui-filter-sidebar-item-container-->
 			</div><!--main-ui-filter-sidebar-->
 			<div class="main-ui-filter-field-container">
 				<div class="main-ui-filter-field-container-list">
-					<? if (is_array($arResult["CURRENT_PRESET"]) && !empty($arResult["CURRENT_PRESET"])) : ?>
-						<? foreach ($arResult["CURRENT_PRESET"]["FIELDS"] as $key => $field) : ?>
-							<? if ($field["TYPE"] === Type::STRING) : ?>
-								<div class="main-ui-control-field" data-name="<?=$field["NAME"]?>">
-									<input tabindex="<?=$key+2?>" class="main-ui-control" name="<?=$field["NAME"]?>" type="text" placeholder="<?=$field["PLACEHOLDER"]?>">
-								</div>
-							<? endif; ?>
-							<? if ($field["TYPE"] === Type::NUMBER) : ?>
-								<div class="main-ui-control-field" data-name="<?=$field["NAME"]?>">
-									<input tabindex="<?=$key+2?>" class="main-ui-control" name="<?=$field["NAME"]?>" type="text" placeholder="<?=$field["PLACEHOLDER"]?>">
-								</div>
-							<? endif; ?>
-							<? if ($field["TYPE"] === Type::DATE) : ?>
-								<div class="main-ui-control-field-group" data-name="<?=$field["NAME"]?>">
-									<div class="main-ui-control-field">
-										<div class="main-ui-control main-ui-select"
-											 data-name="<?=$field["NAME"]?>"
-											 data-params="<?=\Bitrix\Main\Text\HtmlFilter::encode(\Bitrix\Main\Web\Json::encode($field["PARAMS"]))?>"
-											 data-value="<?=\Bitrix\Main\Text\HtmlFilter::encode(\Bitrix\Main\Web\Json::encode($field["SUB_TYPE"]))?>"
-											 data-items="<?=\Bitrix\Main\Text\HtmlFilter::encode(\Bitrix\Main\Web\Json::encode($field["SUB_TYPES"]))?>">
-											<span class="main-ui-item-icon main-ui-search"></span>
-											<span class="main-ui-select-name"><?=$field["SUB_TYPE"]["NAME"]?></span>
-											<span class="main-ui-square-search">
-												<input tabindex="<?=$key+2?>" placeholder="<?=$field["PLACEHOLDER"]?>" type="text" class="main-ui-square-search-item">
-											</span>
-										</div>
-									</div>
-									<div class="main-ui-control-field">
-										<div class="main-ui-control main-ui-date">
-											<span class="main-ui-date-button"></span>
-											<input class="main-ui-date-input main-ui-control-input" type="text" tabindex="<?=$key+2?>" name="<?=$field["NAME"]?>_<?=$field["SUB_TYPE"]["VALUE"]?>" value="<?=$field["VALUE"]?>" placeholder="<?=$field["PLACEHOLDER"]?>">
-										</div>
-									</div>
-									<? if ($field["SUB_TYPE"]["VALUE"] === \Bitrix\Main\UI\Filter\DateType::RANGE) : ?>
-										<div class="main-ui-filter-field-line">
-											<span class="main-ui-filter-field-line-item"></span>
-										</div>
-										<div class="main-ui-control-field">
-											<div class="main-ui-control main-ui-date">
-												<span class="main-ui-date-button"></span>
-												<input class="main-ui-date-input main-ui-control-input" type="text" tabindex="<?=$key+2?>" name="<?=$field["NAME"]?>_<?=$field["SUB_TYPE"]["VALUE"]?>_TO" value="<?=$field["VALUE"]?>" placeholder="<?=$field["PLACEHOLDER"]?>">
-											</div>
-										</div>
-									<? endif; ?>
-								</div>
-							<? endif; ?>
-							<? if ($field["TYPE"] === Type::SELECT) : ?>
-								<div class="main-ui-control-field" data-name="<?=$field["NAME"]?>">
-									<div class="main-ui-control main-ui-select"
-										 data-params="<?=\Bitrix\Main\Text\HtmlFilter::encode(\Bitrix\Main\Web\Json::encode($field["PARAMS"]))?>"
-										 data-value="<?=\Bitrix\Main\Text\HtmlFilter::encode(\Bitrix\Main\Web\Json::encode($field["VALUE"]))?>"
-										 data-items="<?=\Bitrix\Main\Text\HtmlFilter::encode(\Bitrix\Main\Web\Json::encode($field["ITEMS"]))?>">
-										<span class="main-ui-item-icon main-ui-search"></span>
-										<span class="main-ui-select-name"><?=$field["VALUE"]["NAME"]?></span>
-										<span class="main-ui-square-search">
-											<input tabindex="<?=$key+2?>" placeholder="<?=$field["PLACEHOLDER"]?>" type="text" class="main-ui-square-search-item">
-										</span>
-										<div class="main-ui-control-value-delete">
-											<span class="main-ui-control-value-delete-item"></span>
-										</div>
-									</div>
-									<div class="main-ui-item-icon-container">
-										<span class="main-ui-item-icon main-ui-delete"></span>
-									</div>
-								</div>
-							<? endif; ?>
-							<? if ($field["TYPE"] === Type::MULTI_SELECT) : ?>
-								<div class="main-ui-control-field" data-name="<?=$field["NAME"]?>">
-									<div class="main-ui-control main-ui-multi-select"
-										 data-name="<?=$field["NAME"]?>"
-										 data-params="<?=\Bitrix\Main\Text\HtmlFilter::encode(\Bitrix\Main\Web\Json::encode($field["PARAMS"]))?>"
-										 data-value="<?=\Bitrix\Main\Text\HtmlFilter::encode(\Bitrix\Main\Web\Json::encode($field["VALUE"]))?>"
-										 data-items="<?=\Bitrix\Main\Text\HtmlFilter::encode(\Bitrix\Main\Web\Json::encode($field["ITEMS"]))?>">
-										<span class="main-ui-square-container">
-											<? if (is_array($field["VALUE"]) && !empty($field["VALUE"])) : ?>
-												<? foreach ($field["VALUE"] as $fieldkey => $field) : ?>
-													<span class="main-ui-square"
-														  data-item="<?=\Bitrix\Main\Text\HtmlFilter::encode(\Bitrix\Main\Web\Json::encode($field))?>">
-														<span class="main-ui-square-item"><?=$field["NAME"]?></span>
-														<span class="main-ui-item-icon main-ui-square-delete"></span>
-													</span>
-												<? endforeach; ?>
-											<? endif; ?>
-										</span>
-										<span class="main-ui-square-search">
-											<input tabindex="<?=$key+2?>" placeholder="<?=$field["PLACEHOLDER"]?>" type="text" class="main-ui-square-search-item">
-										</span>
-										<div class="main-ui-control-value-delete">
-											<span class="main-ui-control-value-delete-item"></span>
-										</div>
-									</div>
-									<div class="main-ui-item-icon-container">
-										<span class="main-ui-item-icon main-ui-delete"></span>
-									</div>
-								</div><!--main-ui-control-field-->
-							<? endif; ?>
-							<? if ($field["TYPE"] === Type::USER) : ?>
-								<div class="main-ui-filter-field-item" data-name="<?=$field["NAME"]?>">
-									<input tabindex="<?=$key+2?>" class="main-ui-filter-field-item-control" name="<?=$field["NAME"]?>" type="text" placeholder="<?=$field["PLACEHOLDER"]?>">
-								</div>
-							<? endif; ?>
-							<? if ($field["TYPE"] === Type::ENTITY) : ?>
-								<div class="main-ui-filter-field-item" data-name="<?=$field["NAME"]?>">
-									<input tabindex="<?=$key+2?>" class="main-ui-filter-field-item-control" name="<?=$field["NAME"]?>" type="text" placeholder="<?=$field["PLACEHOLDER"]?>">
-								</div>
-							<? endif; ?>
-						<? endforeach; ?>
-					<? endif; ?>
+
 				</div>
 
 				<div class="main-ui-filter-field-add">
-					<span class="main-ui-filter-field-add-item">Добавить поле</span>
+					<span class="main-ui-filter-field-add-item"><?=Loc::getMessage("MAIN_UI_FILTER__ADD_FIELD")?></span>
+					<span class="main-ui-filter-field-restore-items"><?=Loc::getMessage("MAIN_UI_FILTER__RESTORE_FIELDS")?></span>
 				</div><!--main-ui-filter-field-add-->
 			</div><!--main-ui-filter-field-container-->
 			<div class="main-ui-filter-bottom-controls">
-				<div class="main-ui-filter-add-container">
-					<span class="main-ui-filter-add-item"><?=Loc::getMessage("MAIN_UI_FILTER__ADD_FILTER")?></span>
-					<span class="main-ui-filter-add-edit"></span>
-				</div><!--main-ui-filter-add-container-->
+				<? if ($USER->IsAuthorized()) : ?>
+					<div class="main-ui-filter-add-container">
+						<span class="main-ui-filter-add-item"><?=Loc::getMessage("MAIN_UI_FILTER__ADD_FILTER")?></span>
+						<span class="main-ui-filter-add-edit" title="<?=Loc::getMessage("MAIN_UI_FILTER__FILTER_SETTINGS_TITLE")?>"></span>
+						<span class="main-ui-filter-reset-link">
+							<span class="main-ui-filter-field-button-item"><?=Loc::getMessage("MAIN_UI_FILTER__RESET_LINK")?></span>
+						</span>
+					</div><!--main-ui-filter-add-container-->
+				<? endif; ?>
+
+				<div class="main-ui-filter-field-preset-button-container">
+					<div class="main-ui-filter-field-button-inner">
+						<span class="webform-small-button webform-small-button-blue main-ui-filter-field-button main-ui-filter-find">
+							<span class="main-ui-filter-field-button-item"><?=Loc::getMessage("MAIN_UI_FILTER__FIND")?></span>
+						</span>
+						<span class="webform-small-button webform-small-button-transparent main-ui-filter-field-button main-ui-filter-reset">
+							<span class="main-ui-filter-field-button-item"><?=Loc::getMessage("MAIN_UI_FILTER__RESET")?></span>
+						</span>
+					</div>
+				</div>
 				<div class="main-ui-filter-field-button-container">
 					<div class="main-ui-filter-field-button-inner">
-						<span class="webform-small-button webform-small-button-blue main-ui-filter-field-button main-ui-filter-save">
+						<? if ($USER->CanDoOperation("edit_other_settings")) : ?>
+							<label class="main-ui-filter-field-button main-ui-filter-save-for-all" for="save-for-all">
+								<input id="save-for-all" class="main-ui-filter-field-button-checkbox" type="checkbox">
+								<span class="main-ui-filter-field-button-item"><?=Loc::getMessage("MAIN_UI_FILTER__CONFIRM_APPLY_FOR_ALL_CHECKBOX")?></span>
+							</label>
+						<? endif; ?>
+						<span class="webform-small-button webform-small-button-accept main-ui-filter-field-button main-ui-filter-save">
 							<span class="main-ui-filter-field-button-item"><?=Loc::getMessage("MAIN_UI_FILTER__BUTTON_SAVE")?></span>
 						</span>
 						<span class="webform-small-button webform-small-button-transparent main-ui-filter-field-button main-ui-filter-cancel">
@@ -314,319 +161,20 @@
 	</div><!--main-ui-filter-wrapper-->
 </script>
 
-
-<script type="text/html" id="<?=$arParams["FILTER_ID"]?>_CLEAN_template">
-	<div class="main-ui-filter-wrapper main-ui-filter-edit-item">
-		<div class="main-ui-filter-inner-container">
-			<div class="main-ui-filter-sidebar">
-				<div class="main-ui-filter-sidebar-title">
-					<h5 class="main-ui-filter-sidebar-title-item">Фильтры</h5>
-				</div><!--main-ui-filter-sidebar-->
-				<div class="main-ui-filter-sidebar-item-container">
-					<div class="main-ui-filter-sidebar-item main-ui-filter-current-item">
-					<span class="main-ui-filter-sidebar-item-text-container">
-						<span class="main-ui-filter-sidebar-item-text">Первый фильтр</span>
-					</span>
-					</div>
-					<div class="main-ui-filter-sidebar-item main-ui-filter-edit-current">
-						<div class="main-ui-filter-edit-mask"></div>
-						<span class="main-ui-item-icon main-ui-filter-icon-grab"></span>
-						<span class="main-ui-filter-sidebar-item-text-container">
-						<span class="main-ui-filter-sidebar-item-text">Последние сделки</span>
-					</span>
-						<span class="main-ui-item-icon main-ui-delete"></span>
-					</div>
-					<div class="main-ui-filter-sidebar-item">
-						<span class="main-ui-item-icon main-ui-filter-icon-grab"></span>
-						<span class="main-ui-filter-sidebar-item-text-container">
-						<span class="main-ui-filter-sidebar-item-text">Просто сделки</span>
-					</span>
-						<span class="main-ui-item-icon main-ui-filter-icon-edit"></span>
-						<span class="main-ui-item-icon main-ui-delete"></span>
-					</div>
-					<div class="main-ui-filter-sidebar-item">
-					<span class="main-ui-filter-sidebar-item-text-container">
-						<span class="main-ui-filter-sidebar-item-text">Новые лиды</span>
-						<span class="main-ui-item-icon main-ui-filter-icon-pin"></span>
-					</span>
-					</div>
-					<div class="main-ui-filter-sidebar-item main-ui-filter-new-filter">
-						<div class="main-ui-filter-edit-mask"></div>
-						<input class="main-ui-filter-sidebar-edit-control" type="text" placeholder="Название фильтра">
-					</div>
-				</div><!--main-ui-filter-sidebar-item-container-->
-			</div><!--main-ui-filter-sidebar-->
-			<div class="main-ui-filter-field-container">
-				<div class="main-ui-control-field">
-					<input class="main-ui-control" type="text" placeholder="Вид сделки">
-					<div class="main-ui-control-value-delete">
-						<span class="main-ui-control-value-delete-item"></span>
-					</div>
-					<div class="main-ui-item-icon-container">
-						<span class="main-ui-item-icon main-ui-delete"></span>
-					</div>
-				</div><!--main-ui-control-field-->
-				<div class="main-ui-control-field">
-					<input class="main-ui-control" type="text" placeholder="Дата создания">
-					<div class="main-ui-control-value-delete">
-						<span class="main-ui-control-value-delete-item"></span>
-					</div>
-					<div class="main-ui-item-icon-container">
-						<span class="main-ui-item-icon main-ui-delete"></span>
-					</div>
-				</div><!--main-ui-control-field-->
-
-				<div class="main-ui-filter-field-inline-row">
-					<div class="main-ui-filter-field-inline-inner">
-						<div class="main-ui-control-field main-ui-select">
-							<div class="main-ui-control">
-								<span class="main-ui-select-name">Диапозон</span>
-							</div>
-							<div class="main-ui-select-inner">
-								<div class="main-ui-select-inner-item">
-									<span class="main-ui-select-inner-item-element">Точно</span>
-								</div>
-								<div class="main-ui-select-inner-item">
-									<span class="main-ui-select-inner-item-element">Диапозон</span>
-								</div>
-							</div><!--main-ui-select-inner-->
-						</div><!--main-ui-control-field-->
-						<div class="main-ui-control-field">
-							<input class="main-ui-control main-ui-number" type="text" placeholder="Число">
-							<div class="main-ui-control-value-delete">
-								<span class="main-ui-control-value-delete-item"></span>
-							</div>
-						</div><!--main-ui-control-field-->
-						<div class="main-ui-item-icon-container">
-							<span class="main-ui-item-icon main-ui-delete"></span>
-						</div>
-					</div><!--main-ui-filter-field-inline-inner-->
-				</div><!--main-ui-filter-field-inline-row-->
-
-				<div class="main-ui-filter-field-inline-row">
-					<div class="main-ui-filter-field-inline-inner">
-						<div class="main-ui-control-field main-ui-select">
-							<div class="main-ui-control">
-								<span class="main-ui-select-name">Диапозон</span>
-							</div>
-							<div class="main-ui-select-inner">
-								<div class="main-ui-select-inner-item">
-									<span class="main-ui-select-inner-item-element">Точно</span>
-								</div>
-								<div class="main-ui-select-inner-item">
-									<span class="main-ui-select-inner-item-element">Диапозон</span>
-								</div>
-							</div><!--main-ui-select-inner-->
-						</div><!--main-ui-control-field-->
-						<div class="main-ui-control-field">
-							<input class="main-ui-control main-ui-number" type="text" placeholder="От">
-							<div class="main-ui-control-value-delete">
-								<span class="main-ui-control-value-delete-item"></span>
-							</div>
-						</div><!--main-ui-control-field-->
-						<div class="main-ui-filter-field-line">
-							<span class="main-ui-filter-field-line-item"></span>
-						</div>
-						<div class="main-ui-control-field">
-							<input class="main-ui-control main-ui-number" type="text" placeholder="До">
-							<div class="main-ui-control-value-delete">
-								<span class="main-ui-control-value-delete-item"></span>
-							</div>
-						</div><!--main-ui-control-field-->
-						<div class="main-ui-item-icon-container">
-							<span class="main-ui-item-icon main-ui-delete"></span>
-						</div>
-					</div><!--main-ui-filter-field-inline-inner-->
-				</div><!--main-ui-filter-field-inline-row-->
-
-				<div class="main-ui-filter-field-inline-row">
-					<div class="main-ui-filter-field-inline-inner">
-						<div class="main-ui-control-field main-ui-select">
-							<div class="main-ui-control">
-								<span class="main-ui-select-name">Да/Нет</span>
-							</div>
-							<div class="main-ui-select-inner">
-								<div class="main-ui-select-inner-item">
-									<span class="main-ui-select-inner-item-element">Да</span>
-								</div>
-								<div class="main-ui-select-inner-item">
-									<span class="main-ui-select-inner-item-element">Нет</span>
-								</div>
-							</div><!--main-ui-select-inner-->
-						</div><!--main-ui-control-field-->
-					</div><!--main-ui-filter-field-inline-inner-->
-				</div><!--main-ui-filter-field-inline-row-->
-
-				<div class="main-ui-filter-field-inline-row">
-					<div class="main-ui-filter-field-inline-inner">
-						<div class="main-ui-control-field main-ui-select">
-							<div class="main-ui-control">
-								<span class="main-ui-select-name">Диапозон</span>
-							</div>
-							<div class="main-ui-select-inner">
-								<div class="main-ui-select-inner-item">
-									<span class="main-ui-select-inner-item-element">Точно</span>
-								</div>
-								<div class="main-ui-select-inner-item">
-									<span class="main-ui-select-inner-item-element">Диапозон</span>
-								</div>
-							</div><!--main-ui-select-inner-->
-						</div><!--main-ui-control-field-->
-						<div class="main-ui-control-field">
-							<span class="main-ui-control main-ui-date">Дата/Время</span>
-							<div class="main-ui-control-value-delete">
-								<span class="main-ui-control-value-delete-item"></span>
-							</div>
-						</div><!--main-ui-control-field-->
-						<div class="main-ui-filter-field-line">
-							<span class="main-ui-filter-field-line-item"></span>
-						</div>
-						<div class="main-ui-control-field">
-							<span class="main-ui-control main-ui-date">Дата/Время</span>
-							<div class="main-ui-control-value-delete">
-								<span class="main-ui-control-value-delete-item"></span>
-							</div>
-						</div><!--main-ui-control-field-->
-						<div class="main-ui-item-icon-container">
-							<span class="main-ui-item-icon main-ui-delete"></span>
-						</div>
-					</div><!--main-ui-filter-field-inline-inner-->
-				</div><!--main-ui-filter-field-inline-row-->
-
-				<div class="main-ui-filter-field-inline-row">
-					<div class="main-ui-filter-field-inline-inner">
-						<div class="main-ui-control-field main-ui-select">
-							<div class="main-ui-control">
-								<span class="main-ui-select-name">Диапозон</span>
-							</div>
-							<div class="main-ui-select-inner">
-								<div class="main-ui-select-inner-item">
-									<span class="main-ui-select-inner-item-element">Точно</span>
-								</div>
-								<div class="main-ui-select-inner-item">
-									<span class="main-ui-select-inner-item-element">Диапозон</span>
-								</div>
-							</div><!--main-ui-select-inner-->
-						</div><!--main-ui-control-field-->
-						<div class="main-ui-control-field">
-							<span class="main-ui-control main-ui-date">Дата/Время</span>
-						</div><!--main-ui-control-field-->
-						<div class="main-ui-item-icon-container">
-							<span class="main-ui-item-icon main-ui-delete"></span>
-						</div>
-					</div><!--main-ui-filter-field-inline-inner-->
-				</div><!--main-ui-filter-field-inline-row-->
-
-				<div class="main-ui-control-field">
-					<div class="main-ui-control main-ui-select main-ui-search-icon">
-						<span class="main-ui-select-name">Селект</span>
-						<div class="main-ui-control-value-delete">
-							<span class="main-ui-control-value-delete-item"></span>
-						</div>
-						<div class="main-ui-item-icon-container">
-							<span class="main-ui-item-icon main-ui-delete"></span>
-						</div>
-					</div>
-					<div class="main-ui-select-inner">
-						<div class="main-ui-select-inner-item">
-							<span class="main-ui-select-inner-item-element">Первое значение</span>
-						</div>
-						<div class="main-ui-select-inner-item">
-							<span class="main-ui-select-inner-item-element">Второе значение</span>
-						</div>
-						<div class="main-ui-select-inner-item">
-							<span class="main-ui-select-inner-item-element">Третье значение</span>
-						</div>
-					</div><!--main-ui-select-inner-->
-				</div><!--main-ui-control-field-->
-
-				<div class="main-ui-control-field">
-					<div class="main-ui-control main-ui-select main-ui-search-icon">
-					<span class="main-ui-square">
-						<span class="main-ui-square-item">Random stuff</span>
-						<span class="main-ui-item-icon main-ui-square-delete"></span>
-					</span>
-						<span class="main-ui-square">
-						<span class="main-ui-square-item">Random stuff</span>
-						<span class="main-ui-item-icon main-ui-square-delete"></span>
-					</span>
-						<span class="main-ui-square">
-						<span class="main-ui-square-item">Random stuff</span>
-						<span class="main-ui-item-icon main-ui-square-delete"></span>
-					</span>
-						<span class="main-ui-square">
-						<span class="main-ui-square-item">Random stuff</span>
-						<span class="main-ui-item-icon main-ui-square-delete"></span>
-					</span>
-						<span class="main-ui-square-search">
-						<input type="text" class="main-ui-square-search-item">
-					</span>
-						<div class="main-ui-control-value-delete">
-							<span class="main-ui-control-value-delete-item"></span>
-						</div>
-						<div class="main-ui-item-icon-container">
-							<span class="main-ui-item-icon main-ui-delete"></span>
-						</div>
-					</div>
-					<div class="main-ui-select-inner">
-						<div class="main-ui-select-inner-item">
-							<span class="main-ui-select-inner-label">Первое значение</span>
-						</div>
-						<div class="main-ui-select-inner-item color1 main-ui-checked">
-							<span class="main-ui-select-inner-label">Второе значение</span>
-						</div>
-						<div class="main-ui-select-inner-item color2 main-ui-checked">
-							<span class="main-ui-select-inner-label">Третье значение</span>
-						</div>
-					</div><!--main-ui-select-inner-->
-				</div><!--main-ui-control-field-->
-
-				<div class="main-ui-filter-field-entity">
-					<div class="main-ui-control-field">
-						<div class="main-ui-control main-ui-entity">
-							<span class="main-ui-entity-item">&#43; выбрать привязанную сущность</span>
-						</div>
-					</div><!--main-ui-control-field-->
-				</div><!--main-ui-filter-field-user-->
-
-				<div class="main-ui-filter-field-add">
-					<span class="main-ui-filter-field-add-item">Добавить поле</span>
-				</div><!--main-ui-filter-field-add-->
-			</div><!--main-ui-filter-field-container-->
-			<div class="main-ui-filter-bottom-controls">
-				<div class="main-ui-filter-add-container">
-					<span class="main-ui-filter-add-item">Добавить фильтр</span>
-					<span class="main-ui-filter-add-edit"></span>
-				</div><!--main-ui-filter-add-container-->
-				<div class="main-ui-filter-field-button-container">
-					<div class="main-ui-filter-field-button-inner">
-				<span class="webform-small-button webform-small-button-blue main-ui-filter-field-button">
-					<span class="main-ui-filter-field-button-item">Сохранить</span>
-				</span>
-						<span class="webform-small-button webform-small-button-transparent main-ui-filter-field-button">
-					<span class="main-ui-filter-field-button-item">Отменить</span>
-				</span>
-					</div>
-				</div><!--main-ui-filter-field-button-container-->
-			</div><!--main-ui-filter-bottom-controls-->
-		</div><!--main-ui-filter-inner-container-->
-	</div><!--main-ui-filter-wrapper-->
-</script>
-
-
 <script>
 	BX.Main.filterManager.push(
 		'<?=$arParams["FILTER_ID"]?>',
-		new BX.Main.filter(
-			'<?=\Bitrix\Main\Web\Json::encode($arResult)?>',
-			{},
-			'<?=\Bitrix\Main\Web\Json::encode(Type::getList())?>',
-			'<?=\Bitrix\Main\Web\Json::encode(DateType::getList())?>'
+		new BX.Main.Filter(
+			<?=CUtil::PhpToJSObject($arResult)?>,
+			<?=CUtil::PhpToJSObject($arParams["CONFIG"])?>,
+			<?=CUtil::PhpToJSObject(Type::getList())?>,
+			<?=CUtil::PhpToJSObject(DateType::getList())?>,
+			<?=CUtil::PhpToJSObject(NumberType::getList())?>
 		)
 	);
 </script>
-
 <?
+	$frame->end();
 
 	if (!empty($arResult["TARGET_VIEW_ID"]))
 	{

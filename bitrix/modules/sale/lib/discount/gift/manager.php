@@ -9,6 +9,7 @@ use Bitrix\Main\ErrorCollection;
 use Bitrix\Main\SystemException;
 use Bitrix\Sale\Basket;
 use Bitrix\Sale\BasketItem;
+use Bitrix\Sale\Discount\Analyzer;
 use Bitrix\Sale\Order;
 use CCatalogSKU;
 use CSaleDiscountActionApply;
@@ -123,6 +124,11 @@ final class Manager
 			$appliedList[$discount['ID']] = $discount;
 		}
 		unset($discount, $appliedDiscounts);
+
+		if(!$discounts)
+		{
+			return array();
+		}
 
 		$potentialGiftData = $this->getPotentialGiftData($discounts, $appliedList);
 
@@ -462,19 +468,24 @@ final class Manager
 
 	private function checkProductInBasket(array $product, Basket $basket)
 	{
+		return (bool)$this->getItemFromBasket($product, $basket);
+	}
+
+	private function getItemFromBasket(array $product, Basket $basket)
+	{
 		foreach($basket as $item)
 		{
 			/** @var BasketItem $item */
 			if(
-					$item->getProductId() == $product['ID'] &&
-					$item->getField('MODULE') == $product['MODULE']
+				$item->getProductId() == $product['ID'] &&
+				$item->getField('MODULE') === $product['MODULE']
 			)
 			{
-				return true;
+				return $item;
 			}
 		}
 
-		return false;
+		return null;
 	}
 
 	private function addProductToBasket(Basket $basket, array $product)
@@ -500,8 +511,7 @@ final class Manager
 
 	private function deleteProductFromBasket(Basket $basket, array $product)
 	{
-		//todo Ilya's error. He said, that features was not necessary.
-		$item = $basket->getExistsItem($product['MODULE'], $product['ID']);
+		$item = $this->getItemFromBasket($product, $basket);
 		if($item && $item->getQuantity() == $product['QUANTITY'])
 		{
 			$item->delete();
@@ -560,23 +570,7 @@ final class Manager
 	 */
 	public function isContainGiftAction(array $discount)
 	{
-		if(isset($discount['ACTIONS']) && is_string($discount['ACTIONS']))
-		{
-			return strpos($discount['ACTIONS'], \CSaleActionGiftCtrlGroup::getControlID()) !== false;
-		}
-		elseif(isset($discount['ACTIONS_LIST']['CHILDREN']) && is_array($discount['ACTIONS_LIST']['CHILDREN']))
-		{
-			foreach($discount['ACTIONS_LIST']['CHILDREN'] as $child)
-			{
-				if(isset($child['CLASS_ID']) && isset($child['DATA']) && $child['CLASS_ID'] === \CSaleActionGiftCtrlGroup::getControlID())
-				{
-					return true;
-				}
-			}
-			unset($child);
-		}
-
-		return false;
+		return Analyzer::getInstance()->isContainGiftAction($discount);
 	}
 
 	/**
@@ -595,7 +589,7 @@ final class Manager
 	 */
 	public function disableExistenceDiscountsWithGift()
 	{
-		Option::set('sale', 'exists_discounts_with_gift', 'Y');
+		Option::set('sale', 'exists_discounts_with_gift', 'N');
 	}
 
 	/**

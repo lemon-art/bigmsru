@@ -48,7 +48,16 @@ $data = array(
 			'GROUP' => 'PAYMENT',
 			'DEFAULT' => array(
 				'PROVIDER_KEY' => 'PAYMENT',
-				'PROVIDER_VALUE' => 'ID'
+				'PROVIDER_VALUE' => 'ACCOUNT_NUMBER'
+			)
+		),
+		"PAYMENT_ORDER_ID" => array(
+			"NAME" => Loc::getMessage('SALE_HPS_SBERBANK_ORDER_ID_DESC'),
+			"SORT" => 800,
+			'GROUP' => 'PAYMENT',
+			'DEFAULT' => array(
+				'PROVIDER_KEY' => 'ORDER',
+				'PROVIDER_VALUE' => 'ACCOUNT_NUMBER'
 			)
 		),
 		"PAYMENT_DATE_INSERT" => array(
@@ -98,6 +107,11 @@ $data = array(
 		"BUYER_PERSON_ADDRESS_FACT" => array(
 			"NAME" => Loc::getMessage('SALE_HPS_SBERBANK_PAYER_ADDRESS_FACT_DESC'),
 			"SORT" => 1500,
+			'GROUP' => 'BUYER_PERSON'
+		),
+		"BUYER_PERSON_BANK_ACCOUNT" => array(
+			"NAME" => Loc::getMessage('SALE_HPS_SBERBANK_PAYER_ACCOUNT_DESC'),
+			"SORT" => 1550,
 			'GROUP' => 'BUYER_PERSON'
 		),
 		"PAYMENT_SHOULD_PAY" => array(

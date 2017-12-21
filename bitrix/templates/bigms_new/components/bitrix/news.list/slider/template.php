@@ -28,6 +28,7 @@ $this->setFrameMode(true);
 		<?endforeach;?>
 
 	</div>
+<?/*
 	<ul class="slider-nav">
 		<?foreach($arResult["ITEMS"] as $key => $arItem):?>
 			<li class="slider-nav__item <?if ( $key == 0 ):?>active<?endif;?>">
@@ -35,3 +36,4 @@ $this->setFrameMode(true);
 			</li>
 		<?endforeach;?>
     </ul>
+*/?>

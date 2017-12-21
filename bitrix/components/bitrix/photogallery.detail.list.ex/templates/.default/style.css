@@ -195,7 +195,6 @@
 .review-rating .bx-rating {margin-left: 5px;}
 .photo-comment .photo-rating .ilike-light .bx-ilike-right, .photo-comment .review-rating .ilike-light .bx-ilike-right {background-position: 0 -44px;}
 
-body, html{width: 100%; height: 100%;}
 .photo-quirks-mode {position: absolute!important;}
 .photo-quirks-mode .photo-wrap{width:760px !important;}
 .photo-quirks-mode .photo-top-nav {zoom:1; margin-top:5px; padding-right:110px;}
@@ -203,7 +202,6 @@ body, html{width: 100%; height: 100%;}
 .photo-quirks-mode .photo-slider-button{height:15px;}
 .photo-quirks-mode .photo-slider a {height:48px;}
 .photo-quirks-mode .photo-descriptions {; padding-bottom:10px; }
-/* .photo-quirks-mode .photo-footer {left:50%; margin-left:-377px; position:relative;} */
 .photo-quirks-mode .photo-slideshow-speed a {height:13px;}
 .photo-quirks-mode .photo-slideshow-speed a:hover {background-position:0 -79px; height:13px;}
 .photo-quirks-mode .photo-slideshow-speed-active {background-position:0 -79px; height:13px;}
@@ -296,8 +294,6 @@ body, html{width: 100%; height: 100%;}
 .photo-dark-theme .photo-dark-theme-link i {background-position:-23px -215px;}
 .photo-dark-theme .photo-dark-theme-link:hover i {background-position:-23px -226px;}
 
-
-
 .photo-dark-theme .photo-comment-avatar {background: url(images/noavatar-dark.gif) center center no-repeat!important;border: 1px solid #3D3D3D!important;}
 .photo-dark-theme .photo-comments-right-info a {color:#ffffff!important; text-decoration:none;}
 .photo-dark-theme .photo-slider a.photo-wait img{background:url("images/wait_dark.gif") no-repeat center center transparent!important;}
@@ -306,8 +302,6 @@ body, html{width: 100%; height: 100%;}
 .photo-dark-theme .reviews-reply-fields input, .photo-dark-theme input.photo-forum-capcha-input{border-color:#898989!important; background-color:#464646!important;}
 .photo-dark-theme  .photo-comments-left .reviews-reply-fields input.bxph-photo-active , .photo-dark-theme  .photo-forum-capcha-cont input.bxph-photo-active{color:#ffffff !important;}
 .photo-dark-theme  .photo-image-wait{background:url("images/wait_dark.gif") no-repeat center center transparent!important;}
-
-
 
 .photo-qt-desc {color:#656565!important; text-decoration:none !important;}
 .photo-qt-desc:hover {text-decoration:underline !important;}

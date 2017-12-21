@@ -9,8 +9,12 @@
 		this.classControl = 'main-ui-date';
 		this.classButton = 'main-ui-date-button';
 		this.classInput = 'main-ui-date-input';
+		this.classValueDelete = 'main-ui-control-value-delete';
+		this.classHide = 'main-ui-hide';
 		this.button = null;
 		this.input = null;
+		this.valueDeleteButton = null;
+		this.enableTime = false;
 		this.init(node);
 	};
 
@@ -20,28 +24,93 @@
 			if (BX.type.isDomNode(node) && BX.hasClass(node, this.classControl))
 			{
 				this.node = node;
+				this.enableTime = (BX.data(this.getInput(), 'time') == 'true');
 
 				BX.bind(this.getButton(), 'click', BX.delegate(this.calendar, this));
-				BX.bind(this.getInput(), 'focus', BX.delegate(this.calendar, this));
-				BX.bind(this.getInput(), 'input', BX.delegate(this.calendar, this));
-				BX.bind(this.getInput(), 'click', BX.delegate(this.calendar, this));
-				document.addEventListener('focus', BX.delegate(this._onDocumentFocus, this), true);
+				BX.bind(this.getInput(), 'input', BX.delegate(this._onInputInput, this));
+				BX.bind(this.getInput(), 'focus', BX.delegate(this._onInputFocus, this));
+				BX.bind(this.getInput(), 'click', BX.delegate(this._onInputClick, this));
+				BX.bind(this.getValueDeleteButton(), 'click', BX.delegate(this._onValueDeleteButtonClick, this));
+				this.controlDeleteButton();
 			}
 		},
 
-		_onDocumentFocus: function(event)
+		_onInputInput: function()
 		{
-			if (event.target.nodeName === 'INPUT' && event.target !== this.getInput())
+			this.controlDeleteButton();
+		},
+
+		controlDeleteButton: function()
+		{
+			if (this.getInput().value.length)
 			{
-				this.calendar().Close();
+				BX.removeClass(this.getValueDeleteButton(), this.classHide);
 			}
+			else
+			{
+				BX.addClass(this.getValueDeleteButton(), this.classHide);
+			}
+		},
+
+		_onInputFocus: function(event)
+		{
+			this.isFocus = true;
+			this.eventTimestamp = event.timeStamp;
+			this.calendar();
+		},
+
+		_onInputClick: function(event)
+		{
+			var calendar = this.calendar();
+			var focusTime = new Date(this.eventTimestamp).getSeconds();
+			var clickTime = new Date(event.timeStamp).getSeconds();
+			event.preventDefault();
+			event.stopPropagation();
+
+			if (!this.isFocus || Math.abs(focusTime - clickTime) < 0)
+			{
+				if (calendar.popup.isShown())
+				{
+					this.getNode().click();
+				}
+			}
+
+			this.isFocus = false;
+		},
+
+		_onValueDeleteButtonClick: function(event)
+		{
+			var target = event.currentTarget;
+			var input;
+
+			if (BX.type.isDomNode(target))
+			{
+				input = this.getInput();
+
+				if (BX.type.isDomNode(input))
+				{
+					input.value = '';
+					this.controlDeleteButton();
+				}
+			}
+		},
+
+		getValueDeleteButton: function()
+		{
+			if (!BX.type.isDomNode(this.valueDeleteButton))
+			{
+				this.valueDeleteButton = BX.findChild(this.getNode(), {className: this.classValueDelete}, true, false);
+			}
+
+			return this.valueDeleteButton;
 		},
 
 		calendar: function()
 		{
 			var input = this.getInput();
 			var button = this.getButton();
-			var params = {node: button, field: input, bTime: true};
+
+			var params = {node: button, field: input, bTime: this.enableTime, bHideTime: false, callback_after: BX.delegate(this.controlDeleteButton, this)};
 
 			return BX.calendar(params);
 		},
@@ -90,7 +159,7 @@
 			});
 		}
 
-		if ('calendarButton' in data && data.calendarButton === true)
+		if ('calendarButton' in data && data.calendarButton === true && (!('type' in data) || 'type' in data && data.type !== 'hidden'))
 		{
 			calendarButton = {
 				block: 'main-ui-date-button',
@@ -105,20 +174,24 @@
 			mix: ['main-ui-control-input'],
 			tag: 'input',
 			attrs: {
-				type: 'text',
+				type: 'type' in data ? data.type : 'text',
 				name: 'name' in data ? data.name : '',
 				tabindex: 'tabindex' in data ? data.tabindex : '',
-				value: 'value' in data ? data.value : ''
+				value: 'value' in data ? data.value : '',
+				placeholder: 'placeholder' in data ? data.placeholder : '',
+				autocomplete: 'off',
+				'data-time': data.enableTime
 			}
 		};
 
 
 		control.content.push(input);
 
-		if ('valueDelete' in data && data.valueDelete === true)
+		if ('valueDelete' in data && data.valueDelete === true && (!('type' in data) || 'type' in data && data.type !== 'hidden'))
 		{
 			valueDelete = {
 				block: 'main-ui-control-value-delete',
+				mix: ['main-ui-hide'],
 				content: {
 					block: 'main-ui-control-value-delete-item',
 					tag: 'span'
@@ -126,6 +199,11 @@
 			};
 
 			control.content.push(valueDelete);
+		}
+
+		if (input.attrs.type === 'hidden')
+		{
+			control = input;
 		}
 
 		return control;

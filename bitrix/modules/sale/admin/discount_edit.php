@@ -66,9 +66,35 @@ if (
 	check_bitrix_sessid()
 	&& !$readOnly
 	&& $_SERVER['REQUEST_METHOD'] == 'POST'
+	&& !empty($_POST['AJAX_ACTION'])
+)
+{
+	switch ($_POST['AJAX_ACTION'])
+	{
+		case 'getUserName':
+			$userId = (int)$_POST['USER_ID'];
+			$APPLICATION->RestartBuffer();
+			echo Main\Web\Json::encode(array(
+				'userId' => $userId,
+				'name' => \Bitrix\Sale\Helpers\Admin\OrderEdit::getUserName($userId),
+			));
+			CMain::FinalActions();
+			die;
+
+			break;
+	}
+}
+
+if (
+	check_bitrix_sessid()
+	&& !$readOnly
+	&& $_SERVER['REQUEST_METHOD'] == 'POST'
 	&& isset($_POST['Update']) && (string)$_POST['Update'] == 'Y'
 )
 {
+	$CONDITIONS = null;
+	$ACTIONS = null;
+
 	$obCond3 = new CSaleCondTree();
 
 	$boolCond = $obCond3->Init(BT_COND_MODE_PARSE, BT_COND_BUILD_SALE, array('INIT_CONTROLS' => array(
@@ -160,18 +186,10 @@ if (
 	}
 
 	$arGroupID = array();
-	if (array_key_exists('USER_GROUPS', $_POST) && is_array($_POST['USER_GROUPS']))
+	if (isset($_POST['USER_GROUPS']) && is_array($_POST['USER_GROUPS']))
 	{
-		foreach ($_POST['USER_GROUPS'] as &$intValue)
-		{
-			$intValue = intval($intValue);
-			if ($intValue > 0)
-			{
-				$arGroupID[] = $intValue;
-			}
-		}
-		if (isset($intValue))
-			unset($intValue);
+		$arGroupID = $_POST['USER_GROUPS'];
+		Main\Type\Collection::normalizeArrayValuesByInt($arGroupID, true);
 	}
 
 	$arFields = array(
@@ -183,12 +201,14 @@ if (
 		"SORT" => (array_key_exists('SORT', $_POST) ? $_POST['SORT'] : 500),
 		"PRIORITY" => (array_key_exists('PRIORITY', $_POST) ? $_POST['PRIORITY'] : ''),
 		"LAST_DISCOUNT" => (array_key_exists('LAST_DISCOUNT', $_POST) && 'N' == $_POST['LAST_DISCOUNT'] ? 'N' : 'Y'),
+		"LAST_LEVEL_DISCOUNT" => (array_key_exists('LAST_LEVEL_DISCOUNT', $_POST) && 'N' == $_POST['LAST_LEVEL_DISCOUNT'] ? 'N' : 'Y'),
 		"XML_ID" => (array_key_exists('XML_ID', $_POST) ? $_POST['XML_ID'] : ''),
 		'CONDITIONS' => $CONDITIONS,
 		'ACTIONS' => $ACTIONS,
 		'USER_GROUPS' => $arGroupID,
 	);
 
+	$additionalFields = array();
 	if ($discountID == 0 || $copy)
 	{
 		$additionalFields = array(
@@ -227,6 +247,8 @@ if (
 	{
 		if ($discountID > 0 && !$copy)
 		{
+			$arFields['PRESET_ID'] = null;
+			$arFields['PREDICTIONS'] = null;
 			if (!CSaleDiscount::Update($discountID, $arFields))
 			{
 				if ($ex = $APPLICATION->GetException())
@@ -237,6 +259,7 @@ if (
 		}
 		else
 		{
+			unset($arFields['PRESET_ID'], $arFields['PREDICTIONS'], $arFields['PREDICTIONS_APP']);
 			$discountID = (int)CSaleDiscount::Add($arFields);
 			if ($discountID <= 0)
 			{
@@ -290,9 +313,11 @@ $defaultValues = array(
 	'ACTIVE_TO' => '',
 	'PRIORITY' => 1,
 	'LAST_DISCOUNT' => 'Y',
+	'LAST_LEVEL_DISCOUNT' => 'N',
 	'CONDITIONS' => '',
 	'XML_ID' => '',
 	'ACTIONS' => '',
+	'PRESET_ID' => null,
 );
 if (isset($_REQUEST['LID']))
 	$defaultValues['LID'] = trim($_REQUEST['LID']);
@@ -327,9 +352,15 @@ else
 	$rsDiscountGroups = CSaleDiscount::GetDiscountGroupList(array(),array('DISCOUNT_ID' => $discountID),false,false,array('GROUP_ID'));
 	while ($arDiscountGroup = $rsDiscountGroups->Fetch())
 	{
-		$arDiscountGroupList[] = intval($arDiscountGroup['GROUP_ID']);
+		$arDiscountGroupList[] = (int)$arDiscountGroup['GROUP_ID'];
 	}
 }
+
+if (!empty($arDiscount['PRESET_ID']))
+{
+	LocalRedirect('/bitrix/admin/sale_discount_preset_detail.php?DISCOUNT_ID='.$arDiscount['ID'].'&from_list=order&lang='.LANGUAGE_ID);
+}
+
 if (!empty($errors))
 {
 	if ($boolCondParseError || $boolActParseError)
@@ -402,6 +433,24 @@ if (!empty($errors))
 	unset($errorMessage);
 }
 
+$io = CBXVirtualIo::GetInstance();
+$hintPath = '/bitrix/images/sale/discount/';
+$hintLastDiscountImageName = $hintPath.'hint_last_discount_'.LANGUAGE_ID.'.png';
+$hintSizes = '';
+if (!$io->FileExists($_SERVER['DOCUMENT_ROOT'].$hintLastDiscountImageName))
+{
+	$hintLastDiscountImageName = $hintPath.'hint_last_discount_'.Main\Localization\Loc::getDefaultLang(LANGUAGE_ID).'.png';
+	if (!$io->FileExists($_SERVER['DOCUMENT_ROOT'].$hintLastDiscountImageName))
+		$hintLastDiscountImageName = '';
+}
+if ($hintLastDiscountImageName !== '')
+{
+	$imgSizes = getimagesize($io->GetPhysicalName($_SERVER['DOCUMENT_ROOT'].$hintLastDiscountImageName));
+	if (!empty($imgSizes))
+		$hintSizes = $imgSizes[3];
+	unset($imgSizes);
+}
+
 $arSiteList = array();
 $siteIterator = Main\SiteTable::getList(array(
 	'select' => array('LID', 'NAME'),
@@ -466,9 +515,10 @@ $control->BeginNextFormTab();
 		'<input type="hidden" name="ACTIVE_FROM" value="'.htmlspecialcharsbx($arDiscount['ACTIVE_FROM']).'">'.
 		'<input type="hidden" name="ACTIVE_TO" value="'.htmlspecialcharsbx($arDiscount['ACTIVE_FROM']).'">'
 	);
+	$control->AddSection('BT_SALE_DISCOUNT_SECT_PRIORITY', GetMessage('BT_SALE_DISCOUNT_SECTION_PRIORITY'));
 	$control->BeginCustomField('PRIORITY', GetMessage("BT_SALE_DISCOUNT_EDIT_FIELDS_PRIORITY").':', false);
 	?><tr id="tr_PRIORITY">
-		<td width="40%"><? echo $control->GetCustomLabelHTML(); ?><br /><? echo GetMessage('BT_SALE_DISCOUNT_EDIT_FIELDS_PRIORITY_DESCR'); ?></td>
+		<td width="40%"><span id="tr_HELP_notice"></span>&nbsp;<? echo $control->GetCustomLabelHTML(); ?><br /><? echo GetMessage('BT_SALE_DISCOUNT_EDIT_FIELDS_PRIORITY_DESCR'); ?></td>
 		<td width="60%">
 			<input type="text" name="PRIORITY" size="20" maxlength="20" value="<? echo intval($arDiscount['PRIORITY']); ?>">
 		</td>
@@ -476,9 +526,9 @@ $control->BeginNextFormTab();
 	$control->EndCustomField("PRIORITY",
 		'<input type="hidden" name="PRIORITY" value="'.intval($arDiscount['PRIORITY']).'">'
 	);
-	$control->BeginCustomField('SORT', GetMessage("BT_SALE_DISCOUNT_EDIT_FIELDS_SORT").':', false);
+	$control->BeginCustomField('SORT', GetMessage("BT_SALE_DISCOUNT_EDIT_FIELDS_SORT_2").':', false);
 	?><tr id="tr_SORT">
-		<td width="40%"><? echo $control->GetCustomLabelHTML(); ?><br /><? echo GetMessage('BT_SALE_DISCOUNT_EDIT_FIELDS_SORT_DESCR'); ?></td>
+		<td width="40%"><span id="tr_HELP_notice2"></span>&nbsp;<? echo $control->GetCustomLabelHTML(); ?><br /><? echo GetMessage('BT_SALE_DISCOUNT_EDIT_FIELDS_SORT_DESCR'); ?></td>
 		<td width="60%">
 			<input type="text" name="SORT" size="20" maxlength="20" value="<? echo intval($arDiscount['SORT']); ?>">
 		</td>
@@ -486,9 +536,22 @@ $control->BeginNextFormTab();
 	$control->EndCustomField("SORT",
 		'<input type="hidden" name="SORT" value="'.intval($arDiscount['SORT']).'">'
 	);
+	$control->BeginCustomField("LAST_LEVEL_DISCOUNT", GetMessage('BT_SALE_DISCOUNT_EDIT_FIELDS_LAST_LEVEL_DISCOUNT').":",false);
+	?><tr id="tr_LAST_LEVEL_DISCOUNT">
+		<td width="40%"><span id="tr_HELP_notice3"></span>&nbsp;<? echo $control->GetCustomLabelHTML(); ?>
+		</td>
+		<td width="60%">
+			<input type="hidden" value="N" name="LAST_LEVEL_DISCOUNT">
+			<input type="checkbox" value="Y" name="LAST_LEVEL_DISCOUNT" <? echo ('Y' == $arDiscount['LAST_LEVEL_DISCOUNT']? 'checked' : '');?>>
+		</td>
+	</tr><?
+	$control->EndCustomField("LAST_LEVEL_DISCOUNT",
+		'<input type="hidden" name="LAST_LEVEL_DISCOUNT" value="'.htmlspecialcharsbx($arDiscount['LAST_LEVEL_DISCOUNT']).'">'
+	);
 	$control->BeginCustomField("LAST_DISCOUNT", GetMessage('BT_SALE_DISCOUNT_EDIT_FIELDS_LAST_DISCOUNT').":",false);
 	?><tr id="tr_LAST_DISCOUNT">
-		<td width="40%"><? echo $control->GetCustomLabelHTML(); ?></td>
+		<td width="40%"><span id="tr_HELP_notice4"></span>&nbsp;<? echo $control->GetCustomLabelHTML(); ?>
+		</td>
 		<td width="60%">
 			<input type="hidden" value="N" name="LAST_DISCOUNT">
 			<input type="checkbox" value="Y" name="LAST_DISCOUNT" <? echo ('Y' == $arDiscount['LAST_DISCOUNT']? 'checked' : '');?>>
@@ -605,7 +668,7 @@ $control->BeginNextFormTab();
 			{
 				$group['ID'] = (int)$group['ID'];
 				$selected = (in_array($group['ID'], $arDiscountGroupList) ? ' selected' : '');
-				?><option value="<? echo $group['ID']; ?>"<? echo $selected; ?>>[<? echo $group['ID']; ?>] <? echo htmlspecialcharsex($group['NAME']); ?></option><?
+				?><option value="<? echo $group['ID']; ?>"<? echo $selected; ?>>[<? echo $group['ID']; ?>] <? echo htmlspecialcharsEx($group['NAME']); ?></option><?
 			}
 			unset($selected, $group, $groupIterator);
 			?>
@@ -681,7 +744,7 @@ $control->BeginNextFormTab();
 				<select name="COUPON[TYPE]" size="3"><?
 					foreach ($couponTypes as $type => $title)
 					{
-						?><option value="<? echo $type; ?>" <? echo ($type == $coupons['COUPON']['TYPE'] ? 'selected' : ''); ?>><? echo htmlspecialcharsex($title); ?></option><?
+						?><option value="<? echo $type; ?>" <? echo ($type == $coupons['COUPON']['TYPE'] ? 'selected' : ''); ?>><? echo htmlspecialcharsEx($title); ?></option><?
 					}
 					?></select>
 			</td>
@@ -709,7 +772,10 @@ $control->Show();
 			obCouponType = BX('tr_COUPON_TYPE'),
 			obCouponCount = BX('tr_COUPON_COUNT'),
 			obCouponPeriod = BX('tr_COUPON_PERIOD'),
-			obCouponMaxUse = BX('tr_COUPON_MAX_USE');
+			obCouponMaxUse = BX('tr_COUPON_MAX_USE'),
+			priorityHint = ['tr_HELP_notice', 'tr_HELP_notice2', 'tr_HELP_notice3', 'tr_HELP_notice4'],
+			i,
+			hintImage = '<?=$hintLastDiscountImageName; ?>';
 
 		if (!!obCouponAdd && (!!obCouponType || !!obCouponCount || !!obCouponPeriod || !!obCouponMaxUse))
 		{
@@ -731,6 +797,13 @@ $control->Show();
 				BX.style(obCouponPeriod, 'display', (obCouponAdd.checked ? 'table-row' : 'none'));
 			if (!!obCouponMaxUse)
 				BX.style(obCouponMaxUse, 'display', (obCouponAdd.checked ? 'table-row' : 'none'));
+		}
+		if (hintImage != '')
+		{
+			for (i = 0; i < priorityHint.length; i++)
+			{
+				BX.hint_replace(BX(priorityHint[i]), '<img style="padding-left: 16px;" src="' + hintImage + '" <?=$hintSizes; ?> alt="">');
+			}
 		}
 	});
 </script>

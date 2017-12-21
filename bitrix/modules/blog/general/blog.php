@@ -3,6 +3,8 @@ IncludeModuleLangFile(__FILE__);
 
 $GLOBALS["BLOG"] = Array();
 
+use Bitrix\Main\Text\HtmlFilter;
+
 class CAllBlog
 {
 	public static function IsBlogOwner($ID, $userID)
@@ -53,7 +55,7 @@ class CAllBlog
 		return True;
 	}
 
-	function CanUserManageBlog($ID, $userID = 0)
+	public static function CanUserManageBlog($ID, $userID = 0)
 	{
 		global $APPLICATION;
 		$ID = IntVal($ID);
@@ -544,14 +546,14 @@ class CAllBlog
 
 					if ($arFields[$fkey]["TYPE"] == "datetime")
 					{
-						if ((strtoupper($DB->type)=="ORACLE" || strtoupper($DB->type)=="MSSQL") && (array_key_exists($fkey, $arOrder)))
+						if (array_key_exists($fkey, $arOrder))
 							$strSqlSelect .= $arFields[$fkey]["FIELD"]." as ".$fkey."_X1, ";
 
 						$strSqlSelect .= $DB->DateToCharFunction($arFields[$fkey]["FIELD"], "FULL")." as ".$fkey;
 					}
 					elseif ($arFields[$fkey]["TYPE"] == "date")
 					{
-						if ((strtoupper($DB->type)=="ORACLE" || strtoupper($DB->type)=="MSSQL") && (array_key_exists($fkey, $arOrder)))
+						if (array_key_exists($fkey, $arOrder))
 							$strSqlSelect .= $arFields[$fkey]["FIELD"]." as ".$fkey."_X1, ";
 
 						$strSqlSelect .= $DB->DateToCharFunction($arFields[$fkey]["FIELD"], "SHORT")." as ".$fkey;
@@ -589,14 +591,14 @@ class CAllBlog
 						{
 							if ($arFields[$val]["TYPE"] == "datetime")
 							{
-								if ((strtoupper($DB->type)=="ORACLE" || strtoupper($DB->type)=="MSSQL") && (array_key_exists($val, $arOrder)))
+								if (array_key_exists($val, $arOrder))
 									$strSqlSelect .= $arFields[$val]["FIELD"]." as ".$val."_X1, ";
 
 								$strSqlSelect .= $DB->DateToCharFunction($arFields[$val]["FIELD"], "FULL")." as ".$val;
 							}
 							elseif ($arFields[$val]["TYPE"] == "date")
 							{
-								if ((strtoupper($DB->type)=="ORACLE" || strtoupper($DB->type)=="MSSQL") && (array_key_exists($val, $arOrder)))
+								if (array_key_exists($val, $arOrder))
 									$strSqlSelect .= $arFields[$val]["FIELD"]." as ".$val."_X1, ";
 
 								$strSqlSelect .= $DB->DateToCharFunction($arFields[$val]["FIELD"], "SHORT")." as ".$val;
@@ -909,6 +911,7 @@ class CAllBlog
 				"SELECT B.ID, B.NAME, B.DESCRIPTION, B.ACTIVE, B.OWNER_ID, B.URL, B.GROUP_ID, ".
 				"	B.ENABLE_COMMENTS, B.ENABLE_IMG_VERIF, B.EMAIL_NOTIFY, B.ENABLE_RSS, B.REAL_URL, ".
 				"	B.LAST_POST_ID, B.AUTO_GROUPS, B.ALLOW_HTML, B.SEARCH_INDEX, B.SOCNET_GROUP_ID, B.USE_SOCNET, ".
+				"	B.EDITOR_USE_FONT, B.EDITOR_USE_LINK, B.EDITOR_USE_IMAGE, B.EDITOR_USE_FORMAT, B.EDITOR_USE_VIDEO, ".
 				"	".$DB->DateToCharFunction("B.DATE_CREATE", "FULL")." as DATE_CREATE, ".
 				"	".$DB->DateToCharFunction("B.DATE_UPDATE", "FULL")." as DATE_UPDATE, ".
 				"	".$DB->DateToCharFunction("B.LAST_POST_DATE", "FULL")." as LAST_POST_DATE ".
@@ -963,6 +966,7 @@ class CAllBlog
 				"SELECT B.ID, B.NAME, B.DESCRIPTION, B.ACTIVE, B.OWNER_ID, B.URL, B.GROUP_ID, ".
 				"	B.ENABLE_COMMENTS, B.ENABLE_IMG_VERIF, B.EMAIL_NOTIFY, B.ENABLE_RSS, B.REAL_URL, ".
 				"	B.LAST_POST_ID, B.AUTO_GROUPS, B.ALLOW_HTML, B.SEARCH_INDEX, B.SOCNET_GROUP_ID, B.USE_SOCNET, ".
+				"	B.EDITOR_USE_FONT, B.EDITOR_USE_LINK, B.EDITOR_USE_IMAGE, B.EDITOR_USE_FORMAT, B.EDITOR_USE_VIDEO, ".
 				"	".$DB->DateToCharFunction("B.DATE_CREATE", "FULL")." as DATE_CREATE, ".
 				"	".$DB->DateToCharFunction("B.DATE_UPDATE", "FULL")." as DATE_UPDATE, ".
 				"	".$DB->DateToCharFunction("B.LAST_POST_DATE", "FULL")." as LAST_POST_DATE ".
@@ -1019,6 +1023,7 @@ class CAllBlog
 				"SELECT B.ID, B.NAME, B.DESCRIPTION, B.ACTIVE, B.OWNER_ID, B.URL, B.GROUP_ID, ".
 				"	B.ENABLE_COMMENTS, B.ENABLE_IMG_VERIF, B.EMAIL_NOTIFY, B.ENABLE_RSS, B.REAL_URL, ".
 				"	B.LAST_POST_ID, B.AUTO_GROUPS, B.ALLOW_HTML, B.SEARCH_INDEX, B.SOCNET_GROUP_ID, B.USE_SOCNET, ".
+				"	B.EDITOR_USE_FONT, B.EDITOR_USE_LINK, B.EDITOR_USE_IMAGE, B.EDITOR_USE_FORMAT, B.EDITOR_USE_VIDEO, ".
 				"	".$DB->DateToCharFunction("B.DATE_CREATE", "FULL")." as DATE_CREATE, ".
 				"	".$DB->DateToCharFunction("B.DATE_UPDATE", "FULL")." as DATE_UPDATE, ".
 				"	".$DB->DateToCharFunction("B.LAST_POST_DATE", "FULL")." as LAST_POST_DATE ".
@@ -1073,7 +1078,7 @@ class CAllBlog
 			$strSql =
 				"SELECT B.ID, B.NAME, B.DESCRIPTION, B.ACTIVE, B.OWNER_ID, B.URL, B.GROUP_ID, ".
 				"	B.ENABLE_COMMENTS, B.ENABLE_IMG_VERIF, B.EMAIL_NOTIFY, B.ENABLE_RSS, B.REAL_URL, ".
-				"	B.LAST_POST_ID, B.AUTO_GROUPS, B.ALLOW_HTML, B.SEARCH_INDEX, B.SOCNET_GROUP_ID, B.USE_SOCNET,  ".
+				"	B.LAST_POST_ID, B.AUTO_GROUPS, B.ALLOW_HTML, B.SEARCH_INDEX, B.SOCNET_GROUP_ID, B.USE_SOCNET, ".
 				"	".$DB->DateToCharFunction("B.DATE_CREATE", "FULL")." as DATE_CREATE, ".
 				"	".$DB->DateToCharFunction("B.DATE_UPDATE", "FULL")." as DATE_UPDATE, ".
 				"	".$DB->DateToCharFunction("B.LAST_POST_DATE", "FULL")." as LAST_POST_DATE  ".
@@ -1138,6 +1143,7 @@ class CAllBlog
 					else
 						$serverName = COption::GetOptionString("main", "server_name", "");
 				}
+				$serverName = HtmlFilter::encode($serverName);
 
 				if (strlen($charset) <= 0)
 				{
@@ -1186,7 +1192,7 @@ class CAllBlog
 							if ($arUser = $dbUser->Fetch())
 							{
 								$blogName = htmlspecialcharsbx(GetMessage("BLG_RSS_NAME_SONET", Array("#AUTHOR_NAME#" => CUser::FormatName(CSite::GetNameFormat(false), $arUser, true))));
-								$blogURL = htmlspecialcharsbx("http://".$serverName.CComponentEngine::MakePathFromTemplate($blogTemplate, array("user_id" => $arParams["USER_ID"])));
+								$blogURL = "http://".$serverName.htmlspecialcharsbx(CComponentEngine::MakePathFromTemplate($blogTemplate, array("user_id" => $arParams["USER_ID"])));
 							}
 						}
 						else
@@ -1194,7 +1200,7 @@ class CAllBlog
 							if ($arGroupSoNet = CSocNetGroup::GetByID($arParams["SOCNET_GROUP_ID"]))
 							{
 								$blogName = htmlspecialcharsbx(GetMessage("BLG_RSS_NAME_SONET_GROUP", Array("#GROUP_NAME#" => $arGroupSoNet["NAME"])));
-								$blogURL = htmlspecialcharsbx("http://".$serverName.CComponentEngine::MakePathFromTemplate($blogTemplate, array("group_id" => $arParams["SOCNET_GROUP_ID"])));
+								$blogURL = "http://".$serverName.htmlspecialcharsbx(CComponentEngine::MakePathFromTemplate($blogTemplate, array("group_id" => $arParams["SOCNET_GROUP_ID"])));
 							}
 						}
 						$blogDescr = "";
@@ -1202,9 +1208,9 @@ class CAllBlog
 					else
 					{
 						if (strlen($blogTemplate) > 0)
-							$blogURL = htmlspecialcharsbx("http://".$serverName.CComponentEngine::MakePathFromTemplate($blogTemplate, array("blog" => $arBlog["URL"], "user_id" => $arBlog["OWNER_ID"], "group_id" => $arBlog["SOCNET_GROUP_ID"])));
+							$blogURL = "http://".$serverName.htmlspecialcharsbx(CComponentEngine::MakePathFromTemplate($blogTemplate, array("blog" => $arBlog["URL"], "user_id" => $arBlog["OWNER_ID"], "group_id" => $arBlog["SOCNET_GROUP_ID"])));
 						else
-							$blogURL = htmlspecialcharsbx("http://".$serverName.CBlog::PreparePath($arBlog["URL"], $arGroup["SITE_ID"]));
+							$blogURL = "http://".$serverName.htmlspecialcharsbx(CBlog::PreparePath($arBlog["URL"], $arGroup["SITE_ID"]));
 						$blogName = htmlspecialcharsbx($arBlog["NAME"]);
 						$blogDescr = htmlspecialcharsbx($arBlog["DESCRIPTION"]);
 					}
@@ -1239,7 +1245,7 @@ class CAllBlog
 				}
 				elseif ($type == "atom.03")
 				{
-					$atomID = "tag:".htmlspecialcharsbx($serverName).",".date("Y-m-d").":".$ID;
+					$atomID = "tag:".$serverName.",".date("Y-m-d").":".$ID;
 
 					$rssText .= "<"."?xml version=\"1.0\" encoding=\"".$charset."\"?".">\n\n";
 					$rssText .= "<feed version=\"0.3\" xmlns=\"http://purl.org/atom/ns#\" xml:lang=\"".$language."\">\n";
@@ -1320,11 +1326,11 @@ class CAllBlog
 						$date = date("r", mktime($arDate["HH"], $arDate["MI"], $arDate["SS"], $arDate["MM"], $arDate["DD"], $arDate["YYYY"]));
 
 						if(strlen($arPost["PATH"]) > 0)
-							$url = htmlspecialcharsbx("http://".$serverName.str_replace("#post_id#", CBlogPost::GetPostID($arPost["ID"], $arPost["CODE"], $arParams["ALLOW_POST_CODE"]), $arPost["PATH"]));
+							$url = "http://".$serverName.htmlspecialcharsbx(str_replace("#post_id#", CBlogPost::GetPostID($arPost["ID"], $arPost["CODE"], $arParams["ALLOW_POST_CODE"]), $arPost["PATH"]));
 						elseif(strLen($postTemplate)>0)
-							$url = htmlspecialcharsbx("http://".$serverName.CComponentEngine::MakePathFromTemplate($postTemplate, array("blog" => $arBlog["URL"], "post_id"=>CBlogPost::GetPostID($arPost["ID"], $arPost["CODE"], $arParams["ALLOW_POST_CODE"]), "user_id" => (IntVal($arParams["USER_ID"]) > 0 ? $arParams["USER_ID"] : $arBlog["OWNER_ID"]), "group_id" => (IntVal($arParams["SOCNET_GROUP_ID"]) > 0 ? $arParams["SOCNET_GROUP_ID"] : $arBlog["SOCNET_GROUP_ID"]))));
+							$url = "http://".$serverName.htmlspecialcharsbx(CComponentEngine::MakePathFromTemplate($postTemplate, array("blog" => $arBlog["URL"], "post_id"=>CBlogPost::GetPostID($arPost["ID"], $arPost["CODE"], $arParams["ALLOW_POST_CODE"]), "user_id" => (IntVal($arParams["USER_ID"]) > 0 ? $arParams["USER_ID"] : $arBlog["OWNER_ID"]), "group_id" => (IntVal($arParams["SOCNET_GROUP_ID"]) > 0 ? $arParams["SOCNET_GROUP_ID"] : $arBlog["SOCNET_GROUP_ID"]))));
 						else
-							$url = htmlspecialcharsbx("http://".$serverName.CBlogPost::PreparePath($arBlog["URL"], $arPost["ID"], $arGroup["SITE_ID"]));
+							$url = "http://".$serverName.htmlspecialcharsbx(CBlogPost::PreparePath($arBlog["URL"], $arPost["ID"], $arGroup["SITE_ID"]));
 
 						$category = htmlspecialcharsbx($arPost["CATEGORY_NAME"]);
 						
@@ -1334,9 +1340,9 @@ class CAllBlog
 						$author = htmlspecialcharsex(CBlogUser::GetUserName($BlogUser["ALIAS"], $arUser["NAME"], $arUser["LAST_NAME"], $arUser["LOGIN"], $arUser["SECOND_NAME"]));
 
 						if(strLen($userTemplate)>0)
-							$authorURL = htmlspecialcharsbx("http://".$serverName.CComponentEngine::MakePathFromTemplate($userTemplate, array("user_id"=>$arPost["AUTHOR_ID"])));
+							$authorURL = "http://".$serverName.htmlspecialcharsbx(CComponentEngine::MakePathFromTemplate($userTemplate, array("user_id"=>$arPost["AUTHOR_ID"])));
 						else
-							$authorURL = htmlspecialcharsbx("http://".$serverName.CBlogUser::PreparePath($arPost["AUTHOR_ID"], $arGroup["SITE_ID"]));
+							$authorURL = "http://".$serverName.htmlspecialcharsbx(CBlogUser::PreparePath($arPost["AUTHOR_ID"], $arGroup["SITE_ID"]));
 
 						if($arPost["DETAIL_TEXT_TYPE"] == "html")
 							$text = $parser->convert_to_rss($arPost["DETAIL_TEXT"], $arImages, array("HTML" => "Y", "ANCHOR" => "Y", "IMG" => "Y", "SMILES" => "Y", "NL2BR" => "N", "QUOTE" => "Y", "CODE" => "Y"), true, $arParserParams);
@@ -1373,7 +1379,7 @@ class CAllBlog
 						}
 						elseif ($type == "atom.03")
 						{
-							$atomID = "tag:".htmlspecialcharsbx($serverName).":".$arBlog["URL"]."/".$arPost["ID"];
+							$atomID = "tag:".$serverName.":".$arBlog["URL"]."/".$arPost["ID"];
 
 							$timeISO = mktime($arDate["HH"], $arDate["MI"], $arDate["SS"], $arDate["MM"], $arDate["DD"], $arDate["YYYY"]);
 							$dateISO = date("Y-m-d\\TH:i:s", $timeISO).substr(date("O", $timeISO), 0, 3).":".substr(date("O", $timeISO), -2, 2);
@@ -1512,6 +1518,7 @@ class CAllBlog
 			else
 				$serverName = COption::GetOptionString("main", "server_name", "");
 		}
+		$serverName = HtmlFilter::encode($serverName);
 
 		if (strlen($charset) <= 0)
 		{
@@ -1555,7 +1562,7 @@ class CAllBlog
 		}
 		elseif ($type == "atom.03")
 		{
-			$atomID = "tag:".htmlspecialcharsbx($serverName).",".date("Y-m-d");
+			$atomID = "tag:".$serverName.",".date("Y-m-d");
 
 			$rssText .= "<"."?xml version=\"1.0\" encoding=\"".$charset."\"?".">\n\n";
 			$rssText .= "<feed version=\"0.3\" xmlns=\"http://purl.org/atom/ns#\" xml:lang=\"".$language."\">\n";
@@ -1634,33 +1641,33 @@ class CAllBlog
 			
 			if(strlen($arPost["PATH"]) > 0)
 			{
-				$url = htmlspecialcharsbx("http://".$serverName.str_replace("#post_id#", CBlogPost::GetPostID($arPost["ID"], $arPost["CODE"], $arPathTemplates["ALLOW_POST_CODE"]), $arPost["PATH"]));
+				$url = "http://".$serverName.htmlspecialcharsbx(str_replace("#post_id#", CBlogPost::GetPostID($arPost["ID"], $arPost["CODE"], $arPathTemplates["ALLOW_POST_CODE"]), $arPost["PATH"]));
 			}
 			elseif(!empty($arPathTemplates))
 			{
 				if(IntVal($arPost["BLOG_SOCNET_GROUP_ID"]) > 0 && strlen($arPathTemplates["GROUP_BLOG_POST"]) > 0)
-					$url = htmlspecialcharsbx("http://".$serverName.CComponentEngine::MakePathFromTemplate($arPathTemplates["GROUP_BLOG_POST"], array("blog" => $arPost["BLOG_URL"], "post_id" => CBlogPost::GetPostID($arPost["ID"], $arPost["CODE"], $arPathTemplates["ALLOW_POST_CODE"]), "user_id"=>$arPost["BLOG_OWNER_ID"], "group_id"=>$arPost["BLOG_SOCNET_GROUP_ID"])));
+					$url = "http://".$serverName.htmlspecialcharsbx(CComponentEngine::MakePathFromTemplate($arPathTemplates["GROUP_BLOG_POST"], array("blog" => $arPost["BLOG_URL"], "post_id" => CBlogPost::GetPostID($arPost["ID"], $arPost["CODE"], $arPathTemplates["ALLOW_POST_CODE"]), "user_id"=>$arPost["BLOG_OWNER_ID"], "group_id"=>$arPost["BLOG_SOCNET_GROUP_ID"])));
 				else
-					$url = htmlspecialcharsbx("http://".$serverName.CComponentEngine::MakePathFromTemplate($arPathTemplates["BLOG_POST"], array("blog" => $arPost["BLOG_URL"], "post_id" => CBlogPost::GetPostID($arPost["ID"], $arPost["CODE"], $arPathTemplates["ALLOW_POST_CODE"]), "user_id"=>$arPost["BLOG_OWNER_ID"], "group_id"=>$arPost["BLOG_SOCNET_GROUP_ID"])));
+					$url = "http://".$serverName.htmlspecialcharsbx(CComponentEngine::MakePathFromTemplate($arPathTemplates["BLOG_POST"], array("blog" => $arPost["BLOG_URL"], "post_id" => CBlogPost::GetPostID($arPost["ID"], $arPost["CODE"], $arPathTemplates["ALLOW_POST_CODE"]), "user_id"=>$arPost["BLOG_OWNER_ID"], "group_id"=>$arPost["BLOG_SOCNET_GROUP_ID"])));
 			}
 			elseif(strLen($postTemplate)>0)
 			{
-				$url = htmlspecialcharsbx("http://".$serverName.CComponentEngine::MakePathFromTemplate($postTemplate, array("blog" => $arPost["BLOG_URL"], "post_id"=>$arPost["ID"], "user_id"=>$arPost["BLOG_OWNER_ID"], "group_id"=>$arPost["BLOG_SOCNET_GROUP_ID"])));
+				$url = "http://".$serverName.htmlspecialcharsbx(CComponentEngine::MakePathFromTemplate($postTemplate, array("blog" => $arPost["BLOG_URL"], "post_id"=>$arPost["ID"], "user_id"=>$arPost["BLOG_OWNER_ID"], "group_id"=>$arPost["BLOG_SOCNET_GROUP_ID"])));
 			}
 			else
 			{
-				$url = htmlspecialcharsbx("http://".$serverName.CBlogPost::PreparePath(htmlspecialcharsbx($arPost["BLOG_URL"]), $arPost["ID"], $arPost["BLOG_GROUP_SITE_ID"]));
+				$url = "http://".$serverName.htmlspecialcharsbx(CBlogPost::PreparePath(htmlspecialcharsbx($arPost["BLOG_URL"]), $arPost["ID"], $arPost["BLOG_GROUP_SITE_ID"]));
 			}
 
 			$category = htmlspecialcharsbx($arPost["CATEGORY_NAME"]);
 			if(strlen($arPathTemplates["USER"]) > 0)
 			{
-				$authorURL = htmlspecialcharsbx("http://".$serverName.CComponentEngine::MakePathFromTemplate($arPathTemplates["USER"], array("user_id"=>$arPost["AUTHOR_ID"], "group_id"=>$arPost["BLOG_SOCNET_GROUP_ID"])));
+				$authorURL = "http://".$serverName.htmlspecialcharsbx(CComponentEngine::MakePathFromTemplate($arPathTemplates["USER"], array("user_id"=>$arPost["AUTHOR_ID"], "group_id"=>$arPost["BLOG_SOCNET_GROUP_ID"])));
 			}
 			elseif(strLen($userTemplate)>0)
-				$authorURL = htmlspecialcharsbx("http://".$serverName.CComponentEngine::MakePathFromTemplate($userTemplate, array("user_id"=>$arPost["AUTHOR_ID"], "group_id"=>$arPost["BLOG_SOCNET_GROUP_ID"])));
+				$authorURL = "http://".$serverName.htmlspecialcharsbx(CComponentEngine::MakePathFromTemplate($userTemplate, array("user_id"=>$arPost["AUTHOR_ID"], "group_id"=>$arPost["BLOG_SOCNET_GROUP_ID"])));
 			else
-				$authorURL = htmlspecialcharsbx("http://".$serverName.CBlogUser::PreparePath($arPost["AUTHOR_ID"], $arPost["BLOG_GROUP_SITE_ID"]));
+				$authorURL = "http://".$serverName.htmlspecialcharsbx(CBlogUser::PreparePath($arPost["AUTHOR_ID"], $arPost["BLOG_GROUP_SITE_ID"]));
 			
 			if($arPost["DETAIL_TEXT_TYPE"] == "html")
 				$text = $parser->convert_to_rss($arPost["DETAIL_TEXT"], $arImages, array("HTML" => "Y", "ANCHOR" => "Y", "IMG" => "Y", "SMILES" => "Y", "NL2BR" => "N", "QUOTE" => "Y", "CODE" => "Y"), true, $arParserParams);
@@ -1695,7 +1702,7 @@ class CAllBlog
 			}
 			elseif ($type == "atom.03")
 			{
-				$atomID = "tag:".htmlspecialcharsbx($serverName).":/".$arPost["ID"];
+				$atomID = "tag:".$serverName.":/".$arPost["ID"];
 
 				$timeISO = mktime($arDate["HH"], $arDate["MI"], $arDate["SS"], $arDate["MM"], $arDate["DD"], $arDate["YYYY"]);
 				$dateISO = date("Y-m-d\\TH:i:s", $timeISO).substr(date("O", $timeISO), 0, 3).":".substr(date("O", $timeISO), -2, 2);

@@ -12,14 +12,17 @@ if ($params["PAYED"] != "Y")
 	<table border="0" width="100%" cellpadding="2" cellspacing="2">
 		<tr>
 			<td align="center">
+				<?
+					$itemName = "Invoice ".$params["PAYMENT_ID"]." (".$params["PAYMENT_DATE_INSERT"].")";
+				?>
 				<form action="<?=$params['URL']?>" method="post">
 					<input type="hidden" name="cmd" value="_xclick">
 					<input type="hidden" name="buttonsource" value="Bitrix_Cart">
-					<input type="hidden" name="business" value="<?= htmlspecialcharsEx($params["PAYPAL_BUSINESS"]) ?>">
-					<input type="hidden" name="item_name" value="Invoice <?= $params["PAYMENT_ID"]." (".$params["PAYMENT_DATE_INSERT"].")"?>">
-					<input type="hidden" name="currency_code" value="<?= $params["PAYMENT_CURRENCY"]?>">
+					<input type="hidden" name="business" value="<?= htmlspecialcharsbx($params["PAYPAL_BUSINESS"]) ?>">
+					<input type="hidden" name="item_name" value="<?=htmlspecialcharsbx($itemName)?>">
+					<input type="hidden" name="currency_code" value="<?=htmlspecialcharsbx($params["PAYMENT_CURRENCY"])?>">
 					<input type="hidden" name="amount" value="<?=roundEx($params["PAYMENT_SHOULD_PAY"], 2);?>">
-					<input type="hidden" name="custom" value="<?= $params["PAYMENT_ID"]?>">
+					<input type="hidden" name="custom" value="<?=htmlspecialcharsbx($params["PAYMENT_ID"])?>">
 
 					<?if ($params["PAYPAL_ON0"] != ''):?>
 						<input type="hidden" name="on0" value="<?=urlencode($params["PAYPAL_ON0"])?>">
@@ -32,15 +35,15 @@ if ($params["PAYED"] != "Y")
 					<?endif;?>
 
 					<?if ($params["PAYPAL_NOTIFY_URL"] != ''):?>
-						<input type="hidden" name="notify_url" value="<?=$params["PAYPAL_NOTIFY_URL"]?>">
+						<input type="hidden" name="notify_url" value="<?=htmlspecialcharsbx($params["PAYPAL_NOTIFY_URL"])?>">
 					<?endif;?>
 
 					<?if ($params["PAYPAL_RETURN"] != ''):?>
-						<input type="hidden" name="return" value="<?=$params["PAYPAL_RETURN"]?>">
+						<input type="hidden" name="return" value="<?=htmlspecialcharsbx($params["PAYPAL_RETURN"])?>">
 					<?endif;?>
 
 					<?if ($params["PAYPAL_LC"] != ''):?>
-						<input type="hidden" name="lc" value="<?=$params["PAYPAL_LC"]?>">
+						<input type="hidden" name="lc" value="<?=htmlspecialcharsbx($params["PAYPAL_LC"])?>">
 					<?endif;?>
 
 					<? $buttonSrc = (strlen($params["PAYPAL_BUTTON_SRC"])>0) ? $params["PAYPAL_BUTTON_SRC"] : "http://www.paypal.com/en_US/i/btn/x-click-but6.gif";?>

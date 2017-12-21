@@ -68,7 +68,7 @@ class CDatabase extends CDatabaseMysql
 		if ($iMaxLength > 0)
 			$strValue = substr($strValue, 0, $iMaxLength);
 
-		if (!is_object($this) || !$this->db_Conn)
+		if (!isset($this) || !is_object($this) || !$this->db_Conn)
 		{
 			global $DB;
 			$DB->DoConnect();
@@ -86,7 +86,7 @@ class CDatabase extends CDatabaseMysql
 		if ($iMaxLength > 0)
 			$strValue = substr($strValue, 0, $iMaxLength);
 
-		if(!is_object($this) || !$this->db_Conn)
+		if(!isset($this) || !is_object($this) || !$this->db_Conn)
 		{
 			global $DB;
 			$DB->DoConnect();
@@ -159,7 +159,7 @@ class CDBResult extends CDBResultMysql
 
 	function AffectedRowsCount()
 	{
-		if(is_object($this) && is_object($this->DB))
+		if(isset($this) && is_object($this) && is_object($this->DB))
 		{
 			/** @noinspection PhpUndefinedMethodInspection */
 			$this->DB->DoConnect();

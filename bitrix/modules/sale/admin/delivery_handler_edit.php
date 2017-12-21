@@ -942,7 +942,7 @@ function printProfileInfo($SID, $profileId, $arProfile, $baseCurrency)
 			<td valign="top" width="60%">
 				<input type="text" name="HANDLER[PROFILES][<?=htmlspecialcharsbx($profileId)?>][RESTRICTIONS_SUM][1]" value="<?=number_format(floatval($arProfile['RESTRICTIONS_SUM'][1]), 2, '.', '')?>" size="8" />&nbsp;
 				<input type="text" name="HANDLER[PROFILES][<?=htmlspecialcharsbx($profileId)?>][RESTRICTIONS_SUM][2]" value="<?=number_format(floatval($arProfile['RESTRICTIONS_SUM'][2]), 2, '.', '')?>" size="8" />&nbsp;
-				<input type="hidden" name='HANDLER[PROFILES][<?=htmlspecialcharsbx($profileId)?>][RESTRICTIONS_SUM][0]' value="<?=$baseCurrency?>">
+				<input type="hidden" name="HANDLER[PROFILES][<?=htmlspecialcharsbx($profileId)?>][RESTRICTIONS_SUM][0]" value="<?=$baseCurrency?>">
 			</td>
 		</tr>
 		<tr class="heading">

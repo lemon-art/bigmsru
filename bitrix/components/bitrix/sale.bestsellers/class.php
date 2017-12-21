@@ -223,7 +223,7 @@ class CSaleBestsellersComponent extends CCatalogViewedProductsComponent
 	 *
 	 * @return array
 	 */
-	protected function getAdditionalRefereneces()
+	protected function getAdditionalReferences()
 	{
 		if (!$this->isSale)
 			return array();

@@ -73,6 +73,20 @@ if ($_POST['RATING_VOTE_LIST'] == 'Y'
 		$arVoteList['items'][] = $arUserVote;
 	}
 
+	if ($USER->IsAuthorized())
+	{
+		$event = new \Bitrix\Main\Event(
+			'main',
+			'onRatingListViewed',
+			array(
+				'entityTypeId' => $_POST['RATING_VOTE_TYPE_ID'],
+				'entityId' => $_POST['RATING_VOTE_ENTITY_ID'],
+				'userId' => $USER->getId()
+			)
+		);
+		$event->send();
+	}
+
 	Header('Content-Type: application/x-javascript; charset='.LANG_CHARSET);
 	echo CUtil::PhpToJsObject($arVoteList);
 }

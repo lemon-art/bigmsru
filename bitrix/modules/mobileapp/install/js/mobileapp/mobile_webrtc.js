@@ -1,7 +1,85 @@
+
+var WebRTCPlugin = function ()
+{
+	/**
+	 *
+	 * @type {Window.BXCordovaPlugin}
+	 */
+	this.plugin = this.UI.plugin = new BXCordovaPlugin("MobileWebRTC");
+	this.CallBackExecute = function(){
+		this.plugin.CallBackExecute.apply(this.plugin, arguments);
+	}
+};
+
+WebRTCPlugin.prototype =
+{
+	UI: {
+		state: {
+			"OUTGOING_CALL": "outgoing_call",
+			"INCOMING_CALL": "incoming_call",
+			"CONVERSATION": "conversation",
+			"FAIL_CALL": "fail_call"
+		},
+		exec: function (func, params)
+		{
+			console.log(this);
+			this.plugin.exec(func, params);
+		},
+		show: function (state, options)
+		{
+			var params = options || {};
+			params.state = state;
+			return this.exec("showUi", params);
+		},
+		close: function (params)
+		{
+			return this.plugin.exec("closeUi", params);
+		},
+		showLocalVideo: function (params)
+		{
+			return this.plugin.exec("showLocalVideo", params);
+		}
+	},
+	createPeerConnection: function (params)
+	{
+		return this.plugin.exec("createPeerConnection", params);
+	},
+	createOffer: function (params)
+	{
+		return this.plugin.exec("createOffer", params);
+	},
+	createAnswer: function (params)
+	{
+		return this.plugin.exec("createAnswer", params);
+	},
+	addIceCandidates:function (params)
+	{
+		return this.plugin.exec("addIceCandidates", params);
+	},
+	setRemoteDescription:function (params)
+	{
+		return this.plugin.exec("setRemoteDescription", params);
+	},
+	getUserMedia:function (params)
+	{
+		return this.plugin.exec("getUserMedia", params);
+	},
+	onReconnect:function (params)
+	{
+		return this.plugin.exec("onReconnect", params);
+	},
+	setEventListeners:function (params)
+	{
+		return this.plugin.exec("setEventListeners", params);
+	}
+};
+
+window.webrtc = webrtc = new WebRTCPlugin();
+
 MobileWebrtc = function ()
 {
-	this.siteDir = (typeof mobileSiteDir == "undefined"?"/": mobileSiteDir);
-	this.signalingLink = this.siteDir+'mobile/ajax.php?mobile_action=calls&';
+	this.siteDir = (typeof mobileSiteDir == "undefined" ? "/" : mobileSiteDir);
+	this.signalingLink = this.siteDir + 'mobile/ajax.php?mobile_action=calls&';
 	this.initiator = false;
 	this.callUserId = 0;
 	this.debug = false;
@@ -26,47 +104,49 @@ MobileWebrtc = function ()
 	this.iceCandidateTimeout = 0;
 	this.peerConnectionInited = false;
 	this.utcOffest = BX.localStorage.get("bxUTCOffset");
-	if(this.utcOffest == null)
+	if (this.utcOffest == null)
 	{
 		this.utcOffest = 0;
 		BX.ajax({
-			url: this.siteDir +"mobile/?mobile_action=service&service_id=server_utc",
+			url: this.siteDir + "mobile/?mobile_action=service&service_id=server_utc",
 			method: 'GET',
 			dataType: 'json',
 			timeout: 30,
 			async: true,
-			onsuccess: BX.proxy(function(json){
-				if(json)
+			onsuccess: BX.proxy(function (json)
+			{
+				if (json)
 				{
 					var localUtcTimeStamp = Math.round((new Date).getTime() / 1000);
 					this.utcOffest = json.server_utc_time - localUtcTimeStamp;
-					BX.localStorage.set("bxUTCOffset", this.utcOffest,43200);
+					BX.localStorage.set("bxUTCOffset", this.utcOffest, 43200);
 				}
-			},this),
-			onfailure: BX.proxy(function(){
-			},this)
+			}, this),
+			onfailure: BX.proxy(function ()
+			{
+			}, this)
 		});
 	}
 
-	webrtc.setEventListeners(
-		{
-			//UI callbacks
-			"onAnswer": BX.proxy(this.onAnswer, this),
-			"onDecline": BX.proxy(this.onDecline, this),
-			"onCallback": BX.proxy(this.onCallback, this),
-			"onClose": BX.proxy(this.onClose, this),
-			//WebRTC callbacks
-			"onUserMediaSuccess": BX.proxy(this.onUserMediaSuccess, this),
-			"onDisconnect": BX.proxy(this.onDisconnect, this),
-			"onPeerConnectionCreated": BX.proxy(this.onPeerConnectionCreated, this),
-			"onIceCandidateDiscovered": BX.proxy(this.onIceCandidateDiscovered, this),
-			"onLocalSessionDescriptionCreated": BX.proxy(this.onLocalSessionDescriptionCreated, this),
-			"onIceConnectionStateChanged": BX.proxy(this.onIceConnectionStateChanged, this),
-			"onIceGatheringStateChanged": BX.proxy(this.onIceGatheringStateChanged, this),
-			"onSignalingStateChanged": BX.proxy(this.onSignalingStateChanged, this),
-			"onError": BX.proxy(this.onError, this)
-		}
-	);
+		webrtc.setEventListeners(
+			{
+				//UI callbacks
+				"onAnswer": BX.proxy(this.onAnswer, this),
+				"onDecline": BX.proxy(this.onDecline, this),
+				"onCallback": BX.proxy(this.onCallback, this),
+				"onClose": BX.proxy(this.onClose, this),
+				//WebRTC callbacks
+				"onUserMediaSuccess": BX.proxy(this.onUserMediaSuccess, this),
+				"onDisconnect": BX.proxy(this.onDisconnect, this),
+				"onPeerConnectionCreated": BX.proxy(this.onPeerConnectionCreated, this),
+				"onIceCandidateDiscovered": BX.proxy(this.onIceCandidateDiscovered, this),
+				"onLocalSessionDescriptionCreated": BX.proxy(this.onLocalSessionDescriptionCreated, this),
+				"onIceConnectionStateChanged": BX.proxy(this.onIceConnectionStateChanged, this),
+				"onIceGatheringStateChanged": BX.proxy(this.onIceGatheringStateChanged, this),
+				"onSignalingStateChanged": BX.proxy(this.onSignalingStateChanged, this),
+				"onError": BX.proxy(this.onError, this)
+			}
+		);
 };
 
 MobileWebrtc.prototype.attachListeners = function ()
@@ -95,7 +175,7 @@ MobileWebrtc.prototype.attachListeners = function ()
 /**
  * Returns identifier of the current user
  */
-MobileWebrtc.prototype.getUserId = function()
+MobileWebrtc.prototype.getUserId = function ()
 {
 	return BX.message('USER_ID');
 };
@@ -127,25 +207,25 @@ MobileWebrtc.prototype.callInvite = function (userId, video, repeat)
 			'COMMAND': 'invite',
 			'CHAT_ID': userId,
 			'CHAT': 'N',
-			'VIDEO': (callVideo ? "Y":"N")
+			'VIDEO': (callVideo ? "Y" : "N")
 		},
 		BX.delegate(function (params)
 		{
-			if(params.ERROR)
+			if (params.ERROR)
 			{
-				if(isRepeatCall)
+				if (isRepeatCall)
 				{
 					this.resetState();
 					this.callInit = false;
 					this.finishDialog();
 				}
-				else if(params.ERROR == "SESSION_ERROR")
+				else if (params.ERROR == "SESSION_ERROR")
 				{
 					BX.message.bitrix_sessid = params.BITRIX_SESSID;
 					this.callInit = false;
 					this.callInvite(userId, video, true);
 				}
-				else if(params.ERROR == 'AUTHORIZE_ERROR')
+				else if (params.ERROR == 'AUTHORIZE_ERROR')
 				{
 					app.BasicAuth({
 						success: BX.delegate(function ()
@@ -173,8 +253,7 @@ MobileWebrtc.prototype.callInvite = function (userId, video, repeat)
 						"avatar": params["HR_PHOTO"][this.callUserId],
 						"name": params["USERS"][this.callUserId]["name"]
 					},
-					"caller":
-					{
+					"caller": {
 						"avatar": params["HR_PHOTO"][this.getUserId()],
 						"name": params["USERS"][this.getUserId()]["name"]
 					}
@@ -191,7 +270,6 @@ MobileWebrtc.prototype.callInvite = function (userId, video, repeat)
 			this.finishDialog();
 		}, this)
 	);
-
 
 };
 
@@ -212,7 +290,7 @@ MobileWebrtc.prototype.showIncomingCall = function (params)
 		webrtc.UI.state.INCOMING_CALL,
 		{
 			"data": params,
-			"video":params.video,
+			"video": params.video,
 			"caller": {
 				"name": params["users"][params.senderId]["name"],
 				"avatar": params["hrphoto"][params.senderId]
@@ -258,7 +336,7 @@ MobileWebrtc.prototype.resetState = function ()
  */
 MobileWebrtc.prototype.callSignaling = function (userID, params)
 {
-	this.ajaxCall("CALL_SIGNALING",{
+	this.ajaxCall("CALL_SIGNALING", {
 		'COMMAND': 'signaling',
 		'CHAT_ID': this.callChatId,
 		'RECIPIENT_ID': userID,
@@ -291,7 +369,7 @@ MobileWebrtc.prototype.callCommand = function (chatId, command, params, async)
 	{
 		this.ajaxCall(
 			"CALL_SHARED",
-			{'COMMAND': command,'CHAT_ID': chatId ,'RECIPIENT_ID': this.callUserId ,'PARAMS': JSON.stringify(params)}
+			{'COMMAND': command, 'CHAT_ID': chatId, 'RECIPIENT_ID': this.callUserId, 'PARAMS': JSON.stringify(params)}
 		);
 	}
 };
@@ -303,7 +381,6 @@ MobileWebrtc.prototype.finishDialog = function ()
 {
 	webrtc.UI.close();
 };
-
 
 /**
  * Handles peer data signals
@@ -330,8 +407,7 @@ MobileWebrtc.prototype.signalingPeerData = function (userId, peerData)
 		{
 			webrtc.addIceCandidates(signal.candidates);
 		}
-		else
-		{
+		else {
 			for (var i = 0; i < signal.candidates.length; i++)
 				this.iceCandidates.push(signal.candidates[i]);
 		}
@@ -372,7 +448,7 @@ MobileWebrtc.prototype.ajaxCall = function (reqParam, reqData, onsuccess, onfail
  */
 MobileWebrtc.prototype.getUTCOffset = function ()
 {
-	return this.utcOffest*1000;
+	return this.utcOffest * 1000;
 };
 
 MobileWebrtc.prototype.getTimeDiff = function (utcDate)
@@ -386,9 +462,8 @@ MobileWebrtc.prototype.getTimeDiff = function (utcDate)
 
 MobileWebrtc.prototype.timesUp = function (utcDate)
 {
-	return ((Math.abs((new Date).getTime()+this.getUTCOffset() - utcDate) / 1000) >= this.eventTimeRange);
+	return ((Math.abs((new Date).getTime() + this.getUTCOffset() - utcDate) / 1000) >= this.eventTimeRange);
 };
-
 
 MobileWebrtc.prototype.onDecline = function (params)
 {
@@ -468,8 +543,7 @@ MobileWebrtc.prototype.onPeerConnectionCreated = function ()
 	{
 		webrtc.createOffer();
 	}
-	else
-	{
+	else {
 		webrtc.createAnswer({
 			"sdp": this.remoteSessionDescription
 		});
@@ -525,7 +599,6 @@ MobileWebrtc.prototype.onError = function (errorData)
 	this.resetState();
 };
 
-
 window.mwebrtc = new MobileWebrtc();
 
 BX.addCustomEvent("onPullEvent-im", BX.proxy(function (command, params)
@@ -564,8 +637,7 @@ BX.addCustomEvent("onPullEvent-im", BX.proxy(function (command, params)
 							}
 						);
 					}
-					else
-					{
+					else {
 						webrtc.UI.close();
 					}
 
@@ -626,9 +698,8 @@ BX.addCustomEvent("onPullEvent-im", BX.proxy(function (command, params)
 				{
 					this.callCommand(params.chatId, 'busy_self');
 				}
-				else
-				{
-					this.ajaxCall("CALL_BUSY",{
+				else {
+					this.ajaxCall("CALL_BUSY", {
 						'COMMAND': 'busy',
 						'CHAT_ID': params.chatId,
 						'RECIPIENT_ID': params.senderId,
@@ -643,18 +714,18 @@ BX.addCustomEvent("onPullEvent-im", BX.proxy(function (command, params)
 		}
 		else if (params.command == 'answer' && this.initiator == true)
 		{
-			if(!this.isConversationUIReady)
+			if (!this.isConversationUIReady)
 			{
-				var handler = function(){
-					BX.onCustomEvent("onPullEvent-im",[command,params]);
-					BX.removeCustomEvent("onMobileRTCReadyToConversation",handler);
+				var handler = function ()
+				{
+					BX.onCustomEvent("onPullEvent-im", [command, params]);
+					BX.removeCustomEvent("onMobileRTCReadyToConversation", handler);
 				};
 
-				BX.addCustomEvent("onMobileRTCReadyToConversation",handler);
+				BX.addCustomEvent("onMobileRTCReadyToConversation", handler);
 
 				return;
 			}
-
 
 			if (this.callInit)
 			{
@@ -663,7 +734,7 @@ BX.addCustomEvent("onPullEvent-im", BX.proxy(function (command, params)
 				webrtc.UI.show(
 					webrtc.UI.state.CONVERSATION
 				);
-				if( typeof params.video == "undefined")
+				if (typeof params.video == "undefined")
 				{
 					params.video = this.video;
 				}

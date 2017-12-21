@@ -59,6 +59,12 @@ namespace Bitrix\Sale\Delivery\AdminPage\DeliveryRestrictions
 
 	while ($record = $dbRecords->Fetch())
 	{
+		if(empty($record['CLASS_NAME']) || !class_exists($record['CLASS_NAME']))
+			continue;
+
+		if(!is_subclass_of($record['CLASS_NAME'], 'Bitrix\Sale\Delivery\Restrictions\Base'))
+			continue;
+
 		if(strlen($record['CLASS_NAME']) > 0)
 		{
 			$restrictionClassNamesUsed[] = $record['CLASS_NAME'];
@@ -79,7 +85,7 @@ namespace Bitrix\Sale\Delivery\AdminPage\DeliveryRestrictions
 			"',deliveryId: ".$ID.
 			",title: '".$className.
 			"',restrictionId: ".$record["ID"].
-			",params: ".\CUtil::PhpToJSObject($record["PARAMS"]).
+			",params: ".htmlspecialcharsbx(\CUtil::PhpToJSObject($record["PARAMS"])).
 			",sort: ".$record["SORT"].
 			",lang: '".LANGUAGE_ID."'".
 		"});";
@@ -152,6 +158,8 @@ namespace Bitrix\Sale\Delivery\AdminPage\DeliveryRestrictions
 
 		if(!empty($restrictionsMenu))
 		{
+			sortByColumn($restrictionsMenu, array("TEXT" => SORT_ASC));
+
 			$aContext[] = array(
 				"TEXT" => Loc::getMessage("SALE_RDL_BUT_ADD_NEW"),
 				"TITLE" => Loc::getMessage("SALE_RDL_BUT_ADD_NEW"),

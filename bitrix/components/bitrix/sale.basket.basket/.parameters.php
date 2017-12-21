@@ -1,9 +1,11 @@
 <?
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
-use Bitrix\Main\Loader;
-use Bitrix\Catalog;
-use Bitrix\Iblock;
+/** @global array $arCurrentValues */
+
+use Bitrix\Main\Loader,
+	Bitrix\Catalog,
+	Bitrix\Iblock;
 
 if (!Loader::includeModule('sale'))
 	return;
@@ -92,7 +94,7 @@ if (Loader::includeModule('catalog'))
 	}
 }
 
-$arYesNo = Array(
+$arYesNo = array(
 	"Y" => GetMessage("SBB_DESC_YES"),
 	"N" => GetMessage("SBB_DESC_NO"),
 );
@@ -105,6 +107,10 @@ $arComponentParameters = Array(
 		"GIFTS" => array(
 			"NAME" => GetMessage("SBB_GIFTS"),
 		),
+		'ANALYTICS_SETTINGS' => array(
+			'NAME' => GetMessage('SBB_ANALYTICS_SETTINGS'),
+			'SORT' => 11000
+		)
 	),
 	"PARAMETERS" => Array(
 		"PATH_TO_ORDER" => Array(
@@ -139,29 +145,11 @@ $arComponentParameters = Array(
 			"ADDITIONAL_VALUES"=>"N",
 			"PARENT" => "VISUAL",
 		),
-
-/*
-		"PRICE_VAT_INCLUDE" => array(
-			"NAME" => GetMessage('SBB_VAT_INCLUDE'),
-			"TYPE" => "CHECKBOX",
-			"MULTIPLE" => "N",
-			"DEFAULT" => "Y",
-			"ADDITIONAL_VALUES"=>"N",
-			"PARENT" => "ADDITIONAL_SETTINGS",
-		),
-*/
 		"PRICE_VAT_SHOW_VALUE" => array(
 			"NAME" => GetMessage('SBB_VAT_SHOW_VALUE'),
 			"TYPE" => "CHECKBOX",
 			"MULTIPLE" => "N",
 			"DEFAULT" => "N",
-			"ADDITIONAL_VALUES"=>"N",
-			"PARENT" => "ADDITIONAL_SETTINGS",
-		),
-		"COUNT_DISCOUNT_4_ALL_QUANTITY" => Array(
-			"NAME"=>GetMessage("SBB_COUNT_DISCOUNT_4_ALL_QUANTITY"),
-			"TYPE"=>"CHECKBOX",
-			"DEFAULT"=>"N",
 			"ADDITIONAL_VALUES"=>"N",
 			"PARENT" => "ADDITIONAL_SETTINGS",
 		),
@@ -175,6 +163,14 @@ $arComponentParameters = Array(
 		),
 		"QUANTITY_FLOAT" => array(
 			"NAME" => GetMessage('SBB_QUANTITY_FLOAT'),
+			"TYPE" => "CHECKBOX",
+			"MULTIPLE" => "N",
+			"DEFAULT" => "N",
+			"ADDITIONAL_VALUES"=>"N",
+			"PARENT" => "ADDITIONAL_SETTINGS",
+		),
+		"CORRECT_RATIO" => array(
+			"NAME" => GetMessage('SBB_CORRECT_RATIO'),
 			"TYPE" => "CHECKBOX",
 			"MULTIPLE" => "N",
 			"DEFAULT" => "N",

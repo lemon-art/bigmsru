@@ -12,6 +12,7 @@ use Bitrix\Seo\SitemapEntityTable;
 use Bitrix\Seo\SitemapIblockTable;
 use Bitrix\Seo\SitemapForumTable;
 use Bitrix\Seo\SitemapRuntimeTable;
+use Bitrix\Main\Text\HtmlFilter;
 
 Loc::loadMessages(dirname(__FILE__).'/../../main/tools.php');
 Loc::loadMessages(dirname(__FILE__).'/seo_sitemap.php');
@@ -523,6 +524,13 @@ endforeach;
 </select> <b><?=Converter::getHtmlConverter()->encode($arSite['DIR']);?></b> <input type="text" name="FILENAME_INDEX" value="<?=Converter::getHtmlConverter()->encode($arSitemap['SETTINGS']["FILENAME_INDEX"])?>" /></td>
 </tr>
 <tr>
+	<td></td>
+	<style>
+		.adm-info-message{margin-top:0 !important;}
+	</style>
+	<td><?echo BeginNote(),Loc::getMessage("SITEMAP_FILENAME_ADDRESS_ATTENTION"),EndNote();?></td>
+</tr>
+<tr>
 	<td width="40%"><label for="SITEMAP_ROBOTS_Y"><?echo Loc::getMessage("SITEMAP_ROBOTS")?>:</label></td>
 	<td width="60%"><input type="hidden"  name="ROBOTS" value="N"><input type="checkbox" id="SITEMAP_ROBOTS_Y" name="ROBOTS" value="Y"<?=$arSitemap['SETTINGS']['ROBOTS'] == 'Y' ? ' checked="checked"' : ''?>> <label for="SITEMAP_ROBOTS_Y"><?=Loc::getMessage('MAIN_YES')?></label></td>
 </tr>
@@ -533,7 +541,7 @@ endforeach;
 <?
 $tabControl->BeginNextTab();
 
-$startDir = $arSite['DIR'];
+$startDir = HtmlFilter::encode($arSite['DIR']);
 $bChecked = isset($arSitemap['SETTINGS']['DIR'])
 	? $arSitemap['SETTINGS']['DIR'][$startDir] == 'Y'
 	: true;
@@ -683,7 +691,7 @@ if($bIBlock)
 <?
 	$dbRes = CIBlock::GetList(array("ID" => "ASC"), array(
 		'SITE_ID' => $SITE_ID
-	), true);
+	));
 	$bFound = false;
 	while ($arRes = $dbRes->Fetch())
 	{

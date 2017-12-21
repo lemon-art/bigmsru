@@ -112,13 +112,18 @@ class CIBlockPropertyDirectory
 		$cellOption = '<option value="-1"'.('' == $settings["TABLE_NAME"] ? ' selected' : '').'>'.Loc::getMessage('HIBLOCK_PROP_DIRECTORY_NEW_DIRECTORY').'</option>';
 
 		$rsData = HL\HighloadBlockTable::getList(array(
-			'select' => array('TABLE_NAME', 'NAME')
+			'select' => array('*', 'NAME_LANG' => 'LANG.NAME'),
+			'order' => array('NAME_LANG' => 'ASC', 'NAME' => 'ASC')
 		));
 		while($arData = $rsData->fetch())
 		{
+			$arData['NAME_LANG'] = (string)$arData['NAME_LANG'];
+			$hlblockTitle = ($arData['NAME_LANG'] != '' ? $arData['NAME_LANG'] : $arData['NAME']).' ('.$arData["TABLE_NAME"].')';
 			$selected = ($settings["TABLE_NAME"] == $arData['TABLE_NAME']) ? ' selected' : '';
-			$cellOption .= '<option '.$selected.' value="'.htmlspecialcharsbx($arData["TABLE_NAME"]).'">'.htmlspecialcharsEx($arData["NAME"].' ('.$arData["TABLE_NAME"].')').'</option>';
+			$cellOption .= '<option '.$selected.' value="'.htmlspecialcharsbx($arData["TABLE_NAME"]).'">'.htmlspecialcharsbx($hlblockTitle).'</option>';
+			unset($hlblockTitle);
 		}
+		unset($arData, $rsData);
 
 		$tablePrefix = self::TABLE_PREFIX;
 		$selectDir = Loc::getMessage("HIBLOCK_PROP_DIRECTORY_SELECT_DIR");
@@ -236,7 +241,6 @@ function getDirectoryTableRow(addNew)
 function getDirectoryTableHead(e)
 {
 	e.value = BX.translit(e.value, {
-		'max_len' : 35,
 		'change_case' : 'L',
 		'replace_space' : '',
 		'delete_repeat_replace' : true

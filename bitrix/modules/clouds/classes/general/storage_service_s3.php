@@ -48,15 +48,44 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 	*/
 	function GetLocationList()
 	{
+		// http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region
 		return array(
 			"" => "US Standard",
-			"us-west-2" => "US West (Oregon)",
+			"us-east-2" => "US East (Ohio)",
 			"us-west-1" => "US West (Northern California)",
-			"eu-west-1" => "EU (Ireland)",
-			"eu-central-1" => "EU (Frankfurt)",
+			"us-west-2" => "US West (Oregon)",
+			"ca-central-1" => "Canada (Central)",
+			"ap-south-1" => "Asia Pacific (Mumbai)",
+			"ap-northeast-2" => "Asia Pacific (Seoul)",
 			"ap-southeast-1" => "Asia Pacific (Singapore)",
 			"ap-southeast-2" => "Asia Pacific (Sydney)",
 			"ap-northeast-1" => "Asia Pacific (Tokyo)",
+			"eu-central-1" => "EU (Frankfurt)",
+			"eu-west-1" => "EU (Ireland)",
+			"eu-west-2" => "EU (London)",
+			"sa-east-1" => "South America (Sao Paulo)",
+		);
+	}
+	/**
+	 * @return array[string]string
+	*/
+	function GetAPList()
+	{
+		// http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region
+		return array(
+			"" => "s3.amazonaws.com",
+			"us-east-2" => "s3.us-east-2.amazonaws.com",
+			"us-west-1" => "s3-us-west-1.amazonaws.com",
+			"us-west-2" => "s3-us-west-2.amazonaws.com",
+			"ca-central-1" => "s3.ca-central-1.amazonaws.com",
+			"ap-south-1" => "s3.ap-south-1.amazonaws.com",
+			"ap-northeast-2" => "s3.ap-northeast-2.amazonaws.com",
+			"ap-southeast-1" => "s3-ap-southeast-1.amazonaws.com",
+			"ap-southeast-2" => "s3-ap-southeast-2.amazonaws.com",
+			"ap-northeast-1" => "s3-ap-northeast-1.amazonaws.com",
+			"eu-central-1" => "s3.eu-central-1.amazonaws.com",
+			"eu-west-1" => "s3-eu-west-1.amazonaws.com",
+			"eu-west-2" => "s3.eu-west-2.amazonaws.com",
 			"sa-east-1" => "South America (Sao Paulo)",
 		);
 	}
@@ -218,7 +247,7 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 		$Algorithm = "AWS4-HMAC-SHA256";
 		$Time = time();
 		$RequestDate = gmdate('Ymd', $Time);
-		$RequestTime = gmdate('D, d M Y H:i:s', $Time).' GMT';
+		$RequestTime = gmdate('Ymd', $Time).'T'.gmdate('His', $Time).'Z';
 		$Region = $this->location? $this->location: 'us-east-1';
 		$Service = "s3";
 		$Scope = $RequestDate."/".$Region."/".$Service."/aws4_request";
@@ -240,7 +269,7 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 		$Authorization = "$Algorithm Credential=$arSettings[ACCESS_KEY]/$Scope, SignedHeaders=$SignedHeaders, Signature=$Signature";
 
 		return array(
-			"Date" => gmdate('D, d M Y H:i:s', $Time).' GMT',
+			"Date" => $RequestTime,
 			"Authorization" => $Authorization,
 			"x-amz-content-sha256" => $HashedPayload,
 		);
@@ -255,6 +284,24 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 			$this->location = $location;
 		else
 			$this->location = "";
+	}
+	protected function GetRequestHost($bucket)
+	{
+		if(
+			$this->new_end_point != ""
+			&& preg_match('#^(http|https)://'.preg_quote($bucket, '#').'(.+?)/#', $this->new_end_point, $match) > 0
+		)
+		{
+			return $bucket.$match[2];
+		}
+		elseif ($this->location)
+		{
+			return $bucket.".s3-".$this->location.".amazonaws.com";
+		}
+		else
+		{
+			return $bucket.".s3.amazonaws.com";
+		}
 	}
 	/**
 	 * @param array[string]string $arSettings
@@ -297,21 +344,7 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 			$additional_headers["x-amz-security-token"] = $arSettings["SESSION_TOKEN"];
 		}
 
-		if(
-			$this->new_end_point != ""
-			&& preg_match('#^(http|https)://'.preg_quote($bucket, '#').'(.+?)/#', $this->new_end_point, $match) > 0
-		)
-		{
-			$additional_headers["host"] = $bucket.$match[2];
-		}
-		elseif ($this->location)
-		{
-			$additional_headers["host"] = $bucket.".s3-".$this->location.".amazonaws.com";
-		}
-		else
-		{
-			$additional_headers["host"] = $bucket.".s3.amazonaws.com";
-		}
+		$additional_headers["host"] = $this->GetRequestHost($bucket);
 
 		foreach($this->SignRequest($arSettings, $verb, $bucket, $file_name, $ContentType, $additional_headers, $params, $content) as $key => $value)
 		{
@@ -541,6 +574,10 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 	{
 		$proto = CMain::IsHTTPS()? "https": "http";
 
+		static $aps = null;
+		if (!$aps)
+			$aps = self::GetAPList();
+
 		if($arBucket["CNAME"] != "")
 		{
 			$host = $arBucket["CNAME"];
@@ -548,46 +585,20 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 		}
 		elseif ($proto === "https" && strpos($arBucket["BUCKET"], ".") !== false)
 		{
-			switch($arBucket["LOCATION"])
-			{
-			case "us-west-1":
-				$host = "s3-us-west-1.amazonaws.com";
-				break;
-			case "eu-west-1":
-				$host = "s3-eu-west-1.amazonaws.com";
-				break;
-			case "ap-southeast-1":
-				$host = "s3-ap-southeast-1.amazonaws.com";
-				break;
-			case "ap-northeast-1":
-				$host = "s3-ap-northeast-1.amazonaws.com";
-				break;
-			default:
-				$host = "s3.amazonaws.com";
-				break;
-			}
+			if (isset($aps[$arBucket["LOCATION"]]))
+				$host = $aps[$arBucket["LOCATION"]];
+			else
+				$host = $aps[""];
+
 			$pref = $arBucket["BUCKET"];
 		}
 		else
 		{
-			switch($arBucket["LOCATION"])
-			{
-			case "us-west-1":
-				$host = $arBucket["BUCKET"].".s3-us-west-1.amazonaws.com";
-				break;
-			case "eu-west-1":
-				$host = $arBucket["BUCKET"].".s3-eu-west-1.amazonaws.com";
-				break;
-			case "ap-southeast-1":
-				$host = $arBucket["BUCKET"].".s3-ap-southeast-1.amazonaws.com";
-				break;
-			case "ap-northeast-1":
-				$host = $arBucket["BUCKET"].".s3-ap-northeast-1.amazonaws.com";
-				break;
-			default:
-				$host = $arBucket["BUCKET"].".s3.amazonaws.com";
-				break;
-			}
+			if (isset($aps[$arBucket["LOCATION"]]))
+				$host = $arBucket["BUCKET"].".".$aps[$arBucket["LOCATION"]];
+			else
+				$host = $aps[""];
+
 			$pref = "";
 		}
 
@@ -761,6 +772,11 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 		{
 			return true;
 		}
+		elseif ($this->status == 400 && strpos($this->result, 'ExpiredToken') !== false)
+		{
+			$this->tokenHasExpired = true;
+			return false;
+		}
 		elseif($this->status == 403)
 		{
 			AddMessage2Log($this);
@@ -864,6 +880,11 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 
 				break;
 			}
+			elseif ($this->status == 400 && strpos($this->result, 'ExpiredToken') !== false)
+			{
+				$this->tokenHasExpired = true;
+				return false;
+			}
 			else
 			{
 				return false;
@@ -929,10 +950,10 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 
 	function GetMinUploadPartSize()
 	{
-		return 5*1024*1024; //5MB
+		return BX_S3_MIN_UPLOAD_PART_SIZE;
 	}
 
-	function UploadPart($arBucket, &$NS, $data)
+	function UploadPartNo($arBucket, &$NS, $data, $part_no)
 	{
 		$filePath = '/'.trim($NS["filePath"], '/');
 		if($arBucket["PREFIX"])
@@ -948,19 +969,27 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 			'PUT',
 			$arBucket["BUCKET"],
 			$filePath,
-			'?partNumber='.(count($NS["Parts"])+1).'&uploadId='.urlencode($NS["UploadId"]),
+			'?partNumber='.($part_no + 1).'&uploadId='.urlencode($NS["UploadId"]),
 			$data
 		);
 
-		if($this->status == 200 && is_array($this->headers) && isset($this->headers["ETag"]))
+		if($this->status == 200 && is_array($this->headers))
 		{
-			$NS["Parts"][] = $this->headers["ETag"];
-			return true;
+			foreach ($this->headers as $key => $value)
+			{
+				if (strtolower($key) === "etag")
+				{
+					$NS["Parts"][$part_no] = $value;
+					return true;
+				}
+			}
 		}
-		else
-		{
-			return false;
-		}
+		return false;
+	}
+
+	function UploadPart($arBucket, &$NS, $data)
+	{
+		return $this->UploadPartNo($arBucket, $NS, $data, count($NS["Parts"]));
 	}
 
 	function CompleteMultipartUpload($arBucket, &$NS)
@@ -973,9 +1002,12 @@ class CCloudStorageService_AmazonS3 extends CCloudStorageService
 		}
 		$filePath = CCloudUtil::URLEncode($filePath, "UTF-8");
 
+		ksort($NS["Parts"]);
 		$data = "";
 		foreach($NS["Parts"] as $PartNumber => $ETag)
+		{
 			$data .= "<Part><PartNumber>".($PartNumber+1)."</PartNumber><ETag>".$ETag."</ETag></Part>\n";
+		}
 
 		$this->SetLocation($arBucket["LOCATION"]);
 		$this->SendRequest(

@@ -92,3 +92,11 @@ $MESS["SALE_HPS_BILL_DE_LOGO_DPI_96"] = "100% (96 dpi)";
 $MESS["SALE_HPS_BILL_DE_LOGO_DPI_150"] = "64% (150 dpi)";
 $MESS["SALE_HPS_BILL_DE_LOGO_DPI_300"] = "32% (300 dpi)";
 $MESS["SALE_HPS_BILL_DE_LOGO_DPI_600"] = "16% (600 dpi)";
+
+$MESS["SALE_HPS_BILL_DE_HEADER"] = "Заголовок счета";
+
+$MESS["SALE_HPS_BILL_DE_COLUMN_TITLE"] = "Заголовок для колонки ";
+$MESS["SALE_HPS_BILL_DE_COLUMN_SHOW"] = "Активность";
+$MESS["SALE_HPS_BILL_DE_COLUMN_SORT"] = "Сортировка";
+$MESS["SALE_HPS_BILL_DE_HEADER_SHOW"] = "Выводить шапку счета";
+$MESS["SALE_HPS_BILL_DE_TOTAL_SHOW"] = "Показывать итоговую информацию";

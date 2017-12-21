@@ -48,6 +48,7 @@
 				div = document.body.appendChild(document.createElement("DIV"));
 
 			div.className = "bx-adm-scale-wait";
+			div.style.marginLeft = '24px';
 
 			td.appendChild(div);
 			tr.appendChild(td);
@@ -73,9 +74,9 @@
 			var tr =  this.contentTable.lastChild;
 
 			if(result)
-				tr.children[1].innerHTML = "<td><span style='color: green;'>OK</span></td>";
+				tr.children[1].innerHTML = "<td style='text-align: center;'><span style='color: green;'>OK</span></td>";
 			else
-				tr.children[1].innerHTML = "<td><span style='color: red;'>"+BX.message("SCALE_PANEL_JS_ERROR")+"</span></td>";
+				tr.children[1].innerHTML = "<td style='text-align: center;'><span style='color: red;'>"+BX.message("SCALE_PANEL_JS_ERROR")+"</span></td>";
 
 			BX("close").disabled = false;
 

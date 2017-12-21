@@ -103,7 +103,16 @@ class CDeliveryRusPost
 			$arShopLocation = array();
 
 		if(isset($_REQUEST["RESET_HANDLER_SETTINGS"]) && $_REQUEST["RESET_HANDLER_SETTINGS"] == "Y" && !isset($_REQUEST["apply"]))
+		{
 			Option::delete('sale', array('name' => 'delivery_rus_post_prev_loc', 'site_id' => $siteId));
+			Option::delete('sale', array('name' => 'delivery_rus_post_prev_loc'));
+		}
+
+		if(isset($_REQUEST["RESET_TARIF_SETTINGS"]) && $_REQUEST["RESET_TARIF_SETTINGS"] == "Y" && !isset($_REQUEST["apply"]))
+		{
+			Option::delete('sale', array('name' => 'delivery_rus_post_tarifs', 'site_id' => $siteId));
+			Option::delete('sale', array('name' => 'delivery_rus_post_tarifs'));
+		}
 
 		$shopPrevLocationId = Option::get('sale', 'delivery_rus_post_prev_loc', "", $siteId);
 

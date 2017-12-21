@@ -24,7 +24,7 @@ class CCatalogMeasure extends CCatalogMeasureAll
 	 * @param bool|array $arGroupBy
 	 * @param bool|array $arNavStartParams
 	 * @param array $arSelectFields
-	 * @return CCatalogMeasureResult
+	 * @return false|CCatalogMeasureResult
 	 */
 	public static function getList($arOrder = array(), $arFilter = array(), $arGroupBy = false, $arNavStartParams = false, $arSelectFields = array())
 	{

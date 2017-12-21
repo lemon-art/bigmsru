@@ -32,5 +32,6 @@ $MESS ['SSAN_NOTIFY'] = 'Уведомления';
 $MESS ['SSAN_NOTIFY_Y'] = 'Да';
 $MESS ['SSAN_NOTIFY_N'] = 'Нет';
 $MESS ['SSAN_TYPE'] = 'Тип статуса';
+$MESS ['SSAN_COLOR'] = 'Цвет статуса';
 $MESS ['SSEN_TYPE_O'] = 'Заказ';
 $MESS ['SSEN_TYPE_D'] = 'Доставка';

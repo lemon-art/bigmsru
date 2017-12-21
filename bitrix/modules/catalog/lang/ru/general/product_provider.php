@@ -13,9 +13,11 @@ $MESS["DDCT_DEDUCTION_MULTI_BARCODE_EMPTY"] = "У товара \"#PRODUCT_NAME#\
 $MESS["DDCT_DEDUCTION_QUANTITY_STORE_ERROR"] = "Недостаточное количество товара #PRODUCT_NAME# (##PRODUCT_ID#) на складе ##STORE_ID# для отгрузки.";
 $MESS["DDCT_DEDUCTION_PRODUCT_NOT_FOUND_ERROR"] = "Не найден товар для отгрузки (##PRODUCT_ID#)";
 $MESS["RSRV_QUANTITY_NOT_ENOUGH_ERROR"] = "На складе недостаточное количество товара #PRODUCT_NAME# (##PRODUCT_ID#).";
-$MESS["CATALOG_QUANTITY_NOT_ENOGH"] = "Вы не можете купить товар \"#NAME#\" в количестве #QUANTITY# шт. Для покупки доступно только #CATALOG_QUANTITY# шт.";
+$MESS["CATALOG_QUANTITY_NOT_ENOGH"] = "Вы не можете купить товар \"#NAME#\" в количестве #QUANTITY# #MEASURE_NAME#. Для покупки доступно только #CATALOG_QUANTITY# #MEASURE_NAME#.";
 $MESS["CATALOG_NO_QUANTITY_PRODUCT"] = "Товара \"#NAME#\" нет в наличии.";
 $MESS["CATALOG_ERR_NO_PRODUCT"] = "Товар не найден";
 $MESS["CATALOG_ERR_SKU_PRODUCT"] = "Нельзя положить в корзину товар с торговыми предложениями - только конкретное предложение";
+$MESS["CATALOG_ERR_NO_PRODUCT_SET"] = "Не найден состав комплекта";
+$MESS["CATALOG_ERR_NO_PRODUCT_SET_ITEM"] = "Не найдены товары, входящие в комплект";
 $MESS["RSRV_SKU_FOUND"] = "Товар ##PRODUCT_ID# является товаром с торговыми предложениями. Резервировать и снимать с резерва можно лишь конкретное торговое предложение";
 ?>

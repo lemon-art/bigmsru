@@ -1199,12 +1199,17 @@ class __CControllerPacketRequest extends __CControllerPacket
 			$server_name = substr($server_name, 0, 0 - strlen($server_port) - 1);
 		}
 
-		$proxy_url = COption::GetOptionString("main", "controller_proxy_url", "");
-		$proxy_port = COption::GetOptionString("main", "controller_proxy_port", "");
+		$proxy_url = CPageOption::GetOptionString("main", "controller_proxy_url", "");
+		$proxy_port = CPageOption::GetOptionString("main", "controller_proxy_port", "");
+		$bUseProxy = (strlen($proxy_url) > 0 && strlen($proxy_port) > 0);
+		if (!$bUseProxy)
+		{
+			$proxy_url = COption::GetOptionString("main", "controller_proxy_url", "");
+			$proxy_port = COption::GetOptionString("main", "controller_proxy_port", "");
+			$bUseProxy = (strlen($proxy_url) > 0 && strlen($proxy_port) > 0);
+		}
 
 		// соединяемся с удаленным сервером
-		$bUseProxy = (strlen($proxy_url) > 0 && strlen($proxy_port) > 0);
-
 		if ($bUseProxy)
 		{
 			$proxy_port = intval($proxy_port);

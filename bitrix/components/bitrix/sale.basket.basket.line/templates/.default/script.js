@@ -198,7 +198,7 @@ BitrixSmallCart.prototype = {
 	setCartBody: function (result)
 	{
 		if (this.cartElement)
-			this.cartElement.innerHTML = result;
+			this.cartElement.innerHTML = result.replace(/#CURRENT_URL#/g, this.currentUrl);
 		if (this.fixedPosition)
 			setTimeout(this.fixAfterRenderClosure, 100);
 	},

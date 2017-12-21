@@ -560,7 +560,7 @@ jsDD = {
 		{
 			if (jsDD.arDestinationsPriority[p] && BX.type.isArray(jsDD.arDestinationsPriority[p]))
 			{
-				for (p1 = 0, len1 = jsDD.arDestinationsPriority[p].length; p1 < len; p1++)
+				for (p1 = 0, len1 = jsDD.arDestinationsPriority[p].length; p1 < len1; p1++)
 				{
 					i = jsDD.arDestinationsPriority[p][p1];
 					if (jsDD.arDestinations[i] && !jsDD.arDestinations[i].__bxdddisabled)

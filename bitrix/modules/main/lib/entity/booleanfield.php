@@ -89,4 +89,11 @@ class BooleanField extends ScalarField
 	{
 		return (strval($value) === '' && $value !== false);
 	}
+
+	public function convertValueToDb($value)
+	{
+		return $this->getConnection()->getSqlHelper()->convertToDbString(
+			$this->normalizeValue($value)
+		);
+	}
 }

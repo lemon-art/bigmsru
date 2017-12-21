@@ -19,6 +19,10 @@ $map = array(
 
 		//status bar
 		'statusBar/use_top_offset' => ParameterType::BOOLEAN,
+		'statusBar/show_status_bar_without_nav_bar' => array(
+			"type"=>ParameterType::BOOLEAN,
+			"default"=>"NO"
+		),
 		'statusBar/color' => ParameterType::COLOR,
 		'statusBar/opacity' => array(
 			"type" => ParameterType::SIZE,

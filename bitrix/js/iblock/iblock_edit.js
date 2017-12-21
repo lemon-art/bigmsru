@@ -552,6 +552,11 @@ function addNewRow(tableID, row_to_clone)
 		sHTML = sHTML.substr(0, s)+'%5Bn'+(++n)+'%5D'+sHTML.substr(e+3);
 		p=e+3;
 	}
+
+	var htmlObject = {'html': sHTML};
+	BX.onCustomEvent(window, 'onAddNewRowBeforeInner', [htmlObject]);
+	sHTML = htmlObject.html;
+
 	oCell.innerHTML = sHTML;
 
 	var patt = new RegExp ("<"+"script"+">[^\000]*?<"+"\/"+"script"+">", "ig");
@@ -880,6 +885,8 @@ JCInheritedPropertiesTemplates.prototype.updateInheritedPropertiesValues = funct
 						{
 							if (BX(DATA[j].htmlId))
 								BX(DATA[j].htmlId).innerHTML = DATA[j].value;
+							else if (typeof  DATA[j].hiddenId != "undefined" && BX(DATA[j].hiddenId))
+								BX(DATA[j].hiddenId).value = DATA[j].hiddenValue;
 						}
 						else
 						{

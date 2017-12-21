@@ -226,10 +226,10 @@ while($arRes = $rsData->NavNext(true, "f_"))
 	if ($F_RIGHT>=30)
 	{
 		$arActions[] = array("SEPARATOR"=>true);
-		$arActions[] = array("TITLE"=>GetMessage("FORM_DELETE_RESULTS_ALT"),"ACTION"=>"javascript:if(confirm('".GetMessage("FORM_CONFIRM_DELETE_RESULTS")."')) window.location='?lang=".LANGUAGE_ID."&reset_id=".$f_ID."&".bitrix_sessid_get()."'", "TEXT"=>GetMessage("FORM_DELETE_RESULTS"));
+		$arActions[] = array("TITLE"=>GetMessage("FORM_DELETE_RESULTS_ALT"),"ACTION"=>"javascript:if(confirm('".CUtil::JSEscape(GetMessage("FORM_CONFIRM_DELETE_RESULTS"))."')) window.location='?lang=".LANGUAGE_ID."&reset_id=".$f_ID."&".bitrix_sessid_get()."'", "TEXT"=>GetMessage("FORM_DELETE_RESULTS"));
 	}
 	if (CForm::IsAdmin())
-		$arActions[] = array("ICON"=>"delete", "TITLE"=>GetMessage("FORM_DELETE_ALT"),"ACTION"=>"javascript:if(confirm('".GetMessage("FORM_CONFIRM_DELETE")."')) window.location='?lang=".LANGUAGE_ID."&action=delete&ID=$f_ID&".bitrix_sessid_get()."'","TEXT"=>GetMessage("FORM_DELETE"));
+		$arActions[] = array("ICON"=>"delete", "TITLE"=>GetMessage("FORM_DELETE_ALT"),"ACTION"=>"javascript:if(confirm('".CUtil::JSEscape(GetMessage("FORM_CONFIRM_DELETE"))."')) window.location='?lang=".LANGUAGE_ID."&action=delete&ID=$f_ID&".bitrix_sessid_get()."'","TEXT"=>GetMessage("FORM_DELETE"));
 
 	$row->AddActions($arActions);
 

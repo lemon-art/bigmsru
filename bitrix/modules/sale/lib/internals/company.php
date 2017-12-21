@@ -68,6 +68,10 @@ class CompanyTable extends Main\Entity\DataManager
 			),
 			'ADDRESS' => array(
 				'data_type' => 'string'
+			),
+			'SORT' => array(
+				'data_type' => 'integer',
+				'default_value' => 100
 			)
 		);
 	}

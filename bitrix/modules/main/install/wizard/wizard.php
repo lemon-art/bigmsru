@@ -26,6 +26,7 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/lib/loader.php");
 \Bitrix\Main\Loader::registerAutoLoadClasses(
 	"main",
 	array(
+		"bitrix\\main\\systemexception" => "lib/exception.php",
 		"bitrix\\main\\db\\sqlqueryexception" => "lib/db/sqlexception.php",
 	)
 );
@@ -161,7 +162,14 @@ class AgreementStep4VM extends CWizardStep
 	function InitStep()
 	{
 		$this->SetStepID("agreement");
-		$this->SetNextStep("check_license_key");
+		if($_SERVER['BITRIX_ENV_TYPE'] <> "crm")
+		{
+			$this->SetNextStep("check_license_key");
+		}
+		else
+		{
+			$this->SetNextStep("create_modules");
+		}
 		$this->SetNextCaption(InstallGetMessage("NEXT_BUTTON"));
 		$this->SetPrevCaption(InstallGetMessage("PREVIOUS_BUTTON"));
 		$this->SetTitle(InstallGetMessage("INS_STEP2_TITLE"));
@@ -280,100 +288,16 @@ class DBTypeStep extends CWizardStep
 
 				if(!$bError)
 				{
-					$lic_site = $_SERVER["HTTP_HOST"];
-					if(strlen($lic_site) <= 0)
-						$lic_site = "localhost";
-					$lic_db = $dbType;
+					$key = BXInstallServices::GetRegistrationKey($lic_key_user_name, $lic_key_user_surname, $lic_key_email, $dbType);
 
-					$arClientModules = Array();
-					$handle = @opendir($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules");
-					if ($handle)
-					{
-						while (false !== ($dir = readdir($handle)))
-						{
-							if (is_dir($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$dir)
-								&& $dir!="." && $dir!="..")
-							{
-								$module_dir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$dir;
-								if (file_exists($module_dir."/install/index.php"))
-								{
-									$arClientModules[] = $dir;
-								}
-							}
-						}
-						closedir($handle);
-					}
-
-					$lic_edition = serialize($arClientModules);
-
-					if (defined("INSTALL_CHARSET") && strlen(INSTALL_CHARSET) > 0)
-						$charset = INSTALL_CHARSET;
-					else
-						$charset = "windows-1251";
-
-					if(LANGUAGE_ID == "ru")
-						$host = "www.1c-bitrix.ru";
-					else
-						$host = "www.bitrixsoft.com";
-
-					$path = "/bsm_register_key.php";
-					$port = 80;
-					$query = "sur_name=$lic_key_user_surname&first_name=$lic_key_user_name&email=$lic_key_email&site=$lic_site&modules=".urlencode($lic_edition)."&db=$dbType&lang=".LANGUAGE_ID."&bx=Y&max_users=".TRIAL_RENT_VERSION_MAX_USERS;
-
-					if(defined("install_license_type"))
-						$query .= "&cp_type=".install_license_type;
-					if(defined("install_edition"))
-						$query .= "&edition=".install_edition;
-
-					$fp = @fsockopen("$host", "$port", $errnum, $errstr, 30);
-					if ($fp)
-					{
-						fputs($fp, "POST {$path} HTTP/1.1\r\n");
-						fputs($fp, "Host: {$host}\r\n");
-						fputs($fp, "Content-type: application/x-www-form-urlencoded; charset=\"".$charset."\"\r\n");
-						fputs($fp, "User-Agent: bitrixKeyReq\r\n");
-						fputs($fp, "Content-length: ".(function_exists("mb_strlen")? mb_strlen($query, 'latin1'): strlen($query))."\r\n");
-						fputs($fp, "Connection: close\r\n\r\n");
-						fputs($fp, $query."\r\n\r\n");
-						$page_content = "";
-						$headersEnded = 0;
-						while(!feof($fp))
-						{
-							$returned_data = fgets($fp, 128);
-							if($returned_data=="\r\n")
-							{
-								$headersEnded = 1;
-							}
-
-							if($headersEnded==1)
-							{
-								$page_content .= htmlspecialcharsbx($returned_data);
-							}
-						}
-						fclose($fp);
-					}
-					$arContent = explode("\n", $page_content);
-
-					$bEr = false;
-					$bOk = false;
-					$key = "";
-					foreach($arContent as $v)
-					{
-						if($v == "ERROR")
-							$bEr = true;
-						elseif($v == "OK")
-							$bOk = true;
-
-						if(strlen($v) > 10)
-							$key = trim($v);
-					}
-
-					if($bOk && strlen($key) >0)
+					if($key !== false)
 					{
 						$wizard->SetVar("license", $key);
 					}
 					elseif(defined("TRIAL_RENT_VERSION"))
+					{
 						$this->SetError(InstallGetMessage("ACT_KEY_REQUEST_ERROR"), "email");
+					}
 				}
 			}
 		}
@@ -383,8 +307,7 @@ class DBTypeStep extends CWizardStep
 	{
 		$wizard =& $this->GetWizard();
 
-		if (BXInstallServices::SetSession())
-			$this->content .= '<input type="hidden" name="'.ini_get("session.name").'" value="'.session_id().'" />';
+		BXInstallServices::SetSession();
 
 		$this->content .= '
 		<table border="0" class="data-table">
@@ -838,9 +761,6 @@ RewriteRule ^.+\.php$ /bitrix/httest/404.php
 	{
 		$wizard =& $this->GetWizard();
 
-		if (BXInstallServices::CheckSession())
-			$this->content .= '<input type="hidden" name="'.ini_get("session.name").'" value="'.session_id().'" />';
-
 		$this->content .= '<h3>'.InstallGetMessage("SC_SUBTITLE_REQUIED").'</h3>'.InstallGetMessage("SC_SUBTITLE_REQUIED_DESC").'<br><br>';
 
 		$this->content .= '
@@ -1255,11 +1175,11 @@ RewriteRule ^.+\.php$ /bitrix/httest/404.php
 		</tr>
 		<tr>
 			<td valign="top">
-				<a href="http://php.net/manual/en/book.mcrypt.php" target="_blank">MCrypt</a>
+				<a href="http://php.net/manual/en/book.openssl.php" target="_blank">OpenSSL</a>
 			</td>
 			<td valign="top">'.InstallGetMessage("SC_SETTED").'</td>
 			<td valign="top">
-					'.(extension_loaded("mcrypt") && function_exists("mcrypt_encrypt") ? $this->ShowResult(InstallGetMessage("SC_SETTED"), "OK") : $this->ShowResult(InstallGetMessage("SC_NOT_SETTED"), "ERROR")).'
+					'.(function_exists("openssl_encrypt") ? $this->ShowResult(InstallGetMessage("SC_SETTED"), "OK") : $this->ShowResult(InstallGetMessage("SC_NOT_SETTED"), "ERROR")).'
 			</td>
 		</tr>
 		<tr>
@@ -2211,21 +2131,10 @@ class CreateDBStep extends CWizardStep
 		$wizard =& $this->GetWizard();
 		$licenseKey = $wizard->GetVar("license");
 
-		if (strlen($licenseKey) < 0)
-			$licenseKey = "DEMO";
+		if(!BXInstallServices::CreateLicenseFile($licenseKey))
+			return false;
 
 		$filePath = $_SERVER["DOCUMENT_ROOT"]."/bitrix/license_key.php";
-
-		if (!$fp = @fopen($filePath, "wb"))
-			return false;
-
-		$fileContent = "<"."? \$"."LICENSE_KEY = \"".EscapePHPString($licenseKey)."\"; ?".">";
-
-		if (!fwrite($fp, $fileContent))
-			return false;
-
-		@fclose($fp);
-
 		if ($this->filePermission > 0)
 			@chmod($filePath, octdec($this->filePermission));
 
@@ -2295,9 +2204,6 @@ class CreateDBStep extends CWizardStep
 	{
 		$wizard =& $this->GetWizard();
 		$dbType = $wizard->GetVar("dbType");
-
-		if (BXInstallServices::CheckSession())
-			$this->content .= '<input type="hidden" name="'.ini_get("session.name").'" value="'.session_id().'" />';
 
 		$this->content .= '
 		<table border="0" class="data-table">
@@ -2480,7 +2386,6 @@ class CreateModulesStep extends CWizardStep
 		}
 
 		$this->singleSteps = Array(
-			//"remove_help" => InstallGetMessage("INST_REMOVE_HELP"),
 			"remove_mysql" => InstallGetMessage("INST_REMOVE_TEMP_FILES")." (MySQL)",
 			"remove_mssql" => InstallGetMessage("INST_REMOVE_TEMP_FILES")." (MS SQL Server)",
 			"remove_oracle" => InstallGetMessage("INST_REMOVE_TEMP_FILES")." (Oracle)",
@@ -2610,9 +2515,13 @@ class CreateModulesStep extends CWizardStep
 		);
 
 		if (array_key_exists($nextStep , $this->singleSteps))
+		{
 			$status = $this->singleSteps[$nextStep];
+		}
 		elseif ($nextStep == "main")
+		{
 			$status = InstallGetMessage("INST_MAIN_MODULE")." (".$arStatus[$nextStepStage].")";
+		}
 		else
 		{
 			$module =& $this->GetModuleObject($nextStep);
@@ -2637,11 +2546,8 @@ class CreateModulesStep extends CWizardStep
 		require_once($_SERVER["DOCUMENT_ROOT"].BX_PERSONAL_ROOT."/php_interface/dbconn.php");
 
 		$wizard =& $this->GetWizard();
-		$removeHelp = ($wizard->GetVar("help_inst") != "Y");
 
-		if ($code == "remove_help" && $removeHelp)
-			BXInstallServices::DeleteDirRec($_SERVER["DOCUMENT_ROOT"]."/bitrix/help");
-		elseif ($code == "remove_mysql" && $DBType != "mysql")
+		if ($code == "remove_mysql" && $DBType != "mysql")
 			BXInstallServices::DeleteDbFiles("mysql");
 		elseif ($code == "remove_mssql" && $DBType != "mssql")
 			BXInstallServices::DeleteDbFiles("mssql");
@@ -2706,7 +2612,15 @@ class CreateModulesStep extends CWizardStep
 			require_once($_SERVER['DOCUMENT_ROOT']."/bitrix/modules/main/include.php");
 
 			if (strtolower($DB->type)=="mysql" && defined("MYSQL_TABLE_TYPE") && strlen(MYSQL_TABLE_TYPE)>0)
-				$DB->Query("SET storage_engine = '".MYSQL_TABLE_TYPE."'", true);
+			{
+				$res = $DB->Query("SET storage_engine = '".MYSQL_TABLE_TYPE."'", true);
+				if(!$res)
+				{
+					//mysql 5.7 removed storage_engine variable
+					$DB->Query("SET default_storage_engine = '".MYSQL_TABLE_TYPE."'", true);
+				}
+
+			}
 
 			if (IsModuleInstalled($moduleID) && $currentStepStage == "database")
 				return true;
@@ -2886,6 +2800,11 @@ class CreateAdminStep extends CWizardStep
 		$wizard =& $this->GetWizard();
 		$wizard->SetDefaultVar("login", "admin");
 		$wizard->SetDefaultVar("email", "");
+
+		if($_SERVER['BITRIX_ENV_TYPE'] == "crm")
+		{
+			$wizard->SetDefaultVar("lic_key_variant", "Y");
+		}
 	}
 
 	function OnPostForm()
@@ -2905,44 +2824,58 @@ class CreateAdminStep extends CWizardStep
 		if (strlen($email)<=0)
 		{
 			$this->SetError(InstallGetMessage("INS_FORGOT_EMAIL"));
-			return;
+			return false;
 		}
 		elseif (!check_email($email))
 		{
 			$this->SetError(InstallGetMessage("INS_WRONG_EMAIL"));
-			return;
+			return false;
 		}
 
 		if (strlen($login)<=0)
 		{
 			$this->SetError(InstallGetMessage("INS_FORGOT_LOGIN"));
-			return;
+			return false;
 		}
 		elseif (strlen($login)<3)
 		{
 			$this->SetError(InstallGetMessage("INS_LOGIN_MIN"));
-			return;
+			return false;
 		}
 
 		if (strlen($adminPass)<=0)
 		{
 			$this->SetError(InstallGetMessage("INS_FORGOT_PASSWORD"));
-			return;
+			return false;
 		}
 		elseif (strlen($adminPass)<6)
 		{
 			$this->SetError(InstallGetMessage("INS_PASSWORD_MIN"));
-			return;
+			return false;
 		}
 		elseif ($adminPass != $adminPassConfirm)
 		{
 			$this->SetError(InstallGetMessage("INS_WRONG_CONFIRM"));
-			return;
+			return false;
+		}
+
+		if($_SERVER['BITRIX_ENV_TYPE'] == "crm")
+		{
+			if(trim($userName) == '')
+			{
+				$this->SetError(InstallGetMessage("ACT_KEY_BAD_NAME"), "user_name");
+				return false;
+			}
+			if(trim($userSurname) == '')
+			{
+				$this->SetError(InstallGetMessage("ACT_KEY_BAD_LAST_NAME"), "user_surname");
+				return false;
+			}
 		}
 
 		$admin = $DB->Query("SELECT * FROM b_user WHERE ID=1", true);
 		if ($admin === false)
-			return;
+			return false;
 
 		$isAdminExists = ($admin->Fetch() ? true : false);
 
@@ -2975,6 +2908,7 @@ class CreateAdminStep extends CWizardStep
 		}
 
 		COption::SetOptionString("main", "email_from", $email);
+
 		$USER->Authorize($userID, true);
 
 		//Delete utf log
@@ -2982,6 +2916,24 @@ class CreateAdminStep extends CWizardStep
 
 		if(!file_exists($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/intranet") && !defined("FIRST_EDITION"))
 			RegisterModuleDependences('main', 'OnBeforeProlog', 'main', 'CWizardSolPanel', 'ShowPanel', 100, '/modules/main/install/wizard_sol/panel_button.php');
+
+		$devsrv = $wizard->GetVar("devsrv");
+		if ($devsrv == "Y")
+		{
+			COption::SetOptionString("main", "update_devsrv", $devsrv);
+		}
+
+		if($_SERVER['BITRIX_ENV_TYPE'] == "crm")
+		{
+			if($wizard->GetVar("lic_key_variant") == "Y")
+			{
+				$key = BXInstallServices::GetRegistrationKey($userName, $userSurname, $email, $DBType);
+				if($key !== false)
+				{
+					BXInstallServices::CreateLicenseFile($key);
+				}
+			}
+		}
 
 		$arWizardsList = BXInstallServices::GetWizardsList();
 		if (count($arWizardsList) <= 0)
@@ -3009,10 +2961,6 @@ class CreateAdminStep extends CWizardStep
 			}
 		}
 
-		$devsrv = $wizard->GetVar("devsrv");
-		if ($devsrv == "Y")
-			COption::SetOptionString("main", "update_devsrv", $devsrv);
-		
 		return true;
 	}
 
@@ -3030,6 +2978,8 @@ class CreateAdminStep extends CWizardStep
 				$wizard->SetVar($variable, mb_convert_encoding($wizard->GetVar($variable), INSTALL_CHARSET, "utf-8"));
 			}
 		}
+
+		$crm = ($_SERVER['BITRIX_ENV_TYPE'] == "crm");
 
 		$this->content = '
 		<table border="0" class="data-table">
@@ -3053,13 +3003,18 @@ class CreateAdminStep extends CWizardStep
 				<td>'.$this->ShowInputField("text", "email", Array("size" => "30")).'</td>
 			</tr>
 			<tr>
-				<td nowrap align="right">'.InstallGetMessage("INS_NAME").'</td>
+				<td nowrap align="right">'.($crm? '<span style="color:red">*</span>' : '').InstallGetMessage("INS_NAME").'</td>
 				<td>'.$this->ShowInputField("text", "user_name", Array("size" => "30")).'</td>
 			</tr>
 			<tr>
-				<td nowrap align="right" >'.InstallGetMessage("INS_LAST_NAME").'</td>
+				<td nowrap align="right">'.($crm? '<span style="color:red">*</span>' : '').InstallGetMessage("INS_LAST_NAME").'</td>
 				<td>'.$this->ShowInputField("text", "user_surname", Array("size" => "30")).'</td>
-			</tr>
+			</tr>';
+		if($crm)
+		{
+			$this->content .= '<tr><td colspan="2"><label>'.$this->ShowCheckboxField("lic_key_variant", "Y").InstallGetMessage("ACT_KEY").'</label></td></tr>';
+		}
+		$this->content .= '
 		</table>';
 	}
 }
@@ -4118,99 +4073,16 @@ class CheckLicenseKey extends CWizardStep
 
 				if(!$bError)
 				{
-					$lic_site = $_SERVER["HTTP_HOST"];
-					if(strlen($lic_site) <= 0)
-						$lic_site = "localhost";
+					$key = BXInstallServices::GetRegistrationKey($lic_key_user_name, $lic_key_user_surname, $lic_key_email, $DBType);
 
-					$arClientModules = Array();
-					$handle = @opendir($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules");
-					if ($handle)
-					{
-						while (false !== ($dir = readdir($handle)))
-						{
-							if (is_dir($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$dir)
-								&& $dir!="." && $dir!="..")
-							{
-								$module_dir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$dir;
-								if (file_exists($module_dir."/install/index.php"))
-								{
-									$arClientModules[] = $dir;
-								}
-							}
-						}
-						closedir($handle);
-					}
-
-					$lic_edition = serialize($arClientModules);
-
-					if (defined("INSTALL_CHARSET") && strlen(INSTALL_CHARSET) > 0)
-						$charset = INSTALL_CHARSET;
-					else
-						$charset = "windows-1251";
-
-					if(LANGUAGE_ID == "ru")
-						$host = "www.1c-bitrix.ru";
-					else
-						$host = "www.bitrixsoft.com";
-
-					$path = "/bsm_register_key.php";
-					$port = 80;
-					$query = "sur_name=$lic_key_user_surname&first_name=$lic_key_user_name&email=$lic_key_email&site=$lic_site&modules=".urlencode($lic_edition)."&db=$DBType&lang=".LANGUAGE_ID."&bx=Y&max_users=".TRIAL_RENT_VERSION_MAX_USERS;
-
-					if(defined("install_license_type"))
-						$query .= "&cp_type=".install_license_type;
-					if(defined("install_edition"))
-						$query .= "&edition=".install_edition;
-
-					$fp = @fsockopen("$host", "$port", $errnum, $errstr, 30);
-					if ($fp)
-					{
-						fputs($fp, "POST {$path} HTTP/1.1\r\n");
-						fputs($fp, "Host: {$host}\r\n");
-						fputs($fp, "Content-type: application/x-www-form-urlencoded; charset=\"".$charset."\"\r\n");
-						fputs($fp, "User-Agent: bitrixKeyReq\r\n");
-						fputs($fp, "Content-length: ".(function_exists("mb_strlen")? mb_strlen($query, 'latin1'): strlen($query))."\r\n");
-						fputs($fp, "Connection: close\r\n\r\n");
-						fputs($fp, $query."\r\n\r\n");
-						$page_content = "";
-						$headersEnded = 0;
-						while(!feof($fp))
-						{
-							$returned_data = fgets($fp, 128);
-							if($returned_data=="\r\n")
-							{
-								$headersEnded = 1;
-							}
-
-							if($headersEnded==1)
-							{
-								$page_content .= htmlspecialcharsbx($returned_data);
-							}
-						}
-						fclose($fp);
-					}
-					$arContent = explode("\n", $page_content);
-
-					$bEr = false;
-					$bOk = false;
-					$key = "";
-					foreach($arContent as $v)
-					{
-						if($v == "ERROR")
-							$bEr = true;
-						elseif($v == "OK")
-							$bOk = true;
-
-						if(strlen($v) > 10)
-							$key = trim($v);
-					}
-
-					if($bOk && strlen($key) >0)
+					if($key !== false)
 					{
 						$wizard->SetVar("license", $key);
 					}
 					elseif(defined("TRIAL_RENT_VERSION"))
+					{
 						$this->SetError(InstallGetMessage("ACT_KEY_REQUEST_ERROR"), "email");
+					}
 				}
 			}
 		}
@@ -4223,22 +4095,7 @@ class CheckLicenseKey extends CWizardStep
 		$wizard =& $this->GetWizard();
 		$licenseKey = $wizard->GetVar("license");
 
-		if (strlen($licenseKey) < 0)
-			$licenseKey = "DEMO";
-
-		$filePath = $_SERVER["DOCUMENT_ROOT"]."/bitrix/license_key.php";
-
-		if (!$fp = @fopen($filePath, "wb"))
-			return false;
-
-		$fileContent = "<"."? \$"."LICENSE_KEY = \"".addslashes($licenseKey)."\"; ?".">";
-
-		if (!fwrite($fp, $fileContent))
-			return false;
-
-		@fclose($fp);
-
-		return true;
+		return BXInstallServices::CreateLicenseFile($licenseKey);
 	}
 
 	function ShowStep()
@@ -4344,22 +4201,29 @@ elseif (BXInstallServices::IsShortInstall() && BXInstallServices::CheckShortInst
 	$arSteps = Array();
 	if (defined("VM_INSTALL"))
 	{
-		//$arSteps = Array("AgreementStep4VM", "CheckLicenseKey", "CreateModulesStep", "CreateAdminStep");
 		$arSteps = Array("AgreementStep4VM");
 	}
-	//else
-	//{
-		//if (!defined("TRIAL_VERSION"))
-			$arSteps[] = "CheckLicenseKey";
+
+	if($_SERVER['BITRIX_ENV_TYPE'] <> "crm")
+	{
+		$arSteps[] = "CheckLicenseKey";
 		$arSteps[] = "CreateModulesStep";
 		$arSteps[] = "CreateAdminStep";
 		$arSteps[] = "SelectWizardStep";
 		$arSteps[] = "LoadModuleStep";
 		$arSteps[] = "LoadModuleActionStep";
 		$arSteps[] = "SelectWizard1Step";
-	//}
-	if (BXInstallServices::GetDemoWizard() === false)
-		$arSteps[] = "FinishStep";
+
+		if (BXInstallServices::GetDemoWizard() === false)
+		{
+			$arSteps[] = "FinishStep";
+		}
+	}
+	else
+	{
+		$arSteps[] = "CreateModulesStep";
+		$arSteps[] = "CreateAdminStep";
+	}
 }
 else
 {
@@ -4394,4 +4258,3 @@ else
 
 header("Content-Type: text/html; charset=".$pageCharset);
 echo $content;
-?>

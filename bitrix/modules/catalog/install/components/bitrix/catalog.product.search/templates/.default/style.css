@@ -34,6 +34,11 @@
 	vertical-align: top !important;
 }
 
+.catalog-product-search-dialog .product-search-top-item
+{
+	padding-left: 28px !important;
+}
+
 .catalog-product-search-dialog .adm-submenu-item-name-link,
 .catalog-product-search-dialog .adm-submenu-item-name-link-text
 {
@@ -247,7 +252,8 @@
 {
 	width: 10px;
 	vertical-align: middle;
-	margin-left: 10px !important;
+	margin-left: 0 !important;
+	margin-right: 8px !important;
 	opacity: .8;
 	height: 35px;
 	display: inline-block;

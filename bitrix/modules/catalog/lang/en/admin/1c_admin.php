@@ -30,4 +30,5 @@ $MESS["CAT_1C_TRANSLIT_REPLACE_CHAR"] = "Replace non-alphabetical characters wit
 $MESS["CAT_1C_SKIP_ROOT_SECTION_2"] = "Don't import orphan root group nodes";
 $MESS["CAT_1C_EXTENDED_SETTINGS"] = "Extended parameters";
 $MESS["CAT_1C_DISABLE_CHANGE_PRICE_NAME"] = "Don't change price type name if using external ID (XML_ID)";
+$MESS["CAT_1C_SETTINGS_SAVE_DENIED"] = "You need to have the Kernel (main) module's \"Edit PHP Code\" access permission (edit_php) to edit parameters on this tab.";
 ?>

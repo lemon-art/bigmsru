@@ -66,7 +66,9 @@
 .mobile-grid-restricted .mobile-grid-block{
 	padding: 7px 16px;
 }
-
+.mobile-grid-block a {
+	font-size: 17px;
+}
 /*Del*/
 del {
 	display: block;
@@ -280,6 +282,10 @@ del {
 	top:50%;
 	-webkit-transform: translateY(-50%);
 	transform: translateY(-50%);
+}
+
+.mobile-grid-data-phone-container .mobile-grid-data-phone-icon {
+	top: 38%;
 }
 /*Custom*/
 .mobile-grid-data-custom-container {padding: 0}
@@ -662,7 +668,7 @@ del {
 .mobile-grid-field-user-name {
 	display: inline-block;
 	vertical-align: middle;
-	line-height: 20px;
+	line-height: 43px;
 	white-space: normal;
 }
 .mobile-grid-field-user-name span {
@@ -1485,6 +1491,10 @@ ol.mobile-grid-field-tasklinks {
 	-webkit-transform: translateY(-50%);
 	-moz-transform: translateY(-50%);
 	transform: translateY(-50%);
+}
+
+.mobile-grid-field-icon-phone {
+	margin-top: -3px;
 }
 
 .mobile-grid-field-desc {

@@ -1,4 +1,5 @@
 <?
+/** @global CMain $APPLICATION */
 require_once ($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
 CModule::IncludeModule("iblock");
 require_once ($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/iblock/prolog.php");
@@ -1083,7 +1084,7 @@ if (!$bAllLinesLoaded)
 }
 ?>
 
-<form method="POST" action="<?echo $sDocPath ?>?lang=<?echo LANG ?>" ENCTYPE="multipart/form-data" name="dataload" id="dataload">
+<form method="POST" action="<?=$APPLICATION->GetCurPage();?>?lang=<?=LANGUAGE_ID; ?>" ENCTYPE="multipart/form-data" name="dataload" id="dataload">
 
 <?$aTabs = array(
 	array(
@@ -1406,7 +1407,7 @@ if ($STEP == 3)
 			if (!$bSelected && !isset(${"field_".$i}))
 				$bSelected = $ar["code"] == $field;
 ?>
-						<option value="<?echo $ar["value"] ?>" <?
+						<option value="<?echo htmlspecialcharsbx($ar["value"]); ?>" <?
 			if ($bSelected)
 				echo "selected" ?>><?echo htmlspecialcharsbx($ar["name"]); ?></option>
 						<?
@@ -1604,13 +1605,11 @@ if ($STEP < 4): ?>
 	else: ?>
 	<input type="submit" name="backButton2" value="&lt;&lt; <?echo GetMessage("IBLOCK_ADM_IMP_2_1_STEP"); ?>" class="adm-btn-save">
 <?
-	endif; ?>
+	endif;
 
-<?$tabControl->End();
+$tabControl->End();
 ?>
-
 </form>
-
 <script language="JavaScript">
 <!--
 <?if ($STEP < 2): ?>
@@ -1636,6 +1635,4 @@ tabControl.DisableTab("edit3");
 <?endif; ?>
 //-->
 </script>
-
 <?require ($DOCUMENT_ROOT."/bitrix/modules/main/include/epilog_admin.php");
-?>

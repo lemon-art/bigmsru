@@ -91,7 +91,7 @@ $dbResultList = CSaleStatus::GetList(
 	$arFilter,
 	false,
 	false,
-	array('ID', 'SORT', 'TYPE', 'NOTIFY', 'LID', 'NAME', 'DESCRIPTION', $by)
+	array('ID', 'SORT', 'TYPE', 'NOTIFY', 'LID', 'COLOR' ,'NAME', 'DESCRIPTION', $by)
 );
 
 $dbResultList = new CAdminResult($dbResultList, $sTableID);
@@ -104,6 +104,7 @@ $lAdmin->AddHeaders(array(
 	array("id"=>"SORT", "content"=>GetMessage("STATUS_SORT"), "sort"=>"SORT", "default"=>true),
 	array("id"=>"NAME", "content"=>GetMessage("SALE_NAME"), "sort"=>"", "default"=>true),
 	array("id"=>"TYPE", "content"=>GetMessage("SSAN_TYPE"), "sort"=>"TYPE", "default"=>true),
+	array("id"=>"COLOR", "content"=>GetMessage("SSAN_COLOR"), "sort"=>"", "default"=>true),
 	array('id' => 'NOTIFY', 'content' => GetMessage('SSAN_NOTIFY'), 'sort' => 'NOTIFY', 'default' => true),
 ));
 
@@ -116,6 +117,10 @@ while ($arCCard = $dbResultList->NavNext(true, "f_"))
 	$row->AddField("ID", "<a href=\"/bitrix/admin/sale_status_edit.php?ID=".$f_ID."&lang=".LANG.GetFilterParams("filter_")."\" title=\"".GetMessage("SALE_EDIT_DESCR")."\">".$f_ID."</a>");
 	$row->AddField("SORT", $f_SORT);
 	$row->AddField("NAME", $f_NAME."<br><small>".$f_DESCRIPTION."</small><br>");
+	$row->AddField(
+		"COLOR",
+		strlen($f_COLOR) ? "<div style=\"background:".$f_COLOR."; width: 23px; border: 1px solid #87919c; border-radius: 4px; height: 23px;\"></div>" : $f_COLOR
+	);
 	$row->AddField("TYPE", (
 		$f_TYPE == 'O' ? GetMessage('SSEN_TYPE_O') :
 		($f_TYPE == 'D' ? GetMessage('SSEN_TYPE_D') :

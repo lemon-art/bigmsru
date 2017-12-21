@@ -6,6 +6,7 @@ $strErrorMessage = "";
 
 $bCanProcess = False;
 $bSuccessProcess = False;
+$year = date('Y');
 if ($_REQUEST["pay_this_order"] == "Y")
 {
 	$bCanProcess = True;
@@ -25,7 +26,7 @@ if ($_REQUEST["pay_this_order"] == "Y")
 		$INPUT_CARD_EXP_MONTH = "0".$INPUT_CARD_EXP_MONTH;
 
 	$INPUT_CARD_EXP_YEAR = IntVal($_REQUEST["ccard_date2"]);
-	if ($INPUT_CARD_EXP_YEAR < 2005)
+	if ($INPUT_CARD_EXP_YEAR < $year)
 		$strErrorMessage .= GetMessage("AN_CC_YEAR")." ";
 
 	$INPUT_CARD_CODE = Trim($_REQUEST["ccard_code"]);
@@ -151,14 +152,15 @@ if ($bCanProcess)
 			"PS_CURRENCY" => $GLOBALS["SALE_INPUT_PARAMS"]["ORDER"]["CURRENCY"],
 			"PS_RESPONSE_DATE" => Date(CDatabase::DateFormatToPHP(CLang::GetDateFormat("FULL", LANG)))
 		);
-	// You can uncomment this code if you want PAYED flag to be set automatically
-	/*
-	$arOrder = CSaleOrder::GetByID($ORDER_ID);
-	if ($arOrder["PRICE"] == $arFields["PS_SUM"] && $arFields["PS_STATUS"] == "Y")
+
+	if (CSalePaySystemAction::GetParamValue("AUTO_PAY") === 'Y')
 	{
-		CSaleOrder::PayOrder($arOrder["ID"], "Y");
+		$arOrder = CSaleOrder::GetByID($ORDER_ID);
+		if ($arOrder["PRICE"] == $arFields["PS_SUM"] && $arFields["PS_STATUS"] == "Y")
+		{
+			CSaleOrder::PayOrder($arOrder["ID"], "Y");
+		}
 	}
-	*/
 
 	CSaleOrder::Update($ORDER_ID, $arFields);
 
@@ -202,7 +204,7 @@ else
 				</select>
 				/
 				<select name="ccard_date2" class="inputselect">
-					<?for ($i = 2005; $i <= 2010; $i++):?>
+					<?for ($i = $year; $i <= $year+5; $i++):?>
 						<option value="<?= $i ?>"<?= (($i==$_REQUEST["ccard_date2"]) ? "selected" : "") ?>><?= $i ?></option>
 					<?endfor;?>
 				</select>

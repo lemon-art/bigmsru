@@ -168,7 +168,7 @@ while($arRes = $rsData->NavNext(true, "f_"))
 	$row->AddInputField("NAME", array("size"=>20));
 	$row->AddViewField("NAME", '<a href="'.$f_URL.'" title="'.GetMessage("fav_list_go_title").'">'.$f_NAME.'</a>');
 	$row->AddInputField("URL", array("size"=>20));
-	$row->AddViewField("URL", '<a href="favorite_edit.php?ID='.$f_ID.'&amp;lang='.LANG.'" title="'.GetMessage("fav_list_edit_title").'">'.(strlen($f_URL)>30? substr($f_URL, 0, 30)."...":$f_URL).'</a>');
+	$row->AddViewField("URL", '<a href="favorite_edit.php?ID='.$f_ID.'&amp;lang='.LANG.'" title="'.GetMessage("fav_list_edit_title").'">'.(strlen($f_URL)>60 && $_REQUEST["mode"]<>'excel'? substr($f_URL, 0, 60)."...":$f_URL).'</a>');
 	$row->AddInputField("C_SORT", array("size"=>5));
 	$row->AddViewField("MODIFIED_BY", '[<a title="'.GetMessage("MAIN_USER_PROFILE").'" href="user_edit.php?lang='.LANG.'&amp;ID='.$f_MODIFIED_BY.'">'.$f_MODIFIED_BY.'</a>] ('.$f_M_LOGIN.') '.$f_M_USER_NAME);
 	$row->AddViewField("USER_ID", ($f_USER_ID>0? '[<a title="'.GetMessage("MAIN_USER_PROFILE").'" href="user_edit.php?lang='.LANG.'&amp;ID='.$f_USER_ID.'">'.$f_USER_ID.'</a>] ('.$f_LOGIN.') '.$f_USER_NAME:''));

@@ -401,8 +401,8 @@ class CSiteTemplate
 		global $APPLICATION;
 
 		$arDescription = array(
-			"NAME" => EscapePHPString($arFields['NAME']),
-			"DESCRIPTION" => EscapePHPString($arFields['DESCRIPTION']),
+			"NAME" => $arFields['NAME'],
+			"DESCRIPTION" => $arFields['DESCRIPTION'],
 			"SORT" => (intval($arFields['SORT']) > 0? intval($arFields['SORT']) : ''),
 			"TYPE" => $arFields['TYPE']
 		);

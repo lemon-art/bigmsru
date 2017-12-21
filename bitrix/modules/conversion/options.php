@@ -8,10 +8,9 @@ use Bitrix\Main\Localization\Loc;
 Loc::loadMessages($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/options.php');
 Loc::loadMessages(__FILE__);
 
-if (! $USER->IsAdmin())
-{
+$MOD_RIGHT = $APPLICATION->getGroupRight('conversion');
+if ($MOD_RIGHT < 'R')
 	return;
-}
 
 $modules = Config::getModules();
 
@@ -25,35 +24,38 @@ if (! (Loader::includeModule('currency') && ($currencies = CurrencyManager::getC
 	$currencies = array($currency => $currency);
 }
 
-if ($REQUEST_METHOD == 'POST' && strlen($Update.$Apply.$RestoreDefaults)>0 && check_bitrix_sessid())
+if ($MOD_RIGHT >= 'W' && check_bitrix_sessid())
 {
-	if (strlen($RestoreDefaults) > 0)
+	if ($REQUEST_METHOD == 'POST' && strlen($Update.$Apply.$RestoreDefaults) > 0)
 	{
-		Config::setBaseCurrency(null);
-		$currency = Config::getBaseCurrency();
-
-		Config::setModules(array());
-		$modules = Config::getModules();
-	}
-	else
-	{
-		if ($currencies[$_POST['CURRENCY']])
+		if (strlen($RestoreDefaults) > 0)
 		{
-			$currency = $_POST['CURRENCY'];
-			Config::setBaseCurrency($currency);
+			Config::setBaseCurrency(null);
+			$currency = Config::getBaseCurrency();
+
+			Config::setModules(array());
+			$modules = Config::getModules();
+		}
+		else
+		{
+			if ($currencies[$_POST['CURRENCY']])
+			{
+				$currency = $_POST['CURRENCY'];
+				Config::setBaseCurrency($currency);
+			}
+
+			foreach ($modules as $name => $config)
+			{
+				$modules[$name]['ACTIVE'] = isset($_POST['MODULE'][$name]['ACTIVE']);
+			}
+			Config::setModules($modules);
 		}
 
-		foreach ($modules as $name => $config)
-		{
-			$modules[$name]['ACTIVE'] = isset($_POST['MODULE'][$name]['ACTIVE']);
-		}
-		Config::setModules($modules);
+	//	if(strlen($Update)>0 && strlen($_REQUEST["back_url_settings"])>0)
+	//		LocalRedirect($_REQUEST["back_url_settings"]);
+	//	else
+	//		LocalRedirect($APPLICATION->GetCurPage()."?mid=".urlencode($mid)."&lang=".urlencode(LANGUAGE_ID)."&back_url_settings=".urlencode($_REQUEST["back_url_settings"])."&".$tabControl->ActiveTabParam());
 	}
-
-//	if(strlen($Update)>0 && strlen($_REQUEST["back_url_settings"])>0)
-//		LocalRedirect($_REQUEST["back_url_settings"]);
-//	else
-//		LocalRedirect($APPLICATION->GetCurPage()."?mid=".urlencode($mid)."&lang=".urlencode(LANGUAGE_ID)."&back_url_settings=".urlencode($_REQUEST["back_url_settings"])."&".$tabControl->ActiveTabParam());
 }
 
 // VIEW
@@ -102,15 +104,14 @@ $tabControl->Begin();
 			<td width="40%">
 				<?
 
-				if (@include_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/'.$name.'/install/index.php'))
+				$title = $name;
+				if ($info = \CModule::createModuleObject($name))
 				{
-					$module = new $name();
-					echo $module ? $module->MODULE_NAME : $name;
+					if (!empty($info->MODULE_NAME))
+						$title = $info->MODULE_NAME;
 				}
-				else
-				{
-					echo $name;
-				}
+
+				echo $title;
 
 				?>
 			</td>
@@ -125,13 +126,13 @@ $tabControl->Begin();
 
 	<?$tabControl->Buttons()?>
 
-	<input type="submit" name="Update" value="<?=GetMessage("MAIN_SAVE")?>" title="<?=GetMessage("MAIN_OPT_SAVE_TITLE")?>" class="adm-btn-save">
-	<input type="submit" name="Apply" value="<?=GetMessage("MAIN_OPT_APPLY")?>" title="<?=GetMessage("MAIN_OPT_APPLY_TITLE")?>">
+	<input type="submit" name="Update" <? if ($MOD_RIGHT < 'W') echo 'disabled'; ?> value="<?=GetMessage("MAIN_SAVE")?>" title="<?=GetMessage("MAIN_OPT_SAVE_TITLE")?>" class="adm-btn-save">
+	<input type="submit" name="Apply" <? if ($MOD_RIGHT < 'W') echo 'disabled'; ?> value="<?=GetMessage("MAIN_OPT_APPLY")?>" title="<?=GetMessage("MAIN_OPT_APPLY_TITLE")?>">
 	<?if(strlen($_REQUEST["back_url_settings"])>0):?>
 		<input type="button" name="Cancel" value="<?=GetMessage("MAIN_OPT_CANCEL")?>" title="<?=GetMessage("MAIN_OPT_CANCEL_TITLE")?>" onclick="window.location='<?echo htmlspecialcharsbx(CUtil::addslashes($_REQUEST["back_url_settings"]))?>'">
 		<input type="hidden" name="back_url_settings" value="<?=htmlspecialcharsbx($_REQUEST["back_url_settings"])?>">
 	<?endif?>
-	<input type="submit" name="RestoreDefaults" title="<?echo GetMessage("MAIN_HINT_RESTORE_DEFAULTS")?>" OnClick="return confirm('<?echo AddSlashes(GetMessage("MAIN_HINT_RESTORE_DEFAULTS_WARNING"))?>')" value="<?echo GetMessage("MAIN_RESTORE_DEFAULTS")?>">
+	<input type="submit" name="RestoreDefaults" <? if ($MOD_RIGHT < 'W') echo 'disabled'; ?> title="<?echo GetMessage("MAIN_HINT_RESTORE_DEFAULTS")?>" OnClick="return confirm('<?echo AddSlashes(GetMessage("MAIN_HINT_RESTORE_DEFAULTS_WARNING"))?>')" value="<?echo GetMessage("MAIN_RESTORE_DEFAULTS")?>">
 
 	<?$tabControl->End()?>
 </form>

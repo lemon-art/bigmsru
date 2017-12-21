@@ -98,7 +98,8 @@ class RCrmActions
     {
         $bitrixPropsList = array();
         $arPropsAll = \Bitrix\Sale\Internals\OrderPropsTable::getList(array(
-            'select' => array('*')
+            'select' => array('*'),
+            'filter' => array('CODE' => '_%')
         ));
         while ($prop = $arPropsAll->Fetch()) {
             $bitrixPropsList[$prop['PERSON_TYPE_ID']][] = $prop;
@@ -188,7 +189,7 @@ class RCrmActions
             RetailCrmOrder::uploadOrders(50, true);
         }
 
-        return;
+        return 'RCrmActions::uploadOrdersAgent();';
     }
 
     /**
@@ -314,14 +315,19 @@ class RCrmActions
             case 'ordersEdit':
             case 'customersGet':
             case 'customersEdit':
-            case 'ordersPaymentEdit':
                 return self::proxy($api, $methodApi, $method, array($params, 'externalId', $site));
-
+                
+            case 'paymentEditById':
+                return self::proxy($api, 'ordersPaymentEdit', $method, array($params, 'id', $site));
+                
+            case 'paymentEditByExternalId':
+                return self::proxy($api, 'ordersPaymentEdit', $method, array($params, 'externalId', $site));
+                
             default:
                 return self::proxy($api, $methodApi, $method, array($params, $site));
-        }        
+        }
     }
-    
+
     private function proxy($api, $methodApi, $method, $params) {
         $log = new Logger();
         $version = COption::GetOptionString(self::$MODULE_ID, self::$CRM_API_VERSION, 0);
@@ -355,11 +361,11 @@ class RCrmActions
                         'params' => $params
                     ), 'apiErrors');
                 }
-                
+
                 if (function_exists('retailCrmApiResult')) {
                     retailCrmApiResult($methodApi, false, $result->getStatusCode());
                 }
-            
+
                 if ($result->getStatusCode() == 460) {
                     return true;
                 }
@@ -403,11 +409,11 @@ class RCrmActions
 
             return false;
         }
-        
+
         if (function_exists('retailCrmApiResult')) {
             retailCrmApiResult($methodApi, true, $result->getStatusCode());
         }
-        
+
         return $result;
     }
 }

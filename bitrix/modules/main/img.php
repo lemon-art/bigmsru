@@ -244,7 +244,6 @@ function GetArrayX($arrX, &$MinX, &$MaxX, $max_grid=15, $min_grid=10)
 	$arrayX = array();
 	while ($unix_date < $MaxX+$shiftX)
 	{
-		// если имеем ситуацию с переходом на зимнее время (день увеличивается на 1 час)
 		if ($prev_date == date("d.m.Y", $unix_date))
 		{
 			$unix_date += 3600;
@@ -263,9 +262,6 @@ function GetArrayX($arrX, &$MinX, &$MaxX, $max_grid=15, $min_grid=10)
 }
 
 
-/******************************************************
-Формируем ось Y (целые числа)
-*******************************************************/
 function GetArrayY($arrY, &$MinY, &$MaxY, $max_grid=15, $first_null="Y", $integers=false)
 {
 	$arrayY = array();
@@ -364,21 +360,6 @@ $k[14]=0.60;
 $k[15]=0.55;
 $k[16]=0.52;
 
-/******************************************************************************
-	Рисует координатную сетку для графика
-
-	$arrayX - массив значений по X
-	$arrayY - массив значений по Y
-	$width - ширина графика
-	$height - высота графика
-	$ImageHandle - дескриптор картинки
-	$bgColor - цвет подложки графика
-	$gColor - цвет сетки
-	$Color - цвет осей
-	$dD - отступ от края картинки
-	$FontWidth - ширина текстовых символов
-
-******************************************************************************/
 function DrawCoordinatGrid($arrayX, $arrayY, $width, $height, $ImageHandle, $bgColor="FFFFFF", $gColor='B1B1B1', $Color="000000", $dD=15, $FontWidth=2, $arrTTF_FONT=false)
 {
 	global $k, $xA, $yA, $xPixelLength, $yPixelLength, $APPLICATION;
@@ -432,9 +413,6 @@ function DrawCoordinatGrid($arrayX, $arrayY, $width, $height, $ImageHandle, $bgC
 	}
 
 /*
-
-	Считаем точки для осей и координатной сетки
-
 	C
 	|
 	|
@@ -447,7 +425,6 @@ function DrawCoordinatGrid($arrayX, $arrayY, $width, $height, $ImageHandle, $bgC
 	$ttf_font_x = "";
 	$ttf_size_x = $ttf_shift_x = $ttf_base_x = 0;
 
-	// координаты точки A
 	$xA = $dD+$dlataX;
 	if ($bUseTTFX)
 	{
@@ -465,26 +442,22 @@ function DrawCoordinatGrid($arrayX, $arrayY, $width, $height, $ImageHandle, $bgC
 		$yA = $height-$dD-ImageFontHeight($FontWidth)/2;
 	}
 
-	// координаты точки C
 	$xC = $xA;
 	$yC = $dD;
 
-	// координаты точки B
 	$xB = $width-$dD;
 	$yB = $yA;
 
-	$GrafWidth = $xB - $xA;		// ширина координатной сетки
-	$GrafHeight = $yA - $yC;	// высота координатной сетки
+	$GrafWidth = $xB - $xA;
+	$GrafHeight = $yA - $yC;
 
-	$PointsX = max(sizeof($arrayX)+$bForBarDiagram, 2);	// количество делений по оси X
-	$PointsY = max(sizeof($arrayY), 2);	// количество делений по оси Y
+	$PointsX = max(sizeof($arrayX)+$bForBarDiagram, 2);
+	$PointsY = max(sizeof($arrayY), 2);
 
-	$dX = $GrafWidth/($PointsX-1);	// шаг сетки по X
-	$dY = $GrafHeight/($PointsY-1);	// шаг сетки по Y
+	$dX = $GrafWidth/($PointsX-1);
+	$dY = $GrafHeight/($PointsY-1);
 
 /*
-	Рисуем вертикальую сетку
-
 	C	P1
 	|	|
 	|	|
@@ -515,9 +488,9 @@ function DrawCoordinatGrid($arrayX, $arrayY, $width, $height, $ImageHandle, $bgC
 		if($bForBarDiagram)
 			$arResult["XBUCKETS"][$i] = array(ceil($xP0)+1, ceil($xP0+$dX)-1);
 
-		$captionX = $arrayX[$i]; // подписи по оси X
-		$xCaption = $xP0 - strlen($captionX)*$k[$FontWidth] + ($dX*$bForBarDiagram/2); // координата X для подписи
-		$yCaption = $yP0; // координата Y для подписи
+		$captionX = $arrayX[$i];
+		$xCaption = $xP0 - strlen($captionX)*$k[$FontWidth] + ($dX*$bForBarDiagram/2);
+		$yCaption = $yP0;
 
 		if ($bUseTTFX)
 		{
@@ -535,8 +508,6 @@ function DrawCoordinatGrid($arrayX, $arrayY, $width, $height, $ImageHandle, $bgC
 	}
 
 /*
-	Рисуем горизонтальную сетку
-
    C
    |
    |
@@ -567,9 +538,9 @@ function DrawCoordinatGrid($arrayX, $arrayY, $width, $height, $ImageHandle, $bgC
 				);
 			ImageSetStyle($ImageHandle, $style);
 			ImageLine($ImageHandle, ceil($xM0), ceil($yM0), ceil($xM1), ceil($yM1), IMG_COLOR_STYLED);
-			$captionY = $arrayY[$i]; // подписи по оси Y
-			$xCaption = $dlataX; // координата X для подписи
-			$yCaption = $yM1-$k[$FontWidth]*3; // координата Y для подписи
+			$captionY = $arrayY[$i];
+			$xCaption = $dlataX;
+			$yCaption = $yM1-$k[$FontWidth]*3;
 
 			if ($bUseTTFY)
 			{
@@ -585,12 +556,11 @@ function DrawCoordinatGrid($arrayX, $arrayY, $width, $height, $ImageHandle, $bgC
 		$i++;
 	}
 
-	// рисуем оси X и Y
 	ImageLine($ImageHandle, ceil($xA), ceil($yA), ceil($xC), ceil($yC), $color000000);
 	ImageLine($ImageHandle, ceil($xB), ceil($yB), ceil($xA), ceil($yA), $color000000);
 
-	$xPixelLength = $xB - $xA;	// ширина поля для графика
-	$yPixelLength = $yA - $yC;	// высота поля для графика
+	$xPixelLength = $xB - $xA;
+	$yPixelLength = $yA - $yC;
 
 	$arResult["VIEWPORT"] = array(ceil($xA), ceil($yA), ceil($xB), ceil($yC));
 
@@ -641,20 +611,6 @@ function Bar_Diagram($ImageHandle, $arData, $MinY, $MaxY, $gridInfo)
 	}
 }
 
-/******************************************************************************
-	Рисует график
-
-	$arrayX - массив значений по X
-	$arrayY - массив значений по Y
-	$ImageHandle - дескриптор картинки
-	$MinX - минимум графика по X
-	$MaxX - максимум графика по X
-	$MinY - минимум графика по Y
-	$MaxY - максимум графика по Y
-	$Color - цвет графика
-	$dashed - рисовать ли пунктиром
-
-******************************************************************************/
 function Graf($arrayX, $arrayY, $ImageHandle, $MinX, $MaxX, $MinY, $MaxY, $Color='FF0000', $dashed="N", $thikness=2, $antialiase=true)
 {
 	global $xA, $yA, $xPixelLength, $yPixelLength;
@@ -743,18 +699,6 @@ function Graf($arrayX, $arrayY, $ImageHandle, $MinX, $MaxX, $MinY, $MaxY, $Color
 	}
 }
 
-/******************************************************************************
-	Функция рисует сектор
-
-	$ImageHandle	- дескриптор картинки
-	$start			- начальный угол
-	$end			- конечный угол
-	$color			- RGB цвет сектора
-	$diameter		- диаметр круга
-	$centerX		- координата X центра круга
-	$centerY		- координата Y центра круга
-
-******************************************************************************/
 function Draw_Sector($ImageHandle, $start, $end, $color, $diameter, $centerX, $centerY)
 {
 	$radius = $diameter/2;
@@ -763,18 +707,15 @@ function Draw_Sector($ImageHandle, $start, $end, $color, $diameter, $centerX, $c
 
 	imagearc($ImageHandle, $centerX, $centerY, $diameter, $diameter, 0, 360, $color);
 
-	// первая линия сектора
 	$startX = $centerX + cos(deg2rad($start)) * $radius;
 	$startY = $centerY + sin(deg2rad($start)) * $radius;
 	imageline($ImageHandle, $centerX, $centerY, $startX, $startY, $color);
 
-	// вторая линия сектора
 	$endX = $centerX + cos(deg2rad($end)) * $radius;
 	$endY = $centerY + sin(deg2rad($end)) * $radius;
 	imageline($ImageHandle, $centerX, $centerY, $endX, $endY, $color);
 
-	// найдем координаты точки заливки
-	$diff = intval($end - $start); // угол сектора
+	$diff = intval($end - $start);
 	if ($diff < 180)
 	{
 		$x = ($centerX+(($startX + $endX)/2))/2;
@@ -794,19 +735,6 @@ function Draw_Sector($ImageHandle, $start, $end, $color, $diameter, $centerX, $c
 	//imagesetpixel($ImageHandle, $x, $y, $color);
 }
 
-/******************************************************************************
-	Функция рисует круговую диаграмму
-
-	$ImageHandle		- дескриптор картинки
-	$arr			- массив с ключами:
-		COLOR - цвет сектора,
-		COUNTER - численное значение
-	$background_color	- RGB цвет заливки изображения
-	$diameter		- диаметр круга
-	$centerX		- координата X центра круга
-	$centerY		- координата Y центра круга
-
-******************************************************************************/
 function Circular_Diagram($ImageHandle, $arr, $background_color, $diameter, $centerX, $centerY, $antialiase=true)
 {
 	if($antialiase)
@@ -817,7 +745,6 @@ function Circular_Diagram($ImageHandle, $arr, $background_color, $diameter, $cen
 		$centerX=$centerX*5;
 		$centerY=$centerY*5;
 		$ImageHandle = CreateImageHandle($diameter, $diameter, "FFFFFF", true);
-		//Заливаем фон
 		imagefill($ImageHandle, 0, 0, imagecolorallocate($ImageHandle, 255,255,255));
 	}
 	$arr2 = array();
@@ -915,17 +842,6 @@ function Circular_Diagram($ImageHandle, $arr, $background_color, $diameter, $cen
 		imagecopyresampled($ImageHandle_Saved, $ImageHandle, 0, 0, 0, 0, $diameter_saved, $diameter_saved, $diameter, $diameter);
 	}
 }
-
-/******************************************************************************
-	Функция очищает край круговой диаграммы от мусора
-
-	$ImageHandle		- дескриптор картинки
-	$background_color	- RGB цвет заливки изображения
-	$diameter			- диаметр круга
-	$centerX			- координата X центра круга
-	$centerY			- координата Y центра круга
-
-******************************************************************************/
 
 function Clean_Circular_Diagram($ImageHandle, $background_color, $diameter, $centerX, $centerY)
 {

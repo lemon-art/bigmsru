@@ -36,4 +36,6 @@ $MESS ['SALE_F_PERSON_TYPE'] = "Тип плательщика";
 $MESS ['SALE_H_DESCRIPTION'] = "Описание";
 $MESS ['SALE_H_PERSON_TYPES'] = "Типы плательщиков";
 $MESS ['SALE_H_ACTION_FILES'] = "Обработчики";
+$MESS ['SPSAN_MARKETPLACE_ADD_NEW'] = "Установить из Маркетплейс";
+$MESS ['SPSAN_MARKETPLACE_ADD_NEW_ALT'] = "Нажмите для установки из Маркетплейс";
 ?>

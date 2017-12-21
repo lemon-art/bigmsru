@@ -99,6 +99,13 @@ if(strlen($filter_date_to) > 0)
 else
 	$maxDate = mktime(0, 0, 0, date("n"), date("j")+1, date("Y"));
 
+if($filter_by == "week")
+{
+	$d = date("N", $minDate);
+	$difference = 7 - $d;
+	$minDate = AddToTimeStamp(Array("DD" => $difference), $minDate);
+}
+
 $arSelectedFields = Array("ID", "PAYED", "DATE_PAYED", "CANCELED", "DATE_CANCELED", "STATUS_ID", "DATE_STATUS", "PRICE_DELIVERY", "ALLOW_DELIVERY", "DATE_ALLOW_DELIVERY", "PRICE", "CURRENCY", "DISCOUNT_VALUE", "PAY_SYSTEM_ID", "DELIVERY_ID", "DATE_INSERT", "TAX_VALUE", "LID");
 $dbOrder = CSaleOrder::GetList(Array(), $arFilter, false, false, $arSelectedFields);
 while($arOrder = $dbOrder->Fetch())
@@ -112,16 +119,11 @@ while($arOrder = $dbOrder->Fetch())
 	}
 	elseif($filter_by == "week")
 	{
-		$d = date("w", $tstm);
-		if($d < 1)
-			$d = -6;
-		elseif($d > 1)
-			$d = $d-1;
-		else
-			$d = 0;
-		$key = ConvertTimeStamp(AddToTimeStamp(Array("DD" => "-".$d), $tstm));
+		$d = date("N", $tstm);
+		$difference = 7 - $d;
+		$key = ConvertTimeStamp(AddToTimeStamp(Array("DD" => $difference), $tstm));
 		if($tstm < $minDate || $minDate <= 0)
-			$minDate = AddToTimeStamp(Array("DD" => "-".$d), $tstm);
+			$minDate = AddToTimeStamp(Array("DD" => $difference), $tstm);
 	}
 	elseif($filter_by == "month")
 	{

@@ -33,6 +33,7 @@ class HttpClient
 	protected $socketTimeout = 30;
 	protected $streamTimeout = 60;
 	protected $error = array();
+	protected $peerSocketName;
 
 	/** @var HttpHeaders */
 	protected $requestHeaders;
@@ -46,6 +47,7 @@ class HttpClient
 	protected $version = self::HTTP_1_0;
 	protected $requestCharset = '';
 	protected $sslVerify = true;
+	protected $bodyLengthMax = 0;
 
 	protected $status = 0;
 	/** @var HttpHeaders */
@@ -71,7 +73,8 @@ class HttpClient
 	 *		"proxyPassword" string Proxy password
 	 *		"compress" bool Accept gzip encoding (default false)
 	 *		"charset" string Charset for body in POST and PUT
-	 *		"disableSslVerification" bool Pass true to disable ssl check.
+	 *		"disableSslVerification" bool Pass true to disable ssl check
+	 *      "bodyLengthMax" int Maximum length of the body.
 	 * 	All the options can be set separately with setters.
 	 */
 	public function __construct(array $options = null)
@@ -129,6 +132,10 @@ class HttpClient
 			if(isset($options["disableSslVerification"]) && $options["disableSslVerification"] === true)
 			{
 				$this->disableSslVerification();
+			}
+			if(isset($options["bodyLengthMax"]))
+			{
+				$this->setBodyLengthMax($options["bodyLengthMax"]);
 			}
 		}
 	}
@@ -373,6 +380,14 @@ class HttpClient
 	}
 
 	/**
+	 * Clears all HTTP request header fields.
+	 */
+	public function clearHeaders()
+	{
+		$this->requestHeaders->clear();
+	}
+
+	/**
 	 * Sets an array of cookies for HTTP request.
 	 *
 	 * @param array $cookies Array of cookie_name => value pairs.
@@ -524,6 +539,16 @@ class HttpClient
 	}
 
 	/**
+	 * Sets the maximum body length that will be received in $this->readBody().
+	 *
+	 * @param int $bodyLengthMax
+	 */
+	public function setBodyLengthMax($bodyLengthMax)
+	{
+		$this->bodyLengthMax = intval($bodyLengthMax);
+	}
+
+	/**
 	 * Downloads and saves a file.
 	 *
 	 * @param string $url URI to download.
@@ -599,6 +624,7 @@ class HttpClient
 		if(is_resource($res))
 		{
 			$this->resource = $res;
+			$this->peerSocketName = stream_socket_get_name($this->resource, true);
 
 			if($this->streamTimeout > 0)
 			{
@@ -793,6 +819,7 @@ class HttpClient
 
 	protected function readBody()
 	{
+		$receivedBodyLength = 0;
 		if($this->responseHeaders->get("Transfer-Encoding") == "chunked")
 		{
 			while(!feof($this->resource))
@@ -831,7 +858,14 @@ class HttpClient
 						$this->error['STREAM_READING'] = "Stream reading error";
 						return false;
 					}
-					$length -= BinaryString::getLength($buf);
+					$currentReceivedBodyLength = BinaryString::getLength($buf);
+					$length -= $currentReceivedBodyLength;
+					$receivedBodyLength += $currentReceivedBodyLength;
+					if($this->bodyLengthMax > 0 && $receivedBodyLength > $this->bodyLengthMax)
+					{
+						$this->error['STREAM_LENGTH'] = "Maximum content length has been reached. Break reading";
+						return false;
+					}
 				}
 			}
 		}
@@ -852,6 +886,12 @@ class HttpClient
 				if($buf === false)
 				{
 					$this->error['STREAM_READING'] = "Stream reading error";
+					return false;
+				}
+				$receivedBodyLength += BinaryString::getLength($buf);
+				if($this->bodyLengthMax > 0 && $receivedBodyLength > $this->bodyLengthMax)
+				{
+					$this->error['STREAM_LENGTH'] = "Maximum content length has been reached. Break reading";
 					return false;
 				}
 			}
@@ -986,5 +1026,39 @@ class HttpClient
 	public function getCharset()
 	{
 		return $this->responseHeaders->getCharset();
+	}
+
+	/**
+	 * Returns remote peer socket name (usually in form ip:port)
+	 *
+	 * @return string
+	 */
+	public function getPeerSocketName()
+	{
+		return $this->peerSocketName ?: '';
+	}
+
+	/**
+	 * Returns remote peer ip address.
+	 * @return string|false
+	 */
+	public function getPeerAddress()
+	{
+		if(!preg_match('/^(\d+)\.(\d+)\.(\d+)\.(\d+):(\d+)$/', $this->peerSocketName, $matches))
+			return false;
+
+		return sprintf('%d.%d.%d.%d', $matches[1], $matches[2], $matches[3], $matches[4]);
+	}
+
+	/**
+	 * Returns remote peer ip address.
+	 * @return int|false
+	 */
+	public function getPeerPort()
+	{
+		if(!preg_match('/^(\d+)\.(\d+)\.(\d+)\.(\d+):(\d+)$/', $this->peerSocketName, $matches))
+			return false;
+
+		return (int)$matches[5];
 	}
 }

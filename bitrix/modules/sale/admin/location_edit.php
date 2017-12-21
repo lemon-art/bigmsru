@@ -377,7 +377,7 @@ $tabControl->BeginNextTab();
 				$db_contList = CSaleLocation::GetCountryList(Array("NAME"=>"ASC"), Array(), LANG);
 				while ($arContList = $db_contList->Fetch())
 				{
-					?><option value="<?echo $arContList["ID"] ?>"<?if (IntVal($arContList["ID"])==IntVal($str_COUNTRY_ID)) echo " selected";?>><?echo htmlspecialcharsEx($arContList["NAME_ORIG"]) ?> [<?echo htmlspecialcharsEx($arContList["NAME_LANG"]) ?>]</option><?
+					?><option value="<?echo $arContList["ID"] ?>"<?if (IntVal($arContList["ID"])==IntVal($str_COUNTRY_ID)) echo " selected";?>><?echo htmlspecialcharsbx($arContList["NAME_ORIG"]) ?> [<?echo htmlspecialcharsbx($arContList["NAME_LANG"]) ?>]</option><?
 				}
 				?>
 			</select>
@@ -402,12 +402,12 @@ $tabControl->BeginNextTab();
 	<?endif;?>
 	<?
 	$arCountry = CSaleLocation::GetCountryByID($str_COUNTRY_ID);
-	$str_COUNTRY_NAME = htmlspecialcharsEx($arCountry["NAME"]);
-	$str_COUNTRY_SHORT_NAME = htmlspecialcharsEx($arCountry["SHORT_NAME"]);
+	$str_COUNTRY_NAME = htmlspecialcharbx($arCountry["NAME"]);
+	$str_COUNTRY_SHORT_NAME = htmlspecialcharbx($arCountry["SHORT_NAME"]);
 	if ($bInitVars && $CHANGE_COUNTRY == 'Y')
 	{
-		$str_COUNTRY_NAME = htmlspecialcharsEx($COUNTRY_NAME);
-		$str_COUNTRY_SHORT_NAME = htmlspecialcharsEx($COUNTRY_SHORT_NAME);
+		$str_COUNTRY_NAME = htmlspecialcharbx($COUNTRY_NAME);
+		$str_COUNTRY_SHORT_NAME = htmlspecialcharbx($COUNTRY_SHORT_NAME);
 	}
 	?>
 	<tr class="adm-detail-required-field">
@@ -429,12 +429,12 @@ $tabControl->BeginNextTab();
 	<?
 	for ($i = 0, $max = count($arSysLangs); $i < $max; $i++):
 		$arCountry = CSaleLocation::GetCountryLangByID($str_COUNTRY_ID, $arSysLangs[$i]);
-		$str_COUNTRY_NAME = htmlspecialcharsEx($arCountry["NAME"]);
-		$str_COUNTRY_SHORT_NAME = htmlspecialcharsEx($arCountry["SHORT_NAME"]);
+		$str_COUNTRY_NAME = htmlspecialcharbx($arCountry["NAME"]);
+		$str_COUNTRY_SHORT_NAME = htmlspecialcharbx($arCountry["SHORT_NAME"]);
 		if ($bInitVars && $CHANGE_COUNTRY == 'Y')
 		{
-			$str_COUNTRY_NAME = htmlspecialcharsEx(${"COUNTRY_NAME_".$arSysLangs[$i]});
-			$str_COUNTRY_SHORT_NAME = htmlspecialcharsEx(${"COUNTRY_SHORT_NAME_".$arSysLangs[$i]});
+			$str_COUNTRY_NAME = htmlspecialcharbx(${"COUNTRY_NAME_".$arSysLangs[$i]});
+			$str_COUNTRY_SHORT_NAME = htmlspecialcharbx(${"COUNTRY_SHORT_NAME_".$arSysLangs[$i]});
 		}
 		?>
 		<tr>
@@ -523,7 +523,7 @@ $tabControl->BeginNextTab();
 				$dbRegionList = CSaleLocation::GetRegionList(array("NAME"=>"ASC"), $arFilterRegion, LANG);
 				while ($arRegionList = $dbRegionList->Fetch())
 				{
-					?><option value="<?echo $arRegionList["ID"] ?>"<?if (IntVal($arRegionList["ID"])==IntVal($str_REGION_ID)) echo " selected";?>><?echo htmlspecialcharsEx($arRegionList["NAME_ORIG"]) ?> [<?echo htmlspecialcharsEx($arRegionList["NAME_LANG"]) ?>]</option><?
+					?><option value="<?echo $arRegionList["ID"] ?>"<?if (IntVal($arRegionList["ID"])==IntVal($str_REGION_ID)) echo " selected";?>><?echo htmlspecialcharsbx($arRegionList["NAME_ORIG"]) ?> [<?echo htmlspecialcharsbx($arRegionList["NAME_LANG"]) ?>]</option><?
 				}
 				?>
 			</select>
@@ -531,14 +531,14 @@ $tabControl->BeginNextTab();
 	</tr>
 	<?
 	$arRegion = CSaleLocation::GetRegionByID($str_REGION_ID);
-	$str_REGION_NAME = htmlspecialcharsEx($arRegion["NAME"]);
-	$str_REGION_SHORT_NAME = htmlspecialcharsEx($arRegion["SHORT_NAME"]);
+	$str_REGION_NAME = htmlspecialcharbx($arRegion["NAME"]);
+	$str_REGION_SHORT_NAME = htmlspecialcharbx($arRegion["SHORT_NAME"]);
 
 
 	if ($arCity = CSaleLocation::GetCityByID($str_CITY_ID))
 	{
-		$str_CITY_NAME = htmlspecialcharsEx($arCity["NAME"]);
-		$str_CITY_SHORT_NAME = htmlspecialcharsEx($arCity["SHORT_NAME"]);
+		$str_CITY_NAME = htmlspecialcharbx($arCity["NAME"]);
+		$str_CITY_SHORT_NAME = htmlspecialcharbx($arCity["SHORT_NAME"]);
 		$str_WITHOUT_CITY = "N";
 	}
 	else
@@ -550,8 +550,8 @@ $tabControl->BeginNextTab();
 	}
 	if ($bInitVars)
 	{
-		$str_CITY_NAME = htmlspecialcharsEx($CITY_NAME);
-		$str_CITY_SHORT_NAME = htmlspecialcharsEx($CITY_SHORT_NAME);
+		$str_CITY_NAME = htmlspecialcharbx($CITY_NAME);
+		$str_CITY_SHORT_NAME = htmlspecialcharbx($CITY_SHORT_NAME);
 		$str_WITHOUT_CITY = (($WITHOUT_CITY=="Y") ? "Y" : "N");
 	}
 
@@ -575,12 +575,12 @@ $tabControl->BeginNextTab();
 	<?
 	for ($i = 0, $max = count($arSysLangs); $i < $max; $i++):
 		$arRegion = CSaleLocation::GetRegionLangByID($str_REGION_ID, $arSysLangs[$i]);
-		$str_REGION_NAME = htmlspecialcharsEx($arRegion["NAME"]);
-		$str_REGION_SHORT_NAME = htmlspecialcharsEx($arRegion["SHORT_NAME"]);
+		$str_REGION_NAME = htmlspecialcharbx($arRegion["NAME"]);
+		$str_REGION_SHORT_NAME = htmlspecialcharbx($arRegion["SHORT_NAME"]);
 		if ($bInitVars && $str_WITHOUT_CITY == "Y" && IntVal($str_REGION_ID) > 0)
 		{
-			$str_REGION_NAME = htmlspecialcharsEx(${"REGION_NAME_".$arSysLangs[$i]});
-			$str_REGION_SHORT_NAME = htmlspecialcharsEx(${"REGION_SHORT_NAME_".$arSysLangs[$i]});
+			$str_REGION_NAME = htmlspecialcharbx(${"REGION_NAME_".$arSysLangs[$i]});
+			$str_REGION_SHORT_NAME = htmlspecialcharbx(${"REGION_SHORT_NAME_".$arSysLangs[$i]});
 		}
 		?>
 		<tr>
@@ -639,12 +639,12 @@ $tabControl->BeginNextTab();
 	<?
 	for ($i = 0, $max = count($arSysLangs); $i < $max; $i++):
 		$arCity = CSaleLocation::GetCityLangByID($str_CITY_ID, $arSysLangs[$i]);
-		$str_CITY_NAME = htmlspecialcharsEx($arCity["NAME"]);
-		$str_CITY_SHORT_NAME = htmlspecialcharsEx($arCity["SHORT_NAME"]);
+		$str_CITY_NAME = htmlspecialcharbx($arCity["NAME"]);
+		$str_CITY_SHORT_NAME = htmlspecialcharbx($arCity["SHORT_NAME"]);
 		if ($bInitVars)
 		{
-			$str_CITY_NAME = htmlspecialcharsEx(${"CITY_NAME_".$arSysLangs[$i]});
-			$str_CITY_SHORT_NAME = htmlspecialcharsEx(${"CITY_SHORT_NAME_".$arSysLangs[$i]});
+			$str_CITY_NAME = htmlspecialcharbx(${"CITY_NAME_".$arSysLangs[$i]});
+			$str_CITY_SHORT_NAME = htmlspecialcharbx(${"CITY_SHORT_NAME_".$arSysLangs[$i]});
 		}
 		?>
 		<tr>

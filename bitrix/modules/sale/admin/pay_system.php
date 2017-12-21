@@ -66,17 +66,7 @@ if (($ids = $lAdmin->GroupAction()) && $saleModulePermissions >= "W")
 					continue;
 				}
 
-				$restrictionList =  \Bitrix\Sale\Services\PaySystem\Restrictions\Manager::getRestrictionsList($id);
-				if ($restrictionList)
-				{
-					// init restrictions
-					\Bitrix\Sale\Services\PaySystem\Restrictions\Manager::getClassesList();
-
-					foreach ($restrictionList as $restriction)
-						$restriction["CLASS_NAME"]::delete($restriction['ID'], $id);
-				}
-
-				$result = Bitrix\Sale\Internals\PaySystemActionTable::delete($id);
+				$result = \Bitrix\Sale\PaySystem\Manager::delete($id);
 				if (!$result->isSuccess())
 				{
 					if ($result->getErrorMessages())
@@ -281,6 +271,17 @@ $lAdmin->AddGroupActionTable(
 			"ICON" => "btn_new"
 		),
 	);
+	/** @global CUser $USER */
+	global $USER;
+	if($USER->CanDoOperation("install_updates"))
+	{
+		$aContext[] = array(
+			"TEXT" => GetMessage("SPSAN_MARKETPLACE_ADD_NEW"),
+			"TITLE" => GetMessage("SPSAN_MARKETPLACE_ADD_NEW_ALT"),
+			"LINK" => "update_system_market.php?category=35&lang=".LANG,
+			"ICON" => "btn"
+		);
+	}
 	$lAdmin->AddAdminContextMenu($aContext);
 }
 

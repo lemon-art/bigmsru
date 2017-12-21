@@ -269,7 +269,7 @@ class CAllCatalogGroup
 		{
 			$groupIterator = Catalog\GroupTable::getList(array(
 				'select' => array('ID', 'NAME', 'BASE', 'SORT', 'XML_ID', 'NAME_LANG' =>'CURRENT_LANG.NAME'),
-				'order' => array('SORT' => 'ASC')
+				'order' => array('SORT' => 'ASC', 'ID' => 'ASC')
 			));
 			while ($group = $groupIterator->fetch())
 				$result[$group['ID']] = $group;
@@ -288,7 +288,7 @@ class CAllCatalogGroup
 			{
 				$groupIterator = Catalog\GroupTable::getList(array(
 					'select' => array('ID', 'NAME', 'BASE', 'SORT', 'XML_ID', 'NAME_LANG' =>'CURRENT_LANG.NAME'),
-					'order' => array('SORT' => 'ASC')
+					'order' => array('SORT' => 'ASC', 'ID' => 'ASC')
 				));
 				while ($group = $groupIterator->fetch())
 					$result[$group['ID']] = $group;

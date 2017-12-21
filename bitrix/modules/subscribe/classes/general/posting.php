@@ -81,8 +81,6 @@ class CPostingGeneral
 		global $DB;
 		$ID = intval($ID);
 
-		$DB->StartTransaction();
-
 		CPosting::DeleteFile($ID);
 
 		$res = $DB->Query("DELETE FROM b_posting_rubric WHERE POSTING_ID='".$ID."'", false, "File: ".__FILE__."<br>Line: ".__LINE__);
@@ -92,11 +90,6 @@ class CPostingGeneral
 			$res = $DB->Query("DELETE FROM b_posting_email WHERE POSTING_ID='".$ID."' ", false, "File: ".__FILE__."<br>Line: ".__LINE__);
 		if($res)
 			$res = $DB->Query("DELETE FROM b_posting WHERE ID='".$ID."' ", false, "File: ".__FILE__."<br>Line: ".__LINE__);
-
-		if($res)
-			$DB->Commit();
-		else
-			$DB->Rollback();
 
 		return $res;
 	}
@@ -924,6 +917,15 @@ class CPostingGeneral
 						AND (U.ID IS NULL OR U.ACTIVE = 'Y')
 						".(strlen($post_arr["SUBSCR_FORMAT"]) <= 0 || $post_arr["SUBSCR_FORMAT"]==="NOT_REF" ? "": "AND S.FORMAT='".($post_arr["SUBSCR_FORMAT"]=="text"? "text": "html")."'")."
 						".(strlen($post_arr["EMAIL_FILTER"]) <= 0 || $post_arr["EMAIL_FILTER"]==="NOT_REF" ? "": "AND ".GetFilterQuery("S.EMAIL", $post_arr["EMAIL_FILTER"], "Y", array("@", ".", "_")))."
+				");
+				$DB->Query("
+					DELETE pe
+					from b_posting_email pe
+					left join b_posting_email pe0 on
+						pe0.POSTING_ID = pe.POSTING_ID
+						and pe0.EMAIL = pe.EMAIL
+					WHERE pe.POSTING_ID = ".$ID."
+					AND pe0.ID < pe.ID
 				");
 
 				//send to user groups

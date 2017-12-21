@@ -404,6 +404,7 @@
 			BX.addCustomEvent(this.uploader, "onItemIsAdded", this._onItemIsAdded);
 			BX.addCustomEvent(this.uploader, 'onStart', BX.delegate(this.start, this));
 			BX.addCustomEvent(this.uploader, 'onDone', BX.delegate(this.done, this));
+			BX.addCustomEvent(this.uploader, 'onFinish', BX.delegate(this.finish, this));
 			BX.addCustomEvent(this.uploader, 'onTerminate', BX.delegate(this.terminate, this));
 
 			BX.addCustomEvent(this.uploader, "onFileIsAppended", this._onFileIsAppended);
@@ -507,10 +508,11 @@
 			this.vars["filesCountForUpload"] -= queue.filesCount;
 			BX.removeClass(BX("bxuMain" + this.id), "bxu-thumbnails-loading");
 			BX('bxuUploaded' + this.id).innerHTML = this.vars["uploadedFilesCount"];
-			if(!!data && this.uploader.queue.itFailed.length <= 0) {
-				var d = data.report.uploading[this.uploader.CID];
-				if (!!d['redirectUrl'])
-					BX.reload(d['redirectUrl']);
+			this.redirectUrl = data.report.uploading[this.uploader.CID]['redirectUrl'];
+		},
+		finish : function() {
+			if(this.uploader.queue.itFailed.length <= 0 && BX.type.isNotEmptyString(this.redirectUrl)) {
+				BX.reload(this.redirectUrl);
 			}
 		},
 		terminate : function(pIndex, queue)

@@ -30,8 +30,7 @@ foreach($arParams['LIST_ITEM_ID'] as $itemId)
 				)
 			);
 
-			$needValues = array();
-			CIBlockPriceTools::getTreePropertyValues($skuPropList[$itemId], $needValues);
+			CIBlockPriceTools::getTreePropertyValues($skuPropList[$itemId], $arParams['NEED_VALUES'][$itemId]);
 
 			foreach($skuPropList[$itemId] as $propertyCode => &$propertyValue)
 			{

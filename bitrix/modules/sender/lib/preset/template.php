@@ -125,7 +125,7 @@ class Template
 		</script>
 		<div class="sender-template-cont">
 			<div>
-				<table>
+				<table style="width: 100%;">
 					<tr>
 					<td style="vertical-align: top;">
 						<div class="sender-template-type-selector">
@@ -141,7 +141,7 @@ class Template
 							<?endforeach;?>
 						</div>
 					</td>
-					<td style="vertical-align: top;">
+					<td style="vertical-align: top; width: 100%;">
 						<div class="sender-template-list-container">
 							<?foreach($templateTypeList as $templateType => $templateTypeName):?>
 								<div id="sender-template-list-type-container-<?=$templateType?>" class="sender-template-list-type-container sender-template-list-type-container-<?=$templateType?>" style="display: none;">

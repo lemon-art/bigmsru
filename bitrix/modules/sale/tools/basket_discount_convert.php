@@ -12,7 +12,7 @@ require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admi
 
 Loc::loadMessages(__FILE__);
 
-$saleRights = $APPLICATION->GetGroupRight($module_id);
+$saleRights = $APPLICATION->GetGroupRight('sale');
 if ($saleRights < 'W')
 {
 	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_after.php');
@@ -136,11 +136,10 @@ else
 	$startDate->add('-3M');
 	$startDate->setTime(0,0,0);
 
-	if ($ordersCounter == 0)
-	{
-		ShowNote(Loc::getMessage('SALE_BASKET_DISCOUNT_MESS_ORDERS_ABSENT'));
-	}
-	?><div id="basket_discount_result_div" style="margin:0; display: none;"></div>
+	?><div id="basket_discount_empty_orders" style="display: <?=($ordersCounter == 0 ? 'block' : 'none'); ?>;"><?
+	ShowNote(Loc::getMessage('SALE_BASKET_DISCOUNT_MESS_ORDERS_ABSENT'));
+	?></div>
+	<div id="basket_discount_result_div" style="margin:0; display: none;"></div>
 	<div id="basket_discount_error_div" style="margin:0; display: none;">
 		<div class="adm-info-message-wrap adm-info-message-red">
 			<div class="adm-info-message">
@@ -193,7 +192,7 @@ else
 		<?
 		$tabControl->Buttons();
 		?>
-		<input type="button" id="start_button" value="<? echo Loc::getMessage('SALE_BASKET_DISCOUNT_UPDATE_BTN')?>"<? echo ($ordersCounter > 0 ? '' : ' disabled'); ?>>
+		<input type="button" id="start_button" value="<? echo Loc::getMessage('SALE_BASKET_DISCOUNT_UPDATE_BTN')?>" disabled>
 		<input type="button" id="stop_button" value="<? echo Loc::getMessage('SALE_BASKET_DISCOUNT_STOP_BTN')?>" disabled>
 		<?
 		$tabControl->End();
@@ -212,7 +211,8 @@ else
 			'resultContID' => 'basket_discount_result_div',
 			'errorContID' => 'basket_discount_error_cont',
 			'errorDivID' => 'basket_discount_error_div',
-			'timeFieldID' => 'max_execution_time'
+			'timeFieldID' => 'max_execution_time',
+			'emptyOrdersId' => 'basket_discount_empty_orders'
 		),
 		'ajaxParams' => array(
 			'operation' => 'Y'

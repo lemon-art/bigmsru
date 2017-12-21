@@ -374,11 +374,11 @@ if(strlen($arParams["BLOG_URL"]) > 0)
 			{
 				if(intval($_GET["frnd_res_er"]) > 0)
 				{
-					switch (IntVal($_GET["frnd_res_er"])) 
+					switch (IntVal($_GET["frnd_res_er"]))
 					{
 						case 1:
 							$arResultNFCache["ERROR_MESSAGE"][] = GetMessage("BLOG_BLOG_BLOG_REQUEST_ERROR");
-							break;						
+							break;
 						case 2:
 							$arResultNFCache["ERROR_MESSAGE"][] = GetMessage("BLOG_BLOG_BLOG_REQUEST_ERROR_2");
 							break;
@@ -393,11 +393,11 @@ if(strlen($arParams["BLOG_URL"]) > 0)
 				}
 				if(intval($_GET["frnd_res_ok"]) > 0)
 				{
-					switch (IntVal($_GET["frnd_res_ok"])) 
+					switch (IntVal($_GET["frnd_res_ok"]))
 					{
 						case 1:
 							$arResultNFCache["OK_MESSAGE"][] = GetMessage("BLOG_BLOG_BLOG_REQUEST_ALREADY");
-							break;						
+							break;
 						case 2:
 							$arResultNFCache["OK_MESSAGE"][] = GetMessage("BLOG_BLOG_BLOG_REQUEST_ALREADY_3");
 							break;
@@ -406,13 +406,13 @@ if(strlen($arParams["BLOG_URL"]) > 0)
 							break;
 						case 4:
 							$arResultNFCache["OK_MESSAGE"][] = GetMessage("BLOG_BLOG_BLOG_REQUEST_ALREADY_2");
-							break;						
+							break;
 						case 5:
 							$arResultNFCache["OK_MESSAGE"][] = GetMessage("BLOG_BLOG_BLOG_REQUEST_ALREADY_4");
-							break;						
+							break;
 						case 6:
 							$arResultNFCache["OK_MESSAGE"][] = GetMessage("BLOG_BLOG_BLOG_REQUEST_ADDED_2");
-							break;						
+							break;
 						case 7:
 							$arResultNFCache["OK_MESSAGE"][] = GetMessage("BLOG_BLOG_BLOG_LEAVED");
 							break;
@@ -494,215 +494,224 @@ if(strlen($arParams["BLOG_URL"]) > 0)
 				if ($CACHE_TIME > 0)
 					$cache->StartDataCache($CACHE_TIME, $cache_id, $cache_path);
 
-						$arGroup = CBlogGroup::GetByID($arBlog["GROUP_ID"]);
-						if($arGroup["SITE_ID"] == SITE_ID)
+				$arGroup = CBlogGroup::GetByID($arBlog["GROUP_ID"]);
+				if($arGroup["SITE_ID"] == SITE_ID)
+				{
+					$arResult["BLOG"]["Group"] = $arGroup;
+					if($arResult["PostPerm"] >= BLOG_PERMS_READ)
+					{
+						$arResult["enable_trackback"] = COption::GetOptionString("blog","enable_trackback", "Y");
+
+						$arFilter["PUBLISH_STATUS"] = BLOG_PUBLISH_STATUS_PUBLISH;
+						$arFilter[">PERMS"] = BLOG_PERMS_DENY;
+						$arFilter["BLOG_ID"] = $arBlog["ID"];
+
+						if($arParams["YEAR"] && $arParams["MONTH"] && $arParams["DAY"])
 						{
-							$arResult["BLOG"]["Group"] = $arGroup;
-							if($arResult["PostPerm"] >= BLOG_PERMS_READ)
-							{
-								$arResult["enable_trackback"] = COption::GetOptionString("blog","enable_trackback", "Y");
-
-								$arFilter["PUBLISH_STATUS"] = BLOG_PUBLISH_STATUS_PUBLISH;
-								$arFilter[">PERMS"] = BLOG_PERMS_DENY;
-								$arFilter["BLOG_ID"] = $arBlog["ID"];
-
-								if($arParams["YEAR"] && $arParams["MONTH"] && $arParams["DAY"])
-								{
-									$from = mktime(0, 0, 0, $arParams["MONTH"], $arParams["DAY"], $arParams["YEAR"]);
-									$to = mktime(0, 0, 0, $arParams["MONTH"], ($arParams["DAY"]+1), $arParams["YEAR"]);
-									if($to > ($t = time()+$tzOffset))
-										$to = $t;
-									$arFilter[">=DATE_PUBLISH"] = ConvertTimeStamp($from, "FULL");
-									$arFilter["<DATE_PUBLISH"] = ConvertTimeStamp($to, "FULL");
-								}
-								elseif($arParams["YEAR"] && $arParams["MONTH"])
-								{
-									$from = mktime(0, 0, 0, $arParams["MONTH"], 1, $arParams["YEAR"]);
-									$to = mktime(0, 0, 0, ($arParams["MONTH"]+1), 1, $arParams["YEAR"]);
-									if($to > ($t = time()+$tzOffset))
-										$to = $t;
-									$arFilter[">=DATE_PUBLISH"] = ConvertTimeStamp($from, "FULL");
-									$arFilter["<DATE_PUBLISH"] = ConvertTimeStamp($to, "FULL");
-								}
-								elseif($arParams["YEAR"])
-								{
-									$from = mktime(0, 0, 0, 1, 1, $arParams["YEAR"]);
-									$to = mktime(0, 0, 0, 1, 1, ($arParams["YEAR"]+1));
-									if($to > ($t = time()+$tzOffset))
-										$to = $t;
-									$arFilter[">=DATE_PUBLISH"] = ConvertTimeStamp($from, "FULL");
-									$arFilter["<DATE_PUBLISH"] = ConvertTimeStamp($to, "FULL");
-								}
-								else
-									$arFilter["<=DATE_PUBLISH"] = ConvertTimeStamp(time()+$tzOffset, "FULL");
-
-								if(IntVal($arParams["CATEGORY_ID"])>0)
-								{
-									$arFilter["CATEGORY_ID_F"] = $arParams["CATEGORY_ID"];
-									if($arParams["SET_TITLE"] == "Y")
-									{
-										$arCat = CBlogCategory::GetByID($arFilter["CATEGORY_ID_F"]);
-										$arResult["title"]["category"] = CBlogTools::htmlspecialcharsExArray($arCat);
-									}
-
-								}
-
-								$arResult["filter"] = $arFilter;
-
-								$dbPost = CBlogPost::GetList(
-									$SORT,
-									$arFilter,
-									array(
-										"DATE_PUBLISH", "ID", "MAX" => "PERMS"
-									),
-									array("bDescPageNumbering"=>true, "nPageSize"=>$arParams["MESSAGE_COUNT"], "bShowAll" => false)
-								);
-
-								$arResult["NAV_STRING"] = $dbPost->GetPageNavString(GetMessage("MESSAGE_COUNT"), $arParams["NAV_TEMPLATE"], false, $component);
-								$arResult["POST"] = Array();
-								$arResult["IDS"] = Array();
-								$p = new blogTextParser(false, $arParams["PATH_TO_SMILE"]);
-								$arParserParams = Array(
-									"imageWidth" => $arParams["IMAGE_MAX_WIDTH"],
-									"imageHeight" => $arParams["IMAGE_MAX_HEIGHT"],
-								);
-
-								while($arPost = $dbPost->GetNext())
-								{
-									$CurPost = CBlogPost::GetByID($arPost["ID"]);
-									$CurPost = CBlogTools::htmlspecialcharsExArray($CurPost);
-
-									if($CurPost["AUTHOR_ID"] == $arBlog["OWNER_ID"])
-									{
-										$CurPost["urlToBlog"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_BLOG"], array("blog" => $arBlog["URL"]));
-									}
-									else
-									{
-										if($arOwnerBlog = CBlog::GetByOwnerID($CurPost["AUTHOR_ID"], $arParams["GROUP_ID"]))
-											$CurPost["urlToBlog"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_BLOG"], array("blog" => $arOwnerBlog["URL"]));
-										else
-											$CurPost["urlToBlog"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_BLOG"], array("blog" => $arBlog["URL"]));
-									}
-									$CurPost["urlToPost"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_POST"], array("blog" => $arBlog["URL"], "post_id"=>CBlogPost::GetPostID($CurPost["ID"], $CurPost["CODE"], $arParams["ALLOW_POST_CODE"])));
-									$CurPost["urlToAuthor"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_USER"], array("user_id" => $CurPost["AUTHOR_ID"]));
-
-									$arImages = array();
-									$res = CBlogImage::GetList(array("ID"=>"ASC"),array("POST_ID"=>$arPost['ID'], "BLOG_ID"=>$arBlog['ID'], "IS_COMMENT" => "N"));
-									while ($arImage = $res->Fetch())
-									{
-										$arImages[$arImage['ID']] = $arImage['FILE_ID'];
-										$CurPost["arImages"][$arImage['ID']] = Array(
-											"small" => "/bitrix/components/bitrix/blog/show_file.php?fid=".$arImage['ID']."&width=70&height=70&type=square",
-											"full" => "/bitrix/components/bitrix/blog/show_file.php?fid=".$arImage['ID']."&width=1000&height=1000"
-										);
-									}
-
-									if($CurPost["DETAIL_TEXT_TYPE"] == "html" && COption::GetOptionString("blog","allow_html", "N") == "Y")
-									{
-										$arAllow = array("HTML" => "Y", "ANCHOR" => "Y", "IMG" => "Y", "SMILES" => "Y", "NL2BR" => "N", "VIDEO" => "Y", "QUOTE" => "Y", "CODE" => "Y");
-										if(COption::GetOptionString("blog","allow_video", "Y") != "Y")
-											$arAllow["VIDEO"] = "N";
-										$CurPost["TEXT_FORMATED"] = $p->convert($CurPost["~DETAIL_TEXT"], true, $arImages, $arAllow, $arParserParams);
-									}
-									else
-									{
-										$arAllow = array("HTML" => "N", "ANCHOR" => "Y", "BIU" => "Y", "IMG" => "Y", "QUOTE" => "Y", "CODE" => "Y", "FONT" => "Y", "LIST" => "Y", "SMILES" => "Y", "NL2BR" => "N", "VIDEO" => "Y");
-										if(COption::GetOptionString("blog","allow_video", "Y") != "Y")
-											$arAllow["VIDEO"] = "N";
-										$CurPost["TEXT_FORMATED"] = $p->convert($CurPost["~DETAIL_TEXT"], true, $arImages, $arAllow, $arParserParams);
-									}
-									$CurPost["IMAGES"] = $arImages;
-									if(!empty($p->showedImages))
-									{
-										foreach($p->showedImages as $val)
-										{
-											if(!empty($CurPost["arImages"][$val]))
-												unset($CurPost["arImages"][$val]);
-										}
-									}
-
-									$CurPost["BlogUser"] = CBlogUser::GetByID($CurPost["AUTHOR_ID"], BLOG_BY_USER_ID);
-									$CurPost["BlogUser"] = CBlogTools::htmlspecialcharsExArray($CurPost["BlogUser"]);
-									$CurPost["BlogUser"]["AVATAR_file"] = CFile::GetFileArray($CurPost["BlogUser"]["AVATAR"]);
-									if ($CurPost["BlogUser"]["AVATAR_file"] !== false)
-									{
-										$CurPost["BlogUser"]["Avatar_resized"] = CFile::ResizeImageGet(
-													$CurPost["BlogUser"]["AVATAR_file"],
-													array("width" => 100, "height" => 100),
-													BX_RESIZE_IMAGE_EXACT,
-													false
-												);
-
-										$CurPost["BlogUser"]["AVATAR_img"] = CFile::ShowImage($CurPost["BlogUser"]["Avatar_resized"]["src"], 100, 100, "border=0 align='right'");
-									}
-
-									$dbUser = CUser::GetByID($CurPost["AUTHOR_ID"]);
-									$CurPost["arUser"] = $dbUser->GetNext();
-									$CurPost["AuthorName"] = CBlogUser::GetUserName($CurPost["BlogUser"]["ALIAS"], $CurPost["arUser"]["NAME"], $CurPost["arUser"]["LAST_NAME"], $CurPost["arUser"]["LOGIN"]);
-
-									if($arResult["PostPerm"]>=BLOG_PERMS_FULL || ($arResult["PostPerm"] >= BLOG_PERMS_PREMODERATE && $CurPost["AUTHOR_ID"] == $user_id))
-										$CurPost["urlToEdit"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_POST_EDIT"], array("blog" => $arBlog["URL"], "post_id"=>$CurPost["ID"]));
-
-									if($arResult["PostPerm"] >= BLOG_PERMS_MODERATE)
-										$CurPost["urlToHide"] = htmlspecialcharsex($APPLICATION->GetCurPageParam("hide_id=".$CurPost["ID"], Array("del_id", "sessid", "success", "hide_id")));
-
-									if($arResult["PostPerm"] >= BLOG_PERMS_FULL)
-										$CurPost["urlToDelete"] = htmlspecialcharsex($APPLICATION->GetCurPageParam("del_id=".$CurPost["ID"], Array("del_id", "sessid", "success", "hide_id")));
-
-
-									if (preg_match("/(\[CUT\])/i",$CurPost['DETAIL_TEXT']) || preg_match("/(<CUT>)/i",$CurPost['DETAIL_TEXT']))
-										$CurPost["CUT"] = "Y";
-
-									if(strlen($CurPost["CATEGORY_ID"])>0)
-									{
-										$arCategory = explode(",",$CurPost["CATEGORY_ID"]);
-										foreach($arCategory as $v)
-										{
-											if(IntVal($v)>0)
-											{
-												$arCatTmp = CBlogTools::htmlspecialcharsExArray(CBlogCategory::GetByID($v));
-												$arCatTmp["urlToCategory"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_BLOG_CATEGORY"], array("blog" => $arBlog["URL"], "category_id" => $v));
-												$CurPost["CATEGORY"][] = $arCatTmp;
-											}
-										}
-									}
-									$CurPost["POST_PROPERTIES"] = array("SHOW" => "N");
-
-									if (!empty($arParams["POST_PROPERTY_LIST"]))
-									{
-										$arPostFields = $GLOBALS["USER_FIELD_MANAGER"]->GetUserFields("BLOG_POST", $CurPost["ID"], LANGUAGE_ID);
-
-										if (count($arParams["POST_PROPERTY_LIST"]) > 0)
-										{
-											foreach ($arPostFields as $FIELD_NAME => $arPostField)
-											{
-												if (!in_array($FIELD_NAME, $arParams["POST_PROPERTY_LIST"]))
-													continue;
-												$arPostField["EDIT_FORM_LABEL"] = strLen($arPostField["EDIT_FORM_LABEL"]) > 0 ? $arPostField["EDIT_FORM_LABEL"] : $arPostField["FIELD_NAME"];
-												$arPostField["EDIT_FORM_LABEL"] = htmlspecialcharsEx($arPostField["EDIT_FORM_LABEL"]);
-												$arPostField["~EDIT_FORM_LABEL"] = $arPostField["EDIT_FORM_LABEL"];
-												$CurPost["POST_PROPERTIES"]["DATA"][$FIELD_NAME] = $arPostField;
-											}
-										}
-										if (!empty($CurPost["POST_PROPERTIES"]["DATA"]))
-											$CurPost["POST_PROPERTIES"]["SHOW"] = "Y";
-									}
-									$CurPost["DATE_PUBLISH_FORMATED"] = FormatDate($arParams["DATE_TIME_FORMAT"], MakeTimeStamp($CurPost["DATE_PUBLISH"], CSite::GetDateFormat("FULL")));
-									$CurPost["DATE_PUBLISH_DATE"] = ConvertDateTime($CurPost["DATE_PUBLISH"], FORMAT_DATE);
-									$CurPost["DATE_PUBLISH_TIME"] = ConvertDateTime($CurPost["DATE_PUBLISH"], "HH:MI");
-									$CurPost["DATE_PUBLISH_D"] = ConvertDateTime($CurPost["DATE_PUBLISH"], "DD");
-									$CurPost["DATE_PUBLISH_M"] = ConvertDateTime($CurPost["DATE_PUBLISH"], "MM");
-									$CurPost["DATE_PUBLISH_Y"] = ConvertDateTime($CurPost["DATE_PUBLISH"], "YYYY");
-									$arResult["POST"][] = $CurPost;
-									$arResult["IDS"][] = $CurPost["ID"];
-								}
-							}
+							$from = mktime(0, 0, 0, $arParams["MONTH"], $arParams["DAY"], $arParams["YEAR"]);
+							$to = mktime(0, 0, 0, $arParams["MONTH"], ($arParams["DAY"]+1), $arParams["YEAR"]);
+							if($to > ($t = time()+$tzOffset))
+								$to = $t;
+							$arFilter[">=DATE_PUBLISH"] = ConvertTimeStamp($from, "FULL");
+							$arFilter["<DATE_PUBLISH"] = ConvertTimeStamp($to, "FULL");
+						}
+						elseif($arParams["YEAR"] && $arParams["MONTH"])
+						{
+							$from = mktime(0, 0, 0, $arParams["MONTH"], 1, $arParams["YEAR"]);
+							$to = mktime(0, 0, 0, ($arParams["MONTH"]+1), 1, $arParams["YEAR"]);
+							if($to > ($t = time()+$tzOffset))
+								$to = $t;
+							$arFilter[">=DATE_PUBLISH"] = ConvertTimeStamp($from, "FULL");
+							$arFilter["<DATE_PUBLISH"] = ConvertTimeStamp($to, "FULL");
+						}
+						elseif($arParams["YEAR"])
+						{
+							$from = mktime(0, 0, 0, 1, 1, $arParams["YEAR"]);
+							$to = mktime(0, 0, 0, 1, 1, ($arParams["YEAR"]+1));
+							if($to > ($t = time()+$tzOffset))
+								$to = $t;
+							$arFilter[">=DATE_PUBLISH"] = ConvertTimeStamp($from, "FULL");
+							$arFilter["<DATE_PUBLISH"] = ConvertTimeStamp($to, "FULL");
 						}
 						else
+							$arFilter["<=DATE_PUBLISH"] = ConvertTimeStamp(time()+$tzOffset, "FULL");
+
+						if(IntVal($arParams["CATEGORY_ID"])>0)
 						{
-							$arResult["ERROR_MESSAGE"][] = GetMessage("BLOG_BLOG_BLOG_NO_BLOG");
-							CHTTP::SetStatus("404 Not Found");
+							$arFilter["CATEGORY_ID_F"] = $arParams["CATEGORY_ID"];
+							if($arParams["SET_TITLE"] == "Y")
+							{
+								$arCat = CBlogCategory::GetByID($arFilter["CATEGORY_ID_F"]);
+								$arResult["title"]["category"] = CBlogTools::htmlspecialcharsExArray($arCat);
+							}
+
 						}
+
+						$arResult["filter"] = $arFilter;
+						
+						$arGroupBy = array(
+							"ID","TITLE","BLOG_ID","AUTHOR_ID","PREVIEW_TEXT","PREVIEW_TEXT_TYPE","DETAIL_TEXT","DETAIL_TEXT_TYPE",
+							"DATE_CREATE","DATE_PUBLISH","KEYWORDS","PUBLISH_STATUS","CATEGORY_ID","ATRIBUTE","ENABLE_TRACKBACK",
+							"ENABLE_COMMENTS","ATTACH_IMG","NUM_COMMENTS","NUM_TRACKBACKS","VIEWS","FAVORITE_SORT","PATH",
+							"CODE","MICRO","HAS_IMAGES","HAS_PROPS","HAS_TAGS","HAS_COMMENT_IMAGES","HAS_SOCNET_ALL","SEO_TITLE",
+							"SEO_TAGS","SEO_DESCRIPTION","DATE_PUBLISHED","HAS_SEO_TITLE","HAS_SEO_TAGS","HAS_SEO_DESCRIPTION",
+							"NUM_COMMENTS_ALL","DATE_PUBLISHED"
+						);
+						$arGroupBy["MAX"] = "PERMS";
+						$dbPost = CBlogPost::GetList(
+							$SORT,
+							$arFilter,
+							$arGroupBy,
+							array("bDescPageNumbering"=>true, "nPageSize"=>$arParams["MESSAGE_COUNT"], "bShowAll" => false)
+						);
+
+						$arResult["NAV_STRING"] = $dbPost->GetPageNavString(GetMessage("MESSAGE_COUNT"), $arParams["NAV_TEMPLATE"], false, $component);
+						$arResult["POST"] = Array();
+						$arResult["IDS"] = Array();
+						$p = new blogTextParser(false, $arParams["PATH_TO_SMILE"]);
+						$arParserParams = Array(
+							"imageWidth" => $arParams["IMAGE_MAX_WIDTH"],
+							"imageHeight" => $arParams["IMAGE_MAX_HEIGHT"],
+						);
+	
+						$blogUser = new \Bitrix\Blog\BlogUser($CACHE_TIME);
+						$blogUser->setBlogId($arBlog["ID"]);
+						$postsUsers = $blogUser->getUsers(\Bitrix\Blog\BlogUser::getPostAuthorsIdsByBlogId($arBlog["ID"]));
+						
+						while($curPost = $dbPost->GetNext())
+						{
+							$curPost["DATE_PUBLISHED"] = new \DateTime($curPost["DATE_PUBLISH"]) < new \DateTime() ? "Y" : "N";
+
+							if($curPost["AUTHOR_ID"] == $arBlog["OWNER_ID"])
+							{
+								$curPost["urlToBlog"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_BLOG"], array("blog" => $arBlog["URL"]));
+							}
+							else
+							{
+								if($arOwnerBlog = CBlog::GetByOwnerID($curPost["AUTHOR_ID"], $arParams["GROUP_ID"]))
+									$curPost["urlToBlog"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_BLOG"], array("blog" => $arOwnerBlog["URL"]));
+								else
+									$curPost["urlToBlog"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_BLOG"], array("blog" => $arBlog["URL"]));
+							}
+							$curPost["urlToPost"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_POST"], array("blog" => $arBlog["URL"], "post_id"=>CBlogPost::GetPostID($curPost["ID"], $curPost["CODE"], $arParams["ALLOW_POST_CODE"])));
+							$curPost["urlToAuthor"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_USER"], array("user_id" => $curPost["AUTHOR_ID"]));
+
+							$arImages = array();
+							$res = CBlogImage::GetList(array("ID"=>"ASC"),array("POST_ID"=>$curPost['ID'], "BLOG_ID"=>$arBlog['ID'], "IS_COMMENT" => "N"));
+							while ($arImage = $res->Fetch())
+							{
+								$arImages[$arImage['ID']] = $arImage['FILE_ID'];
+								$curPost["arImages"][$arImage['ID']] = Array(
+									"small" => "/bitrix/components/bitrix/blog/show_file.php?fid=".$arImage['ID']."&width=70&height=70&type=square",
+									"full" => "/bitrix/components/bitrix/blog/show_file.php?fid=".$arImage['ID']
+										."&width=".blogTextParser::IMAGE_MAX_SHOWING_WIDTH
+										."&height=".blogTextParser::IMAGE_MAX_SHOWING_HEIGHT
+								);
+							}
+
+							if($curPost["DETAIL_TEXT_TYPE"] == "html" && COption::GetOptionString("blog","allow_html", "N") == "Y")
+							{
+								$arAllow = array("HTML" => "Y", "ANCHOR" => "Y", "IMG" => "Y", "SMILES" => "Y", "NL2BR" => "N", "VIDEO" => "Y", "QUOTE" => "Y", "CODE" => "Y");
+								if(COption::GetOptionString("blog","allow_video", "Y") != "Y")
+									$arAllow["VIDEO"] = "N";
+								$curPost["TEXT_FORMATED"] = $p->convert($curPost["~DETAIL_TEXT"], true, $arImages, $arAllow, $arParserParams);
+							}
+							else
+							{
+								$arAllow = array("HTML" => "N", "ANCHOR" => "Y", "BIU" => "Y", "IMG" => "Y", "QUOTE" => "Y", "CODE" => "Y", "FONT" => "Y", "LIST" => "Y", "SMILES" => "Y", "NL2BR" => "N", "VIDEO" => "Y");
+								if(COption::GetOptionString("blog","allow_video", "Y") != "Y")
+									$arAllow["VIDEO"] = "N";
+								$curPost["TEXT_FORMATED"] = $p->convert($curPost["~DETAIL_TEXT"], true, $arImages, $arAllow, $arParserParams);
+							}
+							$curPost["IMAGES"] = $arImages;
+							if(!empty($p->showedImages))
+							{
+								foreach($p->showedImages as $val)
+								{
+									if(!empty($curPost["arImages"][$val]))
+										unset($curPost["arImages"][$val]);
+								}
+							}
+
+							$curPost["BlogUser"] = $postsUsers[$curPost["AUTHOR_ID"]]["BlogUser"];
+							if($curPost["BlogUser"]["AVATAR_file"] !== false)
+							{
+//								get only size for post
+								$curPost["BlogUser"]["Avatar_resized"] = $curPost["BlogUser"]["Avatar_resized"]["100_100"];
+								$curPost["BlogUser"]["AVATAR_img"] = $curPost["BlogUser"]["AVATAR_img"]["100_100"];
+							}
+							$curPost["arUser"] = $postsUsers[$curPost["AUTHOR_ID"]]["arUser"];
+							$curPost["AuthorName"] = $postsUsers[$curPost["AUTHOR_ID"]]["AUTHOR_NAME"];
+
+							if($arResult["PostPerm"]>=BLOG_PERMS_FULL || ($arResult["PostPerm"] >= BLOG_PERMS_PREMODERATE && $curPost["AUTHOR_ID"] == $user_id))
+								$curPost["urlToEdit"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_POST_EDIT"], array("blog" => $arBlog["URL"], "post_id"=>$curPost["ID"]));
+
+							if($arResult["PostPerm"] >= BLOG_PERMS_MODERATE)
+							{
+								$curPost["urlToHide"] = urlencode($APPLICATION->GetCurPageParam("hide_id=".$curPost["ID"], Array("del_id", "sessid", "success", "hide_id")));
+								$curPost["urlToHide"] = htmlspecialcharsbx($curPost["urlToHide"]);
+							}
+
+							if($arResult["PostPerm"] >= BLOG_PERMS_FULL)
+							{
+								$curPost["urlToDelete"] = urlencode($APPLICATION->GetCurPageParam("del_id=".$curPost["ID"], Array("del_id", "sessid", "success", "hide_id")));
+								$curPost["urlToDelete"] = htmlspecialcharsbx($curPost["urlToDelete"]);
+							}
+
+
+							if (preg_match("/(\[CUT\])/i",$curPost['DETAIL_TEXT']) || preg_match("/(<CUT>)/i",$curPost['DETAIL_TEXT']))
+								$curPost["CUT"] = "Y";
+
+							if(strlen($curPost["CATEGORY_ID"])>0)
+							{
+								$arCategory = explode(",",$curPost["CATEGORY_ID"]);
+								foreach($arCategory as $v)
+								{
+									if(IntVal($v)>0)
+									{
+										$arCatTmp = CBlogTools::htmlspecialcharsExArray(CBlogCategory::GetByID($v));
+										$arCatTmp["urlToCategory"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_BLOG_CATEGORY"], array("blog" => $arBlog["URL"], "category_id" => $v));
+										$curPost["CATEGORY"][] = $arCatTmp;
+									}
+								}
+							}
+							$curPost["POST_PROPERTIES"] = array("SHOW" => "N");
+
+							if (!empty($arParams["POST_PROPERTY_LIST"]))
+							{
+								$arPostFields = $GLOBALS["USER_FIELD_MANAGER"]->GetUserFields("BLOG_POST", $curPost["ID"], LANGUAGE_ID);
+
+								if (count($arParams["POST_PROPERTY_LIST"]) > 0)
+								{
+									foreach ($arPostFields as $FIELD_NAME => $arPostField)
+									{
+										if (!in_array($FIELD_NAME, $arParams["POST_PROPERTY_LIST"]))
+											continue;
+										$arPostField["EDIT_FORM_LABEL"] = strLen($arPostField["EDIT_FORM_LABEL"]) > 0 ? $arPostField["EDIT_FORM_LABEL"] : $arPostField["FIELD_NAME"];
+										$arPostField["EDIT_FORM_LABEL"] = htmlspecialcharsEx($arPostField["EDIT_FORM_LABEL"]);
+										$arPostField["~EDIT_FORM_LABEL"] = $arPostField["EDIT_FORM_LABEL"];
+										$curPost["POST_PROPERTIES"]["DATA"][$FIELD_NAME] = $arPostField;
+									}
+								}
+								if (!empty($curPost["POST_PROPERTIES"]["DATA"]))
+									$curPost["POST_PROPERTIES"]["SHOW"] = "Y";
+							}
+							$curPost["DATE_PUBLISH_FORMATED"] = FormatDate($arParams["DATE_TIME_FORMAT"], MakeTimeStamp($curPost["DATE_PUBLISH"], CSite::GetDateFormat("FULL")));
+							$curPost["DATE_PUBLISH_DATE"] = ConvertDateTime($curPost["DATE_PUBLISH"], FORMAT_DATE);
+							$curPost["DATE_PUBLISH_TIME"] = ConvertDateTime($curPost["DATE_PUBLISH"], "HH:MI");
+							$curPost["DATE_PUBLISH_D"] = ConvertDateTime($curPost["DATE_PUBLISH"], "DD");
+							$curPost["DATE_PUBLISH_M"] = ConvertDateTime($curPost["DATE_PUBLISH"], "MM");
+							$curPost["DATE_PUBLISH_Y"] = ConvertDateTime($curPost["DATE_PUBLISH"], "YYYY");
+							$arResult["POST"][] = $curPost;
+							$arResult["IDS"][] = $curPost["ID"];
+						}
+					}
+				}
+				else
+				{
+					$arResult["ERROR_MESSAGE"][] = GetMessage("BLOG_BLOG_BLOG_NO_BLOG");
+					CHTTP::SetStatus("404 Not Found");
+				}
 
 				if ($CACHE_TIME > 0)
 					$cache->EndDataCache(array("templateCachedData" => $this->GetTemplateCachedData(), "arResult" => $arResult));
@@ -755,7 +764,7 @@ if(strlen($arParams["BLOG_URL"]) > 0)
 	{
 		$arResult["MESSAGE"][] = GetMessage("BLOG_BLOG_BLOG_FRIENDS_ONLY");
 		if($USER->IsAuthorized())
-			$arResult["MESSAGE"][] = GetMessage("BLOG_BLOG_BLOG_U_CAN").' <a href="'.$APPLICATION->GetCurPageParam('become_friend=Y&'.bitrix_sessid_get(), Array("become_friend", "sessid")).'">'.GetMessage("BLOG_BLOG_BLOG_U_CAN1").'</a> '.GetMessage("BLOG_BLOG_BLOG_U_CAN2");
+			$arResult["MESSAGE"][] = GetMessage("BLOG_BLOG_BLOG_U_CAN").' <a href="'.htmlspecialcharsbx($APPLICATION->GetCurPageParam('become_friend=Y&'.bitrix_sessid_get(), Array("become_friend", "sessid"))).'">'.GetMessage("BLOG_BLOG_BLOG_U_CAN1").'</a> '.GetMessage("BLOG_BLOG_BLOG_U_CAN2");
 		else
 			$arResult["MESSAGE"][] = GetMessage("BLOG_BLOG_BLOG_NEED_AUTH");
 	}

@@ -1,5 +1,6 @@
 <?
 $MESS["CAT_MENU_ROOT"] = "Каталог товаров";
+$MESS["CAT_MENU_ROOT_MULTI"] = "Каталоги товаров";
 $MESS["CAT_MENU_PRODUCT_LIST"] = "Список товаров";
 $MESS["CAT_MENU_PRODUCT_PROPERTIES"] = "Свойства товаров";
 $MESS["CAT_MENU_SKU_PROPERTIES"] = "Свойства торговых предложений";
@@ -19,14 +20,22 @@ $MESS["CAT_DISCOUNT_SAVE_DESCR"] = "Программы накопительны�
 $MESS["CM_STORE"] = "Склады";
 $MESS["CM_CONTRACTORS"] = "Поставщики";
 $MESS["CM_STORE_DOCS"] = "Документы";
+$MESS["PRICES_SECTION"] = "Цены";
+$MESS["PRICES_SECTION_TITLE"] = "Типы цен, округление, наценки";
 $MESS["EXTRA"] = "Наценки";
 $MESS["EXTRA_ALT"] = "Типы наценок";
 $MESS["GROUP"] = "Типы цен";
 $MESS["GROUP_ALT"] = "Типы цен";
+$MESS["PRICE_ROUND"] = "Округление";
+$MESS["PRICE_ROUND_TITLE"] = "Округление цен";
 $MESS["VAT"] = "Ставки НДС";
 $MESS["VAT_ALT"] = "Редактировать ставки НДС";
 $MESS["SETUP_UNLOAD_DATA"] = "Экспорт данных";
 $MESS["SETUP_UNLOAD_DATA_ALT"] = "Настройка экспорта данных из каталога";
 $MESS["SETUP_LOAD_DATA"] = "Импорт данных";
 $MESS["SETUP_LOAD_DATA_ALT"] = "Настройка импорта данных в каталог";
+$MESS["CM_SUBSCRIPTION_PRODUCT"] = "Подписка на товары";
+$MESS["CAT_MENU_CATALOG_MARKETPLACE_ADD"] = "Установить из Маркетплейс";
+$MESS["SALE_MENU_MARKETPLACE_MARKETING_ADD"] = "Установить из Маркетплейс";
+$MESS["SALE_MENU_MARKETPLACE_SETTINGS_ADD"] = "Установить из Маркетплейс импорт/экспорт";
 ?>

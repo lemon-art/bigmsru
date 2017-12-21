@@ -47,11 +47,12 @@ namespace Bitrix\Sale\Delivery\AdminPage\DeliveryExtraServiceEdit
 	$tableId = 'table_delivery_extra_service';
 	$oSort = new \CAdminSorting($tableId);
 	$lAdmin = new \CAdminList($tableId, $oSort);
+	$esClasses = ExtraServices\Manager::getClassesList();
 
 	$res = \Bitrix\Sale\Delivery\ExtraServices\Table::getList(array(
 		'filter' => array(
-			'DELIVERY_ID' => $ID,
-			'=CLASS_NAME' => ExtraServices\Manager::getClassesList()
+			'=DELIVERY_ID' => $ID,
+			'=CLASS_NAME' => $esClasses
 		),
 		'select' => array('ID', 'CODE', 'NAME', 'DESCRIPTION', 'CLASS_NAME', 'RIGHTS', 'ACTIVE', 'SORT'),
 		'order' => array('SORT' => 'ASC', 'ID' => 'DESC')
@@ -131,9 +132,10 @@ namespace Bitrix\Sale\Delivery\AdminPage\DeliveryExtraServiceEdit
 			"ICON" => "btn_new"
 		);
 
+		$menu = array();
+
 		if($service && $embeddedList = $service->getEmbeddedExtraServicesList())
 		{
-			$menu = array();
 
 			foreach($embeddedList as $code => $eserviceParams)
 			{
@@ -142,16 +144,21 @@ namespace Bitrix\Sale\Delivery\AdminPage\DeliveryExtraServiceEdit
 					'LINK' => 'sale_delivery_eservice_edit.php?lang='.LANGUAGE_ID.'&DELIVERY_ID='.$ID.'&'.$tabControl->ActiveTabParam().'&ES_CODE='.$code.'&back_url='.urlencode($APPLICATION->GetCurPageParam()),
 				);
 			}
-		}
 
-		$menu[] =  array(
-			'SEPARATOR' => true,
-		);
+			sortByColumn($menu, array("TEXT" => SORT_ASC));
+
+			$menu[] =  array(
+				'SEPARATOR' => true,
+			);
+		}
 
 		/** @var  \Bitrix\Sale\Delivery\ExtraServices\Base $esClass */
 		foreach(ExtraServices\Manager::getClassesList() as $esClass)
 		{
 			if($esClass == '\Bitrix\Sale\Delivery\ExtraServices\String')
+				continue;
+
+			if($esClass::isEmbeddedOnly())
 				continue;
 
 			$menu[] =  array(

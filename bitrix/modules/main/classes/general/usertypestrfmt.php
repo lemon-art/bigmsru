@@ -1,15 +1,19 @@
 <?
 IncludeModuleLangFile(__FILE__);
 
-class CUserTypeStringFormatted extends CUserTypeString
+class CUserTypeStringFormatted extends \CUserTypeString
 {
+	const USER_TYPE_ID = "string_formatted";
+
 	function GetUserTypeDescription()
 	{
 		return array(
-			"USER_TYPE_ID" => "string_formatted",
-			"CLASS_NAME" => "CUserTypeStringFormatted",
+			"USER_TYPE_ID" => static::USER_TYPE_ID,
+			"CLASS_NAME" => __CLASS__,
 			"DESCRIPTION" => GetMessage("USER_TYPE_STRINGFMT_DESCRIPTION"),
-			"BASE_TYPE" => "string"
+			"BASE_TYPE" => \CUserTypeManager::BASE_TYPE_STRING,
+			"EDIT_CALLBACK" => array(__CLASS__, 'GetPublicEdit'), // inherited from string
+			"VIEW_CALLBACK" => array(__CLASS__, 'GetPublicView'),
 		);
 	}
 
@@ -142,8 +146,55 @@ class CUserTypeStringFormatted extends CUserTypeString
 	{
 		$val = $arHtmlControl["VALUE"];
 		if (strlen(trim($val)) <= 0)
-			return "";
+		{
+			$val = '';
+		}
 
 		return $val;
+	}
+
+
+	public static function GetPublicView($arUserField, $arAdditionalParameters = array())
+	{
+		$value = static::normalizeFieldValue($arUserField["VALUE"]);
+
+		$html = '';
+
+		$first = true;
+		foreach($value as $i => $val)
+		{
+			if(!$first)
+			{
+				$html .= static::getHelper()->getMultipleValuesSeparator();
+			}
+			else
+			{
+				$first = false;
+			}
+
+			$name = str_replace("[]", "[".$i."]", $arUserField["FIELD_NAME"]);
+			if($val != "")
+			{
+				$html .= static::getHelper()->wrapSingleField(str_replace(
+					array("#VALUE#"),
+					array(
+						static::GetPublicViewHTML(
+							array(
+								"SETTINGS" => $arUserField["SETTINGS"]
+							),
+							array(
+								"NAME" => $name,
+								"VALUE" => $val
+							)
+						)
+					),
+					$arUserField["SETTINGS"]["PATTERN"]
+				));
+			}
+		}
+
+		static::initDisplay();
+
+		return static::getHelper()->wrapDisplayResult($html);
 	}
 }

@@ -15,7 +15,7 @@ namespace Bitrix\Main\DB;
  *
  * @package Bitrix\Main\DB
  */
-abstract class Result
+abstract class Result implements \IteratorAggregate
 {
 	/** @var \Bitrix\Main\DB\Connection */
 	protected $connection;
@@ -296,5 +296,17 @@ abstract class Result
 			return $this->count;
 		}
 		throw new \Bitrix\Main\ObjectPropertyException("count");
+	}
+
+	/**
+	 * Retrieve an external iterator
+	 * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
+	 * @return \Traversable An instance of an object implementing <b>Iterator</b> or
+	 * <b>Traversable</b>
+	 * @since 5.0.0
+	 */
+	public function getIterator()
+	{
+		return new ResultIterator($this);
 	}
 }

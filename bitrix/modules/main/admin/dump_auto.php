@@ -26,7 +26,7 @@ IncludeModuleLangFile(dirname(__FILE__).'/dump.php');
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/backup.php");
 $strBXError = '';
 $bGzip = function_exists('gzcompress');
-$bMcrypt = function_exists('mcrypt_encrypt');
+$bMcrypt = function_exists('mcrypt_encrypt') || function_exists('openssl_encrypt');
 $bBitrixCloud = $bMcrypt;
 if (!CModule::IncludeModule('bitrixcloud'))
 {
@@ -197,6 +197,9 @@ if($_REQUEST['save'])
 
 		IntOptionSet("dump_integrity_check", $_REQUEST['dump_integrity_check'] == 'Y');
 		IntOptionSet("dump_use_compression", $bGzip && $_REQUEST['dump_disable_gzip'] != 'Y');
+
+		IntOptionSet("dump_max_exec_time", $_REQUEST['dump_max_exec_time']);
+		IntOptionSet("dump_max_exec_time_sleep", $_REQUEST['dump_max_exec_time_sleep']);
 
 		$dump_archive_size_limit = intval($_REQUEST['dump_archive_size_limit'] * 1024 * 1024);
 		if ($dump_archive_size_limit <= 10240 * 1024)
@@ -733,7 +736,16 @@ if ($DB->type == 'MYSQL')
 	<td><?=GetMessage('DISABLE_GZIP')?></td>
 	<td><input type="checkbox" name="dump_disable_gzip" value="Y" <?=IntOption('dump_use_compression') && $bGzip ? '' : 'checked' ?> <?=!$bGzip ? 'disabled' : ''?>>
 </tr>
-
+<tr>
+	<td width=40%><?=GetMessage('STEP_LIMIT')?></td>
+	<td>
+		<input type="text" name="dump_max_exec_time" value="<?=IntOption("dump_max_exec_time", 20)?>" size=2>
+		<?echo GetMessage("MAIN_DUMP_FILE_STEP_sec");?>,
+		<?echo GetMessage("MAIN_DUMP_FILE_STEP_SLEEP")?>
+		<input type="text" name="dump_max_exec_time_sleep" value="<?=IntOption("dump_max_exec_time_sleep", 3)?>" size=2>
+		<?echo GetMessage("MAIN_DUMP_FILE_STEP_sec");?>
+	</td>
+</tr>
 <tr>
 	<td><?=GetMessage("MAIN_DUMP_MAX_ARCHIVE_SIZE")?></td>
 	<td><input type="text" name="dump_archive_size_limit" value="<?=IntOption('dump_archive_size_limit', 100 * 1024 * 1024) / 1024 / 1024?>" size=4> <?=GetMessage("MAIN_DUMP_MAX_ARCHIVE_SIZE_VALUES")?><span class="required"><sup>3</sup></span></td>
@@ -770,6 +782,7 @@ function IntOption($name, $def = 0)
 
 function IntOptionSet($name, $val)
 {
+	$val = intval($val);
 	COption::SetOptionInt('main', $name.'_auto', $val);
 }
 ?>

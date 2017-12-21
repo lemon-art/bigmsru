@@ -12,12 +12,13 @@ use Bitrix\Main\Localization\Loc;
 use Bitrix\Main;
 use Bitrix\Sale;
 use Bitrix\Sale\Internals;
+use Bitrix\Sale\Services\Company;
 
 Loc::loadMessages(__FILE__);
 
 class Payment
 	extends Internals\CollectableEntity
-	implements IBusinessValueProvider
+	implements IBusinessValueProvider, \IEntityMarker
 {
 	const RETURN_NONE = 'N';
 	const RETURN_INNER = 'Y';
@@ -28,9 +29,11 @@ class Payment
 
 	protected $isInner = null;
 
-	private static $innerPaySystemId = null;
+	protected static $innerPaySystemId = null;
 
 	protected static $mapFields = array();
+
+	private static $eventClassName = null;
 
 	/**
 	 * @return array
@@ -74,7 +77,11 @@ class Payment
 			'ID_1C',
 			'VERSION_1C',
 			'EXTERNAL_PAYMENT',
-			'PS_INVOICE_ID'
+			'PS_INVOICE_ID',
+			'MARKED',
+			'REASON_MARKED',
+			'DATE_MARKED',
+			'EMP_MARKED_ID',
 		);
 	}
 
@@ -98,6 +105,18 @@ class Payment
 		return static::$mapFields;
 	}
 
+	/**
+	 * @param array $fields
+	 * @return Payment
+	 */
+	protected static function createPaymentObject(array $fields = array())
+	{
+		$registry = Registry::getInstance(Registry::REGISTRY_TYPE_ORDER);
+		$paymentClassName = $registry->getPaymentClassName();
+
+		return new $paymentClassName($fields);
+	}
+
 	public static function create(PaymentCollection $collection, Sale\PaySystem\Service $paySystem = null)
 	{
 		$fields = array(
@@ -111,7 +130,7 @@ class Payment
 			$fields["PAY_SYSTEM_NAME"] = $paySystem->getField('NAME');
 		}
 
-		$payment = new static();
+		$payment = static::createPaymentObject();
 		$payment->setFieldsNoDemand($fields);
 		$payment->setCollection($collection);
 
@@ -133,11 +152,39 @@ class Payment
 			)
 		);
 		while ($paymentData = $paymentDataList->fetch())
-			$payments[] = new static($paymentData);
+			$payments[] = static::createPaymentObject($paymentData);
 
 		return $payments;
 	}
 
+	/**
+	 * @internal
+	 * 
+	 * @param $idOrder
+	 * @return Result
+	 * @throws Main\ObjectNotFoundException
+	 */
+	public static function deleteNoDemand($idOrder)
+	{
+		$result = new Result();
+		
+		$paymentDataList = Internals\PaymentTable::getList(
+			array(
+				"filter" => array("=ORDER_ID" => $idOrder),
+				"select" => array("ID")
+			)
+		);
+		while ($payment = $paymentDataList->fetch())	
+		{
+			$r = Internals\PaymentTable::delete($payment['ID']);
+			
+			if (!$r->isSuccess())
+				$result->addErrors($r->getErrors());
+		}
+
+		return $result;
+	}
+	
 	public function delete()
 	{
 		$result = new Result();
@@ -147,13 +194,16 @@ class Payment
 			return $result;
 		}
 
-		$eventName = static::getEntityEventName();
+		if (self::$eventClassName === null)
+		{
+			self::$eventClassName = static::getEntityEventName();
+		}
 
 		/** @var array $oldEntityValues */
 		$oldEntityValues = $this->fields->getOriginalValues();
 
 		/** @var Main\Event $event */
-		$event = new Main\Event('sale', "OnBefore".$eventName."EntityDeleted", array(
+		$event = new Main\Event('sale', "OnBefore".self::$eventClassName."EntityDeleted", array(
 				'ENTITY' => $this,
 				'VALUES' => $oldEntityValues,
 		));
@@ -166,7 +216,7 @@ class Payment
 			{
 				if($eventResult->getType() == Main\EventResult::ERROR)
 				{
-					$errorMsg = new ResultError(Loc::getMessage('SALE_EVENT_ON_BEFORE_'.ToUpper($eventName).'_ENTITY_DELETED_ERROR'), 'SALE_EVENT_ON_BEFORE_'.ToUpper($eventName).'_ENTITY_DELETED_ERROR');
+					$errorMsg = new ResultError(Loc::getMessage('SALE_EVENT_ON_BEFORE_'.ToUpper(self::$eventClassName).'_ENTITY_DELETED_ERROR'), 'SALE_EVENT_ON_BEFORE_'.ToUpper(self::$eventClassName).'_ENTITY_DELETED_ERROR');
 					if ($eventResultData = $eventResult->getParameters())
 					{
 						if (isset($eventResultData) && $eventResultData instanceof ResultError)
@@ -199,7 +249,7 @@ class Payment
 		$oldEntityValues = $this->fields->getOriginalValues();
 
 		/** @var Main\Event $event */
-		$event = new Main\Event('sale', "On".$eventName."EntityDeleted", array(
+		$event = new Main\Event('sale', "On".self::$eventClassName."EntityDeleted", array(
 				'ENTITY' => $this,
 				'VALUES' => $oldEntityValues,
 		));
@@ -212,7 +262,7 @@ class Payment
 			{
 				if($eventResult->getType() == Main\EventResult::ERROR)
 				{
-					$errorMsg = new ResultError(Loc::getMessage('SALE_EVENT_ON_'.ToUpper($eventName).'_ENTITY_DELETED_ERROR'), 'SALE_EVENT_ON_'.ToUpper($eventName).'_ENTITY_DELETED_ERROR');
+					$errorMsg = new ResultError(Loc::getMessage('SALE_EVENT_ON_'.ToUpper(self::$eventClassName).'_ENTITY_DELETED_ERROR'), 'SALE_EVENT_ON_'.ToUpper(self::$eventClassName).'_ENTITY_DELETED_ERROR');
 					if ($eventResultData = $eventResult->getParameters())
 					{
 						if (isset($eventResultData) && $eventResultData instanceof ResultError)
@@ -253,6 +303,12 @@ class Payment
 				$this->setField('DATE_PAID', new Main\Type\DateTime());
 				$this->setField('EMP_PAID_ID', $USER->GetID());
 			}
+//			if ($oldValue != $value && $value == "Y")
+//			{
+//				/** @var PaymentCollection $col */
+//				$col = $this->getCollection();
+//				Cashbox\Internals\Pool::addDoc($col->getOrder()->getInternalId(), $this);
+//			}
 		}
 		elseif ($name == "IS_RETURN")
 		{
@@ -272,6 +328,18 @@ class Payment
 				return $result;
 			}
 		}
+		elseif ($name == "MARKED")
+		{
+			if ($oldValue != "Y")
+			{
+				$this->setField('DATE_MARKED', new Main\Type\DateTime());
+				$this->setField('EMP_MARKED_ID', $USER->GetID());
+			}
+			elseif ($value == "N")
+			{
+				$this->setField('REASON_MARKED', '');
+			}
+		}
 
 		return parent::onFieldModify($name, $oldValue, $value);
 	}
@@ -287,6 +355,8 @@ class Payment
 		$result = new Result();
 		$id = $this->getId();
 		$fields = $this->fields->getValues();
+		$isNew = ($this->getId() == 0);
+		$oldEntityValues = $this->fields->getOriginalValues();
 
 		/** @var PaymentCollection $paymentCollection */
 		if (!$paymentCollection = $this->getCollection())
@@ -300,12 +370,15 @@ class Payment
 			throw new Main\ObjectNotFoundException('Entity "Order" not found');
 		}
 
-		$eventName = static::getEntityEventName();
+		if (self::$eventClassName === null)
+		{
+			self::$eventClassName = static::getEntityEventName();
+		}
 
-		if ($this->isChanged() && $eventName)
+		if ($this->isChanged() && self::$eventClassName)
 		{
 			/** @var Main\Entity\Event $event */
-			$event = new Main\Event('sale', 'OnBefore'.$eventName.'EntitySaved', array(
+			$event = new Main\Event('sale', 'OnBefore'.self::$eventClassName.'EntitySaved', array(
 					'ENTITY' => $this,
 					'VALUES' => $this->fields->getOriginalValues()
 			));
@@ -318,6 +391,13 @@ class Payment
 
 			if (!empty($fields) && is_array($fields))
 			{
+				if (array_key_exists('REASON_MARKED', $fields) && strlen($fields['REASON_MARKED']) > 255)
+				{
+					$fields['REASON_MARKED'] = substr($fields['REASON_MARKED'], 0, 255);
+
+					$this->setFieldNoDemand('REASON_MARKED', $fields['REASON_MARKED']);
+				}
+
 				//$fields['DATE_UPDATE'] = new Main\Type\DateTime();
 
 				$r = Internals\PaymentTable::update($id, $fields);
@@ -357,6 +437,13 @@ class Payment
 				$this->setFieldNoDemand('DATE_BILL', $fields['DATE_BILL']);
 			}
 
+			if (array_key_exists('REASON_MARKED', $fields) && strlen($fields['REASON_MARKED']) > 255)
+			{
+				$fields['REASON_MARKED'] = substr($fields['REASON_MARKED'], 0, 255);
+
+				$this->setFieldNoDemand('REASON_MARKED', $fields['REASON_MARKED']);
+			}
+
 			$r = Internals\PaymentTable::add($fields);
 			if (!$r->isSuccess())
 			{
@@ -392,6 +479,18 @@ class Payment
 			}
 		}
 
+		if (!empty($fields['PAID']) && $fields['PAID'] == "Y")
+		{
+			/** @var Main\Event $event */
+			$event = new Main\Event('sale', EventActions::EVENT_ON_PAYMENT_PAID, array(
+				'ENTITY' => $this,
+				'VALUES' => $oldEntityValues,
+			));
+			$event->send();
+
+			Notify::callNotify($this, EventActions::EVENT_ON_PAYMENT_PAID);
+		}
+
 		if ($id > 0)
 		{
 			$result->setId($id);
@@ -412,19 +511,49 @@ class Payment
 				throw new Main\ObjectNotFoundException('Entity "Order" not found');
 			}
 
-			if ($this->isChanged() && $eventName)
+			$changedKeys = $this->fields->getChangedKeys();
+			if (in_array("PAID", $changedKeys))
+			{
+				$originalValues = $this->fields->getOriginalValues();
+				/** @var Sale\PaySystem\Service $ps */
+				$ps = $this->getPaySystem();
+				if ($originalValues["PAID"] != $this->getField("PAID"))
+				{
+					/** @var PaymentCollection $col */
+					$col = $this->getCollection();
+					$order = $col->getOrder();
+					if ($ps->getField("CAN_PRINT_CHECK") == "Y")
+					{
+						Cashbox\Internals\Pool::addDoc($order->getInternalId(), $this);
+					}
+
+					BuyerStatistic::calculate($order->getUserId(), $order->getCurrency(), $order->getSiteId());
+				}
+			}
+
+			if ($this->isChanged() && self::$eventClassName)
 			{
 				/** @var Main\Event $event */
-				$event = new Main\Event('sale', 'On'.$eventName.'EntitySaved', array(
+				$event = new Main\Event('sale', 'On'.self::$eventClassName.'EntitySaved', array(
 					'ENTITY' => $this,
 					'VALUES' => $this->fields->getOriginalValues(),
 				));
 				$event->send();
 			}
 
-		}
+			if (($eventList = Internals\EventsPool::getEvents('p'.$this->getInternalIndex())) && !empty($eventList) && is_array($eventList))
+			{
+				foreach ($eventList as $eventName => $eventData)
+				{
+					$event = new Main\Event('sale', $eventName, $eventData);
+					$event->send();
 
-		$this->fields->clearChanged();
+					Notify::callNotify($this, $eventName);
+				}
+
+				Internals\EventsPool::resetEvents('p'.$this->getInternalIndex());
+			}
+		}
 
 		return $result;
 	}
@@ -593,7 +722,13 @@ class Payment
 			/** @var Result $r */
 			$r = $this->setField('PAID', $value);
 			if (!$r->isSuccess())
+			{
 				$result->addErrors($r->getErrors());
+			}
+			elseif($r->hasWarnings())
+			{
+				$result->addWarnings($r->getWarnings());
+			}
 		}
 
 		return $result;
@@ -678,6 +813,15 @@ class Payment
 	 */
 	public function setField($name, $value)
 	{
+		$priceRoundedFields = array(
+			'SUM' => 'SUM',
+			'PRICE_COD' => 'PRICE_COD',
+		);
+		if (isset($priceRoundedFields[$name]))
+		{
+			$value = PriceMaths::roundPrecision($value);
+		}
+
 		if ($name == "PAY_SYSTEM_ID")
 		{
 			if (intval($value) > 0 && !Sale\PaySystem\Manager::isExist($value))
@@ -708,6 +852,27 @@ class Payment
 
 
 		return parent::setField($name, $value);
+	}
+
+	/**
+	 * @internal
+	 *
+	 * @param $name
+	 * @param $value
+	 * @throws Main\ArgumentOutOfRangeException
+	 */
+	public function setFieldNoDemand($name, $value)
+	{
+		$priceRoundedFields = array(
+			'SUM' => 'SUM',
+			'PRICE_COD' => 'PRICE_COD',
+		);
+		if (isset($priceRoundedFields[$name]))
+		{
+			$value = PriceMaths::roundPrecision($value);
+		}
+
+		parent::setFieldNoDemand($name, $value);
 	}
 
 	/**
@@ -764,7 +929,7 @@ class Payment
 		$result = new Result();
 		if ($this->getPaymentSystemId() <= 0)
 		{
-			$result->addError(new ResultError(Loc::getMessage("SALE_PAYMENT_PAYMENT_SERVICE_EMPTY")));
+			$result->addError(new ResultError(Loc::getMessage("SALE_PAYMENT_PAYMENT_SERVICE_EMPTY"), 'SALE_PAYMENT_PAYMENT_SERVICE_EMPTY'));
 		}
 		return $result;
 	}
@@ -914,10 +1079,115 @@ class Payment
 	 */
 	public function getHash()
 	{
+		/** @var \Bitrix\Sale\PaymentCollection $paymentCollection */
+		$paymentCollection = $this->getCollection();
+
+		/** @var \Bitrix\Sale\Order $order */
+		$order = $paymentCollection->getOrder();
+
 		return md5(
 			$this->getId().
-			PriceMaths::roundByFormatCurrency($this->getSum(), $this->getField('CURRENCY')).
-			$this->getField('DATE_BILL')
+			PriceMaths::roundPrecision($this->getSum()).
+			$order->getId()
 		);
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function isAllowPay()
+	{
+		/** @var \Bitrix\Sale\PaymentCollection $paymentCollection */
+		$paymentCollection = $this->getCollection();
+
+		/** @var \Bitrix\Sale\Order $order */
+		$order = $paymentCollection->getOrder();
+
+		return $order->isAllowPay();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isMarked()
+	{
+		return ($this->getField('MARKED') == "Y");
+	}
+
+	/**
+	 * @param $value
+	 *
+	 * @return string
+	 */
+	public function getErrorEntity($value)
+	{
+		static $className = null;
+		$errorsList = static::getAutoFixErrorsList();
+		if (is_array($errorsList) && in_array($value, $errorsList))
+		{
+			if ($className === null)
+				$className = static::getClassName();
+		}
+
+		return $className;
+	}
+
+	/**
+	 * @param $value
+	 *
+	 * @return bool
+	 */
+	public function canAutoFixError($value)
+	{
+		$autoFix = false;
+		$errorsList = static::getAutoFixErrorsList();
+		if (is_array($errorsList) && in_array($value, $errorsList))
+		{
+			$autoFix = true;
+		}
+		return $autoFix;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getAutoFixErrorsList()
+	{
+		return array();
+	}
+
+	/**
+	 * @param $code
+	 *
+	 * @return Result
+	 */
+	public function tryFixError($code)
+	{
+		$result = new Result();
+
+		$method = static::getFixMethod($code);
+		$r = call_user_func_array($method, array($this));
+		if (!$r->isSuccess())
+		{
+			$result->addErrors($r->getErrors());
+		}
+		elseif ($r->hasWarnings())
+		{
+			$result->addWarnings($r->getWarnings());
+		}
+
+		return $result;
+	}
+
+	public function canMarked()
+	{
+		return true;
+	}
+
+	public function getMarkField()
+	{
+		return 'MARKED';
+	}
+
+
 }

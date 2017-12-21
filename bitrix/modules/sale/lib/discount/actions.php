@@ -42,6 +42,7 @@ class Actions
 	protected static $actionDescription = array();
 	protected static $applyResult = array();
 	protected static $applyResultMode = self::APPLY_RESULT_MODE_COUNTER;
+	protected static $storedData = array();
 
 	protected static $useBasketFilter = true;
 
@@ -354,6 +355,55 @@ class Actions
 	}
 
 	/**
+	 * Fill data to store for discount.
+	 *
+	 * @param array $data   Data.
+	 * @return void
+	 */
+	public static function setStoredData(array $data)
+	{
+		self::$storedData = $data;
+	}
+
+	/**
+	 * Return stored data after discount calculation.
+	 *
+	 * @return array
+	 */
+	public static function getStoredData()
+	{
+		return self::$storedData;
+	}
+
+	/**
+	 * Fill action data to store.
+	 *
+	 * @param array $data   Action data to store.
+	 * @return void
+	 */
+	public static function setActionStoredData(array $data)
+	{
+		if (!static::isCalculateMode())
+			return;
+		if (empty($data))
+			return;
+		self::$storedData[static::getApplyCounter()] = $data;
+	}
+
+	/**
+	 * Return stored action.
+	 *
+	 * @return array|null
+	 */
+	public static function getActionStoredData()
+	{
+		$counter = static::getApplyCounter();
+		if (isset(self::$storedData[$counter]))
+			return self::$storedData[$counter];
+		return null;
+	}
+
+	/**
 	 * Clear actions description and result.
 	 *
 	 * @return void
@@ -364,6 +414,7 @@ class Actions
 		self::$applyResult = array();
 		self::$actionResult = array();
 		self::$actionDescription = array();
+		self::$storedData = array();
 	}
 
 	/**
@@ -390,6 +441,7 @@ class Actions
 
 		$orderCurrency = static::getCurrency();
 		$value = (float)$action['VALUE'];
+		$limitValue = (int)$action['LIMIT_VALUE'];
 		$unit = (string)$action['UNIT'];
 		$currency = (isset($action['CURRENCY']) ? $action['CURRENCY'] : $orderCurrency);
 		$maxBound = false;
@@ -425,6 +477,15 @@ class Actions
 				return;
 				break;
 		}
+
+		if(!empty($limitValue))
+		{
+			$actionDescription['ACTION_TYPE'] = Sale\OrderDiscountManager::DESCR_TYPE_LIMIT_VALUE;
+			$actionDescription['LIMIT_TYPE'] = Sale\OrderDiscountManager::DESCR_LIMIT_MAX;
+			$actionDescription['LIMIT_UNIT'] = $orderCurrency;
+			$actionDescription['LIMIT_VALUE'] = $limitValue;
+		}
+
 		static::setActionDescription(self::RESULT_ENTITY_BASKET, $actionDescription);
 
 		if (empty($order['BASKET_ITEMS']) || !is_array($order['BASKET_ITEMS']))
@@ -463,17 +524,13 @@ class Actions
 
 		foreach ($applyBasket as $basketCode => $basketRow)
 		{
-			$calculateValue = $value;
-			if ($unit == self::VALUE_TYPE_PERCENT)
-				$calculateValue = static::percentToValue($basketRow, $calculateValue);
-			$calculateValue = static::roundValue($calculateValue, $basketRow['CURRENCY']);
-
-			$result = static::roundZeroValue($basketRow['PRICE'] + $calculateValue);
-			if ($maxBound && $result < 0)
-			{
-				$result = 0;
-				$calculateValue = -$basketRow['PRICE'];
-			}
+			list($calculateValue, $result) = self::calculateDiscountPrice(
+				$value,
+				$unit,
+				$basketRow,
+				$limitValue,
+				$maxBound
+			);
 			if ($result >= 0)
 			{
 				if (!isset($basketRow['DISCOUNT_PRICE']))
@@ -489,12 +546,252 @@ class Actions
 				$rowActionDescription['BASKET_CODE'] = $basketCode;
 				$rowActionDescription['RESULT_VALUE'] = abs($calculateValue);
 				$rowActionDescription['RESULT_UNIT'] = $orderCurrency;
+
+				if(!empty($limitValue))
+				{
+					$rowActionDescription['ACTION_TYPE'] = Sale\OrderDiscountManager::DESCR_TYPE_LIMIT_VALUE;
+					$rowActionDescription['LIMIT_TYPE'] = Sale\OrderDiscountManager::DESCR_LIMIT_MAX;
+					$rowActionDescription['LIMIT_UNIT'] = $orderCurrency;
+					$rowActionDescription['LIMIT_VALUE'] = $limitValue;
+				}
+
 				static::setActionResult(self::RESULT_ENTITY_BASKET, $rowActionDescription);
 				unset($rowActionDescription);
 			}
 			unset($result);
 		}
 		unset($basketCode, $basketRow);
+	}
+
+	public static function applyCumulativeToBasket(array &$order, array $ranges, array $configuration = array(), $filter = null)
+	{
+		static::increaseApplyCounter();
+
+		Main\Type\Collection::sortByColumn($ranges, 'sum');
+
+		$sumConfiguration = $configuration['sum']?: array();
+		$applyIfMoreProfitable = $configuration['apply_if_more_profitable'] === 'Y';
+
+
+		if (in_array(self::getUseMode(), array(self::MODE_MANUAL, self::MODE_MIXED)))
+		{
+			$actionStoredData = self::getActionStoredData();
+			$cumulativeOrderUserValue = $actionStoredData['cumulative_value'];
+		}
+		else
+		{
+			$cumulativeCalculator = new CumulativeCalculator((int)$order['USER_ID'], $order['SITE_ID']);
+			$cumulativeCalculator->setSumConfiguration(
+				array(
+					'type_sum_period' => $sumConfiguration['type_sum_period'],
+					'sum_period_data' => array(
+						'order_start' => $sumConfiguration['sum_period_data']['discount_sum_order_start'],
+						'order_end' => $sumConfiguration['sum_period_data']['discount_sum_order_end'],
+						'period_value' => $sumConfiguration['sum_period_data']['discount_sum_period_value'],
+						'period_type' => $sumConfiguration['sum_period_data']['discount_sum_period_type'],
+					),
+				)
+			);
+			$cumulativeOrderUserValue = $cumulativeCalculator->calculate();
+		}
+
+		$rangeToApply = null;
+		foreach ($ranges as $range)
+		{
+			if ($cumulativeOrderUserValue >= $range['sum'])
+			{
+				$rangeToApply = $range;
+			}
+		}
+
+		if (!$rangeToApply)
+		{
+			return;
+		}
+
+		$action = array(
+			'VALUE' => -$rangeToApply['value'],
+			'UNIT' => $rangeToApply['type'],
+		);
+
+		if (!isset($action['VALUE']) || !isset($action['UNIT']))
+			return;
+
+		$orderCurrency = static::getCurrency();
+		$value = (float)$action['VALUE'];
+		$limitValue = (int)$action['LIMIT_VALUE'];
+		$unit = (string)$action['UNIT'];
+		$currency = (isset($action['CURRENCY']) ? $action['CURRENCY'] : $orderCurrency);
+		$maxBound = false;
+		if ($unit == self::VALUE_TYPE_FIX && $value < 0)
+			$maxBound = (isset($action['MAX_BOUND']) && $action['MAX_BOUND'] == 'Y');
+		$valueAction = Sale\OrderDiscountManager::DESCR_VALUE_ACTION_CUMULATIVE;
+
+		$actionDescription = array(
+			'ACTION_TYPE' => Sale\OrderDiscountManager::DESCR_TYPE_VALUE,
+			'VALUE' => abs($value),
+			'VALUE_ACTION' => $valueAction
+		);
+		switch ($unit)
+		{
+			case self::VALUE_TYPE_PERCENT:
+				$actionDescription['VALUE_TYPE'] = Sale\OrderDiscountManager::DESCR_VALUE_TYPE_PERCENT;
+				break;
+			case self::VALUE_TYPE_FIX:
+				$actionDescription['VALUE_TYPE'] = Sale\OrderDiscountManager::DESCR_VALUE_TYPE_CURRENCY;
+				$actionDescription['VALUE_UNIT'] = $currency;
+				if ($maxBound)
+					$actionDescription['ACTION_TYPE'] = Sale\OrderDiscountManager::DESCR_TYPE_MAX_BOUND;
+				break;
+			default:
+				return;
+		}
+
+		if ($unit == self::VALUE_TYPE_FIX && $currency != $orderCurrency)
+		{
+			/** @noinspection PhpMethodOrClassCallIsNotCaseSensitiveInspection */
+			$value = \CCurrencyRates::convertCurrency($value, $currency, $orderCurrency);
+		}
+
+		$value = static::roundZeroValue($value);
+		if ($value == 0)
+		{
+			return;
+		}
+
+		if(!empty($limitValue))
+		{
+			$actionDescription['ACTION_TYPE'] = Sale\OrderDiscountManager::DESCR_TYPE_LIMIT_VALUE;
+			$actionDescription['LIMIT_TYPE'] = Sale\OrderDiscountManager::DESCR_LIMIT_MAX;
+			$actionDescription['LIMIT_UNIT'] = $orderCurrency;
+			$actionDescription['LIMIT_VALUE'] = $limitValue;
+		}
+
+		static::setActionDescription(self::RESULT_ENTITY_BASKET, $actionDescription);
+
+		if (empty($order['BASKET_ITEMS']) || !is_array($order['BASKET_ITEMS']))
+			return;
+
+		static::enableBasketFilter();
+
+		if ($applyIfMoreProfitable)
+		{
+			if ($filter === null)
+			{
+				$filter = function(){
+					return true;
+				};
+			}
+			$filter = self::wrapFilterToFindMoreProfitableForCumulative($filter, $unit, $value, $limitValue, $maxBound);
+		}
+
+		$filteredBasket = static::getBasketForApply($order['BASKET_ITEMS'], $filter, $action);
+		if (empty($filteredBasket))
+			return;
+
+
+		$applyBasket = array_filter($filteredBasket, '\Bitrix\Sale\Discount\Actions::filterBasketForAction');
+		unset($filteredBasket);
+		if (empty($applyBasket))
+			return;
+
+		foreach ($applyBasket as $basketCode => $basketRow)
+		{
+			if ($applyIfMoreProfitable)
+			{
+				$basketRow['PRICE'] = $basketRow['BASE_PRICE'];
+				$basketRow['DISCOUNT_PRICE'] = 0;
+			}
+
+			list($calculateValue, $result) = self::calculateDiscountPrice(
+				$value,
+				$unit,
+				$basketRow,
+				$limitValue,
+				$maxBound
+			);
+			if ($result >= 0)
+			{
+				if (!isset($basketRow['DISCOUNT_PRICE']))
+					$basketRow['DISCOUNT_PRICE'] = 0;
+				$basketRow['PRICE'] = $result;
+				if (isset($basketRow['PRICE_DEFAULT']))
+					$basketRow['PRICE_DEFAULT'] = $result;
+				$basketRow['DISCOUNT_PRICE'] -= $calculateValue;
+
+				$order['BASKET_ITEMS'][$basketCode] = $basketRow;
+
+				$rowActionDescription = $actionDescription;
+				$rowActionDescription['BASKET_CODE'] = $basketCode;
+				$rowActionDescription['RESULT_VALUE'] = abs($calculateValue);
+				$rowActionDescription['RESULT_UNIT'] = $orderCurrency;
+
+				if(!empty($limitValue))
+				{
+					$rowActionDescription['ACTION_TYPE'] = Sale\OrderDiscountManager::DESCR_TYPE_LIMIT_VALUE;
+					$rowActionDescription['LIMIT_TYPE'] = Sale\OrderDiscountManager::DESCR_LIMIT_MAX;
+					$rowActionDescription['LIMIT_UNIT'] = $orderCurrency;
+					$rowActionDescription['LIMIT_VALUE'] = $limitValue;
+				}
+
+				if ($applyIfMoreProfitable)
+				{
+					//revert apply on affected basket items
+					$rowActionDescription['REVERT_APPLY'] = true;
+				}
+
+				static::setActionResult(self::RESULT_ENTITY_BASKET, $rowActionDescription);
+				unset($rowActionDescription);
+			}
+			unset($result);
+		}
+		unset($basketCode, $basketRow);
+
+		if (self::getUseMode() == self::MODE_CALCULATE)
+		{
+			self::setActionStoredData(
+				array(
+					'cumulative_value' => $cumulativeOrderUserValue,
+				)
+			);
+		}
+	}
+
+	private static function wrapFilterToFindMoreProfitableForCumulative($filter, $unit, $value, $limitValue, $maxBound)
+	{
+		if (!is_callable($filter))
+		{
+			return null;
+		}
+
+		return function($basketItem) use ($filter, $unit, $value, $limitValue, $maxBound) {
+			if (empty($basketItem['BASE_PRICE']))
+			{
+				return false;
+			}
+
+			if (empty($basketItem['DISCOUNT_PRICE']))
+			{
+				return true;
+			}
+
+			if (!$filter($basketItem))
+			{
+				return false;
+			}
+
+			$prevPrice = $basketItem['PRICE'];
+			$basketItem['PRICE'] = $basketItem['BASE_PRICE'];
+			list(, $newPrice) = Actions::calculateDiscountPrice(
+				$value,
+				$unit,
+				$basketItem,
+				$limitValue,
+				$maxBound
+			);
+
+			return $newPrice < $prevPrice;
+		};
 	}
 
 	/**
@@ -576,7 +873,7 @@ class Actions
 		if ($maxBound && $resultValue < 0)
 		{
 			$resultValue = 0;
-			$value = $order['PRICE_DELIVERY'];
+			$value = -$order['PRICE_DELIVERY'];
 		}
 
 		if ($resultValue < 0)
@@ -898,6 +1195,80 @@ class Actions
 		return $value;
 	}
 
+	public static function getActionConfiguration(array $discount)
+	{
+		$actionStructure = self::getActionStructure($discount);
+
+		if(!$actionStructure || !is_array($actionStructure))
+		{
+			return null;
+		}
+
+		if($actionStructure['CLASS_ID'] != 'CondGroup')
+		{
+			return null;
+		}
+
+		if(count($actionStructure['CHILDREN']) > 1)
+		{
+			return null;
+		}
+
+		$action = reset($actionStructure['CHILDREN']);
+		if($action['CLASS_ID'] != 'ActSaleBsktGrp')
+		{
+			return null;
+		}
+
+		$actionData = $action['DATA'];
+
+		$configuration = array(
+			'TYPE' => $actionData['Type'],
+			'VALUE' => $actionData['Value'],
+			'LIMIT_VALUE' => $actionData['Max']?: 0,
+		);
+		switch ($actionData['Unit'])
+		{
+			case 'CurEach':
+				$configuration['VALUE_TYPE'] = Sale\Discount\Actions::VALUE_TYPE_FIX;
+				break;
+			case 'CurAll':
+				$configuration['VALUE_TYPE'] = Sale\Discount\Actions::VALUE_TYPE_SUMM;
+				break;
+			default:
+				$configuration['VALUE_TYPE'] = Sale\Discount\Actions::VALUE_TYPE_PERCENT;
+				break;
+		}
+
+		return $configuration;
+	}
+
+	protected static function getActionStructure(array $discount)
+	{
+		$actionStructure = null;
+		if (isset($discount['ACTIONS']) && !empty($discount['ACTIONS']))
+		{
+			$actionStructure = false;
+			if (!is_array($discount['ACTIONS']))
+			{
+				if (CheckSerializedData($discount['ACTIONS']))
+				{
+					$actionStructure = unserialize($discount['ACTIONS']);
+				}
+			}
+			else
+			{
+				$actionStructure = $discount['ACTIONS'];
+			}
+		}
+		elseif(isset($discount['ACTIONS_LIST']) && is_array($discount['ACTIONS_LIST']))
+		{
+			$actionStructure = $discount['ACTIONS_LIST'];
+		}
+
+		return $actionStructure;
+	}
+
 	/**
 	 * Return check result for error mode.
 	 *
@@ -967,5 +1338,36 @@ class Actions
 		unset($valueAction, $value, $currency);
 
 		return $result;
+	}
+
+	/**
+	 * @param $value
+	 * @param $unit
+	 * @param $basketRow
+	 * @param $limitValue
+	 * @param $maxBound
+	 *
+	 * @return array
+	 */
+	protected static function calculateDiscountPrice($value, $unit, $basketRow, $limitValue, $maxBound)
+	{
+		$calculateValue = $value;
+		if ($unit == self::VALUE_TYPE_PERCENT)
+			$calculateValue = static::percentToValue($basketRow, $calculateValue);
+		$calculateValue = static::roundValue($calculateValue, $basketRow['CURRENCY']);
+
+		if (!empty($limitValue) && $limitValue + $calculateValue <= 0)
+		{
+			$calculateValue = -$limitValue;
+		}
+
+		$result = static::roundZeroValue($basketRow['PRICE'] + $calculateValue);
+		if ($maxBound && $result < 0)
+		{
+			$result = 0;
+			$calculateValue = -$basketRow['PRICE'];
+		}
+
+		return array($calculateValue, $result);
 	}
 }

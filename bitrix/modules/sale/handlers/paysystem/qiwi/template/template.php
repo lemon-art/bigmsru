@@ -25,18 +25,18 @@ if (isset($_POST["SET_NEW_PHONE"]))
 			<?if (Loader::includeModule("currency")):?>
 				<strong><?=CCurrencyLang::CurrencyFormat($params['PAYMENT_SHOULD_PAY'], $params['PAYMENT_CURRENCY'], true);?></strong>
 			<?else:?>
-				<strong><?=$params['SHOULD_PAY'];?> <?=$params['CURRENCY']?></strong>
+				<strong><?=htmlspecialcharsbx($params['SHOULD_PAY']);?> <?=htmlspecialcharsbx($params['CURRENCY'])?></strong>
 			<?endif;?>
 		</p>
-		<input type="hidden" name="to" value="<?=$params['BUYER_PERSON_PHONE'];?>"/>
-		<input type="hidden" name="from" value="<?=$params['QIWI_SHOP_ID'];?>"/>
-		<input type="hidden" name="summ" value="<?=$params['PAYMENT_SHOULD_PAY'];?>"/>
-		<input type="hidden" name="currency" value="<?=$params['PAYMENT_CURRENCY'];?>"/>
+		<input type="hidden" name="to" value="<?=htmlspecialcharsbx($params['BUYER_PERSON_PHONE']);?>"/>
+		<input type="hidden" name="from" value="<?=htmlspecialcharsbx($params['QIWI_SHOP_ID']);?>"/>
+		<input type="hidden" name="summ" value="<?=htmlspecialcharsbx($params['PAYMENT_SHOULD_PAY']);?>"/>
+		<input type="hidden" name="currency" value="<?=htmlspecialcharsbx($params['PAYMENT_CURRENCY']);?>"/>
 		<input type="hidden" name="comm" value="<?=htmlspecialcharsbx(Loc::getMessage("SALE_HPS_QIWI_COMMENT", array("#ID#" => $params['PAYMENT_ID'])))?>"/>
-		<input type="hidden" name="txn_id" value="<?=$params['PAYMENT_ID'];?>"/>
-		<input type="hidden" name="successUrl" value="<?=$params['QIWI_SUCCESS_URL'];?>"/>
-		<input type="hidden" name="failUrl" value="<?=$params['QIWI_FAIL_URL'];?>"/>
-		<input type="hidden" name="lifetime" value="<?=$params['QIWI_BILL_LIFETIME'];?>"/>
+		<input type="hidden" name="txn_id" value="<?=htmlspecialcharsbx($params['PAYMENT_ID']);?>"/>
+		<input type="hidden" name="successUrl" value="<?=htmlspecialcharsbx($params['QIWI_SUCCESS_URL']);?>"/>
+		<input type="hidden" name="failUrl" value="<?=htmlspecialcharsbx($params['QIWI_FAIL_URL']);?>"/>
+		<input type="hidden" name="lifetime" value="<?=htmlspecialcharsbx($params['QIWI_BILL_LIFETIME']);?>"/>
 		<input type="submit" value="<?=Loc::getMessage("SALE_HPS_QIWI_DO_BILL");?>" />
 	</form>
 <?endif?>

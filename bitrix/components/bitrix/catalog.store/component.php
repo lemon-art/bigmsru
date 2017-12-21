@@ -65,4 +65,3 @@ $arResult = array_merge(
 	), $arResult);
 
 $this->IncludeComponentTemplate($componentPage);
-?>

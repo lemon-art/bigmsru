@@ -9,7 +9,6 @@ $MESS["MIB_SETTING_MENU_ITEM"] = "Menü konfigurieren";
 $MESS["MIB_APPLY_SETTING_MENU_ITEM"] = "Anpassung abschließen";
 $MESS["MIB_SET_HOME"] = "Zur Startseite des Bereichs machen";
 $MESS["MIB_SET_HIDE"] = "Ausblenden";
-$MESS["MIB_ADD_LEFT"] = "Zum linken Menü hinzufügen";
 $MESS["MIB_SET_SHOW"] = "Anzeigen";
 $MESS["MIB_RESET_SETTINGS"] = "Menü zurücksetzen";
 $MESS["MIB_HIDDEN"] = "Ausgeblendet";

@@ -2,6 +2,7 @@
 /** @global CMain $APPLICATION */
 /** @global CUser $USER */
 /** @global CDatabase $DB */
+/** @global string $mid */
 $module_id = 'catalog';
 
 use Bitrix\Main\Loader,
@@ -216,24 +217,23 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && !empty($_POST['Update']) && !$bReadO
 		if (isset($_POST['AVAIL_CONTENT_GROUPS']) && is_array($_POST['AVAIL_CONTENT_GROUPS']))
 		{
 			$fieldsClear = $_POST['AVAIL_CONTENT_GROUPS'];
-			CatalogClearArray($fieldsClear);
-			foreach ($fieldsClear as &$oneValue)
+			Main\Type\Collection::normalizeArrayValuesByInt($fieldsClear);
+			if (!empty($fieldsClear))
 			{
-				if (isset($arOldAvailContentGroups[$oneValue]))
-					unset($arOldAvailContentGroups[$oneValue]);
-			}
-			if (isset($oneValue))
+				foreach ($fieldsClear as $oneValue)
+				{
+					if (isset($arOldAvailContentGroups[$oneValue]))
+						unset($arOldAvailContentGroups[$oneValue]);
+				}
 				unset($oneValue);
-
+			}
 		}
 		Option::set('catalog', 'avail_content_groups', implode(',', $fieldsClear), '');
 		if (!empty($arOldAvailContentGroups))
 		{
 			$arOldAvailContentGroups = array_keys($arOldAvailContentGroups);
-			foreach ($arOldAvailContentGroups as &$oneValue)
-			{
+			foreach ($arOldAvailContentGroups as $oneValue)
 				CCatalogProductGroups::DeleteByGroup($oneValue);
-			}
 			unset($oneValue);
 		}
 	}
@@ -267,9 +267,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && !empty($_POST['Update']) && !$bReadO
 	if ($oldSimpleSearch != $newSimpleSearch)
 	{
 		if ($newSimpleSearch == 'Y')
-			UnRegisterModuleDependences('search', 'BeforeIndex', 'catalog', '\Bitrix\Catalog\SearchHandlers', 'onBeforeIndex');
+			UnRegisterModuleDependences('search', 'BeforeIndex', 'catalog', '\Bitrix\Catalog\Product\Search', 'onBeforeIndex');
 		else
-			RegisterModuleDependences('search', 'BeforeIndex', 'catalog', '\Bitrix\Catalog\SearchHandlers', 'onBeforeIndex');
+			RegisterModuleDependences('search', 'BeforeIndex', 'catalog', '\Bitrix\Catalog\Product\Search', 'onBeforeIndex');
 	}
 	unset($oldSimpleSearch, $newSimpleSearch);
 
@@ -312,7 +312,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && !empty($_POST['Update']) && !$bReadO
 		$strEnableReservation = 'Y';
 	else
 		$strEnableReservation = (isset($_POST['enable_reservation']) && (string)$_POST['enable_reservation'] === 'Y' ? 'Y' : 'N');
+
 	Option::set('catalog', 'enable_reservation', $strEnableReservation, '');
+
+	CAgent::RemoveAgent('CSaleOrder::ClearProductReservedQuantity();', 'sale');
+	if ($saleIsInstalled && $strEnableReservation == 'Y')
+	{
+		CAgent::AddAgent("CSaleOrder::ClearProductReservedQuantity();", "sale", "N", 86400, "", "Y");
+	}
 
 	if (!$useSaleDiscountOnly)
 	{
@@ -1134,6 +1141,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && !empty($_POST['Update']) && !$bReadO
 	{
 		CAgent::AddAgent('CCatalog::PreGenerateXML("yandex");', 'catalog', 'N', (int)Option::get('catalog', 'yandex_xml_period')*3600);
 	}
+
+	if(isset($_POST['catalog_subscribe_repeated_notify']))
+	{
+		$postValue = (string)$_POST['catalog_subscribe_repeated_notify'];
+		if($postValue === 'Y' || $postValue === 'N')
+		{
+			Option::set('catalog', 'subscribe_repeated_notify', $postValue);
+		}
+	}
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['agent_start']) && !$bReadOnly && check_bitrix_sessid())
@@ -1270,7 +1286,9 @@ function RestoreDefaults()
 	</td>
 </tr>
 <tr>
-	<td width="40%"><label for="show_catalog_tab_with_offers"><? echo Loc::getMessage("CAT_SHOW_CATALOG_TAB"); ?></label></td>
+	<td width="40%">
+		<span id="hint_show_catalog_tab_with_offers"></span> <label for="show_catalog_tab_with_offers"><? echo Loc::getMessage("CAT_SHOW_CATALOG_TAB"); ?></label>
+	</td>
 	<td width="60%">
 		<input type="hidden" name="show_catalog_tab_with_offers" id="show_catalog_tab_with_offers_n" value="N">
 		<input type="checkbox" name="show_catalog_tab_with_offers" id="show_catalog_tab_with_offers_y" value="Y"<?if ('Y' == $strShowCatalogTab) echo " checked";?>>
@@ -1469,6 +1487,17 @@ $viewedPeriod = (int)Option::get('catalog', 'viewed_period');
 		<input type="checkbox" name="product_form_show_offer_name" id="product_form_show_offer_name_y" value="Y" <?if ($searchShowOfferName == 'Y') echo " checked";?>>
 	</td>
 </tr>
+<tr class="heading">
+	<td colspan="2"><? echo Loc::getMessage("CAT_PRODUCT_SUBSCRIBE_TITLE"); ?></td>
+</tr>
+<tr>
+	<td width="40%"><? echo Loc::getMessage('CAT_PRODUCT_SUBSCRIBE_LABLE_REPEATED_NOTIFY'); ?></td>
+	<td width="60%">
+		<input type="hidden" name="catalog_subscribe_repeated_notify" value="N">
+		<input type="checkbox" name="catalog_subscribe_repeated_notify" value="Y"
+			<?if (Option::get('catalog', 'subscribe_repeated_notify') == 'Y') echo " checked";?>>
+	</td>
+</tr>
 <?
 	$tabControl->BeginNextTab();
 ?>
@@ -1644,28 +1673,12 @@ if ($strVal != '')
 	$arVal = array_fill_keys(explode(',', $strVal), true);
 }
 ?><select name="allowed_currencies[]" multiple size="5"><?
-$currencyIterator = Currency\CurrencyTable::getList(array(
-	'select' => array('CURRENCY', 'FULL_NAME' => 'RT_LANG.FULL_NAME', 'SORT'),
-	'order' => array('SORT' => 'ASC', 'CURRENCY' => 'ASC'),
-	'runtime' => array(
-		'RT_LANG' => array(
-			'data_type' => 'Bitrix\Currency\CurrencyLang',
-			'reference' => array(
-				'=this.CURRENCY' => 'ref.CURRENCY',
-				'=ref.LID' => new Main\DB\SqlExpression('?', LANGUAGE_ID)
-			)
-		)
-	)
-));
-while ($currency = $currencyIterator->fetch())
+foreach (Currency\CurrencyManager::getCurrencyList() as $currencyId => $currencyName)
 {
-	$currency['FULL_NAME'] = (string)$currency['FULL_NAME'];
-	?><option value="<? echo $currency["CURRENCY"]; ?>"<? echo (isset($arVal[$currency["CURRENCY"]]) ? ' selected' : ''); ?>><?
-	echo $currency['CURRENCY'];
-	if ($currency['FULL_NAME'] != '')
-		echo ' ('.htmlspecialcharsex($currency['FULL_NAME']).')'; ?></option><?
+	?><option value="<?=htmlspecialcharsbx($currencyId); ?>"<?=(isset($arVal[$currencyId]) ? ' selected' : ''); ?>><?
+	echo htmlspecialcharsbx($currencyName);
+	?></option><?
 }
-unset($currency, $currencyIterator);
 ?></select>
 	</td>
 </tr>
@@ -1990,7 +2003,8 @@ $tabControl->Buttons();
 <input type="button" <?if ($bReadOnly) echo "disabled" ?> title="<?echo Loc::getMessage("CAT_OPTIONS_BTN_HINT_RESTORE_DEFAULT")?>" onclick="RestoreDefaults();" value="<?echo Loc::getMessage("CAT_OPTIONS_BTN_RESTORE_DEFAULT")?>">
 </form>
 <script type="text/javascript">
-BX.hint_replace(BX('hint_reservation'), '<? echo Loc::getMessage('CAT_ENABLE_RESERVATION_HINT'); ?>');
+BX.hint_replace(BX('hint_reservation'), '<?=CUtil::JSEscape(Loc::getMessage('CAT_ENABLE_RESERVATION_HINT')); ?>');
+BX.hint_replace(BX('hint_show_catalog_tab_with_offers'), '<?=CUtil::JSEscape(Loc::getMessage('CAT_ENABLE_SHOW_CATALOG_TAB_WITH_OFFERS')); ?>');
 </script>
 <?
 $tabControl->End();

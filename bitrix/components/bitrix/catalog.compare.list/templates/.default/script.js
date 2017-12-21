@@ -43,7 +43,7 @@ window.JCCatalogCompareList.prototype.reload = function()
 	BX.showWait(this.obCompare);
 	BX.ajax.post(
 		this.ajax.url,
-		this.ajax.params,
+		this.ajax.reload,
 		BX.proxy(this.reloadResult, this)
 	);
 };
@@ -90,6 +90,8 @@ window.JCCatalogCompareList.prototype.deleteCompareResult = function(result)
 	{
 		if (!!result.STATUS && result.STATUS === 'OK' && !!result.ID)
 		{
+			BX.onCustomEvent('onCatalogDeleteCompare', [result.ID]);
+
 			tbl = BX(this.visual.LIST);
 			if (tbl)
 			{
@@ -104,7 +106,7 @@ window.JCCatalogCompareList.prototype.deleteCompareResult = function(result)
 						}
 					}
 					tbl = null;
-					if (!!result.COUNT)
+					if (BX.type.isNotEmptyString(result.COUNT) || BX.type.isNumber(result.COUNT))
 					{
 						newCount = parseInt(result.COUNT, 10);
 						if (!isNaN(newCount))

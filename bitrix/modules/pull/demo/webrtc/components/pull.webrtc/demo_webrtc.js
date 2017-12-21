@@ -15,6 +15,7 @@
 	/* Initialize */
 	YourCompanyPrefix.webrtc = function(params)
 	{
+		this.parent.constructor.apply(this, arguments);
 		params = params || {};
 
 		this.debug = true;

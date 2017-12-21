@@ -75,6 +75,11 @@ $arHeader[] = array("id" => "CODE", "content" => GetMessage("BX_MOD_CATALOG_ADMI
 
 $lAdmin->AddHeaders($arHeader);
 
+if (!isset($by))
+	$by = 'ID';
+if (!isset($order))
+	$order = 'ASC';
+
 $rsIBlocks = CIBlock::GetList(array($by=>$order), $arFilter);
 $rsIBlocks = new CAdminResult($rsIBlocks, $sTableID);
 $rsIBlocks->NavStart();
@@ -85,7 +90,10 @@ while ($arRes = $rsIBlocks->GetNext())
 {
 	$row = &$lAdmin->AddRow($arRes["ID"], $arRes);
 
-	$row->AddViewField("NAME", $arRes["NAME"]."<input type=hidden name='n".$arRes["ID"]."' id='name_".$arRes["ID"]."' value='".CUtil::JSEscape(htmlspecialcharsbx($arRes["NAME"]))."'>");
+	$row->AddViewField(
+		'NAME',
+		$arRes['NAME'].'<input type="hidden" name="n'.$arRes['ID'].'" id="name_'.$arRes['ID'].'" value="'.htmlspecialcharsbx($arRes['NAME']).'">'
+	);
 	$row->AddViewField("IBLOCK_TYPE_ID", $arRes["IBLOCK_TYPE_ID"]);
 	$row->AddCheckField("ACTIVE", false);
 	$row->AddViewField("XML_ID", $arRes["XML_ID"]);
@@ -199,7 +207,4 @@ function SelAll()
 
 $lAdmin->DisplayList();
 
-echo ShowError($strWarning);
-
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_popup_admin.php");
-?>

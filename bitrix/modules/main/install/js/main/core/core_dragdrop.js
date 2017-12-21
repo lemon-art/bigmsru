@@ -275,9 +275,14 @@
 		sortableMove : function()
 		{
 			var elementFromPoint = document.elementFromPoint(this.dragEventX, this.dragEventY);
+			if(elementFromPoint === null)
+			{
+				return;
+			}
+
 			var target = this.sortable.node; /*element over which draggable elem*/
 
-			while(elementFromPoint != document.body)
+			while(elementFromPoint !== null &&elementFromPoint != document.body)
 			{
 				for(var i = this.sortable.list.length-1; i>=0; i--)
 				{

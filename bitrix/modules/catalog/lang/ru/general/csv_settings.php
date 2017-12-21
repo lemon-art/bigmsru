@@ -17,7 +17,6 @@ $MESS["CATI_FI_ID"] = "Первичный ключ";
 $MESS["CATI_FI_QUANT"] = "Количество";
 $MESS["CATI_FI_QUANTITY_TRACE"] = "Отслеживание количества";
 $MESS["CATI_FI_CAN_BUY_ZERO"] = "Разрешить покупку при нулевом количестве";
-$MESS["CATI_FI_NEGATIVE_AMOUNT_TRACE"] = "Разрешить отрицательное количество товара";
 $MESS["CATI_FI_WEIGHT"] = "Вес";
 $MESS["CATI_FI_WIDTH"] = "Ширина";
 $MESS["CATI_FI_HEIGHT"] = "Высота";

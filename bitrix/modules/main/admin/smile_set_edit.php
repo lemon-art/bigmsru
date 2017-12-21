@@ -5,21 +5,18 @@ IncludeModuleLangFile(__FILE__);
 if(!$USER->CanDoOperation('edit_other_settings'))
 	$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
 
-$ID = intVal($ID);
-$arError = $arSmileSet = $arFields = $arLang = array();
-
-if (isset($_REQUEST['GALLERY_ID']))
-{
-	$parentId = intval($_REQUEST['GALLERY_ID']);
-}
-else
+if (!isset($_REQUEST['GALLERY_ID']))
 {
 	LocalRedirect("smile_gallery.php?lang=".LANG);
 }
 
+$ID = intval($_REQUEST["ID"]);
+$parentId = intval($_REQUEST['GALLERY_ID']);
+$arError = $arSmileSet = $arFields = $arLang = array();
+
 /* LANGS */
 $arLangTitle = array("reference_id" => array(), "reference" => array());
-$db_res = CLanguage::GetList(($b="sort"), ($o="asc"));
+$db_res = CLanguage::GetList($b="sort", $o="asc");
 while ($res = $db_res->GetNext(true, false))
 {
 	$arLang[$res["LID"]] = $res;
@@ -31,7 +28,7 @@ $bInitVars = false;
 $APPLICATION->SetTitle($ID > 0 ? GetMessage("SMILE_EDIT_RECORD") : GetMessage("SMILE_NEW_RECORD"));
 
 $fileName = '';
-if ($REQUEST_METHOD == "POST" && (strlen($save) > 0 || strlen($apply) > 0))
+if ($_SERVER["REQUEST_METHOD"] == "POST" && (strlen($save) > 0 || strlen($apply) > 0))
 {
 	if (isset($_FILES["IMAGE"]["name"]))
 		$fileName = RemoveScriptExtension($_FILES["IMAGE"]["name"]);
@@ -122,7 +119,7 @@ else
 		"SORT" => isset($_REQUEST['SORT'])? intval($_REQUEST['SORT']): 300,
 		"STRING_ID" => isset($_REQUEST['STRING_ID'])? htmlspecialcharsbx($_REQUEST['STRING_ID']): "",
 		"NAME" => isset($_REQUEST['NAME'])? $_REQUEST['NAME']: array(),
-		"PARENT_ID" => isset($_REQUEST['GALLERY_ID'])? $_REQUEST['GALLERY_ID']: 0
+		"PARENT_ID" => isset($_REQUEST['GALLERY_ID'])? $parentId : 0
 	);
 }
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");

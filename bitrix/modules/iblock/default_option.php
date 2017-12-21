@@ -10,4 +10,6 @@ $iblock_default_option = array(
 	"event_log_iblock" => "Y",
 	"num_catalog_levels" => "3",
 	"seo_max_stores" => "20",
+	"custom_edit_form_use_property_id" => "Y",
+	"list_full_date_edit" => "N"
 );

@@ -188,6 +188,15 @@ $arAllOptions["main"][] = array("use_time_zones", GetMessage("MAIN_OPT_USE_TIMEZ
 $arAllOptions["main"][] = array("default_time_zone", GetMessage("MAIN_OPT_TIME_ZONE_DEF"), "", array("selectbox", $aZones));
 $arAllOptions["main"][] = array("auto_time_zone", GetMessage("MAIN_OPT_TIME_ZONE_AUTO"), "N", array("checkbox", "Y"));
 
+$countriesReference = GetCountryArray();
+$countriesArray = array();
+foreach ($countriesReference['reference_id'] as $k => $v)
+{
+	$countriesArray[$v] = $countriesReference['reference'][$k];
+}
+$arAllOptions["main"][] = GetMessage("MAIN_OPTIONS_PHONE_NUMBER_FORMAT");
+$arAllOptions["main"][] = array("phone_number_default_country", GetMessage("MAIN_OPTIONS_PHONE_NUMBER_DEFAULT_COUNTRY"), "", array("selectbox", $countriesArray));
+
 if (\Bitrix\Main\Analytics\SiteSpeed::isLicenseAccepted())
 {
 	$arAllOptions["main"][] = GetMessage("MAIN_CATALOG_STAT_SETTINGS");
@@ -273,7 +282,7 @@ function HidePanelFor()
 ";
 
 foreach($arCodes as $code)
-	$panel .= '<div style="margin-bottom:4px"><input type="hidden" name="show_panel_for_users[]" value="'.$code.'">'.($arNames[$code]["provider"] <> ''? $arNames[$code]["provider"].': ':'').$arNames[$code]["name"].'&nbsp;<a href="javascript:void(0);" onclick="DeleteAccess(this, \''.$code.'\')" class="access-delete"></a></div>';
+	$panel .= '<div style="margin-bottom:4px"><input type="hidden" name="show_panel_for_users[]" value="'.$code.'">'.($arNames[$code]["provider"] <> ''? $arNames[$code]["provider"].': ':'').htmlspecialcharsbx($arNames[$code]["name"]).'&nbsp;<a href="javascript:void(0);" onclick="DeleteAccess(this, \''.$code.'\')" class="access-delete"></a></div>';
 
 $panel .= '</div><a href="javascript:void(0)" class="bx-action-href" onclick="ShowPanelFor()">'.GetMessage("main_sett_add_users").'</a>';
 
@@ -282,7 +291,7 @@ $panelHide = "
 ";
 
 foreach($arHideCodes as $code)
-	$panelHide .= '<div style="margin-bottom:4px"><input type="hidden" name="hide_panel_for_users[]" value="'.$code.'">'.($arNames[$code]["provider"] <> ''? $arNames[$code]["provider"].': ':'').$arNames[$code]["name"].'&nbsp;<a href="javascript:void(0);" onclick="DeleteAccess(this, \''.$code.'\')" class="access-delete"></a></div>';
+	$panelHide .= '<div style="margin-bottom:4px"><input type="hidden" name="hide_panel_for_users[]" value="'.$code.'">'.($arNames[$code]["provider"] <> ''? $arNames[$code]["provider"].': ':'').htmlspecialcharsbx($arNames[$code]["name"]).'&nbsp;<a href="javascript:void(0);" onclick="DeleteAccess(this, \''.$code.'\')" class="access-delete"></a></div>';
 
 $panelHide .= '</div><a href="javascript:void(0)" class="bx-action-href" onclick="HidePanelFor()">'.GetMessage("main_sett_add_users").'</a>';
 
@@ -308,6 +317,17 @@ else
 	$arAllOptions["auth"][] = array("note"=>GetMessage("MAIN_OPT_EXT_NOTE"));
 }
 
+$intl = new \Bitrix\Main\UserConsent\Intl(LANGUAGE_ID);
+$listAgreement = array("" => GetMessage("MAIN_REGISTER_AGREEMENT_DEFAUTL_VALUE"));
+$listAgreementObject = \Bitrix\Main\UserConsent\Internals\AgreementTable::getList(array(
+	"select" => array("ID", "NAME"),
+	"filter" => array("=ACTIVE" => "Y"),
+	"order" => array("ID" => "ASC")
+));
+foreach ($listAgreementObject as $agreement)
+{
+	$listAgreement[$agreement["ID"]] = $agreement["NAME"];
+}
 $arAllOptions["auth"][] = GetMessage("MAIN_REGISTRATION_OPTIONS");
 $arAllOptions["auth"][] = Array("new_user_registration", GetMessage("MAIN_REGISTER"), "Y", Array("checkbox", "Y"));
 $arAllOptions["auth"][] = Array("captcha_registration", GetMessage("MAIN_OPTION_FNAME_CAPTCHA"), "N", Array("checkbox", "Y"));
@@ -316,6 +336,8 @@ $arAllOptions["auth"][] = Array("new_user_email_required", GetMessage("MAIN_OPTI
 $arAllOptions["auth"][] = Array("new_user_registration_email_confirmation", GetMessage("MAIN_REGISTER_EMAIL_CONFIRMATION", array("#EMAIL_TEMPLATES_URL#" => "/bitrix/admin/message_admin.php?lang=".LANGUAGE_ID."&set_filter=Y&find_type_id=NEW_USER_CONFIRM")), "N", Array("checkbox", "Y"));
 $arAllOptions["auth"][] = Array("new_user_registration_cleanup_days", GetMessage("MAIN_REGISTER_CLEANUP_DAYS"), "7", Array("text", 5));
 $arAllOptions["auth"][] = Array("new_user_email_uniq_check", GetMessage("MAIN_REGISTER_EMAIL_UNIQ_CHECK").($bEmailIndex? "<br>".GetMessage("MAIN_REGISTER_EMAIL_INDEX_WARNING"): ""), "N", Array("checkbox", "Y"));
+$arAllOptions["auth"][] = array("note" => $intl->getDataValue('DESCRIPTION'));
+$arAllOptions["auth"][] = array("new_user_agreement", GetMessage("MAIN_REGISTER_AGREEMENT_TITLE", array("#AGGREMENT_CREATE_URL#" => BX_ROOT.'/admin/agreement_edit.php?ID=0&lang='.LANGUAGE_ID)), "", array("selectbox", $listAgreement), "", "", "Y");
 
 $arAllOptions["auth"][] = GetMessage("MAIN_OPTION_SESS");
 $arAllOptions["auth"][] = Array("session_expand", GetMessage("MAIN_OPTION_SESS_EXPAND"), "Y", Array("checkbox", "Y"));

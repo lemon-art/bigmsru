@@ -46,7 +46,9 @@ ol.bx-vote-question-list li {
 	padding: 0;
 	margin: 0;
 }
-
+ol.bx-vote-question-list {
+	border-bottom: 1px solid #e6eaec;
+}
 .bx-vote-question-list li {
 	margin-top: 19px;
 }
@@ -341,7 +343,6 @@ label.bx-vote-block-input-wrap-inner {
 	background-color: #f4f7f8;
 }
 .bx-vote-container-web .bx-vote-buttons {
-	border-top: 1px solid #e6eaec;
 	padding: 13px 0 0 17px;
 	vertical-align: middle;
 }
@@ -406,7 +407,6 @@ label.bx-vote-block-input-wrap-inner {
 	-webkit-animation: clock 1s infinite linear;
 	animation: clock 1s infinite linear;
 }
-
 /* mobile */
 .bx-vote-container-mobile  .bx-vote-block{
 	background: #e7f2f5;
@@ -420,6 +420,9 @@ label.bx-vote-block-input-wrap-inner {
 }
 .bx-vote-container-mobile .bx-vote-answer-result {
 	display: block;
+}
+.bx-vote-container-mobile .bx-vote-question-list {
+	border-bottom: none;
 }
 .bx-vote-container-mobile .bx-vote-answer-list-wrap {
 	padding-right: 19px;
@@ -501,3 +504,102 @@ label.bx-vote-block-input-wrap-inner {
 .bx-vote-container-mobile.bx-vote-container[data-bx-vote-lamp="red"] a[data-bx-vote-button="exportXls"] {
 	display: none;
 }
+/* Group of data */
+.bx-vote-body {
+	max-height: 288px;
+	overflow-y: hidden;
+	position: relative;
+
+}
+input.bx-vote-checkbox[type=checkbox] {
+	position: absolute;
+	left: -999px;
+}
+input.bx-vote-checkbox[type=checkbox]:checked ~ .bx-vote-body {
+	-webkit-animation: expand-vote 0.5s;
+	animation: expand-vote 0.5s;
+	max-height: none;
+}
+@-webkit-keyframes expand-vote {
+	0%   { max-height: 288px; }
+	99%   { max-height: 700px; }
+	100% { max-height: none; }
+}
+@keyframes expand-vote {
+	0%   { max-height: 288px; }
+	99%   { max-height: 700px; }
+	100% { max-height: none; }
+}
+
+.bx-vote-body > label > * { pointer-events: none; }
+.bx-vote-body label.bx-vote-switcher {
+	background-image: -webkit-linear-gradient(top, rgba(245, 247, 248, 0.3), rgba(245, 247, 248, 1) 23px);
+	background-image: linear-gradient(to bottom, rgba(245, 247, 248, 0.3), rgba(245, 247, 248, 1) 23px);
+	cursor: pointer;
+	height: 38px;
+	left: 0;
+	position: absolute;
+	top: 264px;
+	width: 100%;
+	z-index: 3;
+}
+input.bx-vote-checkbox[type=checkbox]:checked ~ .bx-vote-body > label.bx-vote-switcher {
+	display: none;
+}
+.bx-vote-body label.bx-vote-switcher:before {
+	background: none;
+	display: block;
+	border-bottom: 1px solid #d7dce0;
+	content: '';
+	height: 23px;
+	left: 0;
+	right: 0;
+	margin: 0;
+	position: absolute;
+	-webkit-transition: border-color 0.2s linear;
+	transition: border-color 0.2s linear;
+}
+.bx-vote-switcher-arrow {
+	border: 1px solid #d7dce0;
+	border-bottom: none;
+	bottom: 14px;
+	height: 21px;
+	left: 50%;
+	margin-left: -32px;
+	position: absolute;
+	width: 63px;
+	-webkit-transition: border-color 0.2s linear;
+	transition: border-color 0.2s linear;
+	background-color: #f5f7f8;
+	z-index: 3;
+}
+
+.bx-vote-switcher-arrow:before {
+	content: '';
+	position: absolute;
+	top: 11px;
+	left: 26px;
+	height: 3px;
+	width: 5px;
+	background: #555555;
+	-webkit-transform: skew(0deg, 45deg);
+	-moz-transform: skew(0deg, 45deg);
+	-ms-transform: skew(0deg, 45deg);
+	-o-transform: skew(0deg, 45deg);
+	transform: skew(0deg, 45deg);
+}
+.bx-vote-switcher-arrow:after {
+	content: '';
+	position: absolute;
+	top: 11px;
+	left: 31px;
+	height: 3px;
+	width: 6px;
+	background: #555555;
+	-webkit-transform: skew(0deg, -45deg);
+	-moz-transform: skew(0deg, -45deg);
+	-ms-transform: skew(0deg, -45deg);
+	-o-transform: skew(0deg, -45deg);
+	transform: skew(0deg, -45deg);
+}
+/* /Group of data */

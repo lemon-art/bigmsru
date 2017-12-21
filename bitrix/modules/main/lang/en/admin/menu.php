@@ -124,4 +124,13 @@ $MESS["main_menu_diag"] = "System Administration";
 $MESS["main_menu_diag_title"] = "Administrator's tools";
 $MESS["MAIN_MENU_COMPOSITE"] = "Composite Website";
 $MESS["MAIN_MENU_COMPOSITE_ALT"] = "Manage composite mode";
+$MESS["MAIN_MENU_HTTPS"] = "HTTPS Configuration";
+$MESS["MAIN_MENU_HTTPS_ALT"] = "Website HTTPS Configuration";
+$MESS["MAIN_MENU_GEOIP_HANDLERS"] = "Geolocation";
+$MESS["MAIN_MENU_USER_CONSENT"] = "Consents";
+$MESS["MAIN_MENU_COMPOSITE_SETTINGS"] = "Settings";
+$MESS["MAIN_MENU_COMPOSITE_PAGES"] = "Pages";
+$MESS["MAIN_MENU_COMPOSITE_PAGES_ALT"] = "Composite pages";
+$MESS["MAIN_MENU_COMPOSITE_LOG"] = "Debug Log";
+$MESS["MAIN_MENU_COMPOSITE_LOG_ALT"] = "View debug messages";
 ?>

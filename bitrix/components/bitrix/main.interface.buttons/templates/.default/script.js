@@ -18,7 +18,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 	 * @property {string} classes.itemLocked Class for locked item. Added for list and submenu item
 	 * @property {string} classes.onDrag Class added for container on dragstart event and removed on drag end event
 	 * @property {string} classes.dropzone Class for dropzone in submenu
-	 * @property {string} classes.seporator Class for submenu seporator before diabled items
+	 * @property {string} classes.separator Class for submenu separator before disabled items
 	 * @property {string} classes.submenuItem Class for submenu item
 	 * @property {string} classes.submenu Class for submenu container
 	 * @property {string} classes.secret Class for hidden alias items (set display: none; for items)
@@ -28,7 +28,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 	 * @property {string} messages.MIB_LICENSE_TRIAL_BUTTON License window Trial button text
 	 * @property {string} messages.MIB_LICENSE_WINDOW_HEADER_TEXT License window header text
 	 * @property {string} messages.MIB_LICENSE_WINDOW_TEXT License window content text
-	 * @property {string} messaget.MIB_LICENSE_WINDOW_TRIAL_SUCCESS_TEXT Trial success text
+	 * @property {string} messages.MIB_LICENSE_WINDOW_TRIAL_SUCCESS_TEXT Trial success text
 	 * @property {object} licenseWindow Settings for license window
 	 * @property {string} licenseWindow.isFullDemoExists Y|N
 	 * @property {string} licenseWindow.hostname Hostname for license window ajax calls
@@ -37,6 +37,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 	 * @property {string} licenseWindow.licenseDemoPath
 	 * @property {string} licenseWindow.featureGroupName
 	 * @property {string} licenseWindow.ajaxActionsUrl
+	 * @param {HTMLElement} container
 	 */
 	BX.Main.interfaceButtons = function(container, params)
 	{
@@ -51,7 +52,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		this.classItemMore = 'main-buttons-item-more';
 		this.classOnDrag = 'main-buttons-drag';
 		this.classDropzone = 'main-buttons-submenu-dropzone';
-		this.classSeporator = 'main-buttons-submenu-seporator';
+		this.classSeporator = 'main-buttons-submenu-separator';
 		this.classHiddenLabel = 'main-buttons-hidden-label';
 		this.classSubmenuItem = 'main-buttons-submenu-item';
 		this.classItemDisabled = 'main-buttons-disabled';
@@ -74,8 +75,8 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		this.classContainer = 'main-buttons';
 		this.classSubmenuNoHiddenItem = 'main-buttons-submenu-item-no-hidden';
 		this.classDefaultSubmenuItem = 'menu-popup-item';
+		this.classInner = 'main-buttons-inner-container';
 		this.listContainer = null;
-		this.submenuContainer = null;
 		this.pinContainer = null;
 		this.dragItem = null;
 		this.overItem = null;
@@ -84,6 +85,8 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		this.licenseParams = null;
 		this.isSubmenuShown = false;
 		this.isSubmenuShownOnDragStart = false;
+		this.isSettingsEnabled = true;
+		this.containerId = params.containerId;
 		this.tmp = {};
 
 		this.init(container, params);
@@ -100,7 +103,6 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 			getDisabledItems: BX.delegate(this.getDisabledItems, this),
 			getMoreButton: BX.delegate(this.getMoreButton, this),
 			adjustMoreButtonPosition: BX.delegate(this.adjustMoreButtonPosition, this),
-			adjustSubmenuPosition: BX.delegate(this.adjustSubmenuPosition, this),
 			showSubmenu: BX.delegate(this.showSubmenu, this),
 			closeSubmenu: BX.delegate(this.closeSubmenu, this),
 			refreshSubmenu: BX.delegate(this.refreshSubmenu, this),
@@ -112,6 +114,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 			getActive: BX.delegate(this.getActive, this),
 			isEditEnabled: BX.delegate(this.isEditEnabled, this),
 			isActiveInMoreMenu: BX.delegate(this.isActiveInMoreMenu, this),
+			isSettingsEnabled: this.isSettingsEnabled,
 			classes:
 			{
 				item: this.classItem,
@@ -133,18 +136,12 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 	};
 
 
-
+	//noinspection JSUnusedGlobalSymbols,JSUnusedGlobalSymbols
 	BX.Main.interfaceButtons.prototype =
 	{
-		/**
-		 * Sets custom values and bind on events
-		 * @method init
-		 * @private
-		 * @return {undefined}
-		 */
 		init: function(container, params)
 		{
-			this.setListContainer(container);
+			this.listContainer = BX(this.getId());
 
 			if (!BX.type.isPlainObject(params))
 			{
@@ -176,18 +173,25 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 				this.setLicenseWindowParams(params.licenseWindow);
 			}
 
+			if ('disableSettings' in params && params.disableSettings === "true")
+			{
+				this.isSettingsEnabled = false;
+				this.visibleControlMoreButton();
+			}
+
 			this.moreButton = this.getMoreButton();
-			this.dragAndDropInit();
+
+			if (this.isSettingsEnabled)
+			{
+				this.dragAndDropInit();
+			}
+
 			this.adjustMoreButtonPosition();
 			this.bindOnClickOnMoreButton();
-			this.createFrame();
-			this.bindOnResizeFrame();
 			this.bindOnScrollWindow();
-			this.setSubmenuContainer(this.getSubmenuContainer());
 			this.setContainerHeight();
-			this.setParentPinContainer();
 
-			BX.bind(document, 'click', BX.delegate(this._onDocumentClick, this));
+			BX.bind(this.getContainer(), 'click', BX.delegate(this._onDocumentClick, this));
 			BX.addCustomEvent("onPullEvent-main", BX.delegate(this._onPush, this));
 
 			this.updateMoreButtonCounter();
@@ -199,7 +203,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 			var visibleItems = this.getVisibleItems();
 			var firstVisibleItem = BX.type.isArray(visibleItems) && visibleItems.length > 0 ? visibleItems[0] : null;
-			var firstItemNode = BX.findChild(firstVisibleItem, { tagName: "a" }, true);
+			var firstItemNode = BX.Buttons.Utils.getByTag(firstVisibleItem, 'a');
 
 			if (!BX.type.isDomNode(firstItemNode))
 			{
@@ -216,12 +220,14 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 			{
 				this.lastHomeLink = firstPageLink;
 			}
+
+			this.bindOnResizeFrame();
 		},
 
 		_onDocumentClick: function(event)
 		{
 			var item = this.getItem(event);
-			var dataOnClick, currentItem, currentAlias, id, applyButton, settingsButton,
+			var dataOnClick, currentItem, currentAlias, id,
 				visibleItems, visibleItemsLength;
 
 			if (this.isDragButton(event.target))
@@ -308,7 +314,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 					currentItem = this.getItemById(id);
 					currentAlias = this.getItemAlias(currentItem);
 
-					currentItem = !this.isVisibleItem(currentItem) ? currentItem : currentAlias;
+					currentItem = this.isVisibleItem(currentItem) ? currentItem : currentAlias;
 
 
 					if (this.isDisabled(currentAlias))
@@ -320,13 +326,15 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 						this.disableItem(currentAlias);
 					}
 
-					BX.onCustomEvent(window, 'BX.Main.InterfaceButtons:onHideLastVisibleItem', [currentItem, this]);
+					if (visibleItemsLength === 2)
+					{
+						BX.onCustomEvent(window, 'BX.Main.InterfaceButtons:onHideLastVisibleItem', [currentItem, this]);
+					}
 
 					this.refreshSubmenu();
 					this.saveSettings();
 
 					this.adjustMoreButtonPosition();
-					this.adjustSubmenuPosition();
 
 					if (this.isEditEnabled())
 					{
@@ -352,7 +360,6 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 					this.listContainer.insertBefore(currentItem, BX.firstChild(this.listContainer));
 
 					this.adjustMoreButtonPosition();
-					this.adjustSubmenuPosition();
 					this.refreshSubmenu();
 					this.saveSettings();
 
@@ -369,26 +376,32 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 			if (this.isEditEnabled())
 			{
+				//noinspection JSCheckFunctionSignatures
 				this.getSubmenu().popupWindow.setAutoHide(false);
 			}
 		},
 
+
+		/**
+		 * @return {boolean}
+		 */
 		isActiveInMoreMenu: function()
 		{
-			var data;
 			var hiddenItems = this.getHiddenItems();
 			var disabledItems = this.getDisabledItems();
 			var items = hiddenItems.concat(disabledItems);
-			var isActive = items.some(function(current) {
+			return  items.some(function(current) {
+				var data;
 				try {
+					/**
+					 * @property data.IS_ACTIVE
+					 */
 					data = JSON.parse(BX.data(current, 'item'));
 				} catch (err) {}
 
 				return BX.type.isPlainObject(data) &&
 					('IS_ACTIVE' in data && data.IS_ACTIVE === true || data.IS_ACTIVE === 'true' || data.IS_ACTIVE === 'Y');
 			}, this);
-
-			return isActive;
 		},
 
 		_onPush: function (command, params)
@@ -398,7 +411,10 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 				var counters = params[BX.message("SITE_ID")];
 				for (var counterId in counters)
 				{
-					this.updateCounter(counterId, counters[counterId]);
+					if (counters.hasOwnProperty(counterId))
+					{
+						this.updateCounter(counterId, counters[counterId]);
+					}
 				}
 			}
 		},
@@ -409,11 +425,10 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		},
 
 
-		setParentPinContainer: function()
-		{
-			this.pinContainer = this.findParentByClassName(this.moreButton, 'bx-pin');
-		},
-
+		/**
+		 * Gets active element
+		 * @return {?HTMLElement}
+		 */
 		getActive: function()
 		{
 			var items = this.getAllItems();
@@ -454,26 +469,49 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 			return result;
 		},
 
+
+		/**
+		 * @param {HTMLElement} item
+		 * @return {boolean}
+		 */
 		isSetHome: function(item)
 		{
 			return BX.hasClass(item, this.classSetHome);
 		},
 
+
+		/**
+		 * @param {HTMLElement} item
+		 * @return {boolean}
+		 */
 		isSetHide: function(item)
 		{
 			return BX.hasClass(item, this.classSetHide);
 		},
 
+
+		/**
+		 * @return {?HTMLElement}
+		 */
 		getSettingsButton: function()
 		{
-			return BX.findChild(this.getSubmenuContainer(), {class: this.classSettingMenuItem}, true, false);
+			return BX.Buttons.Utils.getByClass(this.getSubmenuContainer(), this.classSettingMenuItem);
 		},
 
+
+		/**
+		 * @return {?HTMLElement}
+		 */
 		getSettingsApplyButton: function()
 		{
-			return BX.findChild(this.getSubmenuContainer(), {class: this.classSettingsApplyButton}, true, false);
+			return BX.Buttons.Utils.getByClass(this.getSubmenuContainer(), this.classSettingsApplyButton);
 		},
 
+
+		/**
+		 * @param {HTMLElement} item
+		 * @return {boolean}
+		 */
 		isApplySettingsButton: function(item)
 		{
 			return BX.hasClass(item, this.classSettingsApplyButton);
@@ -485,6 +523,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 			if (submenu && 'popupWindow' in submenu)
 			{
+				//noinspection JSCheckFunctionSignatures
 				submenu.popupWindow.setAutoHide(false);
 			}
 
@@ -499,6 +538,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 			if (menu && 'popupWindow' in menu)
 			{
+				//noinspection JSCheckFunctionSignatures
 				menu.popupWindow.setAutoHide(true);
 			}
 
@@ -507,19 +547,26 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 			this.isEditEnabledState = false;
 		},
 
+
+		/**
+		 * @return {boolean}
+		 */
 		isEditEnabled: function()
 		{
 			return this.isEditEnabledState;
 		},
 
+
+		/**
+		 * @param {object} dataItem
+		 * @param {HTMLElement} node
+		 */
 		showItemEditMenu: function(dataItem, node)
 		{
-			var menuId, menu;
-
 			if (BX.type.isPlainObject(dataItem) && 'ID' in dataItem)
 			{
-				menuId = [this.listContainer.id, '_edit_item'].join('');
-				menu = BX.PopupMenu.getMenuById(menuId);
+				var menuId = [this.listContainer.id, '_edit_item'].join('');
+				var menu = BX.PopupMenu.getMenuById(menuId);
 
 				if (menu)
 				{
@@ -532,21 +579,36 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 			}
 		},
 
+
+		/**
+		 * @return {?HTMLElement}
+		 */
 		getContainer: function()
 		{
 			if (!BX.type.isDomNode(this.container))
 			{
-				this.container = BX.findChild(document, {class: this.classContainer}, true, false);
+				this.container = BX(this.containerId).parentNode;
 			}
 
 			return this.container;
 		},
 
-		getItemEditMenu: function(menuId)
+
+		/**
+		 * @return {?BX.PopupMenu}
+		 */
+		getItemEditMenu: function()
 		{
 			return BX.PopupMenu.getMenuById([this.listContainer.id, '_edit_item'].join(''));
 		},
 
+
+		/**
+		 * @param {object} dataItem
+		 * @param {string} menuId
+		 * @param {HTMLElement} node BX.PopupMenu bindElement
+		 * @return {?BX.PopupMenu}
+		 */
 		createItemEditMenu: function(dataItem, menuId, node)
 		{
 			var menu;
@@ -628,7 +690,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		{
 			var visibleItems = this.getVisibleItems();
 			var firstVisibleItem = BX.type.isArray(visibleItems) && visibleItems.length > 0 ? visibleItems[0] : null;
-			var firstItemNode = BX.findChild(firstVisibleItem, { tagName: 'a' }, true);
+			var firstItemNode = BX.Buttons.Utils.getByTag(firstVisibleItem, 'a');
 
 			if (!BX.type.isDomNode(firstItemNode))
 			{
@@ -655,16 +717,31 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 			this.lastHomeLink = firstPageLink;
 		},
 
+
+		/**
+		 * @param {HTMLElement} item
+		 * @return {boolean}
+		 */
 		isEditButton: function(item)
 		{
 			return BX.hasClass(item, this.classEditItemButton);
 		},
 
+
+		/**
+		 * @param {HTMLElement} item
+		 * @return {boolean}
+		 */
 		isDragButton: function(item)
 		{
 			return BX.hasClass(item, this.classDragItemButton);
 		},
 
+
+		/**
+		 * @param {HTMLElement} item
+		 * @return {boolean}
+		 */
 		isResetSettingsButton: function(item)
 		{
 			return BX.hasClass(item, this.classSettingsResetButton);
@@ -672,16 +749,13 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 
 		/**
-		 * Calculate container heigth
-		 * @return {integer|float} Container height in pixels
+		 * Calculate container height
+		 * @return {number} Container height in pixels
 		 */
 		getContainerHeight: function()
 		{
-			var allItems = this.getAllItems();
-			var heights, currentStyle;
-
-			heights = [].map.call(allItems, function(current) {
-				currentStyle = getComputedStyle(current);
+			var heights = this.getAllItems().map(function(current) {
+				var currentStyle = getComputedStyle(current);
 				return (
 					BX.height(current) +
 					parseInt(currentStyle.marginTop) +
@@ -694,7 +768,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 
 		/**
-		 * Sets container heigth
+		 * Sets container height
 		 */
 		setContainerHeight: function()
 		{
@@ -759,26 +833,11 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 			this.classItemDisabled = (classes.itemDisabled || this.classItemDisabled);
 			this.classOnDrag = (classes.onDrag || this.classOnDrag);
 			this.classDropzone = (classes.dropzone || this.classDropzone);
-			this.classSeporator = (classes.seporator || this.classSeporator);
+			this.classSeporator = (classes.separator || this.classSeporator);
 			this.classSubmenuItem = (classes.submenuItem || this.classSubmenuItem);
 			this.classSubmenu = (classes.submenu || this.classSubmenu);
 			this.classSecret = (classes.secret || this.classSecret);
 			this.classItemLocked = (classes.itemLocked || this.classItemLocked);
-		},
-
-
-		/**
-		 * Sets list container
-		 * @param {string} id container id
-		 */
-		setListContainer: function(container)
-		{
-			var firstButton = BX.findChild(container, {class: this.classItem}, true, false);
-
-			if (BX.type.isDomNode(firstButton))
-			{
-				this.listContainer = firstButton.parentNode;
-			}
 		},
 
 
@@ -802,7 +861,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		 * @private
 		 * @method makeFullItemId
 		 * @param  {string} itemId
-		 * @return {string}
+		 * @return {*}
 		 */
 		makeFullItemId: function(itemId)
 		{
@@ -830,7 +889,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 			if (BX.type.isNotEmptyString(itemId))
 			{
 				realId = this.makeFullItemId(itemId);
-				resultItem = BX.findChild(this.listContainer, {attribute: {id: realId}}, true, false);
+				resultItem = BX.Buttons.Utils.getBySelector(this.listContainer, '#'+realId);
 			}
 
 			return resultItem;
@@ -841,8 +900,8 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		 * Finds counter object
 		 * @private
 		 * @method getItemCounterObject
-		 * @param  {object} item
-		 * @return {object} Counter dom node
+		 * @param  {HTMLElement} item
+		 * @return {?HTMLElement} Counter dom node
 		 */
 		getItemCounterObject: function(item)
 		{
@@ -850,7 +909,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 			if (BX.type.isDomNode(item))
 			{
-				result = BX.findChild(item, {class: this.classItemCounter}, true, false);
+				result = BX.Buttons.Utils.getByClass(item, this.classItemCounter);
 			}
 
 			return result;
@@ -860,9 +919,8 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		/**
 		 * Sets item counter value
 		 * @private
-		 * @method setCounterValue
-		 * @param {object} item
-		 * @param {integer|float|string} value
+		 * @param {HTMLElement} item
+		 * @param {Number|null} value
 		 */
 		setCounterValue: function(item, value)
 		{
@@ -878,15 +936,24 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		},
 
 
+		/**
+		 * Updates menu item counter
+		 * @param {string} id - menu item id
+		 * @param {*} value - counter value
+		 */
 		updateCounter: function(id, value)
 		{
-			var counter, item, data, alias;
+			var counter, data, alias;
+			var item = null;
 			var items = this.getAllItems();
 
 			if (BX.type.isArray(items))
 			{
 				items.forEach(function(current) {
 					try {
+						/**
+						 * @property data.COUNTER_ID
+						 */
 						data = JSON.parse(BX.data(current, 'item'));
 					} catch (err) {
 						data = {};
@@ -930,7 +997,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		 * @public
 		 * @method setCounterValueByItemId
 		 * @param {string} itemId
-		 * @param {integer|Float} counterValue
+		 * @param {Number} counterValue
 		 */
 		setCounterValueByItemId: function(itemId, counterValue)
 		{
@@ -992,6 +1059,11 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 			return counterValue;
 		},
 
+
+		/**
+		 * Sets counter of more button
+		 * @param {*} value
+		 */
 		setMoreButtonCounter: function(value)
 		{
 			var counter = this.getItemCounterObject(this.moreButton);
@@ -1024,50 +1096,38 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		 * Binds on tmp frame resize
 		 * @method bindOnResizeFrame
 		 * @private
-		 * @return {undefined}
 		 */
 		bindOnResizeFrame: function()
 		{
-			maininterfacebuttonstmpframe.onresize = BX.throttle(this._onResizeHandler, 20, this);
+			window.frames["maininterfacebuttonstmpframe-"+this.getId()].onresize = BX.throttle(this._onResizeHandler, 20, this);
 		},
 
-		createFrame: function()
-		{
-			this.tmp.frame = BX.create('iframe', {
-				props: {
-					height: '100%',
-					width: '100%',
-					id: 'maininterfacebuttons-tmp-frame',
-					name: 'maininterfacebuttonstmpframe'
-				},
-				style: {
-					position: 'absolute',
-					'z-index': '-1',
-					opacity: 0
-				}
-			});
 
-			this.listContainer.parentNode.appendChild(this.tmp.frame);
+		/**
+		 * Gets buttons list container id
+		 * @return {string}
+		 */
+		getId: function()
+		{
+			return BX.Buttons.Utils.getByClass(this.getContainer(), this.classInner).id;
 		},
 
 
 		/**
 		 * Gets all items
 		 * @public
-		 * @method getAllItems
-		 * @return {array} html collection
+		 * @return {HTMLElement[]}
 		 */
 		getAllItems: function()
 		{
-			return BX.findChild(this.listContainer, {class: this.classItem}, true, true);
+			return BX.Buttons.Utils.getByClass(this.listContainer, this.classItem, true);
 		},
 
 
 		/**
 		 * Gets only visible items
 		 * @public
-		 * @method getVisibleItems
-		 * @return {array} html collection
+		 * @return {HTMLElement[]}
 		 */
 		getVisibleItems: function()
 		{
@@ -1077,8 +1137,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 			if (allItems && allItems.length)
 			{
-				visibleItems = [].filter.call(allItems, function(current)
-				{
+				visibleItems = allItems.filter(function(current) {
 					return self.isVisibleItem(current) && !self.isDisabled(current);
 				});
 			}
@@ -1091,7 +1150,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		 * Gets only hidden items
 		 * @public
 		 * @method getHiddenItems
-		 * @return {array} html collection
+		 * @return {HTMLElement[]}
 		 */
 		getHiddenItems: function()
 		{
@@ -1101,8 +1160,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 			if (allItems && allItems.length)
 			{
-				hiddenItems = [].filter.call(allItems, function(current)
-				{
+				hiddenItems = allItems.filter(function(current) {
 					return !self.isVisibleItem(current) && !self.isDisabled(current);
 				});
 			}
@@ -1113,52 +1171,31 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 		/**
 		 * Gets only disabled items,
-		 * as showed after seporator in popup menu
+		 * as showed after separator in popup menu
 		 * @public
 		 * @method getDisabledItems
-		 * @return {array} html collection
+		 * @return {HTMLElement[]}
 		 */
 		getDisabledItems: function()
 		{
-			var allItems = this.getAllItems();
-			var disabledItems = [];
-			var self = this;
-
-			if (allItems && allItems.length)
-			{
-				disabledItems = [].filter.call(allItems, function(current)
-				{
-					return self.isDisabled(current);
-				});
-			}
-
-			return disabledItems;
+			return this.getAllItems().filter(function(current) {
+				return this.isDisabled(current);
+			}, this);
 		},
 
 
 		/**
-		 * Gets more button item
+		 * Gets more button
 		 * @public
-		 * @getMoreButton
-		 * @return {object||null} more button object or null
+		 * @returns {?HTMLElement} More button element
 		 */
 		getMoreButton: function()
 		{
-			var allItems = this.getAllItems();
 			var moreButton = null;
-			var self = this;
 
-			if (allItems && allItems.length)
-			{
-				[].map.call(allItems, function(current)
-				{
-					if (BX.hasClass(current, self.classItemMore))
-					{
-						moreButton = current;
-						return;
-					}
-				});
-			}
+			this.getAllItems().forEach(function(current) {
+				!moreButton && BX.hasClass(current, this.classItemMore) && (moreButton = current);
+			}, this);
 
 			return moreButton;
 		},
@@ -1213,7 +1250,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		 * Gets submenu id
 		 * @private
 		 * @method getSubmenuId
-		 * @param  {boolean} isFull Set true if your need to get id for popup window
+		 * @param  {boolean} [isFull] Set true if your need to get id for popup window
 		 * @return {string} id
 		 */
 		getSubmenuId: function(isFull)
@@ -1239,15 +1276,15 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		 * Gets submenu item content
 		 * @private
 		 * @method getSubmenuItemText
-		 * @param  {object} item
-		 * @return {string}
+		 * @param  {HTMLElement} item
+		 * @return {?string}
 		 */
 		getSubmenuItemText: function(item)
 		{
 			var text, counter, result;
 			if (!BX.type.isDomNode(item))
 			{
-				return;
+				return null;
 			}
 
 			text = this.findChildrenByClassName(item, this.classItemText);
@@ -1271,33 +1308,9 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 
 		/**
-		 * Updates submenu position relative to more button
-		 * @return {undefind}
+		 * @param {HTMLElement} item
+		 * @return {string}
 		 */
-		adjustSubmenuPosition: function()
-		{
-			var submenu, submenuWindow, bindElement, bindElementPosition;
-
-			if (!this.isSubmenuShown)
-			{
-				return;
-			}
-
-			submenu = this.getSubmenu();
-
-			if (submenu === null)
-			{
-				return;
-			}
-
-			submenuWindow = submenu.popupWindow;
-			bindElement = document.getElementById('morebutton');
-			bindElementPosition = submenuWindow.getBindElementPos(bindElement);
-
-			submenuWindow.adjustPosition(bindElementPosition);
-		},
-
-
 		getLockedClass: function(item)
 		{
 			var result = '';
@@ -1314,7 +1327,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		 * Gets submenu items
 		 * @private
 		 * @method getSubmenuItems
-		 * @return {array}
+		 * @return {HTMLElement[]}
 		 */
 		getSubmenuItems: function()
 		{
@@ -1322,147 +1335,149 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 			var hiddenItems = this.getHiddenItems();
 			var disabledItems = this.getDisabledItems();
 			var result = [];
-			var self = this;
-			var isActive, data, className;
+			var data, className;
 
 			if (allItems.length)
 			{
-				[].map.call(allItems, function(current)
-				{
+				allItems.forEach(function(current) {
 					if (hiddenItems.indexOf(current) === -1 &&
 						disabledItems.indexOf(current) === -1)
 					{
 						result.push({
-							text: self.getSubmenuItemText(current),
-							href: self.dataValue(current, 'url'),
+							text: this.getSubmenuItemText(current),
+							href: this.dataValue(current, 'url'),
+							onclick: this.dataValue(current, 'onclick'),
 							title: current.getAttribute('title'),
 							className: [
-								self.classSubmenuItem,
-								self.getIconClass(current),
-								self.classSecret,
-								self.getAliasLink(current),
-								self.getLockedClass(current)
+								this.classSubmenuItem,
+								this.getIconClass(current),
+								this.classSecret,
+								this.getAliasLink(current),
+								this.getLockedClass(current)
 							].join(' ')
 						});
 					}
-				});
+				}, this);
 			}
 
 			if (hiddenItems.length)
 			{
-				[].map.call(hiddenItems, function(current)
-				{
+				hiddenItems.forEach(function(current) {
 					try {
-						data = JSON.parse(self.dataValue(current, 'item'));
+						data = JSON.parse(this.dataValue(current, 'item'));
 					} catch (err) {
 						data = null;
 					}
 
 					className = [
-						self.classSubmenuItem,
-						self.getIconClass(current),
-						self.getAliasLink(current),
-						self.getLockedClass(current)
+						this.classSubmenuItem,
+						this.getIconClass(current),
+						this.getAliasLink(current),
+						this.getLockedClass(current)
 					];
 
 					if (BX.type.isPlainObject(data) &&
 						('IS_ACTIVE' in data && data.IS_ACTIVE === true || data.IS_ACTIVE === 'true' || data.IS_ACTIVE === 'Y'))
 					{
-						className.push(self.classItemActive);
+						className.push(this.classItemActive);
 					}
 
 					result.push({
-						text: self.getSubmenuItemText(current),
-						href: self.dataValue(current, 'url'),
+						text: this.getSubmenuItemText(current),
+						href: this.dataValue(current, 'url'),
+						onclick: this.dataValue(current, 'onclick'),
 						title: current.getAttribute('title'),
 						className: className.join(' ')
 					});
-				});
+				}, this);
 			}
 
-			result.push({
-				text: '<span>'+this.message('MIB_HIDDEN')+'</span>',
-				className: [
-					this.classSeporator,
-					this.classSubmenuItem,
-					this.classHiddenLabel,
-				].join(' ')
-			});
-
-			if (!disabledItems.length)
+			if (this.isSettingsEnabled)
 			{
 				result.push({
-					text: '<span>'+this.message('MIB_NO_HIDDEN')+'</span>',
+					text: '<span>'+this.message('MIB_HIDDEN')+'</span>',
 					className: [
+						this.classSeporator,
 						this.classSubmenuItem,
-						this.classSubmenuNoHiddenItem
+						this.classHiddenLabel
 					].join(' ')
 				});
-			}
 
-			if (disabledItems.length)
-			{
-				[].map.call(disabledItems, function(current)
+				if (!disabledItems.length)
 				{
-					try {
-						data = JSON.parse(self.dataValue(current, 'item'));
-					} catch (err) {
-						data = null;
-					}
-
-					className = [
-						self.classSubmenuItem,
-						self.classItemDisabled,
-						self.getIconClass(current),
-						self.getAliasLink(current),
-						self.getLockedClass(current)
-					];
-
-					if (BX.type.isPlainObject(data) &&
-						('IS_ACTIVE' in data && data.IS_ACTIVE === true || data.IS_ACTIVE === 'true' || data.IS_ACTIVE === 'Y'))
-					{
-						className.push(self.classItemActive);
-					}
-
 					result.push({
-						text: self.getSubmenuItemText(current),
-						href: self.dataValue(current, 'url'),
-						title: current.getAttribute('title'),
-						className: className.join(' ')
+						text: '<span>'+this.message('MIB_NO_HIDDEN')+'</span>',
+						className: [
+							this.classSubmenuItem,
+							this.classSubmenuNoHiddenItem
+						].join(' ')
 					});
+				}
+
+				if (disabledItems.length)
+				{
+					disabledItems.forEach(function(current) {
+						try {
+							data = JSON.parse(this.dataValue(current, 'item'));
+						} catch (err) {
+							data = null;
+						}
+
+						className = [
+							this.classSubmenuItem,
+							this.classItemDisabled,
+							this.getIconClass(current),
+							this.getAliasLink(current),
+							this.getLockedClass(current)
+						];
+
+						if (BX.type.isPlainObject(data) &&
+							('IS_ACTIVE' in data && data.IS_ACTIVE === true || data.IS_ACTIVE === 'true' || data.IS_ACTIVE === 'Y'))
+						{
+							className.push(this.classItemActive);
+						}
+
+						result.push({
+							text: this.getSubmenuItemText(current),
+							href: this.dataValue(current, 'url'),
+							onclick: this.dataValue(current, 'onclick'),
+							title: current.getAttribute('title'),
+							className: className.join(' ')
+						});
+					}, this);
+				}
+
+				result.push({
+					text: '<span>'+this.message('MIB_MANAGE')+'</span>',
+					className: [
+						this.classSeporator,
+						this.classSubmenuItem,
+						this.classHiddenLabel,
+						this.classManage
+					].join(' ')
+				});
+
+				result.push({
+					text: this.message('MIB_SETTING_MENU_ITEM'),
+					className: [
+						this.classSettingMenuItem,
+						this.classSubmenuItem
+					].join(' ')
+				});
+
+				result.push({
+					text: this.message('MIB_APPLY_SETTING_MENU_ITEM'),
+					className: [
+						this.classSettingsApplyButton,
+						this.classSubmenuItem
+					].join(' ')
+				});
+
+				result.push({
+					text: this.message('MIB_RESET_SETTINGS'),
+					className: [this.classSettingsResetButton, this.classSubmenuItem].join(' ')
 				});
 			}
-
-			result.push({
-				text: '<span>'+this.message('MIB_MANAGE')+'</span>',
-				className: [
-					this.classSeporator,
-					this.classSubmenuItem,
-					this.classHiddenLabel,
-					this.classManage
-				].join(' ')
-			});
-
-			result.push({
-				text: this.message('MIB_SETTING_MENU_ITEM'),
-				className: [
-					this.classSettingMenuItem,
-					this.classSubmenuItem
-				].join(' ')
-			});
-
-			result.push({
-				text: this.message('MIB_APPLY_SETTING_MENU_ITEM'),
-				className: [
-					this.classSettingsApplyButton,
-					this.classSubmenuItem
-				].join(' ')
-			});
-
-			result.push({
-				text: this.message('MIB_RESET_SETTINGS'),
-				className: [this.classSettingsResetButton, this.classSubmenuItem].join(' ')
-			});
 
 			return result;
 		},
@@ -1472,7 +1487,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		 * Gets BX.PopupMenu.show arguments
 		 * @private
 		 * @method getSubmenuArgs
-		 * @return {array} Arguments
+		 * @return {*[]} Arguments
 		 */
 		getSubmenuArgs: function()
 		{
@@ -1501,33 +1516,34 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 		/**
 		 * Controls the visibility of more button
-		 * @return {undefined}
 		 */
-		visibleControllMoreButton: function()
+		visibleControlMoreButton: function()
 		{
-			var self = this;
 			var hiddenItems = this.getHiddenItems();
-			var disabledItems = this.getDisabledItems();
-			var hiddenIsOnlyMoreButton = !(hiddenItems || []).some(function(current) {
-				return !self.isMoreButton(current);
-			});
 
-			if ((!hiddenItems.length || hiddenIsOnlyMoreButton) && !disabledItems.length && this.dragItem === null)
+			if (!hiddenItems.length || (hiddenItems.length === 1 && this.isMoreButton(hiddenItems[0])))
 			{
-				this.closeSubmenu();
-				return;
+				this.getMoreButton().style.display = 'none';
+			}
+			else
+			{
+				this.getMoreButton().style.display = '';
 			}
 		},
 
 
 		/**
 		 * Creates submenu
-		 * @return {undefined}
+		 * @return {BX.PopupMenu}
 		 */
 		createSubmenu: function()
 		{
 			var menu = BX.PopupMenu.create.apply(BX.PopupMenu, this.getSubmenuArgs());
-			this.dragAndDropInitInSubmenu();
+
+			if (this.isSettingsEnabled)
+			{
+				this.dragAndDropInitInSubmenu();
+			}
 
 			menu.menuItems.forEach(function(current) {
 				BX.bind(current.layout.item, 'click', BX.delegate(this._onDocumentClick, this));
@@ -1563,6 +1579,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 			if (this.isEditEnabled())
 			{
+				//noinspection JSCheckFunctionSignatures
 				submenu.popupWindow.setAutoHide(false);
 			}
 		},
@@ -1596,7 +1613,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		 * Gets current submenu
 		 * @public
 		 * @method getSubmenu
-		 * @return {object}
+		 * @return {BX.PopupMenu}
 		 */
 		getSubmenu: function()
 		{
@@ -1709,20 +1726,11 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		 */
 		getCurrentSettings: function()
 		{
-			var allItems = this.getAllItems();
 			var settings = {};
-			var self = this;
 
-			if (allItems && allItems.length)
-			{
-				[].map.call(allItems, function(current, index)
-				{
-					settings[current.id] = {
-						sort: index,
-						isDisabled: self.isDisabled(current)
-					};
-				});
-			}
+			this.getAllItems().forEach(function(current, index) {
+				settings[current.id] = {sort: index, isDisabled: this.isDisabled(current)};
+			}, this);
 
 			return settings;
 		},
@@ -1785,7 +1793,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 									BX.addClass(button.buttonNode, "popup-window-button-wait");
 
-									this.handleResetSettings(function(error, result) {
+									this.handleResetSettings(function(error) {
 										if (error)
 										{
 											BX.removeClass(button.buttonNode, "popup-window-button-wait");
@@ -1818,6 +1826,10 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 			confirmPopup.show();
 		},
 
+
+		/**
+		 * @callback cb
+		 */
 		handleResetSettings: function(cb)
 		{
 			var promises = [];
@@ -1847,7 +1859,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		 * Moves alias buttons
 		 * @private
 		 * @method moveButtonAlias
-		 * @param  {object} item
+		 * @param  {HTMLElement} item
 		 * @return {undefined}
 		 */
 		moveButtonAlias: function(item)
@@ -1880,8 +1892,8 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		 * Moves drag item before item, or appendChild to container
 		 * @private
 		 * @method moveButton
-		 * @param  {object} item
-		 * @return {undefined}
+		 * @param  {HTMLElement} item
+		 * @return {*}
 		 */
 		moveButton: function(item)
 		{
@@ -1942,17 +1954,16 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 
 		/**
-		 * Finds nextElementSibling for item by className
-		 * @private
-		 * @method findNextSiblingByClass
-		 * @param  {object} item
-		 * @param  {string} className
-		 * @return {object}
+		 * Gets next element with className
+		 * @param {?HTMLElement} item
+		 * @param {string} className
+		 * @returns {?HTMLElement}
 		 */
 		findNextSiblingByClass: function(item, className)
 		{
+			//noinspection UnnecessaryLocalVariableJS
 			var sourceItem = item;
-			for (; item && item !== document; item = item.nextSibling)
+			for (; !!item; item = item.nextElementSibling)
 			{
 				if (className)
 				{
@@ -2002,23 +2013,16 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		 * Finds children item by className
 		 * @private
 		 * @method findChildrenByClassName
-		 * @param  {object} item
+		 * @param  {HTMLElement} item
 		 * @param  {string} className
-		 * @return {object}
+		 * @return {?HTMLElement}
 		 */
 		findChildrenByClassName: function(item, className)
 		{
 			var result = null;
 			if (BX.type.isDomNode(item) && BX.type.isNotEmptyString(className))
 			{
-				result = BX.findChildren(item,
-				{
-					className: className
-				}, true);
-				if (BX.type.isArray(result) && result.length)
-				{
-					result = result[0];
-				}
+				result = BX.Buttons.Utils.getByClass(item, className);
 			}
 
 			return result;
@@ -2026,42 +2030,39 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 
 		/**
-		 * Initialisere Drag And Drop
+		 * Initialise Drag And Drop
 		 * @private
 		 * @method dragAndDropInit
 		 * @return {undefined}
 		 */
 		dragAndDropInit: function()
 		{
-			var allItems = this.getAllItems();
-			var self = this;
-
-			[].forEach.call(allItems, function(current, index)
-			{
-				if (!self.isSeporator(current) &&
-					!self.isSettings(current) &&
-					!self.isApplySettingsButton(current) &&
-					!self.isResetSettingsButton(current))
+			this.getAllItems().forEach(function(current, index) {
+				if (!this.isSeparator(current) &&
+					!this.isSettings(current) &&
+					!this.isApplySettingsButton(current) &&
+					!this.isResetSettingsButton(current))
 				{
-					current.draggable = true;
-					current.tabindex = -1;
+					current.setAttribute('draggable', 'true');
+					current.setAttribute('tabindex', '-1');
+
 					current.dataset.link = 'item' + index;
-					BX.bind(current, 'dragstart', BX.delegate(self._onDragStart, self));
-					BX.bind(current, 'dragend', BX.delegate(self._onDragEnd, self));
-					BX.bind(current, 'dragenter', BX.delegate(self._onDragEnter, self));
-					BX.bind(current, 'dragover', BX.delegate(self._onDragOver, self));
-					BX.bind(current, 'dragleave', BX.delegate(self._onDragLeave, self));
-					BX.bind(current, 'drop', BX.delegate(self._onDrop, self));
+					BX.bind(current, 'dragstart', BX.delegate(this._onDragStart, this));
+					BX.bind(current, 'dragend', BX.delegate(this._onDragEnd, this));
+					BX.bind(current, 'dragenter', BX.delegate(this._onDragEnter, this));
+					BX.bind(current, 'dragover', BX.delegate(this._onDragOver, this));
+					BX.bind(current, 'dragleave', BX.delegate(this._onDragLeave, this));
+					BX.bind(current, 'drop', BX.delegate(this._onDrop, this));
 				}
 
-				BX.bind(current, 'mouseover', BX.delegate(self._onMouse, self));
-				BX.bind(current, 'mouseout', BX.delegate(self._onMouse, self));
-			});
+				BX.bind(current, 'mouseover', BX.delegate(this._onMouse, this));
+				BX.bind(current, 'mouseout', BX.delegate(this._onMouse, this));
+			}, this);
 		},
 
 
 		/**
-		 * Initialisere Drag And Drop for submenu items
+		 * Initialise Drag And Drop for submenu items
 		 * @private
 		 * @method dragAndDropInitInSubmenu
 		 * @return {undefined}
@@ -2070,30 +2071,28 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		{
 			var submenu = this.getSubmenu();
 			var submenuItems = submenu.menuItems;
-			var self = this;
 
-			[].forEach.call(submenuItems, function(current)
-			{
-				if ((!self.isSeporator(current.layout.item) &&
-					!self.isSettings(current.layout.item) &&
-					!self.isApplySettingsButton(current.layout.item) &&
-					!self.isResetSettingsButton(current.layout.item)))
+			submenuItems.forEach(function(current) {
+				if ((!this.isSeparator(current.layout.item) &&
+					!this.isSettings(current.layout.item) &&
+					!this.isApplySettingsButton(current.layout.item) &&
+					!this.isResetSettingsButton(current.layout.item)))
 				{
 					current.layout.item.draggable = true;
 					current.layout.item.dataset.sortable = true;
-					BX.bind(current.layout.item, 'dragstart', BX.delegate(self._onDragStart, self));
-					BX.bind(current.layout.item, 'dragenter', BX.delegate(self._onDragEnter, self));
-					BX.bind(current.layout.item, 'dragover', BX.delegate(self._onDragOver, self));
-					BX.bind(current.layout.item, 'dragleave', BX.delegate(self._onDragLeave, self));
-					BX.bind(current.layout.item, 'dragend', BX.delegate(self._onDragEnd, self));
-					BX.bind(current.layout.item, 'drop', BX.delegate(self._onDrop, self));
+					BX.bind(current.layout.item, 'dragstart', BX.delegate(this._onDragStart, this));
+					BX.bind(current.layout.item, 'dragenter', BX.delegate(this._onDragEnter, this));
+					BX.bind(current.layout.item, 'dragover', BX.delegate(this._onDragOver, this));
+					BX.bind(current.layout.item, 'dragleave', BX.delegate(this._onDragLeave, this));
+					BX.bind(current.layout.item, 'dragend', BX.delegate(this._onDragEnd, this));
+					BX.bind(current.layout.item, 'drop', BX.delegate(this._onDrop, this));
 				}
 
-				if (BX.hasClass(current.layout.item, self.classHiddenLabel) && !BX.hasClass(current.layout.item, self.classManage))
+				if (BX.hasClass(current.layout.item, this.classHiddenLabel) && !BX.hasClass(current.layout.item, this.classManage))
 				{
-					BX.bind(current.layout.item, 'dragover', BX.delegate(self._onDragOver, self));
+					BX.bind(current.layout.item, 'dragover', BX.delegate(this._onDragOver, this));
 				}
-			});
+			}, this);
 		},
 
 
@@ -2101,18 +2100,16 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		 * Gets drag and drop event target element
 		 * @private
 		 * @method getItem
-		 * @param  {object} event
-		 * @return {object}
+		 * @param  {object} eventOrItem
+		 * @return {?HTMLElement}
 		 */
 		getItem: function(eventOrItem)
 		{
-			var item = null;
-
 			if (!BX.type.isDomNode(eventOrItem))
 			{
 				if ((!eventOrItem || !BX.type.isDomNode(eventOrItem.target)))
 				{
-					return;
+					return null;
 				}
 			}
 			else
@@ -2120,7 +2117,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 				eventOrItem = {target: eventOrItem};
 			}
 
-			item = this.findParentByClassName(eventOrItem.target, this.classItem);
+			var item = this.findParentByClassName(eventOrItem.target, this.classItem);
 
 			if (!BX.type.isDomNode(item))
 			{
@@ -2149,7 +2146,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 
 		/**
-		 * Unsets opacity style
+		 * Unset opacity style
 		 * @private
 		 * @method unsetOpacity
 		 * @param  {object} item
@@ -2163,18 +2160,6 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 			}
 
 			BX.style(item, 'opacity', '1');
-		},
-
-
-		/**
-		 * Updates link to submenu container object
-		 * @private
-		 * @method updateSubmenuContainer
-		 * @return {undefined}
-		 */
-		setSubmenuContainer: function(container)
-		{
-			this.submenuContainer = container;
 		},
 
 
@@ -2193,36 +2178,29 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 
 		/**
-		 * Unsets drag styles
+		 * Unset drag styles
 		 * @private
 		 * @method unsetDragStyles
 		 * @return {undefined}
 		 */
 		unsetDragStyles: function()
 		{
-			var items = this.getAllItems();
 			var submenu = this.getSubmenu();
-			var self = this;
 
-			if (items && items.length)
-			{
-				[].forEach.call(items, function(current)
-				{
-					self.unsetOpacity(current);
-					BX.removeClass(current, 'over');
-				});
-			}
+			this.getAllItems().forEach(function(current) {
+				this.unsetOpacity(current);
+				BX.removeClass(current, 'over');
+			}, this);
 
 			if (submenu && ('menuItems' in submenu) &&
 				BX.type.isArray(submenu.menuItems) &&
 				submenu.menuItems.length)
 			{
 
-				[].forEach.call(submenu.menuItems, function(current)
-				{
-					self.unsetOpacity(current);
+				submenu.menuItems.forEach(function(current) {
+					this.unsetOpacity(current);
 					BX.removeClass(current.layout.item, 'over');
-				});
+				}, this);
 			}
 
 			BX.removeClass(this.listContainer, this.classOnDrag);
@@ -2256,7 +2234,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		 * Disables the element
 		 * @private
 		 * @method disableItem
-		 * @param  {object} item
+		 * @param  {HTMLElement} item
 		 * @return {undefined}
 		 */
 		disableItem: function(item)
@@ -2277,7 +2255,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		 * Disables the element
 		 * @private
 		 * @method enableItem
-		 * @param  {object} item
+		 * @param  {HTMLElement} item
 		 * @return {undefined}
 		 */
 		enableItem: function(item)
@@ -2320,23 +2298,21 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		 * Gets item alias
 		 * @private
 		 * @method getItemAlias
-		 * @param  {object} item
-		 * @return {object}
+		 * @param  {HTMLElement} item
+		 * @return {?HTMLElement}
 		 */
 		getItemAlias: function(item)
 		{
 			var result = null;
-			var self = this;
-			var isSubmenuItem, isListItem, allItems;
 
 			if (!BX.type.isDomNode(item))
 			{
 				return result;
 			}
 
-			allItems = this.getAllItems();
-			isSubmenuItem = this.isSubmenuItem(item);
-			isListItem = this.isListItem(item);
+			var allItems = this.getAllItems();
+			var isSubmenuItem = this.isSubmenuItem(item);
+			var isListItem = this.isListItem(item);
 
 			if (!isSubmenuItem && !isListItem)
 			{
@@ -2345,25 +2321,14 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 			if (isSubmenuItem)
 			{
-				[].forEach.call(allItems, function(current)
-				{
-					if (BX.hasClass(item, self.getAliasLink(current)))
-					{
-						result = current;
-					}
-				});
+				allItems.forEach(function(current) {
+					BX.hasClass(item, this.getAliasLink(current)) && (result = current);
+				}, this);
 			}
 
 			if (isListItem)
 			{
-				result = BX.findChildren(document,
-				{
-					class: this.getAliasLink(item)
-				}, true);
-				if (BX.type.isArray(result) && result.length)
-				{
-					result = result[0];
-				}
+				result = BX.Buttons.Utils.getByClass(document, this.getAliasLink(item));
 			}
 
 			return result;
@@ -2371,34 +2336,20 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 
 		/**
-		 * Hides item
-		 * @private
-		 * @method hideItem
-		 * @param  {object} item
-		 * @return {undefined}
+		 * @param {?HTMLElement} item
 		 */
 		hideItem: function(item)
 		{
-			if (BX.type.isDomNode)
-			{
-				BX.addClass(item, this.classSecret);
-			}
+			!!item && BX.addClass(item, this.classSecret);
 		},
 
 
 		/**
-		 * Shows item
-		 * @private
-		 * @method showItem
-		 * @param  {object} item
-		 * @return {undefined}
+		 * @param {?HTMLElement} item
 		 */
 		showItem: function(item)
 		{
-			if (BX.type.isDomNode)
-			{
-				BX.removeClass(item, this.classSecret);
-			}
+			!!item && BX.removeClass(item, this.classSecret);
 		},
 
 
@@ -2486,7 +2437,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 					return (
 						BX.hasClass(current.layout.item, self.dataValue(someEl, 'link')) ||
 						self.isDisabled(current.layout.item) ||
-						self.isSeporator(current.layout.item) ||
+						self.isSeparator(current.layout.item) ||
 						self.isDropzone(current.layout.item)
 					);
 				});
@@ -2495,7 +2446,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 					self.isApplySettingsButton(current.layout.item) ||
 					self.isResetSettingsButton(current.layout.item) ||
 					self.isNotHiddenItem(current.layout.item) ||
-					self.isSeporator(current.layout.item) ||
+					self.isSeparator(current.layout.item) ||
 					current.layout.item === self.dragItem) &&
 					!self.isMoreButton(current.layout.item))
 				{
@@ -2508,20 +2459,28 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 			});
 		},
 
+
+		/**
+		 * @param {HTMLElement} item
+		 * @return {boolean}
+		 */
 		isNotHiddenItem: function(item)
 		{
 			return BX.hasClass(item, this.classSubmenuNoHiddenItem);
 		},
 
 
+		/**
+		 * @return {?HTMLElement}
+		 */
 		getNotHidden: function()
 		{
-			return BX.findChild(this.getSubmenuContainer(), {class: this.classSubmenuNoHiddenItem}, true, false);
+			return BX.Buttons.Utils.getByClass(this.getSubmenuContainer(), this.classSubmenuNoHiddenItem);
 		},
 
 
 		/**
-		 * Sets styles for overed item
+		 * Sets styles for hovered item
 		 * @private
 		 * @method setOverStyles
 		 * @param {object} item
@@ -2536,7 +2495,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 
 		/**
-		 * Unsets styles for overed item
+		 * Unset styles for hovered item
 		 * @private
 		 * @method unsetOverStyles
 		 * @param  {object} item
@@ -2656,21 +2615,14 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 			}
 
 			if (this.isMoreButton(this.dragItem) ||
-				this.isSeporator(this.dragItem) ||
+				this.isSeparator(this.dragItem) ||
 				this.isNotHiddenItem(this.dragItem))
 			{
 				event.preventDefault();
 				return;
 			}
 
-			if (this.isSubmenuShown)
-			{
-				this.isSubmenuShownOnDragStart = true;
-			}
-			else
-			{
-				this.isSubmenuShownOnDragStart = false;
-			}
+			this.isSubmenuShownOnDragStart = !!this.isSubmenuShown;
 
 			if (this.isListItem(this.dragItem))
 			{
@@ -2687,7 +2639,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 
 		/**
-		 * dragend event handleer
+		 * dragend event handler
 		 * @private
 		 * @method _onDragEnd
 		 * @param  {object} event dragend event object
@@ -2908,6 +2860,12 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 			event.preventDefault();
 		},
 
+
+		/**
+		 * @param {array|NodeList} collection
+		 * @param {*} item - collection item
+		 * @return {number}
+		 */
 		getIndex: function(collection, item)
 		{
 			return [].indexOf.call((collection || []), item);
@@ -2948,6 +2906,11 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		{
 			this.adjustMoreButtonPosition();
 			this.updateSubmenuItems();
+
+			if (!this.isSettingsEnabled)
+			{
+				this.visibleControlMoreButton();
+			}
 		},
 
 
@@ -2974,40 +2937,26 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		 */
 		_onMouse: function(event)
 		{
-			var item;
+			var item = this.getItem(event);
 
-			if (!this.drgaItem)
+			if (event.type === 'mouseover' && !BX.hasClass(item, this.classItemOver))
 			{
-				item = this.getItem(event);
-				if (event.type === 'mouseover' && !BX.hasClass(item, this.classItemOver))
-				{
-					BX.addClass(item, this.classItemOver);
-				}
+				BX.addClass(item, this.classItemOver);
+			}
 
-				if (event.type === 'mouseout' && BX.hasClass(item, this.classItemOver))
-				{
-					BX.removeClass(item, this.classItemOver);
-				}
+			if (event.type === 'mouseout' && BX.hasClass(item, this.classItemOver))
+			{
+				BX.removeClass(item, this.classItemOver);
 			}
 		},
 
 
 		/**
-		 * click event handler
-		 * @private
-		 * @method _onClick
-		 * @param  {object} event
-		 * @return {undefined}
+		 * @return {?HTMLElement}
 		 */
-		_onClick: function(event)
-		{
-
-		},
-
-
 		getSettingsResetButton: function()
 		{
-			return BX.findChild(this.getSubmenuContainer(), {class: this.classSettingsResetButton}, true, false);
+			return BX.Buttons.Utils.getByClass(this.getSubmenuContainer(), this.classSettingsResetButton);
 		},
 
 
@@ -3043,6 +2992,10 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		},
 
 
+		/**
+		 * @param {HTMLElement} item
+		 * @return {boolean}
+		 */
 		isSettings: function(item)
 		{
 			var result = false;
@@ -3093,20 +3046,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 
 		/**
-		 * Checks whether the item is over
-		 * @private
-		 * @method isOvered
-		 * @param  {object} item
-		 * @return {boolean}
-		 */
-		isOvered: function(item)
-		{
-			return BX.hasClass(item, this.classItemOver);
-		},
-
-
-		/**
-		 * Checks whether the overed item is next
+		 * Checks whether the hovered item is next
 		 * @private
 		 * @method isNext
 		 * @param  {object} event dragover event object
@@ -3152,7 +3092,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 			if (!BX.type.isDomNode(overItem))
 			{
-				return;
+				return false;
 			}
 
 			overItemRect = overItem.getBoundingClientRect();
@@ -3201,7 +3141,7 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 		{
 			if (!BX.type.isDomNode(item))
 			{
-				return;
+				return false;
 			}
 
 			return item.offsetTop === 0;
@@ -3267,13 +3207,13 @@ if (typeof(BX.Main.interfaceButtons) === 'undefined')
 
 
 		/**
-		 * Checks whether the item is seporator
+		 * Checks whether the item is separator
 		 * @private
-		 * @method isSeporator
+		 * @method isSeparator
 		 * @param  {object}  item
 		 * @return {boolean}
 		 */
-		isSeporator: function(item)
+		isSeparator: function(item)
 		{
 			var result = false;
 			if (BX.type.isDomNode(item))

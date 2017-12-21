@@ -26,6 +26,7 @@ abstract class Base
 	protected $id = 0;
 	protected $name = "";
 	protected $code = "";
+	protected $vatId = 0;
 	protected $sort = 100;
 	protected $logotip = 0;
 	protected $parentId = 0;
@@ -102,6 +103,9 @@ abstract class Base
 		if(isset($initParams["ALLOW_EDIT_SHIPMENT"]))
 			$this->allowEditShipment = $initParams["ALLOW_EDIT_SHIPMENT"];
 
+		if(isset($initParams["VAT_ID"]))
+			$this->vatId = intval($initParams["VAT_ID"]);
+
 		if(isset($initParams["RESTRICTED"]))
 			$this->restricted = $initParams["RESTRICTED"];
 
@@ -139,7 +143,7 @@ abstract class Base
 
 			$this->extraServices->setValues($extraServices);
 			$this->extraServices->setOperationCurrency($shipment->getCurrency());
-			$extraServicePrice = $this->extraServices->getTotalCost();
+			$extraServicePrice = $this->extraServices->getTotalCostShipment($shipment);
 
 			if(floatval($extraServicePrice) > 0)
 				$result->setExtraServicesPrice($extraServicePrice);
@@ -147,7 +151,8 @@ abstract class Base
 
 		$eventParams = array(
 			"RESULT" => $result,
-			"SHIPMENT" => $shipment
+			"SHIPMENT" => $shipment,
+			"DELIVERY_ID" => $this->id
 		);
 
 		$event = new Event('sale', self::EVENT_ON_CALCULATE, $eventParams);
@@ -172,7 +177,7 @@ abstract class Base
 	}
 
 	/**
-	 * @return Delivery\ExtraServices\Manager[]
+	 * @return Delivery\ExtraServices\Manager
 	 */
 	public function getExtraServices()
 	{
@@ -199,6 +204,13 @@ abstract class Base
 		{
 			/** @var  \Bitrix\Sale\BasketItem $basketItem */
 			$basketItem = $shipmentItem->getBasketItem();
+
+			if(!$basketItem)
+				continue;
+
+			if($basketItem->isBundleChild())
+				continue;
+
 			$result += $basketItem->getPrice();
 		}
 
@@ -527,7 +539,7 @@ abstract class Base
 	}
 
 	/**
-	 * @return array
+	 * @return array Profiles list
 	 */
 	public function getProfilesList()
 	{
@@ -586,6 +598,14 @@ abstract class Base
 	 * @return array
 	 */
 	public static function onGetBusinessValueConsumers()
+	{
+		return array();
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function onGetBusinessValueGroups()
 	{
 		return array();
 	}
@@ -665,6 +685,15 @@ abstract class Base
 	}
 
 	/**
+	 * @param Shipment $shipment
+	 * @return array
+	 */
+	public function getAdditionalInfoShipmentPublic(Shipment $shipment)
+	{
+		return array();
+	}
+
+	/**
 	 * @internal
 	 * @param \SplObjectStorage $cloneEntity
 	 *
@@ -708,5 +737,38 @@ abstract class Base
 	public function isClone()
 	{
 		return $this->isClone;
+	}
+
+	/**
+	 * Returns names of supported delivery services
+	 * @return array
+	 */
+	public static function getSupportedServicesList()
+	{
+		return array();
+	}
+
+	/**
+	 * @return array Additional tabs to show on edit admin page.
+	 */
+	public function getAdminAdditionalTabs()
+	{
+		return array();
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getVatId()
+	{
+		return $this->vatId;
+	}
+
+	/**
+	 * @param int $vatId
+	 */
+	public function setVatId($vatId)
+	{
+		$this->vatId = $vatId;
 	}
 }

@@ -10,6 +10,8 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/prolog.php");
 
 $moduleId = "sale";
 
+global $USER, $APPLICATION;
+
 Bitrix\Main\Loader::includeModule('sale');
 $saleModulePermissions = $APPLICATION->GetGroupRight("sale");
 if ($saleModulePermissions == "D")
@@ -38,40 +40,93 @@ $refresh = $_SERVER["REQUEST_METHOD"] == "POST" && !$save;
 if($orderId <= 0 || !($saleOrder = Bitrix\Sale\Order::load($orderId)))
 	LocalRedirect("/bitrix/admin/sale_order.php?lang=".$lang.GetFilterParams("filter_", false));
 
+
+$allowedOrderStatusesView = \Bitrix\Sale\OrderStatus::getStatusesUserCanDoOperations($USER->GetID(), array('view'));
+$allowedOrderStatusesUpdate = \Bitrix\Sale\OrderStatus::getStatusesUserCanDoOperations($USER->GetID(), array('update'));
+
+$allowUpdate = in_array($saleOrder->getField("STATUS_ID"), $allowedOrderStatusesUpdate);
+$allowView = in_array($saleOrder->getField("STATUS_ID"), $allowedOrderStatusesView);
+$allowDelete = false;
+
 $shipmentCollection = $saleOrder->getShipmentCollection();
+
+if (intval($shipmentId) > 0)
+{
+	/** @var \Bitrix\Sale\Shipment $shipment */
+	$shipment = $shipmentCollection->getItemById($shipmentId);
+
+	if(!$shipment)
+		LocalRedirect("/bitrix/admin/sale_order.php?lang=".LANGUAGE_ID.GetFilterParams("filter_", false));
+
+	$allowedDeliveryStatusesView = \Bitrix\Sale\DeliveryStatus::getStatusesUserCanDoOperations($USER->GetID(), array('view'));
+	$allowedDeliveryStatusesUpdate = \Bitrix\Sale\DeliveryStatus::getStatusesUserCanDoOperations($USER->GetID(), array('update'));
+	$allowedDeliveryStatusesDelete = \Bitrix\Sale\DeliveryStatus::getStatusesUserCanDoOperations($USER->GetID(), array('delete'));
+
+	$allowUpdate = in_array($shipment->getField("STATUS_ID"), $allowedDeliveryStatusesUpdate);
+	$allowView = in_array($shipment->getField("STATUS_ID"), $allowedDeliveryStatusesView);
+	$allowDelete = in_array($shipment->getField("STATUS_ID"), $allowedDeliveryStatusesDelete);
+}
+
+$isUserResponsible = false;
+$isAllowCompany = false;
+
+if ($saleModulePermissions == 'P')
+{
+	$userCompanyList = \Bitrix\Sale\Services\Company\Manager::getUserCompanyList($USER->GetID());
+
+	$isUserResponsible = ($saleOrder->getField('RESPONSIBLE_ID') == $USER->GetID() || $shipment->getField('RESPONSIBLE_ID') == $USER->GetID());
+
+	$isAllowCompany = (in_array($saleOrder->getField('COMPANY_ID'), $userCompanyList) || in_array($shipment->getField('COMPANY_ID'), $userCompanyList));
+
+	if (!$isUserResponsible && !$isAllowCompany)
+	{
+		LocalRedirect("/bitrix/admin/sale_order.php?lang=".LANGUAGE_ID.GetFilterParams("filter_", false));
+	}
+}
 
 if ($request->get('delete') == 'Y' && check_bitrix_sessid())
 {
-	$shipment = $shipmentCollection->getItemById($shipmentId);
-
-	if ($shipment)
+	if(!$allowDelete)
 	{
-		$delResult = $shipment->delete();
-		if (!$delResult->isSuccess())
+		LocalRedirect('/bitrix/admin/sale_order_shipment.php?lang='.$lang.GetFilterParams('filter_', false));
+	}
+
+	$delResult = $shipment->delete();
+	if (!$delResult->isSuccess())
+	{
+		$errors = $delResult->getErrorMessages();
+	}
+	else
+	{
+		$result = $saleOrder->save();
+		if ($result->isSuccess())
 		{
-			$errors = $delResult->getErrorMessages();
+			if ($backUrl)
+				LocalRedirect($backUrl);
+			else
+				LocalRedirect('/bitrix/admin/sale_order_shipment.php?lang='.$lang.GetFilterParams('filter_', false));
 		}
 		else
 		{
-			$result = $saleOrder->save();
-			if ($result->isSuccess())
-			{
-				if ($backUrl)
-					LocalRedirect($backUrl);
-				else
-					LocalRedirect('/bitrix/admin/sale_order_shipment.php?lang='.$lang.GetFilterParams('filter_', false));
-			}
-			else
-			{
-				$errors = $result->getErrorMessages();
-			}
+			$errors = $result->getErrorMessages();
 		}
 	}
 }
 
-
 if ($request->isPost() && ($save || $refresh) && check_bitrix_sessid())
 {
+	if(!$allowUpdate)
+	{
+		if (isset($_POST["apply"]))
+		{
+			LocalRedirect("/bitrix/admin/sale_order_shipment_edit.php?lang=".$lang."&order_id=".$orderId."&shipment_id=".$shipmentId."&backurl=".urlencode($backUrl).GetFilterParams("filter_", false));
+		}
+		else
+		{
+			LocalRedirect('/bitrix/admin/sale_order_shipment.php?lang='.$lang.GetFilterParams('filter_', false));
+		}
+
+	}
 	$result = \Bitrix\Sale\Helpers\Admin\Blocks\OrderShipment::updateData($saleOrder, $request->get('SHIPMENT'));
 
 	$data = $result->getData();
@@ -126,14 +181,11 @@ if ($request->isPost() && ($save || $refresh) && check_bitrix_sessid())
 else
 {
 	$new = true;
-	if ($shipmentId > 0)
+	if ($shipmentId > 0 && $shipment)
 	{
-		$shipment = $saleOrder->getShipmentCollection()->getItemById($shipmentId);
-		if ($shipment)
-			$new = false;
-		else
-			LocalRedirect("/bitrix/admin/sale_order_shipment.php?lang=".$lang.GetFilterParams("filter_", false));
+		$new = false;
 	}
+
 	if ($new)
 	{
 		$shipment = $saleOrder->getShipmentCollection()->createItem();
@@ -141,7 +193,7 @@ else
 	}
 }
 
-if (!$shipment)
+if (!$shipment || (!$allowView && !$allowUpdate) || Order::isLocked($orderId))
 	LocalRedirect("/bitrix/admin/sale_order_shipment.php?lang=".$lang.GetFilterParams("filter_", false));
 
 if ($shipmentId)
@@ -153,9 +205,9 @@ $APPLICATION->SetTitle($title);
 
 if ($shipmentId > 0)
 {
-	global $entity;
+	global $historyEntity;
 
-	$entity = array(
+	$historyEntity = array(
 		'ENTITY' => 'SHIPMENT',
 		'ENTITY_ID' => $shipmentId
 	);
@@ -180,12 +232,15 @@ $aMenu = array();
 
 if (!$new)
 {
-	$aMenu[] = array(
-		"TEXT" => Loc::getMessage("SOPE_SHIPMENT_DELETE"),
-		"TITLE" => Loc::getMessage("SOPE_SHIPMENT_DELETE_TITLE"),
-		"LINK" => 'javascript:void(0)',
-		"ONCLICK" => "if(confirm('".Loc::getMessage('SOPE_SHIPMENT_DELETE_MESSAGE')."')) window.location.href='/bitrix/admin/sale_order_shipment_edit.php?order_id=".$orderId."&shipment_id=".$shipmentId."&delete=Y&".bitrix_sessid_get()."&lang=".$lang.GetFilterParams("filter_")."'"
-	);
+	if($allowDelete)
+	{
+		$aMenu[] = array(
+			"TEXT" => Loc::getMessage("SOPE_SHIPMENT_DELETE"),
+			"TITLE" => Loc::getMessage("SOPE_SHIPMENT_DELETE_TITLE"),
+			"LINK" => 'javascript:void(0)',
+			"ONCLICK" => "if(confirm('".Loc::getMessage('SOPE_SHIPMENT_DELETE_MESSAGE')."')) window.location.href='/bitrix/admin/sale_order_shipment_edit.php?order_id=".$orderId."&shipment_id=".$shipmentId."&delete=Y&".bitrix_sessid_get()."&lang=".$lang.GetFilterParams("filter_")."'"
+		);
+	}
 }
 
 $aMenu[] = array(
@@ -276,6 +331,14 @@ foreach ($dirs as $dir)
 }
 $context = new CAdminContextMenu($aMenu);
 $context->Show();
+
+// Problem block
+?><div id="sale-adm-order-problem-block"><?
+if($shipmentId > 0 && $shipment->getField("MARKED") == "Y")
+{
+	echo \Bitrix\Sale\Helpers\Admin\Blocks\OrderMarker::getViewForEntity($saleOrder->getId(), $shipmentId);
+}
+?></div><?
 
 if(!empty($errors))
 	CAdminMessage::ShowMessage(implode("<br>\n", $errors));
@@ -401,6 +464,7 @@ if ($shipmentId > 0):
 endif;
 $tabControl->Buttons(
 	array(
+		"disabled" => !$allowUpdate,
 		"back_url" => $backUrl
 	)
 );

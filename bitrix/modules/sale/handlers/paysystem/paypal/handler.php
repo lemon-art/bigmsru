@@ -23,7 +23,7 @@ class PayPalHandler extends PaySystem\ServiceHandler implements PaySystem\IPrePa
 	 */
 	static public function getIndicativeFields()
 	{
-		return array('custom', 'mc_gross', 'mc_currency');
+		return array('mc_gross', 'mc_currency');
 	}
 
 	/**
@@ -64,7 +64,7 @@ class PayPalHandler extends PaySystem\ServiceHandler implements PaySystem\IPrePa
 			$header .= "User-Agent: 1C-Bitrix\r\n";
 			$header .= "Connection: Close\r\n\r\n";
 
-			if ($this->getBusinessValue($payment, "SSL_ENABLE") == "Y")
+			if ($this->getBusinessValue($payment, "PAYPAL_SSL_ENABLE") == "Y")
 				$fp = fsockopen("ssl://".$host, 443, $errNo, $errStr, 30);
 			else
 				$fp = fsockopen($host, 80, $errNo, $errStr, 30);
@@ -84,9 +84,9 @@ class PayPalHandler extends PaySystem\ServiceHandler implements PaySystem\IPrePa
 				}
 
 				// parse the data
-				$lines = explode('\n', $response);
+				$lines = explode("\n", $response);
 
-				if (strcmp($lines[0], "SUCCESS") == 0)
+				if (strcmp($lines[1], "SUCCESS") == 0)
 				{
 					return $this->processSuccessAction($payment, $request, $lines);
 				}
@@ -166,10 +166,10 @@ class PayPalHandler extends PaySystem\ServiceHandler implements PaySystem\IPrePa
 		}
 
 		$response = '<p><h3>'.Loc::getMessage('SALE_HPS_PAYPAL_T1').'</h3></p>';
-		$response .= '<b>'.Loc::getMessage('SALE_HPS_PAYPAL_T2').'</b><br>\n';
-		$response .= '<li>'.Loc::getMessage('SALE_HPS_PAYPAL_T3').': '.$keys['first_name'].' '.$keys['last_name'].'</li>\n';
-		$response .= '<li>'.Loc::getMessage('SALE_HPS_PAYPAL_T4').': '.$keys['item_name'].'</li>\n';
-		$response .= '<li>'.Loc::getMessage('SALE_HPS_PAYPAL_T5').': '.$keys['mc_gross'].'</li>\n';
+		$response .= '<b>'.Loc::getMessage('SALE_HPS_PAYPAL_T2').'</b><br>';
+		$response .= '<li>'.Loc::getMessage('SALE_HPS_PAYPAL_T3').': '.$keys['first_name'].' '.$keys['last_name'].'</li>';
+		$response .= '<li>'.Loc::getMessage('SALE_HPS_PAYPAL_T4').': '.$keys['item_name'].'</li>';
+		$response .= '<li>'.Loc::getMessage('SALE_HPS_PAYPAL_T5').': '.$keys['mc_gross'].'</li>';
 
 		$serviceResult->setData(array('MESSAGE' => $response));
 
@@ -237,7 +237,7 @@ class PayPalHandler extends PaySystem\ServiceHandler implements PaySystem\IPrePa
 		if ($request->get('tx'))
 		{
 			$req = 'cmd=_notify-synch';
-			$req .= "&tx=".$request->get('tx')."&at=".$this->getBusinessValue($payment, "IDENTITY_TOKEN");
+			$req .= "&tx=".$request->get('tx')."&at=".$this->getBusinessValue($payment, "PAYPAL_IDENTITY_TOKEN");
 		}
 
 		return $req;
@@ -287,7 +287,7 @@ class PayPalHandler extends PaySystem\ServiceHandler implements PaySystem\IPrePa
 	 */
 	public function getCurrencyList()
 	{
-		return array('RUB');
+		return array('RUB', 'EUR', 'USD');
 	}
 
 	/**
@@ -296,7 +296,10 @@ class PayPalHandler extends PaySystem\ServiceHandler implements PaySystem\IPrePa
 	 */
 	public function getPaymentIdFromRequest(Request $request)
 	{
-		return $request->get('custom');
+		if ($request->get('custom') !== null)
+			return $request->get('custom');
+
+		return $request->get('cm');
 	}
 
 	/**

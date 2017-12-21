@@ -39,4 +39,5 @@ $MESS["IBLOCK_SORT_SHOWS"] = "average views";
 $MESS["IBLOCK_SORT_RATING"] = "rating";
 $MESS["IBLOCK_SORT_COMMENTS_BLOG"] = "blog comments";
 $MESS["IBLOCK_SORT_COMMENTS_FORUM"] = "forum comments";
+$MESS["P_SECTION_LIST_THUMBS_SIZE"] = "Preview image size in Albums list (px)";
 ?>

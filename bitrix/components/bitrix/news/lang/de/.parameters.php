@@ -83,4 +83,6 @@ $MESS["CP_BN_SET_LAST_MODIFIED"] = "Im Header der Antwort den Zeitpunkt der Seit
 $MESS["CP_BN_AVERAGE"] = "Durchschnittswert";
 $MESS["CP_BN_RATING"] = "Bewertung";
 $MESS["CP_BN_DISPLAY_AS_RATING"] = "Als Bewertung anzeigen";
+$MESS["CP_BN_DETAIL_STRICT_SECTION_CHECK"] = "Übergeordneten Bereich prüfen, wenn Details der Elemente angezeigt werden";
+$MESS["CP_BN_STRICT_SECTION_CHECK"] = "Strikte Prüfung der Bereich";
 ?>

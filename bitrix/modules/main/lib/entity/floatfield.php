@@ -35,4 +35,9 @@ class FloatField extends ScalarField
 	{
 		return $this->scale;
 	}
+
+	public function convertValueToDb($value)
+	{
+		return $this->getConnection()->getSqlHelper()->convertToDbFloat($value);
+	}
 }

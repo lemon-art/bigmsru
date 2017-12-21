@@ -45,8 +45,8 @@ function menuCheckIcons()
 	for (i = 1; i <= l; i++)
 	{
 		tbl = arRows[i - 1].firstChild.firstChild;
-		tbl.rows[0].cells[6].firstChild.style.visibility = (i == 1 ? 'hidden' : 'visible'); // Up button
-		tbl.rows[0].cells[7].firstChild.style.visibility = (i == l ? 'hidden' : 'visible'); // Down button
+		tbl.rows[0].cells[4].firstChild.style.visibility = (i == 1 ? 'hidden' : 'visible'); // Up button
+		tbl.rows[0].cells[5].firstChild.style.visibility = (i == l ? 'hidden' : 'visible'); // Down button
 	}
 }
 
@@ -204,8 +204,8 @@ function BXDD_DragStart()
 	this.BXOldPlacement = this.parentNode;
 	var id = this.id.substring(12);
 	rowMouseOut(viewArea('title_' + id));
-	rowMouseOut(viewArea('author_' + id));
-	rowMouseOut(viewArea('duration_' + id));
+	//rowMouseOut(viewArea('author_' + id));
+	//rowMouseOut(viewArea('duration_' + id));
 	rowMouseOut(viewArea('location_' + id));
 	rowMouseOut(viewArea('image_' + id));
 	GLOBAL_bDisableActions = true;
@@ -270,8 +270,8 @@ function itemAdd()
 	'	<input type="hidden" name="ids[]" value="' + i + '" />' +
 	'	<span class="rowcontrol drag" title="' + jsMess.itemDrag + '"></span></td>' +
 		getRowInnerHTML('title', jsMess.noname, i, 160) +
-		getRowInnerHTML('author', jsMess.noname, i, 140) +
-		getRowInnerHTML('duration', jsMess.noname, i, 50) +
+		//getRowInnerHTML('author', jsMess.noname, i, 140) +
+		//getRowInnerHTML('duration', jsMess.noname, i, 50) +
 		getRowInnerHTML('location', jsMess.noname, i, 150, 'VIDEO') +
 		getRowInnerHTML('image', jsMess.noname, i, 140, 'IMAGE') +
 	'	<td><span onclick="itemMoveUp(' + i + ')" class="rowcontrol up" style="visibility: ' + (i == 1 ? 'hidden' : 'visible') + '" title="' + jsMess.itemUp + '"></span></td>' +

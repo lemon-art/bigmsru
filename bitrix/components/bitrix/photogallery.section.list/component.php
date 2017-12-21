@@ -61,6 +61,7 @@ CPageOption::SetOptionString("main", "nav_page_in_session", "N");
 
 	$arParams["ALBUM_PHOTO_SIZE"] = (intVal($arParams["ALBUM_PHOTO_SIZE"]) > 0 ? intVal($arParams["ALBUM_PHOTO_SIZE"]) : 150);
 	$arParams["ALBUM_PHOTO_THUMBS_SIZE"] = (intVal($arParams["ALBUM_PHOTO_THUMBS_SIZE"]) > 0 ? intVal($arParams["ALBUM_PHOTO_THUMBS_SIZE"]) : 70);
+	$arParams["SECTION_LIST_THUMBNAIL_SIZE"] = (intVal($arParams["SECTION_LIST_THUMBNAIL_SIZE"]) > 0 ? intVal($arParams["SECTION_LIST_THUMBNAIL_SIZE"]) : 70);
 
 	$arParams["PAGE_ELEMENTS"] = intVal($arParams["PAGE_ELEMENTS"]);
 	$arParams["PAGE_NAVIGATION_TEMPLATE"] = trim($arParams["PAGE_NAVIGATION_TEMPLATE"]);

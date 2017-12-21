@@ -86,6 +86,7 @@ if (!empty($arElements) && is_array($arElements))
 			"CONVERT_CURRENCY" => $arParams["CONVERT_CURRENCY"],
 			"CURRENCY_ID" => $arParams["CURRENCY_ID"],
 			"HIDE_NOT_AVAILABLE" => $arParams["HIDE_NOT_AVAILABLE"],
+			"HIDE_NOT_AVAILABLE_OFFERS" => $arParams["HIDE_NOT_AVAILABLE_OFFERS"],
 			"DISPLAY_TOP_PAGER" => $arParams["DISPLAY_TOP_PAGER"],
 			"DISPLAY_BOTTOM_PAGER" => $arParams["DISPLAY_BOTTOM_PAGER"],
 			"PAGER_TITLE" => $arParams["PAGER_TITLE"],
@@ -117,4 +118,3 @@ elseif (is_array($arElements))
 {
 	echo GetMessage("CT_BCSE_NOT_FOUND");
 }
-?>

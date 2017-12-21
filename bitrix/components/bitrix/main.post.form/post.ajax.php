@@ -6,6 +6,14 @@ define("NO_AGENT_STATISTIC","Y");
 define("NO_AGENT_CHECK", true);
 define("DisableEventsCheck", true);
 
+$siteId = (isset($_REQUEST["SITE_ID"]) && is_string($_REQUEST["SITE_ID"])) ? trim($_REQUEST["SITE_ID"]): "";
+$siteId = substr(preg_replace("/[^a-z0-9_]/i", "", $siteId), 0, 2);
+
+if (!empty($siteId))
+{
+	define("SITE_ID", $siteId);
+}
+
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
 header('Content-Type: application/x-javascript; charset='.LANG_CHARSET);
 
@@ -123,7 +131,7 @@ if (check_bitrix_sessid())
 				&& $search != $searchConverted
 			)
 			{
-				$searchResults['USERS'] = CSocNetLogDestination::SearchUsers(
+				$searchResults['USERS'] = CSocNetLogDestination::searchUsers(
 					array(
 						"SEARCH" => $searchConverted,
 						"NAME_TEMPLATE" => $nameTemplate,
@@ -142,6 +150,17 @@ if (check_bitrix_sessid())
 				);
 				$searchResults['SEARCH'] = $searchConverted;
 			}
+		}
+
+		if (
+			isset($_POST['SEARCH_SONET_GROUPS'])
+			&& $_POST['SEARCH_SONET_GROUPS'] == 'Y'
+		)
+		{
+			$searchResults['SONET_GROUPS'] = CSocNetLogDestination::searchSonetGroups(array(
+				"SEARCH" => $search,
+				"FEATURES" => (isset($_POST['SEARCH_SONET_FEATUES']) && is_array($_POST['SEARCH_SONET_FEATUES']) ? $_POST['SEARCH_SONET_FEATUES'] : false)
+			));
 		}
 
 		if (

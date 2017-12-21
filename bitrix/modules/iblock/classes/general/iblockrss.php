@@ -58,7 +58,7 @@ class CAllIBlockRSS
 				"socketTimeout" => 120,
 			));
 			$http->setHeader("User-Agent", "BitrixSMRSS");
-			$text = $http->get($SITE.":".$PORT.$PATH.(strlen($strVars) > 0? "?".$strVars: ""));
+			$text = $http->get($SITE.":".$PORT.$PATH.(strlen($QUERY_STR) > 0? "?".$QUERY_STR: ""));
 
 			if ($text)
 			{

@@ -478,8 +478,12 @@ width:86pt'>
 	}
 	else
 	{
+		if(strlen($arParams["BUYER_COMPANY_NAME"]) > 0)
+			$buyerName = $arParams["BUYER_COMPANY_NAME"];
+	    else
+			$buyerName = $arParams["BUYER_LAST_NAME"]." ".$arParams["BUYER_FIRST_NAME"]." ".$arParams["BUYER_SECOND_NAME"];
 		?>
-		<?=$arParams["BUYER_COMPANY_NAME"]?>, <?=$arParams["BUYER_COUNTRY"]?>, <?=$arParams["BUYER_INDEX"]?>, г. <?=$arParams["BUYER_CITY"]?>, <?=$arParams["BUYER_ADDRESS"]?>
+		<?=$buyerName;?>, <?=$arParams["BUYER_COUNTRY"]?>, <?=$arParams["BUYER_INDEX"]?>, г. <?=$arParams["BUYER_CITY"]?>, <?=$arParams["BUYER_ADDRESS"]?>
 		<?
 	}
 	?>
@@ -708,7 +712,7 @@ foreach ($arBasketOrder as $arBasket):
 	<td class=xl42 align=right style='border-top:none;border-left:none' x:num><?echo number_format($item_price * $arQuantities[$mi], 2, ',', ' ');  $total_price += ($item_price*$arQuantities[$mi]);?></td>
 	<td class=xl43 style='border-top:none;border-left:none'>&nbsp;</td>
 	<td class=xl44 align=right width=43 style='border-top:none;border-left:none;
-	width:32pt'><?echo $taxRate."%"?></td>
+	width:32pt'><?=($taxRate > 0 || count($arTaxList) > 0) ? $taxRate."%" : "Без НДС";?></td>
 	<td class=xl45 align=right width=78 style='border-top:none;border-left:none;
 	width:59pt' x:num><?echo number_format($nds_val*$arQuantities[$mi], 2, ',', ' '); $total_nds += $nds_val*$arQuantities[$mi];?></td>
 	
@@ -750,7 +754,7 @@ if (DoubleVal($arOrder["PRICE_DELIVERY"])>0):
 	<td class=xl42 align=right style='border-top:none;border-left:none' x:num><?echo number_format($item_price, 2, ',', ' ');  $total_price += $item_price;?></td>
 	<td class=xl43 style='border-top:none;border-left:none'>&nbsp;</td>
 	<td class=xl44 align=right width=43 style='border-top:none;border-left:none;
-	width:32pt'><?echo $taxRate."%"?></td>
+	width:32pt'><?=($taxRate > 0 || count($arTaxList) > 0) ? $taxRate."%" : "Без НДС";?></td>
 	<td class=xl45 align=right width=78 style='border-top:none;border-left:none;
 	width:59pt' x:num><?echo number_format($nds_val, 2, ',', ' '); $total_nds += $nds_val;?></td>
 	<td class=xl45 align=right width=83 style='border-top:none;border-left:none;

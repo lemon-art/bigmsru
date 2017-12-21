@@ -36,17 +36,18 @@ if (strlen($_REQUEST["BasketRefresh"]) > 0 || strlen($_REQUEST["BasketOrder"]) >
 		$id = intval($_REQUEST["id"]);
 		if ($id > 0)
 		{
+			$fuserId = CSaleBasket::GetBasketUserID(); 
 			$dbBasketItems = CSaleBasket::GetList(
 				array(),
 				array(
-					"FUSER_ID" => CSaleBasket::GetBasketUserID(),
+					"FUSER_ID" => $fuserId,
 					"LID" => SITE_ID,
 					"ORDER_ID" => "NULL",
 					"ID" => $id,
 				),
 				false,
 				false,
-				array('ID', 'DELAY', 'CAN_BUY', 'SET_PARENT_ID', 'TYPE')
+				array('ID', 'DELAY', 'CAN_BUY', 'SET_PARENT_ID', 'TYPE', 'NAME')
 			);
 			$arItem = $dbBasketItems->Fetch();
 			if ($arItem && !CSaleBasketHelper::isSetItem($arItem))
@@ -70,6 +71,10 @@ if (strlen($_REQUEST["BasketRefresh"]) > 0 || strlen($_REQUEST["BasketOrder"]) >
 					{
 						CSaleBasket::Update($arItem["ID"], array("DELAY" => "N"));
 						$_SESSION["SALE_BASKET_NUM_PRODUCTS"][SITE_ID]++;
+					}
+					else
+					{
+						$_SESSION["SALE_BASKET_MESSAGE"][] = \Bitrix\Main\Localization\Loc::getMessage("SBB_PRODUCT_NOT_AVAILABLE", array("#PRODUCT#" => $arItem["NAME"]));
 					}
 				}
 			}

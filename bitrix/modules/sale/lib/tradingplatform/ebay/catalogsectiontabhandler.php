@@ -180,8 +180,8 @@ class CatalogSectionTabHandler extends TabHandler
 		//categories
 		$resultHtml =
 			'<tr>'.
-				'<td width="20%" valign="top">'.Loc::getMessage("SALE_EBAY_CSTH_CATEGORY").':</td>'.
-				'<td width="80%">';
+				'<td width="40%" valign="top">'.Loc::getMessage("SALE_EBAY_CSTH_CATEGORY").':</td>'.
+				'<td width="60%">';
 
 		$catMapRes = \Bitrix\Sale\TradingPlatform\MapTable::getList(array(
 			"filter" => array(

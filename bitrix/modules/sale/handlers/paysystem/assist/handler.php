@@ -240,22 +240,27 @@ class AssistHandler extends PaySystem\ServiceHandler implements PaySystem\IRefun
 	protected function getUrlList()
 	{
 		return array(
-			'confirm' => array(
-				self::ACTIVE_URL=> 'https://test.paysecure.ru/charge/charge.cfm.'
-			),
-			'return' => array(
-				self::ACTIVE_URL=> 'https://secure.assist.ru/rvr/rvr.cfm',
-				self::TEST_URL => 'https://test.paysecure.ru/cancel/cancel.cfm'
-			),
-			'pay' => array(
-				self::ACTIVE_URL=> 'https://payments.paysecure.ru/pay/order.cfm',
-				self::TEST_URL => 'https://test.paysecure.ru/pay/order.cfm'
-			),
-			'check' => array(
-				self::ACTIVE_URL=> 'https://payments.paysecure.ru/orderstate/orderstate.cfm',
-				self::TEST_URL=> 'https://test.paysecure.ru/orderstate/orderstate.cfm'
-			)
+			'confirm' => 'https://#SERVER_NAME#/charge/charge.cfm',
+			'return' => 'https://#SERVER_NAME#/cancel/wscancel.cfm',
+			'pay' => 'https://#SERVER_NAME#/pay/order.cfm',
+			'check' => 'https://#SERVER_NAME#/orderstate/orderstate.cfm',
 		);
+	}
+
+	/**
+	 * @param Payment $payment
+	 * @param string $action
+	 * @return string
+	 */
+	protected function getUrl(Payment $payment = null, $action)
+	{
+		$url = parent::getUrl($payment, $action);
+		if ($this->isTestMode($payment))
+			$domain = 'payments.demo.paysecure.ru';
+		else
+			$domain = $this->getBusinessValue($payment, 'ASSIST_SERVER_URL');
+
+		return str_replace('#SERVER_NAME#', $domain, $url);
 	}
 
 	/**
@@ -268,7 +273,7 @@ class AssistHandler extends PaySystem\ServiceHandler implements PaySystem\IRefun
 
 	/**
 	 * @param Payment $payment
-	 * @return bool
+	 * @return PaySystem\ServiceResult
 	 */
 	public function check(Payment $payment)
 	{

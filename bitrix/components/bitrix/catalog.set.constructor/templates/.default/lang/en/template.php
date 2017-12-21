@@ -15,4 +15,7 @@ $MESS["CATALOG_SET_BUTTON_BUY"] = "View shopping cart";
 $MESS["CATALOG_SET_BUTTON_ADD"] = "Add";
 $MESS["CATALOG_SET_MESS_NOT_AVAILABLE"] = "Out of stock";
 $MESS["CT_BCE_CATALOG_MESS_EMPTY_SET"] = "There are no products in the bundle. Select the products in the list.";
+$MESS["CATALOG_SET_PRODUCTS_PRICE"] = "Individual product prices";
+$MESS["CATALOG_SET_SET_PRICE"] = "Bundle price";
+$MESS["CATALOG_SET_ECONOMY_PRICE"] = "You save";
 ?>

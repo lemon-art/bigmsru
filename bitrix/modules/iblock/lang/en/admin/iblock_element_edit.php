@@ -100,4 +100,7 @@ $MESS["IBLOCK_FIELD_STATUS"] = "Status";
 $MESS["IBEL_E_MAIN_IBLOCK_SECTION_ID"] = "Main section";
 $MESS["IBLOCK_EL_EDIT_IN_PANEL"] = "Control Panel";
 $MESS["IBLOCK_LINKED_ELEMENT_TITLE"] = "Open Control Panel";
+$MESS["IBLOCK_FIELD_HINT_XML_ID"] = "Required for existing elements; can be left empty when creating a new element in which case the external ID will be set to the element ID.";
+$MESS["IBLOCK_FIELD_CREATED"] = "Created on";
+$MESS["IBLOCK_FIELD_LAST_UPDATED"] = "Modified on";
 ?>

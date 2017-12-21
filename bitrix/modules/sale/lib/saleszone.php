@@ -63,7 +63,7 @@ class SalesZone
 			return false;
 
 		$cIds = static::getCountriesIds($siteId);
-		return in_array($countryId, $cIds) || in_array("", $cIds);
+		return !$cIds || in_array($countryId, $cIds) || in_array("", $cIds);
 	}
 
 	/**
@@ -78,7 +78,7 @@ class SalesZone
 			return false;
 
 		$rIds = static::getRegionsIds($siteId);
-		return in_array($regionId, $rIds) || in_array("", $rIds);
+		return !$rIds || in_array($regionId, $rIds) || in_array("", $rIds);
 	}
 
 	/**
@@ -93,7 +93,7 @@ class SalesZone
 			return false;
 
 		$cIds = static::getCitiesIds($siteId);
-		return in_array($cityId, $cIds) || in_array("", $cIds);
+		return !$cIds || in_array($cityId, $cIds) || in_array("", $cIds);
 	}
 
 	/**

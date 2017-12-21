@@ -1,5 +1,5 @@
 <?if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
-//echo "<pre>"; print_R($arResult["ITEMS"]);
+
 if ($arResult["ShowReady"]=="Y" || $arResult["ShowDelay"]=="Y" || $arResult["ShowSubscribe"]=="Y" || $arResult["ShowNotAvail"]=="Y")
 {
 	foreach ($arResult["GRID"]["HEADERS"] as $id => $arHeader):

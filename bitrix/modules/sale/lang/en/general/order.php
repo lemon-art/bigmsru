@@ -30,4 +30,6 @@ $MESS["SALE_ORDER_GENERATE_ACCOUNT_NUMBER_ORDER_NUMBER_WRONG_ID"] = "Invalid ord
 $MESS["SALE_ORDER_GENERATE_ACCOUNT_NUMBER_ORDER_NUMBER_IS_NOT_SET"] = "Cannot set order ID";
 $MESS["SALE_ORDER_GENERATE_ACCOUNT_NUMBER_ORDER_NUMBER_IS_NOT_SET_AS_ID"] = "Cannot set ID as order number";
 $MESS["SKGO_DUB_STATUS"] = "Order ##ID# already has required status";
+$MESS["SKGO_ERROR_ORDERS_ARCHIVE"] = "The user ##USER_ID# has archived orders in the e-Store module and cannot be deleted.";
+$MESS["SKGO_ERROR_ORDERS_ARCHIVE_CURRENCY"] = "There are archived orders in the system that use currency \"#CURRENCY#\".";
 ?>

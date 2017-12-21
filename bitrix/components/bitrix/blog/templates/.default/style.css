@@ -23,6 +23,10 @@
 .blog-post-tag a:hover {text-decoration: underline !important;}
 .blog-post-avatar img {float:right;}
 .blog-post-avatar {padding: 0.1em 0.3em 0.3em 0.3em;}
+.blog-post-content div[align="left"],
+.blog-post-content div[align="right"],
+.blog-post-content div[align="center"],
+.blog-post-content div[align="justify"]{min-height:1em;}
 
 /*post form*/
 div.blog-post-field-text textarea {width: 100%;}
@@ -639,8 +643,15 @@ z-index: 0;
 }
 
 #blog-upload-file, #blog-show-seo {color: #2067B0; border-bottom: dashed 1px #2067B0; text-decoration: none;}
-#blog-comment-user-fields-UF_BLOG_COMMENT_DOC .file-selectdialog-switcher {display: none;}
 #blog-post-user-fields-UF_BLOG_POST_DOC .file-selectdialog-switcher {display: none;}
+
+/*for neweditor */
+.feed-add-post .file-selectdialog-switcher,
+.feed-add-post .wduf-selectdialog-switcher,
+.feed-add-post .diskuf-selectdialog-switcher {display: block !important; margin-top: 0.46em; position: relative;}
+.feed-add-post .file-selectdialog-switcher span,
+.feed-add-post .wduf-selectdialog-switcher span,
+.feed-add-post .diskuf-selectdialog-switcher span {display:block !important;}
 
 .blg-cancel-com,
 .blg-cancel-com:link,

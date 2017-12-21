@@ -18,18 +18,23 @@ BX.Catalog.SetConstructor = (function()
 		this.noFotoSrc = params.noFotoSrc || "";
 		this.messages = params.messages;
 
+		this.canBuy = params.canBuy;
 		this.mainElementPrice = params.mainElementPrice || 0;
 		this.mainElementOldPrice = params.mainElementOldPrice || 0;
 		this.mainElementDiffPrice = params.mainElementDiffPrice || 0;
 		this.mainElementBasketQuantity = params.mainElementBasketQuantity || 1;
 
 		this.parentCont = BX(params.parentContId) || null;
+		this.sliderParentCont = this.parentCont.querySelector("[data-role='slider-parent-container']");
 		this.sliderItemsCont = this.parentCont.querySelector("[data-role='set-other-items']");
 		this.setItemsCont = this.parentCont.querySelector("[data-role='set-items']");
 
 		this.setPriceCont = this.parentCont.querySelector("[data-role='set-price']");
+		this.setPriceDuplicateCont = this.parentCont.querySelector("[data-role='set-price-duplicate']");
 		this.setOldPriceCont = this.parentCont.querySelector("[data-role='set-old-price']");
+		this.setOldPriceRow = this.setOldPriceCont.parentNode.parentNode;
 		this.setDiffPriceCont = this.parentCont.querySelector("[data-role='set-diff-price']");
+		this.setDiffPriceRow = this.setDiffPriceCont.parentNode.parentNode;
 
 		this.notAvailProduct = this.sliderItemsCont.querySelector("[data-not-avail='yes']");
 
@@ -39,7 +44,16 @@ BX.Catalog.SetConstructor = (function()
 		BX.bindDelegate(this.sliderItemsCont, 'click', { 'attribute': 'data-role' }, BX.proxy(this.addToSet, this));
 
 		var buyButton = this.parentCont.querySelector("[data-role='set-buy-btn']");
-		BX.bind(buyButton, "click", BX.proxy(this.addToBasket, this));
+
+		if (this.canBuy)
+		{
+			BX.show(buyButton);
+			BX.bind(buyButton, "click", BX.proxy(this.addToBasket, this));
+		}
+		else
+		{
+			BX.hide(buyButton);
+		}
 
 		this.generateSliderStyles();
 	};
@@ -178,7 +192,7 @@ BX.Catalog.SetConstructor = (function()
 									children: [
 										BX.create("a", {
 											attrs: {
-												className: "btn btn-add btn-sm",
+												className: "btn btn-default btn-sm",
 												"data-role": "set-add-btn"
 											},
 											html: this.messages.ADD_BUTTON
@@ -210,6 +224,11 @@ BX.Catalog.SetConstructor = (function()
 
 			if (this.numSetItems <= 0 && !!this.emptySetMessage)
 				BX.adjust(this.emptySetMessage, { style: { display: 'inline-block' }, html: this.messages.EMPTY_SET });
+
+			if (this.numSliderItems > 0 && this.sliderParentCont)
+			{
+				this.sliderParentCont.style.display = '';
+			}
 		}
 	};
 
@@ -335,6 +354,11 @@ BX.Catalog.SetConstructor = (function()
 
 			if (this.numSetItems > 0 && !!this.emptySetMessage)
 				BX.adjust(this.emptySetMessage, { style: { display: 'none' }, html: '' });
+
+			if (this.numSliderItems <= 0 && this.sliderParentCont)
+			{
+				this.sliderParentCont.style.display = 'none';
+			}
 		}
 	};
 
@@ -359,13 +383,18 @@ BX.Catalog.SetConstructor = (function()
 		}
 
 		this.setPriceCont.innerHTML = BX.Currency.currencyFormat(sumPrice, this.currency, true);
+		this.setPriceDuplicateCont.innerHTML = BX.Currency.currencyFormat(sumPrice, this.currency, true);
 		if (Math.floor(sumDiffDiscountPrice*100) > 0)
 		{
 			this.setOldPriceCont.innerHTML = BX.Currency.currencyFormat(sumOldPrice, this.currency, true);
 			this.setDiffPriceCont.innerHTML = BX.Currency.currencyFormat(sumDiffDiscountPrice, this.currency, true);
+			BX.style(this.setOldPriceRow, 'display', 'table-row');
+			BX.style(this.setDiffPriceRow, 'display', 'table-row');
 		}
 		else
 		{
+			BX.style(this.setOldPriceRow, 'display', 'none');
+			BX.style(this.setDiffPriceRow, 'display', 'none');
 			this.setOldPriceCont.innerHTML = '';
 			this.setDiffPriceCont.innerHTML = '';
 		}

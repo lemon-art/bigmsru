@@ -1,12 +1,12 @@
 <?
+use Bitrix\Main\Composite;
+use Bitrix\Main\Composite\Helper;
+use Bitrix\Main\Composite\Internals\AutomaticArea;
 use Bitrix\Main\Config\Option;
-use Bitrix\Main\Page\Frame;
-use Bitrix\Main\Page\FrameComponent;
 
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
 require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/prolog.php");
 define("HELP_FILE", "settings/composite.php");
-require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/classes/general/cache_html.php");
 /** @var CUser $USER */
 /** @var CMain $APPLICATION */
 
@@ -19,12 +19,12 @@ if(!$USER->CanDoOperation('cache_control') && !$USER->CanDoOperation('view_other
 }
 
 $APPLICATION->SetAdditionalCSS("/bitrix/panel/main/composite.css");
-$APPLICATION->AddHeadString("<style type=\"text/css\">".\Bitrix\Main\Page\Frame::getInjectedCSS()."</style>");
+$APPLICATION->AddHeadString("<style type=\"text/css\">".Composite\Engine::getInjectedCSS()."</style>");
 
-$compositeOptions = CHTMLPagesCache::getOptions();
+$compositeOptions = Helper::getOptions();
 $autoCompositeMode = false;
 $compositeMode = false;
-if (CHTMLPagesCache::isOn())
+if (Helper::isOn())
 {
 	if (isset($compositeOptions["AUTO_COMPOSITE"]) && $compositeOptions["AUTO_COMPOSITE"] === "Y")
 	{
@@ -99,19 +99,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" &&
 	$compositeOptions["EXCLUDE_MASK"] = $_REQUEST["composite_exclude_mask"];
 	$compositeOptions["EXCLUDE_PARAMS"] = $_REQUEST["composite_exclude_params"];
 	$compositeOptions["NO_PARAMETERS"] = $_REQUEST["composite_no_parameters"];
-	$compositeOptions["ONLY_PARAMETERS"] = $_REQUEST["composite_only_parameters"];
 	$compositeOptions["IGNORED_PARAMETERS"] = $_REQUEST["composite_ignored_parameters"];
 	$compositeOptions["FILE_QUOTA"] = $_REQUEST["composite_quota"];
 	$compositeOptions["BANNER_BGCOLOR"] = $_REQUEST["composite_banner_bgcolor"];
 	$compositeOptions["BANNER_STYLE"] = $_REQUEST["composite_banner_style"];
-	$compositeOptions["ALLOW_HTTPS"] = $_REQUEST["composite_allow_https"];
-
-	if (isset($compositeOptions["STORAGE"])
-		&& isset($_REQUEST["composite_storage"])
-		&& $compositeOptions["STORAGE"] !== $_REQUEST["composite_storage"]
-	)
+	if (isset($_REQUEST["composite_only_parameters"]))
 	{
-		CHTMLPagesCache::writeStatistic(false, false, false, false, false);
+		$compositeOptions["ONLY_PARAMETERS"] = $_REQUEST["composite_only_parameters"];
 	}
 
 	$storage = $_REQUEST["composite_storage"];
@@ -191,7 +185,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" &&
 	{
 		if ($_REQUEST["auto_composite"] === "Y")
 		{
-			CHTMLPagesCache::setEnabled(true);
+			Helper::setEnabled(true);
 			$compositeOptions["AUTO_COMPOSITE"] = "Y";
 			$compositeOptions["FRAME_MODE"] = "Y";
 			$compositeOptions["FRAME_TYPE"] = "DYNAMIC_WITH_STUB";
@@ -200,7 +194,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" &&
 		}
 		else if ($_REQUEST["auto_composite"] === "N")
 		{
-			CHTMLPagesCache::setEnabled(false);
+			Helper::setEnabled(false);
 			$compositeOptions["AUTO_COMPOSITE"] = "N";
 			$compositeOptions["FRAME_MODE"] = "N";
 			$compositeOptions["AUTO_UPDATE_TTL"] = "0";
@@ -211,11 +205,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" &&
 		$compositeOptions["AUTO_COMPOSITE"] = "N";
 		if ($_REQUEST["composite"] === "Y")
 		{
-			CHTMLPagesCache::setEnabled(true);
+			Helper::setEnabled(true);
 		}
 		elseif ($_REQUEST["composite"] == "N")
 		{
-			CHTMLPagesCache::setEnabled(false);
+			Helper::setEnabled(false);
 		}
 	}
 
@@ -224,7 +218,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" &&
 		Option::set("main", "~show_composite_banner", $_REQUEST["composite_show_banner"]);
 	}
 
-	CHTMLPagesCache::setOptions($compositeOptions);
+	Helper::setOptions($compositeOptions);
 	bx_accelerator_reset();
 	LocalRedirect("/bitrix/admin/composite.php?lang=".LANGUAGE_ID."&".$tabControl->ActiveTabParam());
 }
@@ -259,7 +253,7 @@ if (
 	}
 
 	header("Content-Type: application/x-javascript; charset=".LANG_CHARSET);
-	die("{ status : '".$status."', text : '".$text."' }");
+	die("{ status : '".$status."', text : '".CUtil::JSEscape($text)."' }");
 }
 
 $APPLICATION->SetTitle(GetMessage("MAIN_COMPOSITE_TITLE"));
@@ -511,7 +505,7 @@ $frameMode = isset($compositeOptions["FRAME_MODE"]) && $compositeOptions["FRAME_
 </tr>
 <?
 $frameType = "STATIC";
-if (isset($compositeOptions["FRAME_TYPE"]) && in_array($compositeOptions["FRAME_TYPE"], FrameComponent::getFrameTypes()))
+if (isset($compositeOptions["FRAME_TYPE"]) && in_array($compositeOptions["FRAME_TYPE"], AutomaticArea::getFrameTypes()))
 {
 	$frameType = $compositeOptions["FRAME_TYPE"];
 }
@@ -722,7 +716,7 @@ $autoUpdateTTL = isset($compositeOptions["AUTO_UPDATE_TTL"]) ? intval($composite
 <?
 if (!is_array($compositeOptions["DOMAINS"]) || count($compositeOptions["DOMAINS"]) < 1)
 {
-	$compositeOptions["DOMAINS"] = array(CHTMLPagesCache::getHttpHost());
+	$compositeOptions["DOMAINS"] = array(Helper::getHttpHost());
 }
 ?>
 <tr class="adm-detail-valign-top">
@@ -761,11 +755,13 @@ if (!is_array($compositeOptions["DOMAINS"]) || count($compositeOptions["DOMAINS"
 	</td>
 </tr>
 
-<tr id="composite_only_parameters" <?if ($compositeOptions["NO_PARAMETERS"] !== "Y") echo 'style="display:none"'?>>
+<tr>
 	<td><?echo GetMessage("MAIN_COMPOSITE_ONLY_PARAMETERS");?>:</td>
 	<td>
-		<input type="text" size="45" style="width:100%" name="composite_only_parameters"
-			   value="<? echo htmlspecialcharsbx($compositeOptions["ONLY_PARAMETERS"]) ?>">
+		<input type="text" size="45" style="width:100%" name="composite_only_parameters" id="composite_only_parameters"
+			   value="<? echo htmlspecialcharsbx($compositeOptions["ONLY_PARAMETERS"]) ?>"
+				<?if ($compositeOptions["NO_PARAMETERS"] !== "Y"):?>disabled<?endif?>
+		>
 	</td>
 </tr>
 
@@ -827,7 +823,6 @@ if (!isset($compositeOptions["MEMCACHED_PORT"]))
 				var hintRow = BX("composite_memcached_hint_row", true);
 				var clusterRow = BX("composite_cluster_hint_row", true);
 				var quotaRow = BX("composite_quota_row", true);
-				var quotaStatRow = BX("composite_quota_stat_row", true);
 				var quotaSizeRow = BX("composite_quota_size_row", true);
 				if (select.value === "memcached")
 				{
@@ -854,13 +849,11 @@ if (!isset($compositeOptions["MEMCACHED_PORT"]))
 				if (select.value !== "files")
 				{
 					quotaRow.style.display = "none";
-					quotaStatRow && (quotaStatRow.style.display = "none");
 					quotaSizeRow && (quotaSizeRow.style.display = "none");
 				}
 				else
 				{
 					quotaRow.style.cssText = "";
-					quotaStatRow && (quotaStatRow.style.cssText = "");
 					quotaSizeRow && (quotaSizeRow.style.cssText = "");
 				}
 			}
@@ -954,16 +947,12 @@ if (!isset($compositeOptions["MEMCACHED_PORT"]))
 	</td>
 </tr>
 <?
-if(CHTMLPagesCache::isOn())
+if(Helper::isOn())
 {
-	$arStatistic = CHTMLPagesCache::readStatistic();?>
-	<tr id="composite_quota_stat_row" <?if ($compositeOptions["STORAGE"] !== "files") echo 'style="display:none"'?>>
-		<td><?=GetMessage("MAIN_COMPOSITE_HITS_WITHOUT_CACHE")?></td>
-		<td><?echo $arStatistic["QUOTA"]?></td>
-	</tr>
+	$cacheSize = Helper::getCacheFileSize();?>
 	<tr id="composite_quota_size_row" <?if ($compositeOptions["STORAGE"] !== "files") echo 'style="display:none"'?>>
 		<td><?=GetMessage("MAIN_COMPOSITE_STAT_FILE_SIZE")?></td>
-		<td><?=CFile::FormatSize($arStatistic["FILE_SIZE"])?></td>
+		<td><?=CFile::FormatSize($cacheSize)?></td>
 	</tr>
 	<?
 }
@@ -1050,7 +1039,7 @@ $tabControl->BeginNextTab();?>
 
 
 <?
-$showBanner = Frame::isBannerEnabled();
+$showBanner = Composite\Engine::isBannerEnabled();
 ?>
 <tr>
 	<td colspan="2">
@@ -1257,14 +1246,14 @@ $showBanner = Frame::isBannerEnabled();
 
 				window.onParamsCheckboxClick = function(show)
 				{
-					var tr = BX("composite_only_parameters", true);
+					var input = BX("composite_only_parameters", true);
 					if (show)
 					{
-						tr.style.cssText = "";
+						input.disabled = false;
 					}
 					else
 					{
-						tr.style.display = "none";
+						input.disabled = true;
 					}
 				};
 

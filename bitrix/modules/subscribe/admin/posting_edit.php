@@ -344,7 +344,7 @@ else
 	<tr>
 		<td colspan="2">
 		<?
-		CFileMan::AddHTMLEditorFrame("BODY", $str_BODY, "BODY_TYPE", $str_BODY_TYPE, 400, "N", 0, "", "", SITE_ID);
+		CFileMan::AddHTMLEditorFrame("BODY", $str_BODY, "BODY_TYPE", $str_BODY_TYPE, array('height' => '400', 'width' => '100%'), "N", 0, "", "", SITE_ID);
 		?>
 		</td>
 	</tr>

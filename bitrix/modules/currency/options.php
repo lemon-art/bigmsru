@@ -127,10 +127,10 @@ function RestoreDefaults()
 		window.location = "<?echo $APPLICATION->GetCurPage()?>?lang=<? echo LANGUAGE_ID; ?>&mid=<? echo $module_id; ?>&RestoreDefaults=Y&<?=bitrix_sessid_get()?>";
 }
 </script>
-	<input type="submit" <?if ($moduleAccessLevel < "W") echo "disabled" ?> name="Update" value="<?echo Loc::getMessage("CUR_OPTIONS_BTN_SAVE")?>">
+	<input type="submit"<?=($moduleAccessLevel < 'W' ? ' disabled' : ''); ?> name="Update" value="<?=Loc::getMessage('CUR_OPTIONS_BTN_SAVE')?>" class="adm-btn-save" title="<?=Loc::getMessage('CUR_OPTIONS_BTN_SAVE_TITLE'); ?>">
 	<input type="hidden" name="Update" value="Y">
-	<input type="reset" name="reset" value="<?echo Loc::getMessage("CUR_OPTIONS_BTN_RESET")?>">
-	<input type="button" <?if ($moduleAccessLevel < "W") echo "disabled" ?> title="<?echo Loc::getMessage("CUR_OPTIONS_BTN_HINT_RESTORE_DEFAULT")?>" onclick="RestoreDefaults();" value="<?echo Loc::getMessage("CUR_OPTIONS_BTN_RESTORE_DEFAULT")?>">
+	<input type="reset" name="reset" value="<?=Loc::getMessage('CUR_OPTIONS_BTN_RESET')?>" title="<?=Loc::getMessage('CUR_OPTIONS_BTN_RESET_TITLE'); ?>">
+	<input type="button"<?=($moduleAccessLevel < 'W' ? ' disabled' : ''); ?> title="<?=Loc::getMessage("CUR_OPTIONS_BTN_HINT_RESTORE_DEFAULT")?>" onclick="RestoreDefaults();" value="<?=Loc::getMessage('CUR_OPTIONS_BTN_RESTORE_DEFAULT'); ?>">
 	</form>
 	<?$tabControl->End();
 

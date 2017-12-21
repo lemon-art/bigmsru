@@ -14,9 +14,6 @@ IncludeModuleLangFile(__FILE__);
 
 $APPLICATION->SetTitle(GetMessage("USMP_TITLE"));
 
-if(!$USER->CanDoOperation('install_updates'))
-	$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
-
 $sort = "sort";
 $category = "";
 $arResult = array();
@@ -65,7 +62,7 @@ if(in_array(LANGUAGE_ID, array("ru", "ua", "bg")))
 	foreach($arSort as $val)
 	{
 		$arDDSort[] = array(
-			"TEXT" => (($val == $sort) ? "<b>" : "").GetMessage("USM_SORT_".ToUpper($val)).(($val == $sort) ? "</b>" : ""),
+			"TEXT" => GetMessage("USM_SORT_".ToUpper($val)),
 			"ACTION" => $lAdmin->ActionDoGroup(0, "", "sort=".$val.(($category) > 0 ? "&category=".$category : ""))
 		);
 	}
@@ -85,6 +82,9 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/upd
 
 if(!in_array(LANGUAGE_ID, array("ru", "ua", "bg")))
 {
+	if(!$USER->CanDoOperation('install_updates'))
+		$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
+
 	include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/admin/update_system_market_notru.php");
 }
 else
@@ -169,7 +169,7 @@ else
 		$sectionName = GetMessage("USM_SEARCH");
 	
 	$arModules = array();
-	if($res = $ht->Get("http://marketplace.1c-bitrix.ru/".$url."?".$getData))
+	if($res = $ht->Get("https://marketplace.1c-bitrix.ru/".$url."?".$getData))
 	{
 		if(in_array($ht->status, array("200")))
 		{
@@ -276,9 +276,12 @@ else
 						$arM = convert2normalArray($Item["#"]);
 
 						$arM["url"] = str_replace("#module#", $arM["code"], "update_system_market.php?module=#module#&lang=".LANGUAGE_ID);
-						// $arM["urlClick"] = str_replace("#module#", $arM["code"], $sTableID.".GetAdminList('/bitrix/admin/update_system_market.php?module=#module#&lang=".LANGUAGE_ID."&".bitrix_sessid_get()."&table_id=".$sTableID.((intval($category) > 0) ? "&category=".$category : "")."'); return false;");
-						
-						$arM["urlInstall"] = "update_system_partner.php?lang=".LANGUAGE_ID."&addmodule=".$arM["code"];
+
+						if($USER->CanDoOperation('install_updates'))
+							$arM["urlInstall"] = "update_system_partner.php?lang=".LANGUAGE_ID."&addmodule=".$arM["code"];
+						else
+							$arM["urlInstall"] = $arM["url"]."&instadm=Y&".bitrix_sessid_get();
+
 						if(!empty($m[$arM["code"]]))
 						{
 							$arM["installed"] = "Y";
@@ -345,7 +348,7 @@ else
 													}
 													if($arM["canDemo"] == "Y")
 													{
-														?><div class="mp-test"><a href="<?=htmlspecialcharsbx($arM["urlInstall"])?>" target="_blank"><?=GetMessage("USM_TEST")?></a></div><?
+														?><div class="mp-test"><a href="<?=$arM["urlInstall"]?>" target="_blank"><?=GetMessage("USM_TEST")?></a></div><?
 													}
 												}
 												?>
@@ -820,6 +823,24 @@ else
 		define("ADMIN_AJAX_MODE", true);
 		require($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/include/epilog_admin_after.php");
 		die();
+	}
+
+	if($_REQUEST["instadm"] == "Y" && check_bitrix_sessid() && strlen($moduleCode) > 0 && !empty($arM))
+	{
+		CAdminNotify::Add(array(
+		    'MODULE_ID' => 'main',
+		    'TAG' => 'mp_inst_'.$moduleCode,
+		    'MESSAGE' => GetMessage("USM_NOTIF_INST", array("#USER#" => htmlspecialchars($USER->GetFullName()." (".$USER->GetLogin().")"), "#MODULE_CODE#" => htmlspecialcharsbx($arM["code"]), "#MODULE_NAME#" => htmlspecialcharsbx($arM["name"]), "#LANG#" => LANG)),
+		    'NOTIFY_TYPE' => CAdminNotify::TYPE_NORMAL,
+		    'PUBLIC_SECTION' => 'N',
+		));
+
+		$m = new CAdminMessage(array(
+			                       "TYPE" => "OK",
+			                       "MESSAGE" => GetMessage("USM_NOTIF_INST_OK"),
+			                       "HTML" => false
+		                       ));
+		echo $m->Show();
 	}
 	$lAdmin->DisplayList();
 }

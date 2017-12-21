@@ -317,7 +317,10 @@ class CAllUserCounter
 
 	public static function CheckLiveMode()
 	{
-		return CModule::IncludeModule('pull') && CPullOptions::GetNginxStatus();
+		return (
+			CModule::IncludeModule('pull')
+			&& CPullOptions::GetNginxStatus()
+		);
 	}
 
 	protected static function SendPullEvent($user_id, $code = "", $bMultiple = false)

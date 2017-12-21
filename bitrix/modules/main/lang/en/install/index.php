@@ -218,4 +218,9 @@ $MESS["MAIN_DESKTOP_INFO_TITLE"] = "Website info";
 $MESS["MAIN_DESKTOP_RSS_TITLE"] = "Bitrix News";
 $MESS["MAIN_RULE_AUTO_AUTHORITY_VOTE_NAME"] = "Autovote for user authority";
 $MESS["MAIN_SMILE_DEF_SET_NAME"] = "Default set";
-?>
+$MESS["MAIN_MAIL_CONFIRM_EVENT_TYPE_NAME"] = "Confirm sender's email address";
+$MESS["MAIN_MAIL_CONFIRM_EVENT_TYPE_DESC"] = "
+
+#EMAIL_TO# - confirmation email address
+#MESSAGE_SUBJECT# - Message subject
+#CONFIRM_CODE# - Confirmation code";

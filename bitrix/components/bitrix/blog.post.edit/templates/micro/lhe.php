@@ -301,14 +301,38 @@ if(CModule::IncludeModule("fileman"))
 			};
 		};
 
-		// Submit form by ctrl+enter
-		window.blogCtrlEnterHandler = function(e)
+		window.checkConsent = function()
 		{
-			oBlogLHE.SaveContent();
-			if (document.forms.REPLIER)
-				document.forms.REPLIER.submit();
-		};
+//			consent was set previously
+			if(document.forms.REPLIER.consent == true)
+			{
+				if(document.forms.REPLIER)
+					document.forms.REPLIER.submit();
+			}
+			else
+			{
+//				to listen consent answer if they not set already
+				var control = BX.UserConsent.load(BX("blog-post-edit-micro-form"));
 
+//				add new accept event with form submit
+				BX.addCustomEvent(
+					control,
+					BX.UserConsent.events.save,
+					BX.proxy(function () {
+						document.forms.REPLIER.consent = true; if(document.forms.REPLIER) document.forms.REPLIER.submit();
+						}, this)
+				);
+				BX.addCustomEvent(
+					control,
+					BX.UserConsent.events.refused,
+					BX.proxy(function () {document.forms.REPLIER.consent = false;}, this)
+				);
+
+//				to open consent form if needed
+				BX.onCustomEvent(this, 'OnUCFormCheckConsent', []);
+			}
+		};
+		
 		document.forms.REPLIER.onsubmit = function()
 		{
 			oBlogLHE.SaveContent();
@@ -317,6 +341,22 @@ if(CModule::IncludeModule("fileman"))
 		</script>
 		<?
 	}
+	?>
+	<script>
+//	Submit form by ctrl+enter
+	window.blogCtrlEnterHandler = function(e)
+	{
+		oBlogLHE.SaveContent();
+		<?if ($arParams['USER_CONSENT'] == 'Y' && (empty($arResult["User"]) || !$arParams['USER_CONSENT_WAS_GIVEN'])):?>
+			window.checkConsent();
+		<?else:?>
+			if (document.forms.REPLIER)
+				document.forms.REPLIER.submit();
+		<?endif;?>
+	};
+	</script>
+	<?
+	
 	AddEventHandler("fileman", "OnIncludeLightEditorScript", "CustomizeLightEditorForBlog");
 
 	$arSmiles = array();

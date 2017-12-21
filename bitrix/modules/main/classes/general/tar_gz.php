@@ -1175,7 +1175,7 @@ class CArchiver implements IBXArchive
 			if (($v_checksum == 256) && ($v_header['checksum'] == 0))
 				return true;
 
-			$this->_arErrors[] = array("INV_BLOCK_CHECK", str_replace(array("#FILE_NAME#","#CHECKSUM#","#EXP_CHECKSUM#"), array(removeDocRoot($this->io->GetLogicalName($v_data['filename'])), $v_checksum, $v_header['checksum']), GetMessage("MAIN_ARCHIVE_INV_BLOCK_CHECK")));
+			$this->_arErrors[] = array("INV_BLOCK_CHECK", GetMessage("MAIN_ARCHIVE_INV_BLOCK_CHECK1"));
 			return false;
 		}
 

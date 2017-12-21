@@ -230,15 +230,28 @@ BXBlockEditorDialogFileInput.prototype =
 {
 	getImages: function()
 	{
-		var result = [], item;
 		var itemList = this.fileInput.agent.getItems();
 		itemList.reset();
+
+		var item, ids = [];
 		while ((item = itemList.getNext()) && item)
 		{
-			result.push(this.fileList[item.id]);
+			ids.push(item.id);
 		}
 
-		return result;
+		return ids.map(function (id) {
+			var filtered = this.fileList.filter(function (file) {
+				return (file.id == id && file.url);
+			});
+			if (filtered.length > 0)
+			{
+				return filtered[filtered.length - 1].url;
+			}
+			else
+			{
+				return null;
+			}
+		}, this);
 	},
 
 	setImages: function(pathList)
@@ -323,7 +336,11 @@ BXBlockEditorDialogFileInput.prototype =
 			this.semaphoreOnQueueIsChanged = true;
 			if(item.file['tmp_url'])
 			{
-				this.fileList[id] = item.file['tmp_url'];
+				this.fileList.push({
+					'id': id,
+					'url': item.file['tmp_url'],
+					'path': item.file['tmp_url']
+				});
 			}
 
 			if(BX.util.in_array(item['type'], ['image/filedialog', 'image/medialib']))
@@ -336,11 +353,15 @@ BXBlockEditorDialogFileInput.prototype =
 
 			BX.addCustomEvent(item, 'onUploadDone', BX.delegate(function(item, data)
 			{
-				if(data['file'] && data.file['path'])
-				{
-					this.fileList[data.file.id] = data.file.path + '?' + Math.random();
-					this.onAgentChange(ctrlImage);
-				}
+				var url = data.file.files.default.url;
+				url += (url.indexOf('?') > 0 ? '&' : '?') + 'r=' + Math.random();
+
+				this.fileList.push({
+					'id': data.file.id,
+					'url': url,
+					'path': data.file.files.default.path
+				});
+				this.onAgentChange(ctrlImage);
 			}, this));
 		};
 		BX.addCustomEvent(this.fileInput.agent, "onFileIsCreated", BX.delegate(this.onFileIsCreated, this));
@@ -360,11 +381,20 @@ BXBlockEditorDialogFileInput.prototype =
 			if(inputList[i] && inputList[i].getAttribute)
 			{
 				var paramName = inputList[i].getAttribute('name');
-				postData[inputList[i].getAttribute('name')] = inputList[i].value;
+				var paramValue = inputList[i].value;
+				postData[inputList[i].getAttribute('name')] = paramValue;
 
 				if(paramName.indexOf('tmp_name') > -1)
 				{
-					isNeedToDoRequest = true;
+
+					var isSaved = this.fileList.filter(function (file) {
+						return (paramValue == file.path && file.saved);
+					}).length > 0;
+
+					if (!isSaved)
+					{
+						isNeedToDoRequest = true;
+					}
 				}
 			}
 		}
@@ -384,7 +414,7 @@ BXBlockEditorDialogFileInput.prototype =
 		});
 	},
 
-	onImagesSaved: function(data)
+	onImagesSaved: function(answer)
 	{
 		for(var tabCode in this.caller.tabList)
 		{
@@ -399,18 +429,28 @@ BXBlockEditorDialogFileInput.prototype =
 				continue;
 			}
 
-			for(var fileTmp in data)
-			{
-				if(!fileTmp)
-				{
-					continue;
-				}
+			answer.data.list.forEach(function (savedFileData) {
+				var filtered = this.fileList.filter(function (file) {
+					if (!file.path && file.url)
+					{
+						return file.url.indexOf(savedFileData.tmp) >= 0;
+					}
 
-				var fileNew = data[fileTmp];
-				item.ctrl.value = item.ctrl.value.replace(fileTmp, fileNew);
-			}
+					return savedFileData.tmp == file.path;
+				});
+				
+				filtered.forEach(function (file) {
+					item.ctrl.value = item.ctrl.value.replace(file.url, savedFileData.path);
+					file.saved = true;
+				});
+			}, this);
 
 			BX.onCustomEvent(item.ctrl, 'onSettingChangeValue');
+		}
+
+		if (answer.error)
+		{
+			alert(answer.errorText);
 		}
 	}
 };

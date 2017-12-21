@@ -1,5 +1,6 @@
 <?if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
 <?
+
 $arFieldsSorted = array(
 	"LOGIN",
 	"NAME",	
@@ -417,9 +418,9 @@ if (IsModuleInstalled('extranet') || IsModuleInstalled('mail'))
 		$strUserNameClass = "";
 	}
 }
-		
+
 $strNameFormatted = CUser::FormatName($arParams['NAME_TEMPLATE'], $arTmpUser, $bUseLogin);
-		
+
 $strPhoto = '<a href="'.$arTmpUser["DETAIL_URL"].'" class="'.$photoClass.'">'.$strPhoto.'</a>';
 
 $data_cont_class = ($GLOBALS["USER"]->IsAuthorized() && $arResult["CurrentUserPerms"]["Operations"]["videocall"] ? "bx-user-info-data-cont-video" : "bx-user-info-data-cont");
@@ -431,4 +432,12 @@ $strCard .= '<div class="bx-user-info-data-name '.$strUserNameClass.'"><a href="
 $strCard .= ($bExtranetUser ? '<div class="bx-user-info-extranet-description">'.GetMessage("MAIN_UL_EXTRANET_USER").'</div>' : '');
 $strCard .= '<div class="bx-user-info-data-info">'.$strUserFields.$strTmpUserRatings.'</div>';
 $strCard .= '</div>';
+
+static $includedOnce = false;
+if (!$includedOnce)
+{
+	$arScripts = array("BX.message({ MULSonetMessageChatTemplate: '".CUtil::JSEscape($arParams["~PATH_TO_SONET_MESSAGES_CHAT"])."', MULVideoCallTemplate: '".CUtil::JSEscape($arParams["~PATH_TO_VIDEO_CALL"])."' });");
+}
+
+$includedOnce = true;
 ?>

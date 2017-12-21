@@ -11,6 +11,11 @@ $arParamsToDelete = array(
 	"confirm_user_id",
 );
 
+if(!is_array($arParams["~AUTH_RESULT"]) && $arParams["~AUTH_RESULT"] <> '')
+{
+	$arParams["~AUTH_RESULT"] = array("MESSAGE" => $arParams["~AUTH_RESULT"], "TYPE" => "ERROR");
+}
+
 if(defined("AUTH_404"))
 {
 	$arResult["AUTH_URL"] = POST_FORM_ACTION_URI;

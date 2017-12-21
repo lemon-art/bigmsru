@@ -5,4 +5,5 @@ $MESS["SKGP_ERROR_PERSON_HAS_ORDER"] = "Error deleting a record. There are order
 $MESS["SKGP_BAD_SITE_NA"] = "No website specified.";
 $MESS["SKGP_PERSON_TYPE_NOT_FOUND"] = "Payer type is incorrect.";
 $MESS["SKGP_PERSON_TYPE_EMPTY"] = "No payer type exists.";
+$MESS["SKGP_ERROR_PERSON_HAS_ARCHIVE"] = "The archived orders use payer type ID ##ID#.";
 ?>

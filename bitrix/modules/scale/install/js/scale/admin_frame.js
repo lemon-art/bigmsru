@@ -14,7 +14,7 @@
 		timeIntervalId: "",
 		graphPageUrl: "",
 		failureAnswersCount: 0,
-		failureAnswersCountAllow: 5, // Max number bad request-answers we suppose to receive.  For example server reboots, etc.
+		failureAnswersCountAllow: 50, // Max number bad request-answers we suppose to receive.  For example server reboots, etc.
 		nextActionId: null, // for action chains
 
 		/**
@@ -196,19 +196,24 @@
 				actionsIds = {
 					MONITORING_ENABLE: true,
 					MONITORING_DISABLE: true,
-					SITE_ADD: true,
+					SITE_CREATE: true,
 					SITE_DEL: true,
 					SET_EMAIL_SETTINGS: true,
 					CRON_SET: true,
 					CRON_UNSET: true,
 					HTTP_OFF: true,
 					HTTP_ON: true,
-					UPDATE_ALL_BVMS: true
+					CERTIFICATES: true,
+					UPDATE_ALL_BVMS: true,
+					UPDATE_ALL_SYSTEMS: true 
 				},
 				s;
 
 			for(var key in actionsIds)
 			{
+				if(!actionsIds.hasOwnProperty(key))
+					continue;
+
 				var action = BX.Scale.actionsCollection.getObject(key);
 
 				if(action)
@@ -219,11 +224,61 @@
 
 						for(s in BX.Scale.sitesList)
 						{
+							if(!BX.Scale.sitesList.hasOwnProperty(s))
+								continue;
+
 							settMenu.push({
 								TEXT: BX.Scale.sitesList[s].NAME,
-								ONCLICK: "BX.Scale.actionsCollection.getObject('"+key+"').start('',{SITE_NAME_CONF: '"+BX.Scale.sitesList[s].SiteName+"', SITE_NAME: '"+BX.Scale.sitesList[s].NAME+"',SMTP_HOST: BX.Scale.sitesList['"+s+"'].SMTPHost,SMTP_PORT: BX.Scale.sitesList['"+s+"'].SMTPPort,SMTP_USER: BX.Scale.sitesList['"+s+"'].SMTPUser,EMAIL: BX.Scale.sitesList['"+s+"'].EmailAddress,SMTPTLS: (BX.Scale.sitesList['"+s+"'].SMTPTLS == 'on' ? 'Y' : 'N')});"
+								ONCLICK: "BX.Scale.actionsCollection.getObject('"+key+"').start('',{SITE_NAME_CONF: '"+BX.Scale.sitesList[s].SiteName+"', SITE_NAME: '"+BX.Scale.sitesList[s].NAME+"',SMTP_HOST: BX.Scale.sitesList['"+s+"'].SMTPHost,SMTP_PORT: BX.Scale.sitesList['"+s+"'].SMTPPort,SMTP_USER: BX.Scale.sitesList['"+s+"'].SMTPUser,EMAIL: BX.Scale.sitesList['"+s+"'].EmailAddress,SMTPTLS: (BX.Scale.sitesList['"+s+"'].SMTPTLS == 'on' ? 'Y' : 'N'), USER_PASSWORD: BX.Scale.sitesList['"+s+"'].SMTPPassword, USE_AUTH: (BX.Scale.sitesList['"+s+"'].SMTP_USE_AUTH == 'Y' ? 'Y' : 'N')});"
 							});
 						}
+
+						menuItems.push({
+							TEXT: action.name,
+							MENU: settMenu
+						});
+					}
+					else if(key == "CERTIFICATES")
+					{
+						var menu1 = [];
+
+						for(s in BX.Scale.sitesList)
+						{
+							if(!BX.Scale.sitesList.hasOwnProperty(s))
+								continue;
+
+							var email = BX.Scale.sitesList[s].EMAIL ? BX.Scale.sitesList[s].EMAIL : '',
+								domains = BX.Scale.sitesList[s].DOMAINS ? BX.Scale.sitesList[s].DOMAINS : '';
+
+							menu1.push({
+								TEXT: BX.Scale.sitesList[s].NAME,
+								ONCLICK: "BX.Scale.actionsCollection.getObject('CERTIFICATE_LETS_ENCRYPT_CONF').start('',{SITE_NAME_CONF: '"+BX.Scale.sitesList[s].SiteName+"', SITE_NAME: '"+BX.Scale.sitesList[s].NAME+"', EMAIL: '"+email+"', DNS: '"+domains+"'});"
+							});
+						}
+
+						var menu2 = [];
+
+						for(s in BX.Scale.sitesList)
+						{
+							if(!BX.Scale.sitesList.hasOwnProperty(s))
+								continue;
+
+							menu2.push({
+								TEXT: BX.Scale.sitesList[s].NAME,
+								ONCLICK: "BX.Scale.actionsCollection.getObject('CERTIFICATE_SELF_CONF').start('',{SITE_NAME_CONF: '"+BX.Scale.sitesList[s].SiteName+"', SITE_NAME: '"+BX.Scale.sitesList[s].NAME+"', PRIVATE_KEY_PATH: '"+BX.Scale.sitesList[s].HTTPSPriv+"', CERTIFICATE_PATH: '"+BX.Scale.sitesList[s].HTTPSCert+"', CERTIFICATE_CHAIN_PATH: '"+BX.Scale.sitesList[s].HTTPSCertChain+"'});"
+							});
+						}
+
+						settMenu = [
+							{
+								TEXT: BX.Scale.actionsCollection.getObject('CERTIFICATE_LETS_ENCRYPT_CONF').name,
+								MENU:menu1
+							},
+							{
+								TEXT: BX.Scale.actionsCollection.getObject('CERTIFICATE_SELF_CONF').name,
+								MENU:menu2
+							}
+						];
 
 						menuItems.push({
 							TEXT: action.name,
@@ -280,11 +335,20 @@
 							});
 						}
 					}
-					else if(key == "SITE_ADD")
+					else if(key == "SITE_CREATE")
 					{
 						menuItems.push({
 							TEXT: action.name,
-							ONCLICK: "BX.Scale.actionsCollection.getObject('"+key+"').start();"
+							MENU:[
+								{
+									TEXT: BX.Scale.actionsCollection.getObject('SITE_CREATE_LINK').name,
+									ONCLICK: "BX.Scale.actionsCollection.getObject('SITE_CREATE_LINK').start();"
+								},
+								{
+									TEXT: BX.Scale.actionsCollection.getObject('SITE_CREATE_KERNEL').name,
+									ONCLICK: "BX.Scale.actionsCollection.getObject('SITE_CREATE_KERNEL').start();"
+								}
+							]
 						});
 					}
 					else if(key == "SITE_DEL")
@@ -414,7 +478,7 @@
 
 			this.dialogWindow = new BX.CDialog({
 				title: title ? title : '',
-				content: text,
+				content: '<div style="margin-top: 9px;">'+text+'</div>',
 				resizable: false,
 				height: 200,
 				width: 400,
@@ -489,7 +553,7 @@
 		{
 			var dialog = new BX.CDialog({
 				title: BX.message("SCALE_PANEL_JS_REFRESH_TITLE"),
-				content: BX.message("SCALE_PANEL_JS_REFRESH_TEXT"),
+				content: '<div style="margin-top: 9px;">'+BX.message("SCALE_PANEL_JS_REFRESH_TEXT")+'</div>',
 				resizable: false,
 				height: 200,
 				width: 400

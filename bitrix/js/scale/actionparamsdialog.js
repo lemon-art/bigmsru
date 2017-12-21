@@ -40,7 +40,7 @@
 		this.dialogWindow = new BX.CDialog({
 			title: this.title,
 			content: content,
-			resizable: false,
+			resizable: true,
 			buttons: [{
 				title: BX.message("SCALE_PANEL_JS_APD_BUT_START"),
 				id: this.startButtonId,
@@ -71,10 +71,18 @@
 	BX.Scale.ActionParamsDialog.prototype.buildContent = function()
 	{
 		var content = BX.create('DIV'),
+			contentForm = BX.create('form',{
+				props:{
+					id: 'action_params_dialog_form'
+				}
+			}),
 			contentTable = BX.create('table');
 
 		for(var paramId in this.userParams)
 		{
+			if(!this.userParams.hasOwnProperty(paramId))
+				continue;
+
 			switch(this.userParams[paramId].TYPE)
 			{
 				case "STRING":
@@ -102,7 +110,12 @@
 				case "TEXT":
 					this.params[paramId] = new BX.Scale.ActionsParamsTypes.Text(paramId, this.userParams[paramId]);
 					break;
-
+				case "FILE":
+					this.params[paramId] = new BX.Scale.ActionsParamsTypes.File(paramId, this.userParams[paramId]);
+					break;
+				case "REMOTE_AND_LOCAL_PATH":
+					this.params[paramId] = new BX.Scale.ActionsParamsTypes.RemoteAndLocalPath(paramId, this.userParams[paramId]);
+					break;
 			}
 
 			if(this.params[paramId])
@@ -112,7 +125,8 @@
 				contentTable.appendChild(this.createParamNodeRaw(this.confirmParams[paramId]));
 		}
 
-		content.appendChild(contentTable);
+		contentForm.appendChild(contentTable);
+		content.appendChild(contentForm);
 
 		BX.addCustomEvent("BXScaleActionParamKeyUp", BX.proxy(this.onParamFieldKeyUp, this));
 
@@ -137,11 +151,16 @@
 				this.requiredParamsEmptyty[paramNode.id] = false;
 		}
 
-		var td = BX.create('td', {style: {'textAlign': 'right', 'width': '50%'}});
+		var control = paramNode.domNode;
+
+		if(paramNode.domNode.type == 'file')
+			control = BX.adminFormTools.modifyFile(control);
+
+		var td = BX.create('td', {style: {'textAlign': 'right', 'width': '40%'}});
 		td.appendChild(name);
 		tr.appendChild(td);
-		td = BX.create('td', {style: {'textAlign': 'left', 'width': '50%'}});
-		td.appendChild(paramNode.domNode);
+		td = BX.create('td', {style: {'textAlign': 'left', 'width': '60%'}});
+		td.appendChild(control);
 		tr.appendChild(td);
 
 		return tr;
@@ -206,6 +225,9 @@
 
 		for(var paramId in this.params)
 		{
+			if(!this.params.hasOwnProperty(paramId))
+				continue;
+
 			paramValue = this.params[paramId].getValue();
 
 			if(this.confirmParams[paramId])
@@ -225,6 +247,7 @@
 					return false;
 				}
 			}
+
 			paramsValues[paramId] = paramValue;
 		}
 

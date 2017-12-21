@@ -264,7 +264,7 @@ function addSelectColumn(checkBox, calc, alias, num, grouping, grouping_subtotal
 
 	// set Title
 	var titleElem = BX.findChild(newCol, {className:'reports-add-col-tit-text'}, true);
-	titleElem.innerHTML = checkBox.title;
+	titleElem.innerHTML = BX.util.htmlspecialchars(checkBox.title);
 	if (parseInt(checkBox.getAttribute('isUF')) === 1)
 		BX.addClass(titleElem, 'uf');
 
@@ -1977,7 +1977,7 @@ function fillFilterColumnEvent(e, popupElem)
 		ufName = iCheckBox.getAttribute('ufName');
 	}
 	var dashed = BX.findChild(LAST_FILCOL_CALLED, {className:'reports-dashed'});
-	dashed.innerHTML = iCheckBox.title;
+	dashed.innerHTML = BX.util.htmlspecialchars(iCheckBox.title);
 	dashed.title = iCheckBox.title;
 	dashed.setAttribute('fieldDefinition', iCheckBox.name);
 	dashed.setAttribute('fieldType', fieldType);

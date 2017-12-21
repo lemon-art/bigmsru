@@ -91,7 +91,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $_REQUEST["Export"]=="Y")
 			{
 				if(strtolower(substr($ABS_FILE_NAME, -4)) == ".xml")
 				{
-					if(@mkdir($DIR_NAME = substr($ABS_FILE_NAME, 0, -4)."_files", BX_DIR_PERMISSIONS))
+					$DIR_NAME = substr($ABS_FILE_NAME, 0, -4)."_files";
+					if(
+						is_dir($DIR_NAME)
+						|| @mkdir($DIR_NAME, BX_DIR_PERMISSIONS)
+					)
 					{
 						$_SESSION["BX_CML2_EXPORT"]["work_dir"] = $WORK_DIR_NAME;
 						$_SESSION["BX_CML2_EXPORT"]["file_dir"] = substr($DIR_NAME."/", strlen($WORK_DIR_NAME));

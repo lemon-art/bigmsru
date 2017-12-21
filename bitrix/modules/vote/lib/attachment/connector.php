@@ -80,6 +80,15 @@ abstract class Connector
 	}
 
 	/**
+	 * @param array $data Data array.
+	 * @return array
+	 */
+	public function checkFields(&$data)
+	{
+		return $data;
+	}
+
+	/**
 	 * @return Application|\Bitrix\Main\HttpApplication|\CAllMain|\CMain
 	 */
 	protected function getApplication()

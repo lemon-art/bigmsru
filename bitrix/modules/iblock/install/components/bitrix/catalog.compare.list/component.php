@@ -1,5 +1,5 @@
 <?
-if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 /** @var CBitrixComponent $this */
 /** @var array $arParams */
 /** @var array $arResult */
@@ -10,10 +10,11 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 /** @global CUser $USER */
 /** @global CMain $APPLICATION */
 
-use Bitrix\Main\Loader,
+use Bitrix\Main,
+	Bitrix\Main\Loader,
 	Bitrix\Iblock;
 
-if(!Loader::includeModule("iblock"))
+if (!Loader::includeModule("iblock"))
 {
 	ShowError(GetMessage("IBLOCK_MODULE_NOT_INSTALLED"));
 	return;
@@ -35,7 +36,7 @@ if ($arParams["PRODUCT_ID_VARIABLE"] == '' || !preg_match("/^[A-Za-z_][A-Za-z01-
 	$arParams["PRODUCT_ID_VARIABLE"] = "id";
 
 $arParams['COMPARE_URL'] = (isset($arParams['COMPARE_URL']) ? trim($arParams['COMPARE_URL']) : '');
-if($arParams['COMPARE_URL'] == '')
+if ($arParams['COMPARE_URL'] == '')
 {
 	$comparePath = "compare.php?";
 }
@@ -52,16 +53,16 @@ $arParams['COMPARE_URL'] = $comparePath.$arParams['ACTION_VARIABLE'].'=COMPARE';
 unset($comparePath);
 
 $arParams["NAME"]=trim($arParams["NAME"]);
-if($arParams["NAME"] == '')
+if ($arParams["NAME"] == '')
 	$arParams["NAME"] = "CATALOG_COMPARE_LIST";
 
-if(!isset($_SESSION[$arParams["NAME"]]) || !is_array($_SESSION[$arParams["NAME"]]))
+if (!isset($_SESSION[$arParams["NAME"]]) || !is_array($_SESSION[$arParams["NAME"]]))
 	$_SESSION[$arParams["NAME"]] = array();
 
-if(!isset($_SESSION[$arParams["NAME"]][$arParams["IBLOCK_ID"]]) || !is_array($_SESSION[$arParams["NAME"]][$arParams["IBLOCK_ID"]]))
+if (!isset($_SESSION[$arParams["NAME"]][$arParams["IBLOCK_ID"]]) || !is_array($_SESSION[$arParams["NAME"]][$arParams["IBLOCK_ID"]]))
 	$_SESSION[$arParams["NAME"]][$arParams["IBLOCK_ID"]] = array();
 
-if(!isset($_SESSION[$arParams["NAME"]][$arParams["IBLOCK_ID"]]["ITEMS"]) || !is_array($_SESSION[$arParams["NAME"]][$arParams["IBLOCK_ID"]]["ITEMS"]))
+if (!isset($_SESSION[$arParams["NAME"]][$arParams["IBLOCK_ID"]]["ITEMS"]) || !is_array($_SESSION[$arParams["NAME"]][$arParams["IBLOCK_ID"]]["ITEMS"]))
 	$_SESSION[$arParams["NAME"]][$arParams["IBLOCK_ID"]]["ITEMS"] = array();
 
 if (isset($_REQUEST[$arParams['ACTION_VARIABLE']]) && isset($_REQUEST[$arParams['PRODUCT_ID_VARIABLE']]))
@@ -74,7 +75,7 @@ if (isset($_REQUEST[$arParams['ACTION_VARIABLE']]) && isset($_REQUEST[$arParams[
 	$resultCount = 0;
 	if ($productID > 0)
 	{
-		switch ($_REQUEST[$arParams['ACTION_VARIABLE']])
+		switch (ToUpper($_REQUEST[$arParams['ACTION_VARIABLE']]))
 		{
 			case 'ADD_TO_COMPARE_LIST':
 				$actionMessage = GetMessage('CP_BCCL_MESS_SUCCESSFUL_ADD_TO_COMPARE');
@@ -207,6 +208,7 @@ if (isset($_REQUEST[$arParams['ACTION_VARIABLE']]) && isset($_REQUEST[$arParams[
 		$successfulAction = false;
 		$actionMessage = GetMessage('CP_BCCL_ERR_MESS_PRODUCT_NOT_FOUND');
 	}
+
 	if ($actionByAjax)
 	{
 		if ($successfulAction)
@@ -215,11 +217,12 @@ if (isset($_REQUEST[$arParams['ACTION_VARIABLE']]) && isset($_REQUEST[$arParams[
 			$addResult = array('STATUS' => 'ERROR', 'MESSAGE' => $actionMessage);
 
 		$APPLICATION->RestartBuffer();
-		echo CUtil::PhpToJSObject($addResult);
+		header('Content-Type: application/json');
+		echo Main\Web\Json::encode($addResult);
 		die();
 	}
 }
 
 $arResult = $_SESSION[$arParams["NAME"]][$arParams["IBLOCK_ID"]]["ITEMS"];
 
-$this->IncludeComponentTemplate();
+$this->includeComponentTemplate();

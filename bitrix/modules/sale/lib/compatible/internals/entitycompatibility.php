@@ -581,8 +581,12 @@ abstract class EntityCompatibility
 		if (!($value instanceof DateTime)
 			&& !($value instanceof Date))
 		{
+			if ($value === null)
+				return null;
+
 			if (strval($value) == '')
 				return false;
+
 
 			$setValue = null;
 

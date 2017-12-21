@@ -167,7 +167,7 @@ $vatList = array(0 => Loc::getMessage('CATALOG_ADM_IBLOCK_CATALOG_MESS_NOT_SELEC
 if ($selectFieldsMap['VAT_ID'])
 {
 	$vatIterator = Catalog\VatTable::getList(array(
-		'select' => array('ID', 'NAME'),
+		'select' => array('ID', 'NAME', 'SORT'),
 		'order' => array('SORT' => 'ASC', 'ID' => 'ASC')
 	));
 	while ($vat = $vatIterator->fetch())

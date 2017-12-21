@@ -11,9 +11,6 @@
 		this.items = null;
 		this.value = null;
 		this.tabindex = null;
-		this.searchButton = null;
-		this.clearButton = null;
-		this.removeButton = null;
 		this.classSearchButton = null;
 		this.classClearButton = '';
 		this.classSquareRemove = 'main-ui-square-delete';
@@ -24,20 +21,24 @@
 		this.classClose = 'main-ui-popup-fast-close-animation';
 		this.classInput = 'main-ui-square-search-item';
 		this.classMenuItem = 'main-ui-select-inner-item';
+		this.classLegend = 'main-ui-select-inner-item-legend';
 		this.classMenuItemText = 'main-ui-select-inner-item-element';
 		this.classMenuMultiItemText = 'main-ui-select-inner-label';
 		this.classMenuItemChecked = 'main-ui-checked';
 		this.classSquare = 'main-ui-square';
 		this.classSquareContainer = 'main-ui-square-container';
 		this.classTextValueNode = 'main-ui-select-name';
-		this.classPopupItemInput = 'main-ui-select-inner-input';
-		this.classPopupItemLabel = 'main-ui-select-inner-label';
 		this.classMultiSelect = 'main-ui-multi-select';
 		this.classSelect = 'main-ui-select';
-		this.classDelete = 'main-ui-delete';
 		this.classValueDelete = 'main-ui-control-value-delete';
 		this.classValueDeleteItem = 'main-ui-control-value-delete-item';
 		this.classSquareSelected = 'main-ui-square-selected';
+		this.classPopupItemSelected = 'main-ui-select-inner-item-selected';
+		this.classHide = 'main-ui-hide';
+		this.classFocus = 'main-ui-focus';
+		this.classDisableScroll = 'main-ui-disable-scroll';
+		this.classScroll = 'main-ui-mac-scroll';
+		this.marginForEachLevel = 10;
 		this.popup = null;
 		this.popupItems = null;
 		this.isShown = false;
@@ -49,7 +50,7 @@
 	BX.Main.ui.select.prototype = {
 		init: function(node, params)
 		{
-			var node, popup, input, popupContainer;
+			var popup, input, popupContainer;
 
 			if (BX.type.isDomNode(node))
 			{
@@ -77,13 +78,52 @@
 			BX.bind(input, 'blur', BX.delegate(this._onBlur, this));
 			BX.bind(input, 'focus', BX.delegate(this._onFocus, this));
 			BX.bind(input, 'keydown', BX.delegate(this._onKeyDown, this));
+			BX.bind(input, 'input', BX.delegate(this._onInput, this));
 			BX.bind(popupContainer, 'click', BX.delegate(this._onPopupClick, this));
 			BX.bind(node, 'click', BX.delegate(this._onControlClick, this));
+			this.controlValueDeleteButton();
+		},
+
+		controlValueDeleteButton: function()
+		{
+			if (this.isMulti)
+			{
+				if (!this.getDataValue().length)
+				{
+					BX.addClass(this.getValueDeleteButton(), this.classHide);
+				}
+				else
+				{
+					BX.removeClass(this.getValueDeleteButton(), this.classHide);
+				}
+			}
+		},
+
+		getValueDeleteButton: function()
+		{
+			if (!BX.type.isDomNode(this.valueDeleteButton))
+			{
+				this.valueDeleteButton = BX.findChild(this.getNode(), {className: this.classValueDelete}, true, false);
+			}
+
+			return this.valueDeleteButton;
+		},
+
+		_onInput: function(event)
+		{
+			var target = event.currentTarget;
+
+			clearTimeout(this.inputTimer);
+			this.inputTimer = setTimeout(function() {
+				target.value = '';
+			}, 1000);
+
+			this.selectPopupItemBySubstring(target.value);
 		},
 
 		_onKeyDown: function(event)
 		{
-			var target = event.target;
+			var target = event.currentTarget;
 			var lastSquare, data;
 
 			if (this.isMulti)
@@ -113,6 +153,181 @@
 					}
 				}
 			}
+
+			if (event.code === 'ArrowDown')
+			{
+				this.selectNextPopupItem();
+				target.value = '';
+			}
+
+			if (event.code === 'ArrowUp')
+			{
+				this.selectPrevPopupItem();
+				target.value = '';
+			}
+
+			if (event.code === 'Enter')
+			{
+				this.selectSelectedItem();
+				event.stopPropagation();
+				target.value = '';
+			}
+		},
+
+		selectPopupItemBySubstring: function(substr)
+		{
+			substr = substr.toLowerCase();
+
+			var items = this.getPopupItems();
+			var isSelected = false;
+
+			this.unselectAllPopupItems();
+
+			items.forEach(function(item) {
+				if (!isSelected && item.innerText.toLowerCase().indexOf(substr) === 0)
+				{
+					isSelected = true;
+					BX.addClass(item, this.classPopupItemSelected);
+					this.selectedItem = item;
+					this.adjustScroll();
+				}
+			}, this);
+		},
+
+		selectSelectedItem: function()
+		{
+			if (BX.type.isDomNode(this.selectedItem))
+			{
+				BX.fireEvent(this.selectedItem, 'mousedown');
+				this.selectNextPopupItem();
+			}
+		},
+
+		unselectAllPopupItems: function()
+		{
+			var items = this.getPopupItems();
+
+			if (BX.type.isArray(items))
+			{
+				items.forEach(function(current) {
+					BX.removeClass(current, this.classPopupItemSelected);
+				}, this);
+			}
+		},
+
+		resetPopupScroll: function()
+		{
+			var popup = this.getPopup();
+			var popupContainer = popup.contentContainer.parentNode;
+			BX.scrollTop(popupContainer, 0);
+		},
+
+		selectNextPopupItem: function()
+		{
+			var items = this.getPopupItems();
+			var selected, nextSelected;
+
+			if (BX.type.isArray(items))
+			{
+				selected = items.filter(function(current) {
+					return BX.hasClass(current, this.classPopupItemSelected);
+				}, this);
+
+				selected = selected.length > 0 ? selected[0] : null;
+			}
+
+			if (BX.type.isDomNode(selected))
+			{
+				nextSelected = BX.nextSibling(selected);
+
+				if (!BX.type.isDomNode(nextSelected))
+				{
+					nextSelected = items[0];
+				}
+
+				BX.removeClass(selected, this.classPopupItemSelected);
+			}
+			else
+			{
+				nextSelected = items[0];
+			}
+
+			this.selectedItem = nextSelected;
+			BX.addClass(nextSelected, this.classPopupItemSelected);
+			this.adjustScroll(false);
+		},
+
+		selectPrevPopupItem: function()
+		{
+			var items = this.getPopupItems();
+			var selected, prevSelected;
+
+			if (BX.type.isArray(items))
+			{
+				selected = items.filter(function(current) {
+					return BX.hasClass(current, this.classPopupItemSelected);
+				}, this);
+
+				selected = selected.length > 0 ? selected[0] : null;
+			}
+
+			if (BX.type.isDomNode(selected))
+			{
+				prevSelected = BX.previousSibling(selected);
+
+				if (!BX.type.isDomNode(prevSelected))
+				{
+					prevSelected = items[items.length-1];
+				}
+
+				BX.removeClass(selected, this.classPopupItemSelected);
+			}
+			else
+			{
+				prevSelected = items[items.length-1];
+			}
+
+			this.selectedItem = prevSelected;
+			BX.addClass(prevSelected, this.classPopupItemSelected);
+			this.adjustScroll(true);
+		},
+
+		adjustScroll: function(isTop)
+		{
+			var popupContainer = this.getPopup().contentContainer.parentNode;
+			var itemRect = BX.pos(this.selectedItem);
+			var popupRect = BX.pos(popupContainer);
+			var scrollTop = BX.scrollTop(popupContainer);
+
+			if (!isTop)
+			{
+				if (itemRect.bottom > popupRect.bottom)
+				{
+					scrollTop = scrollTop + (itemRect.bottom - popupRect.bottom);
+					BX.scrollTop(popupContainer, scrollTop);
+				}
+
+				if (itemRect.top < popupRect.top)
+				{
+					scrollTop = scrollTop - itemRect.bottom;
+					BX.scrollTop(popupContainer, scrollTop);
+				}
+			}
+			else
+			{
+				if (itemRect.top < popupRect.top)
+				{
+					scrollTop = scrollTop - (popupRect.top - itemRect.top);
+					BX.scrollTop(popupContainer, scrollTop);
+				}
+
+				if (itemRect.bottom > popupRect.bottom)
+				{
+					scrollTop = scrollTop + (itemRect.bottom - popupRect.bottom);
+					BX.scrollTop(popupContainer, scrollTop);
+				}
+			}
+
 		},
 
 		isSelected: function(square)
@@ -145,43 +360,47 @@
 
 		_onMenuItemClick: function(event)
 		{
-			var target = event.target;
+			event.stopPropagation();
+			event.preventDefault();
+
+			var target = event.currentTarget;
 			var data, square;
 
-			if (!BX.hasClass(target, this.classMenuItem))
+			if (!this.isLegend(target))
 			{
-				target = BX.findParent(target, {class: this.classMenuItem});
-			}
+				try {
+					data = JSON.parse(BX.data(target, 'item'));
+				} catch (err) {}
 
-			try {
-				data = JSON.parse(BX.data(target, 'item'));
-			} catch (err) {}
-
-			if (this.isMulti)
-			{
-				square = this.getSquare(data);
-
-				if (!BX.type.isDomNode(square))
+				if (this.isMulti)
 				{
-					this.selectItem(data);
+					square = this.getSquare(data);
+
+					if (!BX.type.isDomNode(square))
+					{
+						this.selectItem(data);
+					}
+					else
+					{
+						this.unselectItem(data);
+					}
+
+					this.adjustPopupPosition();
+					this.inputFocus();
 				}
 				else
 				{
-					this.unselectItem(data);
+					this.uncheckAllItems();
+					this.checkItem(target);
+					this.updateDataValue(data);
+					this.updateValue(data);
+					this.closePopup();
+					this.inputBlur();
 				}
 
-				this.adjustPopupPosition();
-				this.inputFocus();
+				BX.onCustomEvent(window, 'UI::Select::change', [this, data]);
+				this.controlValueDeleteButton();
 			}
-			else
-			{
-				this.updateDataValue(data);
-				this.updateValue(data);
-				this.closePopup();
-				this.inputBlur();
-			}
-
-			BX.onCustomEvent(window, 'UI::Select::change', [this, data]);
 		},
 
 		selectItem: function(data)
@@ -206,6 +425,16 @@
 			this.removeSquare(square);
 			this.uncheckItem(popupItem);
 			this.removeMultiValue(data);
+		},
+
+		uncheckAllItems: function()
+		{
+			var items = this.getPopupItems();
+
+			if (BX.type.isArray(items))
+			{
+				items.forEach(this.uncheckItem, this);
+			}
 		},
 
 		addMultiValue: function(data)
@@ -235,10 +464,9 @@
 
 		getPopupItems: function()
 		{
-			var popupContainer = this.getPopup().popupContainer;
-
 			if (!BX.type.isArray(this.popupItems))
 			{
+				var popupContainer = this.getPopup().popupContainer;
 				this.popupItems = BX.findChild(popupContainer, {class: this.classMenuItem}, true, true);
 			}
 
@@ -276,8 +504,8 @@
 		updateDataValue: function(data)
 		{
 			var node = this.getNode();
-			var dataString = JSON.stringify(data);
-			node.dataset.value = dataString;
+			node.dataset.value = JSON.stringify(data);
+			this.controlValueDeleteButton();
 		},
 
 		getDataValue: function()
@@ -300,15 +528,14 @@
 		getTextValueNode: function()
 		{
 			var node = this.getNode();
-			var textValueNode = BX.findChild(node, {class: this.classTextValueNode}, true, false);
 
-			return textValueNode;
+			return BX.findChild(node, {class: this.classTextValueNode}, true, false);
 		},
 
 		updateValue: function(data)
 		{
 			var textValueNode = this.getTextValueNode();
-			BX.html(textValueNode, data.NAME);
+			BX.html(textValueNode, BX.util.htmlspecialchars(data.NAME));
 		},
 
 		adjustPopupPosition: function()
@@ -321,30 +548,31 @@
 
 		_onControlClick: function(event)
 		{
-			var squareData, square, squares;
 			var target = event.target;
-
-			if (!this.getPopup().isShown() || this.isMulti)
-			{
-				this.inputFocus();
-			}
-			else
-			{
-				this.inputBlur();
-			}
 
 			if (!BX.hasClass(target, this.classValueDelete) && !BX.hasClass(target, this.classValueDeleteItem))
 			{
 				if (BX.hasClass(target, this.classSquareRemove))
 				{
-					square = target.parentNode;
-					squareData = JSON.parse(BX.data(square, 'item'));
+					var square = target.parentNode;
+					var squareData = JSON.parse(BX.data(square, 'item'));
 					this.unselectItem(squareData);
+				}
+				else
+				{
+					if (!this.getPopup().isShown())
+					{
+						this.inputFocus();
+					}
+					else
+					{
+						this.inputBlur();
+					}
 				}
 			}
 			else
 			{
-				squares = this.getSquares();
+				var squares = this.getSquares();
 
 				(squares || []).forEach(function(current) {
 					squareData = JSON.parse(BX.data(current, 'item'));
@@ -384,7 +612,7 @@
 			}
 		},
 
-		_onPopupClick: function(event)
+		_onPopupClick: function()
 		{
 			this.inputFocus();
 		},
@@ -393,21 +621,15 @@
 		{
 			var popup = this.getPopup();
 
-			clearTimeout(this.blurTimer);
-
 			if (!popup.isShown())
 			{
 				this.showPopup();
 			}
 		},
 
-		_onBlur: function(event)
+		_onBlur: function()
 		{
-			var self = this;
-
-			this.blurTimer = setTimeout(function() {
-				self.closePopup();
-			}, 50);
+			this.closePopup();
 		},
 
 		getInput: function()
@@ -481,22 +703,39 @@
 				}
 			});
 
+			if ('LEGEND' in itemData && itemData.LEGEND === true)
+			{
+				BX.addClass(itemContainer, this.classLegend);
+			}
+
+			if ('DEPTH' in itemData)
+			{
+				var depth = parseInt(itemData.DEPTH);
+				depth = BX.type.isNumber(depth) ? depth * this.marginForEachLevel : 0;
+				BX.style(itemContainer, 'margin-left', depth + 'px');
+			}
+
 			if (!this.isMulti)
 			{
 				itemText = BX.create('div', {props: {
 					className: this.classMenuItemText
-				}, text: itemData.NAME});
+				}, html: BX.util.htmlspecialchars(itemData.NAME)});
 			}
 			else
 			{
 				itemText = BX.create('div', {props: {
 					className: this.classMenuMultiItemText
-				}, text: itemData.NAME});
+				}, html: BX.util.htmlspecialchars(itemData.NAME)});
 			}
 
 			BX.append(itemText, itemContainer);
 
 			return itemContainer;
+		},
+
+		isLegend: function(item)
+		{
+			return BX.hasClass(item, this.classLegend);
 		},
 
 		createSquare: function(data)
@@ -520,7 +759,7 @@
 				props: {
 					className: this.classSquareText
 				},
-				text: data.NAME
+				html: BX.util.htmlspecialchars(data.NAME)
 			});
 
 			var squareRemove = BX.create('span', {
@@ -556,23 +795,33 @@
 		{
 			var popup = this.getPopup();
 			var popupContainer = popup.popupContainer;
-			var closeDelay = 0;
+			var closeDelay = parseFloat(BX.style(popupContainer, 'animation-duration'));
 			var self = this;
 
-			BX.removeClass(popupContainer, this.classShow);
-			BX.addClass(popupContainer, this.classClose);
-
-			closeDelay = parseFloat(BX.style(popupContainer, 'animation-duration'));
-
-			if (BX.type.isNumber(closeDelay))
+			if (!BX.hasClass(document.documentElement, 'bx-ie'))
 			{
-				closeDelay = closeDelay * 1000;
+				BX.removeClass(popupContainer, this.classShow);
+				BX.addClass(popupContainer, this.classClose);
+
+				if (BX.type.isNumber(closeDelay))
+				{
+					closeDelay = closeDelay * 1000;
+				}
+
+				setTimeout(function() {
+					popup.close();
+					self.inputBlur();
+				}, closeDelay);
+			}
+			else
+			{
+				popup.close();
 			}
 
-			setTimeout(function() {
-				popup.close();
-				self.inputBlur();
-			}, closeDelay);
+			BX.removeClass(this.getNode(), this.classFocus);
+
+			this.unselectAllPopupItems();
+			this.resetPopupScroll();
 		},
 
 		getNode: function()
@@ -582,18 +831,69 @@
 
 		showPopup: function()
 		{
-			var self = this;
 			var popup = this.getPopup();
-			var input = this.getInput();
 			var popupContainer = popup.popupContainer;
+			var squares, squareData, currentPopupItem, currentPopupItemPos;
 
 			if (!popup.isShown())
 			{
 				this.adjustPopupPosition();
 				popup.show();
-				BX.removeClass(popupContainer, this.classClose);
-				BX.addClass(popupContainer, self.classShow);
+
+				if (!BX.hasClass(document.documentElement, 'bx-ie'))
+				{
+					BX.removeClass(popupContainer, this.classClose);
+					BX.addClass(popupContainer, this.classShow);
+				}
+
+				BX.addClass(this.getNode(), this.classFocus);
+
+				if (this.isMulti)
+				{
+					squares = this.getSquares();
+					(squares || []).forEach(function(current) {
+						squareData = JSON.parse(BX.data(current, 'item'));
+						this.checkItem(this.getPopupItem(squareData));
+					}, this);
+				}
+				else
+				{
+					currentPopupItem = this.getPopupItem(this.getDataValue());
+					currentPopupItemPos = BX.pos(currentPopupItem, popupContainer);
+					BX.scrollTop(popupContainer, currentPopupItemPos.top);
+					this.checkItem(currentPopupItem);
+				}
+
+				if (!this.trackMouse && this.getPopupItemsCount() > 5)
+				{
+					BX.addClass(popupContainer, this.classScroll);
+					BX.bind(popupContainer, 'mouseenter', BX.delegate(this._onMouseOver, this));
+					BX.bind(popupContainer, 'mouseleave', BX.delegate(this._onMouseOut, this));
+					this.trackMouse = true;
+				}
 			}
+		},
+
+		_onMouseOver: function()
+		{
+			var popupContainer = this.getPopup().popupContainer;
+			var containerHeight = BX.height(popupContainer);
+			var contentHeight = BX.height(BX.firstChild(popupContainer));
+			var scrollDist = contentHeight - containerHeight;
+
+			popupContainer.onmousewheel = function(event)
+			{
+				if ((event.deltaY < 0 && this.scrollTop <= 0) ||
+					(event.deltaY > 0 && this.scrollTop >= scrollDist)) {
+					event.preventDefault();
+				}
+			}
+		},
+
+		_onMouseOut: function()
+		{
+			var popupContainer = this.getPopup().popupContainer;
+			popupContainer.onmousewheel = null;
 		},
 
 		getItems: function()
@@ -630,10 +930,19 @@
 			var container = BX.create('div');
 			var item;
 
+			if (this.isMulti)
+			{
+				BX.addClass(container, 'popup-multiselect-content');
+			}
+			else
+			{
+				BX.addClass(container, 'popup-select-content');
+			}
+
 			items.forEach(function(current) {
 				item = this.createItem(current);
 				BX.append(item, container);
-				BX.bind(item, 'click', BX.delegate(this._onMenuItemClick, this));
+				BX.bind(item, 'mousedown', BX.delegate(this._onMenuItemClick, this));
 			}, this);
 
 			return container;
@@ -669,6 +978,19 @@
 			}
 
 			return this.popup;
+		},
+
+		getPopupItemsCount: function()
+		{
+			var popupItems;
+
+			if (!this.popupItemsCount)
+			{
+				popupItems = this.getPopupItems();
+				this.popupItemsCount = BX.type.isArray(popupItems) ? popupItems.length : 0;
+			}
+
+			return this.popupItemsCount;
 		},
 
 
@@ -764,6 +1086,7 @@
 		{
 			valueDelete = {
 				block: 'main-ui-control-value-delete',
+				mix: ['main-ui-hide'],
 				tag: 'span',
 				content: {
 					block: 'main-ui-control-value-delete-item'
@@ -778,11 +1101,8 @@
 
 
 	/**
-	 * BX.decl control declaration
+	 *
 	 * @param data
-	 * @returns {{block: string, mix: string[], attrs: {data-name: *, data-params:
-	 *     (data.params|{getSonetGroupAvailableList, getLivefeedUrl, checkParams}|*), data-items: *, data-value:
-	 *     string}, content: Array}|*}
 	 */
 	BX.Main.ui.block['main-ui-select'] = function(data)
 	{

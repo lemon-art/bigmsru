@@ -231,13 +231,13 @@ $isDocumentConduct = false;
 
 if($ID > 0 || isset($_REQUEST["AJAX_MODE"]))
 {
+	$arAllDocumentElement = array();
 	if($ID > 0)
 	{
 		$dbDocument = CCatalogDocs::getList(array(), array("ID" => $ID), false, false, array("DOC_TYPE", "SITE_ID", "CONTRACTOR_ID", "CURRENCY", "TOTAL", "STATUS"));
 		if($arDocument = $dbDocument->Fetch())
 		{
 			$isDocumentConduct = ($arDocument["STATUS"] == 'Y');
-			$arAllDocumentElement = array();
 			foreach($arDocument as $key => $value)
 				$arResult[$key] = $value;
 			unset($key, $value);
@@ -424,6 +424,7 @@ if(!$bReadOnly)
 	);
 }
 
+$visibleHeaderIds = array();
 $arHeaders = array(
 	array(
 		"id" => "IMAGE",
@@ -451,6 +452,7 @@ if(isset($requiredFields["RESERVED"]))
 		"content" => GetMessage("CAT_DOC_PRODUCT_RESERVED"),
 		"default" => ($requiredFields["RESERVED"]["required"] == 'Y')
 	);
+	$visibleHeaderIds[] = "RESERVED";
 }
 if(isset($requiredFields["AMOUNT"]))
 {
@@ -459,49 +461,61 @@ if(isset($requiredFields["AMOUNT"]))
 		"content" => GetMessage("CAT_DOC_PRODUCT_AMOUNT"),
 		"default" => $requiredFields["AMOUNT"]["required"],
 	);
+	$visibleHeaderIds[] = "AMOUNT";
 }
 if(isset($requiredFields["NET_PRICE"]))
 {
 	$arHeaders[] = array(
 		"id" => "PURCHASING_PRICE",
 		"content" => GetMessage("CAT_DOC_PRODUCT_PRICE"),
-		"default" => ($requiredFields["NET_PRICE"]["required"] == 'Y') ? true : false
+		"default" => ($requiredFields["NET_PRICE"]["required"] == 'Y')
 	);
+	$visibleHeaderIds[] = "PURCHASING_PRICE";
 }
 if(isset($requiredFields["TOTAL"]))
 {
 	$arHeaders[] = array(
 		"id" => "SUMM",
 		"content" => GetMessage("CAT_DOC_PRODUCT_SUMM"),
-		"default" => ($requiredFields["TOTAL"]["required"] == 'Y') ? true : false
+		"default" => ($requiredFields["TOTAL"]["required"] == 'Y')
 	);
+	$visibleHeaderIds[] = "SUMM";
 }
 if(isset($requiredFields["STORE_FROM"]))
 {
 	$arHeaders[] = array(
 		"id" => "STORE_FROM",
 		"content" => GetMessage("CAT_DOC_STORE_FROM"),
-		"default" => ($requiredFields["STORE_FROM"]["required"] == 'Y') ? true : false
+		"default" => ($requiredFields["STORE_FROM"]["required"] == 'Y')
 	);
+	$visibleHeaderIds[] = "STORE_FROM";
 }
 if(isset($requiredFields["STORE_TO"]))
 {
 	$arHeaders[] = array(
 		"id" => "STORE_TO",
 		"content" => GetMessage("CAT_DOC_STORE_TO"),
-		"default" => ($requiredFields["STORE_TO"]["required"] == 'Y') ? true : false
+		"default" => ($requiredFields["STORE_TO"]["required"] == 'Y')
 	);
+	$visibleHeaderIds[] = "STORE_TO";
 }
 if(isset($requiredFields["BAR_CODE"]))
 {
 	$arHeaders[] = array(
 		"id" => "BARCODE",
 		"content" => GetMessage("CAT_DOC_BARCODE"),
-		"default" => ($requiredFields["BAR_CODE"]["required"] == 'Y') ? true : false
+		"default" => ($requiredFields["BAR_CODE"]["required"] == 'Y')
 	);
+	$visibleHeaderIds[] = "BARCODE";
 }
 
 $lAdmin->AddHeaders($arHeaders);
+if (!empty($visibleHeaderIds))
+{
+	foreach ($visibleHeaderIds as $headerId)
+		$lAdmin->AddVisibleHeaderColumn($headerId);
+	unset($headerId);
+}
 
 $isDisable = $bReadOnly ? " disabled" : "";
 $maxId = 0;
@@ -574,17 +588,17 @@ if(is_array($arResult["ELEMENT"]))
 				$buttonValue = ($bReadOnly) ? GetMessage('CAT_DOC_BARCODES_VIEW') : GetMessage('CAT_DOC_BARCODES_ENTER');
 				if(empty($barcode))
 					$barcode = '';//GetMessage('CAT_DOC_POPUP_TITLE');
-				$inputBarcode = '<input type="button" value="'.$buttonValue.'" onclick="enterBarcodes('.$arRes['ID'].');"><input '.$readOnly.' type="hidden" value="'.$barcode.'" type="text" name="PRODUCT['.$arRes['ID'].'][BARCODE]" id="PRODUCT['.$arRes['ID'].'][BARCODE]" onchange="recalculateSum('.$arRes['ID'].');" size="20">';
+				$inputBarcode = '<input type="button" value="'.$buttonValue.'" onclick="enterBarcodes('.$arRes['ID'].');"><input '.$readOnly.' type="hidden" value="'.htmlspecialcharsbx($barcode).'" type="text" name="PRODUCT['.$arRes['ID'].'][BARCODE]" id="PRODUCT['.$arRes['ID'].'][BARCODE]" onchange="recalculateSum('.$arRes['ID'].');" size="20">';
 			}
 			elseif(count($value['BARCODE']) < 2)
-				$inputBarcode = $barcode;
+				$inputBarcode = htmlspecialcharsbx($barcode);
 			else
 			{
 				$inputBarcode = '<select style="max-width:150px; width:150px;" id="PRODUCT['.$arRes['ID'].'][BARCODE]" name="PRODUCT['.$arRes['ID'].'][BARCODE]"> ';
 				foreach($value['BARCODE'] as $singleCode)
 				{
 					$selected = ($value["SELECTED_BARCODE"] == $singleCode) ? ' selected' : '';
-					$inputBarcode .= '<option value="'.$singleCode.'"'.$selected.'>'.$singleCode.'</option>';
+					$inputBarcode .= '<option value="'.htmlspecialcharsbx($singleCode).'"'.$selected.'>'.htmlspecialcharsbx($singleCode).'</option>';
 				}
 				$inputBarcode .= '</select>';
 			}
@@ -719,11 +733,11 @@ CAdminMessage::ShowMessage($errorMessage);
 					<tr class="adm-detail-required-field">
 						<td width="40%" class="adm-detail-content-cell-l"><?= GetMessage("CAT_DOC_SITE_ID") ?>:</td>
 						<td width="60%" class="adm-detail-content-cell-r">
-							<select id="SITE_ID" name="SITE_ID" <?=$isDisable?>/>
+							<select id="SITE_ID" name="SITE_ID" <?=$isDisable?>>
 							<?foreach($arSitesShop as $key => $val)
 							{
 								$selected = ($val['ID'] == $str_SITE_ID) ? 'selected' : '';
-								echo"<option ".$selected." value=".$val['ID'].">".$val["NAME"]." (".$val["ID"].")"."</option>";
+								echo"<option ".$selected." value=".htmlspecialcharsbx($val['ID']).">".htmlspecialcharsbx($val["NAME"]." (".$val["ID"].")")."</option>";
 							}
 							?>
 							</select>
@@ -734,7 +748,7 @@ CAdminMessage::ShowMessage($errorMessage);
 							<td width="40%" class="adm-detail-content-cell-l"><?= GetMessage("CAT_DOC_CONTRACTOR") ?>:</td>
 							<td width="60%" class="adm-detail-content-cell-r">
 								<?if(count($arContractors) > 0 && is_array($arContractors)):?>
-									<select style="max-width:300px"  name="CONTRACTOR_ID" <?=$isDisable?>/>
+									<select style="max-width:300px"  name="CONTRACTOR_ID" <?=$isDisable?>>
 									<?foreach($arContractors as $key => $val)
 									{
 										$selected = ($val['ID'] == $str_CONTRACTOR_ID) ? 'selected' : '';

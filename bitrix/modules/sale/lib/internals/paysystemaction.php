@@ -114,6 +114,10 @@ class PaySystemActionTable extends \Bitrix\Main\Entity\DataManager
 				'data_type' => 'boolean',
 				'values' => array('N', 'Y')
 			),
+			'CAN_PRINT_CHECK' => array(
+				'data_type' => 'boolean',
+				'values' => array('N', 'Y')
+			),
 		);
 	}
 

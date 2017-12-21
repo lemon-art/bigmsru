@@ -354,7 +354,7 @@ $tabControl->BeginNextTab();
 		<td width="60%"><?=InputType("checkbox", "ACTIVE", "Y", $arQuestion["ACTIVE"], false)?></td>
 	</tr>
 	<tr><td><?=GetMessage("VOTE_C_SORT")?></td>
-		<td><input type="text" id="C_SORT" name="C_SORT" size="5" maxlength="18" value="<?=$arQuestion["C_SORT"]?>" /></td>
+		<td><input type="text" id="C_SORT" name="C_SORT" size="5" maxlength="18" value="<?=intval($arQuestion["C_SORT"])?>" /></td>
 	</tr>
 	<tr>
 		<td><?=GetMessage("VOTE_DIAGRAM")?></td>

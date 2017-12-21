@@ -138,7 +138,7 @@ class CAllSalePaySystemAction
 			{
 				$res = $GLOBALS["SALE_INPUT_PARAMS"][$type][$value];
 			}
-			elseif ($type == "SELECT" || $type == "RADIO" || $type == "FILE" || $type == "Y/N" || $type == "ENUM")
+			elseif ($type == "SELECT" || $type == "RADIO" || $type == "FILE" || $type == "Y/N" || $type == "ENUM" || $type == "CHECKBOX" || $type == "USER_COLUMN_LIST")
 			{
 				$res = $GLOBALS["SALE_CORRESPONDENCE"][$key]["VALUE"];
 			}
@@ -192,7 +192,7 @@ class CAllSalePaySystemAction
 				"TAG" => $tag,
 				"MODULE_ID" => "SALE",
 				"ENABLE_CLOSE" => "Y",
-				"TYPE" => CAdminNotify::TYPE_ERROR
+				"NOTIFY_TYPE" => CAdminNotify::TYPE_ERROR
 			)
 		);
 	}
@@ -205,7 +205,7 @@ class CAllSalePaySystemAction
 		$GLOBALS["SALE_INPUT_PARAMS"] = array();
 		$GLOBALS["SALE_CORRESPONDENCE"] = array();
 
-		if (!is_array($arOrder) || count($arOrder) <= 0 || !array_key_exists("ID", $arOrder))
+		if ((!is_array($arOrder) || count($arOrder) <= 0 || !array_key_exists("ID", $arOrder)) && $orderID > 0)
 		{
 			$arOrder = array();
 
@@ -320,7 +320,7 @@ class CAllSalePaySystemAction
 		$shipment = \Bitrix\Sale\Internals\ShipmentTable::getRow(
 			array(
 				'select' => array('DELIVERY_ID'),
-				'filter' => array('ORDER_ID' => $orderID, 'SYSTEM' => 'N')
+				'filter' => array('=ORDER_ID' => $orderID, '=SYSTEM' => 'N')
 			)
 		);
 
@@ -361,7 +361,25 @@ class CAllSalePaySystemAction
 
 			$params = CSalePaySystemAction::getParamsByConsumer('PAYSYSTEM_'.$paySystemId, $personTypeId);
 			foreach ($params as $key => $value)
-				$params[$key]['~VALUE'] = htmlspecialcharsbx($value['VALUE']);
+			{
+				if ($key === 'USER_COLUMNS')
+				{
+					$userColumns = unserialize($value['VALUE']);
+					if ($userColumns)
+					{
+						foreach ($userColumns as $code => $column)
+						{
+							$userColumns['PROPERTY_'.$code] = $column;
+							unset($userColumns[$code]);
+						}
+					}
+					$params[$key]['VALUE'] = $params[$key]['~VALUE'] = $userColumns;
+				}
+				else
+				{
+					$params[$key]['~VALUE'] = htmlspecialcharsbx($value['VALUE']);
+				}
+			}
 
 			$GLOBALS["SALE_CORRESPONDENCE"] = $params;
 		}
@@ -432,6 +450,10 @@ class CAllSalePaySystemAction
 					return $GLOBALS['SALE_INPUT_PARAMS']['BANK_DETAIL'][$providerValue];
 				}
 			);
+		}
+		if(isset($relatedData["TEMPLATE_PARAMS"]) && is_array($relatedData["TEMPLATE_PARAMS"]))
+		{
+			$GLOBALS["SALE_CORRESPONDENCE"] = array_merge($GLOBALS["SALE_CORRESPONDENCE"], $relatedData["TEMPLATE_PARAMS"]);
 		}
 		if(isset($relatedData["CRM_COMPANY"]) && is_array($relatedData["CRM_COMPANY"]))
 		{
@@ -835,13 +857,30 @@ class CAllSalePaySystemAction
 			foreach ($consumers[$consumer]['CODES'] as $key => $val)
 			{
 				$map = \Bitrix\Sale\BusinessValue::getMapping($key, $consumer, $personTypeId);
-				if ($map['PROVIDER_KEY'] == 'INPUT')
-					$map['PROVIDER_KEY'] = $val['INPUT']['TYPE'];
+				if ($map)
+				{
+					if ($map['PROVIDER_KEY'] == 'INPUT')
+					{
+						if ($val['INPUT']['TYPE'] == 'ENUM')
+							$map['PROVIDER_KEY'] = 'SELECT';
+						elseif ($val['INPUT']['TYPE'] == 'Y/N')
+							$map['PROVIDER_KEY'] = 'CHECKBOX';
+						else
+							$map['PROVIDER_KEY'] = $val['INPUT']['TYPE'];
+					}
 
-				$params[$key] = array(
-					"TYPE" => ($map['PROVIDER_KEY'] != 'VALUE') ? $map['PROVIDER_KEY'] : '',
-					"VALUE" => $map["PROVIDER_VALUE"]
-				);
+					$params[$key] = array(
+						"TYPE" => ($map['PROVIDER_KEY'] != 'VALUE') ? $map['PROVIDER_KEY'] : '',
+						"VALUE" => $map["PROVIDER_VALUE"]
+					);
+				}
+				else
+				{
+					$params[$key] = array(
+						"TYPE" => $val['TYPE'],
+						"VALUE" => $val["VALUE"]
+					);
+				}
 			}
 		}
 
@@ -1037,7 +1076,7 @@ class CAllSalePaySystemAction
 		}
 	}
 
-	function prepareParamsForBusVal($id, $fields)
+	public static function prepareParamsForBusVal($id, $fields)
 	{
 		if (!array_key_exists('PERSON_TYPE_ID', $fields))
 		{
@@ -1048,7 +1087,7 @@ class CAllSalePaySystemAction
 
 		$itemParams = unserialize($fields['PARAMS']);
 
-		$result=  array();
+		$result = array();
 
 		$result[] = array(
 			'CODE' => 'BX_PAY_SYSTEM_ID',
@@ -1064,11 +1103,17 @@ class CAllSalePaySystemAction
 			foreach ($itemParams as $code => $param)
 			{
 				if ($param['TYPE'] == '')
+				{
 					$type = 'VALUE';
-				elseif ($param['TYPE'] == 'FILE' || $param['TYPE'] == 'SELECT')
+				}
+				elseif ($param['TYPE'] == 'FILE' || $param['TYPE'] == 'SELECT' || $param['TYPE'] == 'ENUM' || $param['TYPE'] == 'CHECKBOX' || $param['TYPE'] == 'USER_COLUMN_LIST')
+				{
 					$type = 'INPUT';
+				}
 				else
+				{
 					$type = $param['TYPE'];
+				}
 
 				$result[] = array(
 					'CODE' => $code,

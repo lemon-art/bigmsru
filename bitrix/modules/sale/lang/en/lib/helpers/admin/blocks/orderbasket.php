@@ -75,4 +75,6 @@ $MESS["SALE_ORDER_BASKET_PROMO"] = "Coupon";
 $MESS["SALE_ORDER_BASKET_ACTUALIZE_DATA"] = "Recalculate";
 $MESS["SALE_ORDER_BASKET_ADD_COUPON_ERROR"] = "Error adding coupon";
 $MESS["SALE_ORDER_BASKET_COUPONS_NOTE"] = "To use a price type specific coupon, enter the coupon code and recalculate the order.";
+$MESS["SALE_ORDER_BASKET_NO_NAME"] = "Untitled";
+$MESS["SALE_ORDER_DEPRECATED_DISCOUNT_VALUE"] = "Order total discount";
 ?>

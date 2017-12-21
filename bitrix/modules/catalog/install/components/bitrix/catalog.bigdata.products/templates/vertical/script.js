@@ -1298,12 +1298,7 @@
 				if (this.basketData.useProps && !this.basketData.emptyProps)
 				{
 					this.InitPopupWindow();
-					this.obPopupWin.setTitleBar({
-						content: BX.create('div', {
-							style: { marginRight: '30px', whiteSpace: 'nowrap' },
-							text: BX.message('CBD_TITLE_BASKET_PROPS')
-						})
-					});
+                    this.obPopupWin.setTitleBar(BX.message('CBD_TITLE_BASKET_PROPS'));
 					if (BX(this.visual.BASKET_PROP_DIV))
 					{
 						contentBasketProps = BX(this.visual.BASKET_PROP_DIV).innerHTML;
@@ -1365,7 +1360,7 @@
 						);
 					break;
 			}
-			strContent = '<div style="width: 96%; margin: 10px 2%; text-align: center;"><img src="'+strPict+'" height="130" style="max-height:130px"><p>'+strName+'</p></div>';
+            strContent = '<div style="width: 100%; margin: 0; text-align: center;"><img src="'+strPict+'" height="130" style="max-height:130px"><p>'+strName+'</p></div>';
 			buttons = [
 				new BasketButton({
 					ownerClass: this.obProduct.parentNode.parentNode.parentNode.className,
@@ -1392,12 +1387,7 @@
 			];
 		}
 		this.InitPopupWindow();
-		this.obPopupWin.setTitleBar({
-			content: BX.create('div', {
-				style: { marginRight: '30px', whiteSpace: 'nowrap' },
-				text: (successful ? BX.message('CBD_TITLE_SUCCESSFUL') : BX.message('CBD_TITLE_ERROR'))
-			})
-		});
+        this.obPopupWin.setTitleBar(successful ? BX.message('CBD_TITLE_SUCCESSFUL') : BX.message('CBD_TITLE_ERROR'));
 		this.obPopupWin.setContent(strContent);
 		this.obPopupWin.setButtons(buttons);
 		this.obPopupWin.show();
@@ -1416,7 +1406,8 @@
 			overlay : true,
 			closeByEsc: true,
 			titleBar: true,
-			closeIcon: {top: '10px', right: '10px'}
+            closeIcon: true,
+            contentColor: 'white'
 		});
 	};
 })(window);
@@ -1491,10 +1482,9 @@ function bx_rcm_get_from_cloud(injectId, rcmParameters, localAjaxData)
 
 	var onready = function(response) {
 
-		if (!response.items)
-		{
-			response.items = [];
-		}
+		if ((!BX.type.isArray(response.items) && !BX.type.isPlainObject(response.items)) || !BX.type.isNotEmptyString(response.id))
+			return;
+
 		BX.ajax({
 			url: '/bitrix/components/bitrix/catalog.bigdata.products/ajax.php?'+BX.ajax.prepareData({'AJAX_ITEMS': response.items, 'RID': response.id}),
 			method: 'POST',

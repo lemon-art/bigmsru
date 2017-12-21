@@ -1103,8 +1103,8 @@ class CIBlockDocument
 						{
 							if($propertyValue["MULTIPLE"] == "Y")
 							{
-								$arResult["PROPERTY_".$propertyKey][$user['ID']] = "user_".intval($user['ID']);
-								$arResult["PROPERTY_".$propertyKey."_PRINTABLE"][$user['ID']] = "(".$user["LOGIN"].")".
+								$arResult["PROPERTY_".$propertyKey][] = "user_".intval($user['ID']);
+								$arResult["PROPERTY_".$propertyKey."_PRINTABLE"][] = "(".$user["LOGIN"].")".
 									((strlen($user["NAME"]) > 0 || strlen($user["LAST_NAME"]) > 0) ? " " : "").$user["NAME"].
 									((strlen($user["NAME"]) > 0 && strlen($user["LAST_NAME"]) > 0) ? " " : "").$user["LAST_NAME"];
 							}
@@ -1538,7 +1538,7 @@ class CIBlockDocument
 			"file" => array("Name" => GetMessage("BPCGHLP_PROP_FILE"), "BaseType" => "file"),
 		);
 
-		$ignoredTypes = array('map_yandex');
+		$ignoredTypes = array('map_yandex', 'directory', 'SectionAuto', 'SKU', 'EAutocomplete');
 
 		//TODO: remove class_exists, add version_control
 		if (class_exists('\Bitrix\Bizproc\BaseType\InternalSelect'))
@@ -1558,6 +1558,12 @@ class CIBlockDocument
 			}
 
 			$t = $ar["PROPERTY_TYPE"].":".$ar["USER_TYPE"];
+
+			if($t == "S:ECrm")
+			{
+				$t = "E:ECrm";
+			}
+
 			if (COption::GetOptionString("bizproc", "SkipNonPublicCustomTypes", "N") == "Y"
 				&& !array_key_exists("GetPublicEditHTML", $ar) || $t == "S:UserID" || $t == "S:DateTime" || $t == "S:Date")
 				continue;
@@ -1583,6 +1589,17 @@ class CIBlockDocument
 			{
 				$arResult[$t]["BaseType"] = "int";
 				$arResult[$t]['typeClass'] = '\Bitrix\Iblock\BizprocType\UserTypePropertyDiskFile';
+			}
+			elseif($t == 'E:ECrm')
+			{
+				$arResult[$t]["BaseType"] = "string";
+				$arResult[$t]["Complex"] = true;
+				$arResult[$t]['typeClass'] = '\Bitrix\Iblock\BizprocType\ECrm';
+			}
+			elseif($t == 'S:Money')
+			{
+				$arResult[$t]["BaseType"] = "string";
+				$arResult[$t]['typeClass'] = '\Bitrix\Iblock\BizprocType\Money';
 			}
 		}
 
@@ -1833,13 +1850,22 @@ class CIBlockDocument
 					{
 						foreach($value as $file)
 						{
-							$files[] = CFile::MakeFileArray($file);
+							$makeFileArray = CFile::MakeFileArray($file);
+							if($makeFileArray)
+								$files[] = $makeFileArray;
 						}
 					}
 					else
-						$files[] = CFile::MakeFileArray($value);
+					{
+						$makeFileArray = CFile::MakeFileArray($value);
+						if($makeFileArray)
+							$files[] = $makeFileArray;
+					}
 				}
-				$arFields[$key] = $files;
+				if($files)
+					$arFields[$key] = $files;
+				else
+					$arFields[$key] = array(array('del' => 'Y'));
 			}
 			elseif($arDocumentFields[$key]["Type"] == "S:DiskFile")
 			{
@@ -2970,6 +2996,10 @@ class CIBlockDocument
 		$arFilter = array("ACTIVE" => "Y");
 		if ($group != 2)
 			$arFilter["GROUPS_ID"] = $group;
+		else
+		{
+			$arFilter['EXTERNAL_AUTH_ID'] = '';
+		}
 
 		$dbUsersList = CUser::GetList(($b = "ID"), ($o = "ASC"), $arFilter);
 		while ($arUser = $dbUsersList->Fetch())

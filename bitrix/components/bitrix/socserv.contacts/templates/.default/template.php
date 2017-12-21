@@ -16,8 +16,6 @@ use Bitrix\Main\Text\Converter;
 
 if(count($arResult["CONTACTS"]) > 0)
 {
-	$n = new \Bitrix\Socialservices\Network();
-	$n->setEnable(true);
 ?>
 	<script>
 		function networkConnect(node, id, connections)

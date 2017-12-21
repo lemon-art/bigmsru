@@ -73,9 +73,9 @@ class PaymentTable extends Main\Entity\DataManager
 				'title' => Loc::getMessage('ORDER_PAYMENT_ENTITY_PAY_SYSTEM_ID_FIELD'),
 			),
 			'PAY_SYSTEM' => array(
-				'data_type' => 'Bitrix\Sale\PaySystemAction',
+				'data_type' => 'Bitrix\Sale\Internals\PaySystemAction',
 				'reference' => array(
-					'=this.PAY_SYSTEM_ID' => 'ref.PAY_SYSTEM_ID'
+					'=this.PAY_SYSTEM_ID' => 'ref.ID'
 				)
 			),
 			'PS_STATUS' => array(
@@ -138,10 +138,12 @@ class PaymentTable extends Main\Entity\DataManager
 				'validation' => array(__CLASS__, 'validateXmlId'),
 				'title' => Loc::getMessage('ORDER_PAYMENT_ENTITY_XML_ID_FIELD'),
 			),
-			'SUM' => array(
-				'data_type' => 'float',
-				'default_value' => '0.0000',
-				'title' => Loc::getMessage('ORDER_PAYMENT_ENTITY_SUM_FIELD'),
+			new Main\Entity\FloatField(
+				'SUM',
+				array(
+					'default_value' => '0.0000',
+					'required' => true,
+				)
 			),
 			'PRICE_COD' => array(
 				'data_type' => 'float',
@@ -229,6 +231,31 @@ class PaymentTable extends Main\Entity\DataManager
 			),
 
 			new Main\Entity\BooleanField(
+				'MARKED',
+				array(
+					'values' => array('N','Y'),
+					'default_value' => 'N'
+				)
+			),
+
+			new Main\Entity\DatetimeField('DATE_MARKED'),
+
+			new Main\Entity\IntegerField('EMP_MARKED_ID'),
+
+			new Main\Entity\ReferenceField(
+				'EMP_MARKED_BY',
+				'\Bitrix\Main\User',
+				array('=this.EMP_MARKED_ID' => 'ref.ID'),
+				array('join_type' => 'INNER')
+			),
+
+			'REASON_MARKED' => array(
+				'data_type' => 'string',
+				'validation' => array(__CLASS__, 'validateReasonMarked'),
+				'title' => Loc::getMessage('ORDER_PAYMENT_ENTITY_REASON_MARKED_FIELD'),
+			),
+
+			new Main\Entity\BooleanField(
 				'UPDATED_1C',
 				array(
 					'values' => array('N', 'Y')
@@ -289,7 +316,7 @@ class PaymentTable extends Main\Entity\DataManager
 	public static function validatePsStatusDescription()
 	{
 		return array(
-			new Main\Entity\Validator\Length(null, 250),
+			new Main\Entity\Validator\Length(null, 512),
 		);
 	}
 	/**
@@ -367,6 +394,17 @@ class PaymentTable extends Main\Entity\DataManager
 	{
 		return array(
 			new Main\Entity\Validator\Length(null, 128),
+		);
+	}
+	/**
+	 * Returns validators for REASON_MARKED field.
+	 *
+	 * @return array
+	 */
+	public static function validateReasonMarked()
+	{
+		return array(
+			new Main\Entity\Validator\Length(null, 255),
 		);
 	}
 }

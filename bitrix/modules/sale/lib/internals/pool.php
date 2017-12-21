@@ -38,6 +38,13 @@ class Pool
 		$this->quantities[$code] = $quantity;
 
 	}
+	/**
+	 * @param $code
+	 */
+	public function delete($code)
+	{
+		unset($this->quantities[$code]);
+	}
 
 	/**
 	 * @param $code

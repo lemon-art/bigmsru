@@ -21,20 +21,21 @@ if($arParams["DISPLAY_AS_RATING"] == "vote_avg")
 }
 else
 {
-	$votesValue = intval($arResult["PROPERTIES"]["rating"]["VALUE"]);
+	$votesValue = $arResult["PROPERTIES"]["rating"]["VALUE"];
 }
+$votesValue = (float)$votesValue;
 
-$votesCount = intval($arResult["PROPERTIES"]["vote_count"]["VALUE"]);
+$votesCount = (int)$arResult["PROPERTIES"]["vote_count"]["VALUE"];
 
-if(isset($arParams["AJAX_CALL"]) && $arParams["AJAX_CALL"]=="Y")
+if (isset($arParams["AJAX_CALL"]) && $arParams["AJAX_CALL"]=="Y")
 {
 	$APPLICATION->RestartBuffer();
-
-	die(json_encode( array(
+	header('Content-Type: application/json');
+	echo \Bitrix\Main\Web\Json::encode(array(
 		"value" => $votesValue,
 		"votes" => $votesCount
-		)
 	));
+	return;
 }
 
 CJSCore::Init(array("ajax"));
@@ -44,11 +45,15 @@ $arJSParams = array(
 	"ratingId" => $strObName."_rating",
 	"starsId" => $strObName."_stars",
 	"ajaxUrl" => $componentPath."/component.php",
-	"voteId" => $arResult["ID"],
-);
-$templateData = array(
-	'JS_OBJ' => $strObName,
-	'ELEMENT_ID' => $arParams["ELEMENT_ID"]
+	"checkVoteUrl" => $componentPath."/ajax.php",
+	'ajaxParams' => $arResult["~AJAX_PARAMS"],
+	'siteId' => SITE_ID,
+	'voteData' => array(
+		'element' => (int)$arResult["ID"],
+		'percent' => ($votesCount > 0 ? $votesValue*20 : 0),
+		'count' => $votesCount
+	),
+	'readOnly' => (isset($arParams['READ_ONLY']) && $arParams['READ_ONLY'] === 'Y')
 );
 ?><table align="center" class="bx_item_detail_rating">
 	<tr>
@@ -56,7 +61,7 @@ $templateData = array(
 			<div class="bx_item_rating">
 				<div class="bx_stars_container">
 					<div id="<?=$arJSParams["starsId"]?>" class="bx_stars_bg"></div>
-					<div id="<?=$arJSParams["progressId"]?>" class="bx_stars_progres"></div>
+					<div id="<?=$arJSParams["progressId"]?>" class="bx_stars_progress"></div>
 				</div>
 			</div>
 		</td>
@@ -66,11 +71,5 @@ $templateData = array(
 	</tr>
 </table>
 <script type="text/javascript">
-BX.ready(function(){
-	window.<?=$strObName;?> = new JCIblockVoteStars(<?=CUtil::PhpToJSObject($arJSParams, false, true);?>);
-
-	window.<?=$strObName?>.ajaxParams = <?=$arResult["AJAX_PARAMS"]?>;
-	window.<?=$strObName?>.setValue("<?=$votesCount > 0 ? ($votesValue+1)*20 : 0?>");
-	window.<?=$strObName?>.setVotes("<?=$votesCount?>");
-});
+	<?=$strObName;?> = new JCIblockVoteStars(<?=CUtil::PhpToJSObject($arJSParams, false, true, true);?>);
 </script>

@@ -14,4 +14,8 @@ $MESS["SALE_LOCATION_L_CONFIRM_DELETE_ITEM"] = "Are you sure you want to delete 
 $MESS["SALE_LOCATION_L_ANY"] = "any";
 $MESS["SALE_LOCATION_L_VIEW_CHILDREN"] = "View child locations";
 $MESS["SALE_LOCATION_L_FROM_AND_TO"] = "range";
+$MESS["SALE_LOCATION_L_LEVEL"] = "Level";
+$MESS["SALE_LOCATION_L_EDIT_CURRENT"] = "Edit current";
+$MESS["SALE_LOCATION_L_CURRENT"] = "only current";
+$MESS["SALE_LOCATION_L_CURRENT_AND_LOWER"] = "current and below";
 ?>

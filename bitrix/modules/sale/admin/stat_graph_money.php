@@ -114,6 +114,15 @@ while($arCur = $dbCur->GetNext())
 
 }
 
+if (!empty($filter_find) && is_array($filter_find))
+{
+	foreach ($filter_find as $filterLine)
+	{
+		${$filterLine} = 'Y';
+	}
+}
+
+
 foreach($filter_site_id as $v)
 {
 	if(strlen($arAvCur[$v]) > 0 && strlen($arCurrencyInfo[$arAvCur[$v]]) > 0)
@@ -260,28 +269,20 @@ $oFilter->Begin();
 <tr valign="top">
 	<td><?=GetMessage("SALE_SHOW")?>:</td>
 	<td>
-		<?
-		//foreach($arCurrencyInfo as $k => $v)
-		//{
-			?>
-			<?echo InputType("checkbox","find_all","Y",$find_all,false,false,'id="find_all"');?>
-			<label for="find_all"><?=GetMessage("SALE_COUNT")?></label><br>
-			<?echo InputType("checkbox","find_payed","Y",$find_payed,false,false,'id="find_payed"'); ?>
-			<label for="find_payed"><?=GetMessage("SALE_PAYED")?></label><br>
-			<?echo InputType("checkbox","find_allow_delivery","Y",$find_allow_delivery,false,false,'id="find_allow_delivery"'); ?>
-			<label for="find_allow_delivery"><?=GetMessage("SALE_ALLOW_DELIVERY")?></label><br>
-			<?echo InputType("checkbox","find_canceled","Y",$find_canceled,false,false,'id="find_canceled"'); ?>
-			<label for="find_canceled"><?=GetMessage("SALE_CANCELED")?></label><br>
+		<select name="filter_find[]" multiple>
+			<option value="find_all"<?if ($find_all=="Y") echo " selected"?>><?echo GetMessage("SALE_COUNT")?></option>
+			<option value="find_payed"<?if ($find_payed=="Y") echo " selected"?>><?echo GetMessage("SALE_PAYED")?></option>
+			<option value="find_allow_delivery"<?if ($find_allow_delivery=="Y") echo " selected"?>><?echo GetMessage("SALE_ALLOW_DELIVERY")?></option>
+			<option value="find_canceled"<?if ($find_canceled=="Y") echo " selected"?>><?echo GetMessage("SALE_CANCELED")?></option>
 			<?
-			foreach($arStatus as $k1 => $v1)
-			{
-				echo InputType("checkbox","find_status_".$k1,"Y",${"find_status_".$k1},false,false,'id="find_status_'.$k1.'"');
-				?>
-				<label for="find_status_<?=$k1?>"><?=$v1?></label><br>
-				<?
-			}
-		//}
-		?>
+				foreach($arStatus as $id => $name)
+				{
+					?>
+					<option value="find_status_<?=$id?>" <?if (${"find_status_$id"}=="Y") echo " selected"?>><?=htmlspecialcharsbx($name)?></option>
+					<?
+				}
+			?>
+		</select>
 	</td>
 </tr>
 

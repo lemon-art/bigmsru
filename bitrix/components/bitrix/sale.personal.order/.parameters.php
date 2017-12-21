@@ -17,12 +17,12 @@ $arComponentParameters = array(
 			),
 			"detail" => Array(
 				"NAME" => GetMessage("SPO_DETAIL_DESC"),
-				"DEFAULT" => "order_detail.php?ID=#ID#",
+				"DEFAULT" => "detail/#ID#",
 				"VARIABLES" => array("ID")
 			),
 			"cancel" => Array(
 				"NAME" => GetMessage("SPO_CANCEL_DESC"),
-				"DEFAULT" => "order_cancel.php?ID=#ID#",
+				"DEFAULT" => "cancel/#ID#",
 				"VARIABLES" => array("ID")
 			),
 
@@ -39,18 +39,25 @@ $arComponentParameters = array(
 			"NAME" => GetMessage("SPO_PATH_TO_PAYMENT"),
 			"TYPE" => "STRING",
 			"MULTIPLE" => "N",
-			"DEFAULT" => "payment.php",
+			"DEFAULT" => "/personal/order/payment/",
 			"PARENT" => "ADDITIONAL_SETTINGS",
 		),
 		"PATH_TO_BASKET" => Array(
 			"NAME" => GetMessage("SPO_PATH_TO_BASKET"),
 			"TYPE" => "STRING",
 			"MULTIPLE" => "N",
-			"DEFAULT" => "basket.php",
+			"DEFAULT" => "/personal/cart",
 			"COLS" => 25,
 			"PARENT" => "ADDITIONAL_SETTINGS",
 		),
-
+		"PATH_TO_CATALOG" => array(
+			"NAME" => GetMessage("SPO_PATH_TO_CATALOG"),
+			"TYPE" => "STRING",
+			"MULTIPLE" => "N",
+			"DEFAULT" => "/catalog/",
+			"COLS" => 25,
+			"PARENT" => "ADDITIONAL_SETTINGS",
+		),
 		"SET_TITLE" => Array(),
 		"SAVE_IN_SESSION" => array(
 			"PARENT" => "ADDITIONAL_SETTINGS",
@@ -90,6 +97,22 @@ if(CModule::IncludeModule("iblock"))
 
 if(CModule::IncludeModule("sale"))
 {
+	$userInfo = array(
+		"LOGIN" => GetMessage("SPO_USER_INFO_LOGIN"),
+		"EMAIL" => GetMessage("SPO_USER_INFO_EMAIL"),
+		"PERSON_TYPE_NAME" => GetMessage("SPO_USER_INFO_PERSON_TYPE_NAME"),
+		0 => GetMessage("SPO_SHOW_ALL"),
+	);
+
+	$arComponentParameters['PARAMETERS']['DETAIL_HIDE_USER_INFO'] = array(
+		"NAME" => GetMessage("SPO_ORDER_HIDE_USER_INFO"),
+		"TYPE" => "LIST",
+		"VALUES" => $userInfo,
+		"MULTIPLE" => "Y",
+		"DEFAULT" => 0,
+		"PARENT" => "BASE"
+	);
+
 	$dbPerson = CSalePersonType::GetList(Array("SORT" => "ASC", "NAME" => "ASC"));
 	while($arPerson = $dbPerson->GetNext())
 	{
@@ -133,5 +156,57 @@ if(CModule::IncludeModule("sale"))
 		"PARENT" => "ADDITIONAL_SETTINGS",
 	);
 
+	array_unshift($statList, GetMessage("SPO_NOT_CHOSEN"));
+
+	$arComponentParameters['PARAMETERS']['RESTRICT_CHANGE_PAYSYSTEM'] = array(
+		"NAME" => GetMessage("SPO_RESTRICT_CHANGE_PAYSYSTEM"),
+		"TYPE" => "LIST",
+		"VALUES" => $statList,
+		"MULTIPLE" => "Y",
+		"DEFAULT" => 0,
+		"PARENT" => "ORDER",
+		"SIZE" => 5,
+	);
+
+	$arComponentParameters['PARAMETERS']['REFRESH_PRICES'] = array(
+		"NAME" => GetMessage("SPO_REFRESH_PRICE_AFTER_PAYSYSTEM_CHANGE"),
+		"TYPE" => "CHECKBOX",
+		"DEFAULT" => "N",
+		"PARENT" => "ORDER",
+	);
+
+	$orderSortList = array(
+		'STATUS' => GetMessage("SPO_ORDER_LIST_SORT_STATUS"),
+		'ID' => GetMessage("SPO_ORDER_LIST_SORT_ID"),
+		'ACCOUNT_NUMBER'=> GetMessage("SPO_ORDER_LIST_SORT_ACCOUNT_NUMBER"),
+		'DATE_INSERT'=> GetMessage("SPO_ORDER_LIST_SORT_DATE_CREATE"),
+		'PRICE'=> GetMessage("SPO_ORDER_LIST_SORT_PRICE")
+	);
+
+	$arComponentParameters['PARAMETERS']['ORDER_DEFAULT_SORT'] = array(
+		"NAME" => GetMessage("SPO_ORDER_LIST_DEFAULT_SORT"),
+		"TYPE" => "LIST",
+		"VALUES" => $orderSortList,
+		"MULTIPLE" => "N",
+		"DEFAULT" => "STATUS",
+		"PARENT" => "ORDER",
+	);
+	
+	if (CBXFeatures::IsFeatureEnabled('SaleAccounts'))
+	{
+		$arComponentParameters['PARAMETERS']['ALLOW_INNER'] = array(
+			"NAME" => GetMessage("SPO_ALLOW_INNER"),
+			"TYPE" => "CHECKBOX",
+			"DEFAULT" => "N",
+			"PARENT" => "ORDER",
+		);
+
+		$arComponentParameters['PARAMETERS']['ONLY_INNER_FULL'] = array(
+			"NAME" => GetMessage("SPO_ONLY_INNER_FULL"),
+			"TYPE" => "CHECKBOX",
+			"DEFAULT" => "N",
+			"PARENT" => "ORDER",
+		);
+	}	
 }
 ?>

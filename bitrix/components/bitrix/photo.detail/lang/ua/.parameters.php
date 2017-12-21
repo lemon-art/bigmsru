@@ -24,4 +24,5 @@ $MESS["IBLOCK_SORT_NAME"] = "Назва";
 $MESS["IBLOCK_FIELD"] = "Поля";
 $MESS["IBLOCK_TYPE"] = "Тип інфоблоку";
 $MESS["IBLOCK_ELEMENT_SORT_ORDER_NEXT_PREV_LINK"] = "У якому порядку відсортувати фотографії для посилань «наступ.» та «поперед.»";
+$MESS["CP_BPD_SET_LAST_MODIFIED"] = "У заголовках відповіді час модифікації сторінки";
 ?>

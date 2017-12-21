@@ -12,10 +12,12 @@ $MESS["DDCT_DEDUCTION_QUANTITY_STORE_ERROR"] = "The quantity of product #PRODUCT
 $MESS["RSRV_QUANTITY_NOT_ENOUGH_ERROR"] = "Product #PRODUCT_NAME# (##PRODUCT_ID#) has insufficient stock.";
 $MESS["DDCT_DEDUCTION_BARCODE_ERROR"] = "Barcode \"#BARCODE#\" was not found for product \"#PRODUCT_NAME#\" (##PRODUCT_ID#).";
 $MESS["DDCT_DEDUCTION_MULTI_BARCODE_EMPTY"] = "Barcode for product \"#PRODUCT_NAME#\" in warehouse ##STORE_ID# has not been specified";
-$MESS["CATALOG_QUANTITY_NOT_ENOGH"] = "You want to buy #QUANTITY# pcs. of #NAME#; however, only #CATALOG_QUANTITY# pcs. are available.";
+$MESS["CATALOG_QUANTITY_NOT_ENOGH"] = "You want to buy #QUANTITY# #MEASURE_NAME#. of #NAME#; however, only #CATALOG_QUANTITY# #MEASURE_NAME#. are available.";
 $MESS["CATALOG_NO_QUANTITY_PRODUCT"] = "#NAME# is out of stock.";
 $MESS["CATALOG_ERR_NO_PRODUCT"] = "The product was not found.";
 $MESS["CATALOG_ERR_SKU_PRODUCT"] = "You cannot add to cart a product that has multiple SKU's. Only a specific SKU can be added to cart.";
 $MESS["RSRV_SKU_FOUND"] = "The product ##PRODUCT_ID# has multiple SKU's. Only a specific SKU can be reserved or released.";
 $MESS["DDCT_DEDUCTION_PRODUCT_NOT_FOUND_ERROR"] = "Product to be shipped was not found (##PRODUCT_ID#)";
+$MESS["CATALOG_ERR_NO_PRODUCT_SET"] = "Bundle contents was not found.";
+$MESS["CATALOG_ERR_NO_PRODUCT_SET_ITEM"] = "Bundled products were not found.";
 ?>

@@ -9,7 +9,7 @@ $arTypes = CIBlockParameters::GetIBlockTypes();
 $arIBlocks=Array();
 $db_iblock = CIBlock::GetList(Array("SORT"=>"ASC"), Array("SITE_ID"=>$_REQUEST["site"], "TYPE" => ($arCurrentValues["IBLOCK_TYPE"]!="-"?$arCurrentValues["IBLOCK_TYPE"]:"")));
 while($arRes = $db_iblock->Fetch())
-	$arIBlocks[$arRes["ID"]] = $arRes["NAME"];
+	$arIBlocks[$arRes["ID"]] = "[".$arRes["ID"]."] ".$arRes["NAME"];
 
 $arProperty_LNS = array();
 if(count($arCurrentValues["IBLOCKS"])==1)

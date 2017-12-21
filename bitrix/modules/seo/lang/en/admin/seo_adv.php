@@ -186,6 +186,7 @@ $MESS["SEO_SEARCH_WITH"] = "Search results for  <b>#PHRASE#</b>";
 $MESS["SEO_SEARCH_WHATELSE"] = "People who submitted keywords <b>#PHRASE#</b> also looked for";
 $MESS["SEO_SEARCH_EMPTY"] = "No entries have been found.";
 $MESS["SEO_PHRASE_HINT"] = "Separate multiple keywords with a comma or a new line. Denote stop words by prepending them with \"-\".";
+$MESS["SEO_MINUS_KW_HINT"] = "You can add several negative keywords separated with comma or a new line.";
 $MESS["SEO_LINK_HINT"] = "A link needs the following parameters to track Yandex.Direct clicks: #PARAMS_HINT#";
 $MESS["SEO_LINK_HINT_ACTION"] = "Add parameters";
 $MESS["SEO_FORECAST_SHOWS"] = "Impressions";
@@ -270,7 +271,7 @@ $MESS["SEO_AUTOLOG_ACTION_1"] = "Auto enabled because product is back in stock."
 $MESS["SEO_AUTOLOG_ACTION_2"] = "Auto disabled because product is out of stock.";
 $MESS["SEO_AUTOLOG_CAMPAIGN"] = "Campaign";
 $MESS["SEO_AUTOLOG_BANNER"] = "Advertisement";
-
+$MESS["SEO_YANDEX_SEOPROXY_AUTH_ERROR"] = "Error connecting to YandexDirect. Please try again later. Error description:";
 $MESS["SEO_YANDEX_CURRENCY__RUB"] = "RUB";
 $MESS["SEO_YANDEX_CURRENCY__UAH"] = "UAH";
 $MESS["SEO_YANDEX_CURRENCY__USD"] = "USD";

@@ -131,6 +131,12 @@ if ($arCurrentValues["PHOTO_LIST_MODE"] != "N")
 			"desc" => GetMessage("IBLOCK_SORT_DESC")),
 		"DEFAULT" => "asc"
 	);
+
+	$arComponentParameters["PARAMETERS"]["SECTION_LIST_THUMBNAIL_SIZE"] = array(
+		"PARENT" => "BASE",
+		"NAME" => GetMessage("P_SECTION_LIST_THUMBS_SIZE"),
+		"DEFAULT" => "70"
+	);
 }
 
 if ($arCurrentValues["BEHAVIOUR"] == "USER")
@@ -201,7 +207,8 @@ $arComponentParameters["PARAMETERS"] = array_merge($arComponentParameters["PARAM
 			"PARENT" => "ADDITIONAL_SETTINGS",
 			"NAME" => GetMessage("P_ALBUM_PHOTO_THUMBS_WIDTH"),
 			"TYPE" => "STRING",
-			"DEFAULT" => "120"),
+			"DEFAULT" => "120"
+		),
 
 		"PAGE_ELEMENTS" => array(
 			"PARENT" => "BASE",
@@ -228,6 +235,8 @@ $arComponentParameters["PARAMETERS"] = array_merge($arComponentParameters["PARAM
 			// "TYPE" => "CHECKBOX",
 			// "DEFAULT" => "N")
 	));
+
+
 if ($arCurrentValues["BEHAVIOUR"] == "USER")
 {
 

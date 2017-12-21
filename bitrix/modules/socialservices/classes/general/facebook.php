@@ -193,7 +193,7 @@ class CSocServFacebook extends CSocServAuth
 		{
 			CSocServUtil::checkOAuthProxyParams();
 
-			$url = ($GLOBALS["APPLICATION"]->GetCurDir() == "/login/") ? "" : $GLOBALS["APPLICATION"]->GetCurDir();
+			$url = ($GLOBALS["APPLICATION"]->GetCurDir() == "/login/") ? "" : $GLOBALS["APPLICATION"]->GetCurPageParam('', $aRemove);
 
 			if(isset($_REQUEST['backurl']))
 			{
@@ -352,6 +352,7 @@ class CFacebookInterface extends CSocServOAuthTransport
 	const GRAPH_URL = "https://graph.facebook.com";
 
 	protected $userId = false;
+	protected $responseData = array();
 
 	protected $scope = array(
 		"email",
@@ -376,13 +377,21 @@ class CFacebookInterface extends CSocServOAuthTransport
 
 	public function GetAuthUrl($redirect_uri, $state = '')
 	{
-		$_SESSION["FACEBOOK_OAUTH_LAST_REDIRECT_URI"] = $redirect_uri;
+		if(IsModuleInstalled('oauth'))
+		{
+			$_SESSION["FACEBOOK_OAUTH_LAST_REDIRECT_URI"] = $redirect_uri;
+		}
 
 		return self::AUTH_URL .
 			"?client_id=" . $this->appID .
 			"&redirect_uri=" . urlencode($redirect_uri) .
 			"&scope=".$this->getScopeEncode()."&display=popup" .
 			($state <> '' ? '&state=' . urlencode($state) : '');
+	}
+
+	public function getResult()
+	{
+		return $this->responseData;
 	}
 
 	public function GetAccessToken($redirect_uri)
@@ -406,17 +415,19 @@ class CFacebookInterface extends CSocServOAuthTransport
 
 		$result = CHTTP::sGetHeader(self::GRAPH_URL.'/oauth/access_token?client_id='.$this->appID.'&client_secret='.$this->appSecret.'&redirect_uri='.urlencode($redirect_uri).'&code='.urlencode($this->code), array(), $this->httpTimeout);
 
-		$arResult = array();
-		$arResultLongLive = array();
-		parse_str($result, $arResult);
+		$arResult = Json::decode($result);
+		$this->responseData = $arResult;
+
 		if(isset($arResult["access_token"]) && $arResult["access_token"] <> '')
 		{
 			$result = CHTTP::sGetHeader(self::GRAPH_URL."/oauth/access_token?grant_type=fb_exchange_token&client_id=".$this->appID."&client_secret=".$this->appSecret."&fb_exchange_token=".$arResult["access_token"], array(), $this->httpTimeout);
-			parse_str($result, $arResultLongLive);
+
+			$arResultLongLive = Json::decode($result);
+
 			if(isset($arResultLongLive["access_token"]) && $arResultLongLive["access_token"] <> '')
 			{
 				$arResult["access_token"] = $arResultLongLive["access_token"];
-				$arResult["expires"] = $arResultLongLive["expires"];
+				$arResult["expires"] = $arResultLongLive["expires_in"];
 				$_SESSION["OAUTH_DATA"] = array(
 					"OATOKEN" => $arResultLongLive["access_token"],
 					"OATOKEN_EXPIRES" => time() + $arResultLongLive['expires'],
@@ -428,6 +439,15 @@ class CFacebookInterface extends CSocServOAuthTransport
 
 			return true;
 		}
+
+		if (isset($this->responseData['error']))
+		{
+			$this->responseData = array(
+				'error' => $this->responseData['error']['type'],
+				'error_description' => $this->responseData['error']['message'],
+			);
+		}
+
 		return false;
 	}
 

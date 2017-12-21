@@ -7,6 +7,7 @@
  */
 
 namespace Bitrix\Main\Entity;
+use Bitrix\Main\Entity\Field\IReadable;
 use Bitrix\Main\SystemException;
 
 /**
@@ -15,7 +16,7 @@ use Bitrix\Main\SystemException;
  * @package bitrix
  * @subpackage main
  */
-class ExpressionField extends Field
+class ExpressionField extends Field implements IReadable
 {
 	/**
 	 * @var string
@@ -327,6 +328,13 @@ class ExpressionField extends Field
 	{
 		$this->buildFromChains = null;
 		$this->fullExpression = null;
+	}
+
+	public function convertValueToDb($value)
+	{
+		/** @var \Bitrix\Main\Entity\Field\IStorable $valueField */
+		$valueField = $this->valueField;
+		return $valueField->convertValueToDb($value);
 	}
 }
 

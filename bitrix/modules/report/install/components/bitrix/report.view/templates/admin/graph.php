@@ -379,7 +379,8 @@ if ($errorCode === 0)
 					$sumTrifle = 0;
 					if ($offset > 0)
 					{
-						$arTrifle = array_splice($arCounting, $offset);
+						$arTrifle = array_slice($arCounting, $offset, null, true);
+						$arCounting = array_slice($arCounting, 0, $offset, true);
 						foreach (array_keys($arTrifle) as $k) $sumTrifle += $arConsolidated[$k];
 					}
 					if (round($prcntCount,2) < 100.0)

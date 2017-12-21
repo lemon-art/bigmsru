@@ -1,10 +1,15 @@
 <?if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 
+use Bitrix\Main,
+	Bitrix\Sale;
+
 class SaleBasketLineComponent extends CBitrixComponent
 {
 	protected $bUseCatalog = null;
 	protected $readyForOrderFilter = array("CAN_BUY" => "Y", "DELAY" => "N", "SUBSCRIBE" => "N");
 	protected $disableUseBasket = false;
+
+	protected $currentFuser = null;
 
 	public function onPrepareComponentParams($arParams)
 	{
@@ -43,9 +48,15 @@ class SaleBasketLineComponent extends CBitrixComponent
 		if ($arParams['SHOW_AUTHOR'] != 'Y')
 			$arParams['SHOW_AUTHOR'] = 'N';
 
-		$arParams['PATH_TO_REGISTER'] = trim($arParams['PATH_TO_REGISTER']);
-		if ($arParams['PATH_TO_REGISTER'] == '')
+		$arParams['PATH_TO_REGISTER'] = (isset($arParams['PATH_TO_REGISTER']) ? trim($arParams['PATH_TO_REGISTER']) : '');
+		if ($arParams['PATH_TO_REGISTER'] === '')
+			$arParams['PATH_TO_REGISTER'] = (string)Main\Config\Option::get('main', 'custom_register_page');
+		if ($arParams['PATH_TO_REGISTER'] === '')
 			$arParams['PATH_TO_REGISTER'] = SITE_DIR.'login/';
+
+		$arParams['PATH_TO_AUTHORIZE'] = (isset($arParams['PATH_TO_AUTHORIZE']) ? trim($arParams['PATH_TO_AUTHORIZE']) : '');
+		if ($arParams['PATH_TO_AUTHORIZE'] === '')
+			$arParams['PATH_TO_AUTHORIZE'] = $arParams['PATH_TO_REGISTER'];
 
 		$arParams['PATH_TO_PROFILE'] = trim($arParams['PATH_TO_PROFILE']);
 		if ($arParams['PATH_TO_PROFILE'] == '')
@@ -61,9 +72,6 @@ class SaleBasketLineComponent extends CBitrixComponent
 
 		if ($arParams['SHOW_NOTAVAIL'] != 'N')
 			$arParams['SHOW_NOTAVAIL'] = 'Y';
-
-		if ($arParams['SHOW_SUBSCRIBE'] != 'N')
-			$arParams['SHOW_SUBSCRIBE'] = 'Y';
 
 		if ($arParams['SHOW_IMAGE'] != 'N')
 			$arParams['SHOW_IMAGE'] = 'Y';
@@ -93,9 +101,9 @@ class SaleBasketLineComponent extends CBitrixComponent
 		return $arParams;
 	}
 
-	private function getUserFilter()
+	protected function getUserFilter()
 	{
-		$fUserID = IntVal(CSaleBasket::GetBasketUserID(True));
+		$fUserID = (int)$this->currentFuser;
 		return ($fUserID > 0)
 			? array("FUSER_ID" => $fUserID, "LID" => SITE_ID, "ORDER_ID" => "NULL")
 			: null; // no basket for current user
@@ -106,7 +114,7 @@ class SaleBasketLineComponent extends CBitrixComponent
 		if (preg_match('/^[0-9]+$/', $_POST["sbblRemoveItemFromCart"]) !== 1)
 			return;
 
-		if (! ($userFilter = $this->getUserFilter()))
+		if (!($userFilter = $this->getUserFilter()))
 			return;
 
 		$numProducts = CSaleBasket::GetList(
@@ -139,18 +147,20 @@ class SaleBasketLineComponent extends CBitrixComponent
 		)
 			return;
 
-		if(! \Bitrix\Main\Loader::includeModule ('sale'))
+		if(!\Bitrix\Main\Loader::includeModule('sale'))
 		{
 			ShowError(GetMessage('SALE_MODULE_NOT_INSTALL'));
 			return;
 		}
+
+		$this->loadCurrentFuser();
 
 		if (isset($_POST['sbblRemoveItemFromCart']))
 			$this->removeItemFromCart();
 
 		// prepare result
 
-		if(! \Bitrix\Main\Loader::includeModule("currency"))
+		if(!\Bitrix\Main\Loader::includeModule("currency"))
 		{
 			ShowError(GetMessage("CURRENCY_MODULE_NOT_INSTALLED"));
 			return;
@@ -179,34 +189,17 @@ class SaleBasketLineComponent extends CBitrixComponent
 		}
 
 		if($this->arParams["SHOW_PRODUCTS"] == "Y")
+		{
 			$this->arResult = $this->getProducts() + $this->arResult;
+		}
 		else
 		{
 			if($this->arParams["SHOW_TOTAL_PRICE"] == "Y")
 			{
-
-				if (isset($_SESSION["SALE_BASKET_PRICE"]) && array_key_exists(SITE_ID, $_SESSION["SALE_BASKET_PRICE"]))
-				{
-					$totalPrice = floatval($_SESSION["SALE_BASKET_PRICE"][SITE_ID]);
-				}
-				else
-				{
-					$totalPrice = $this->getTotalPrice();
-				}
-
-				$this->arResult["TOTAL_PRICE"] = $totalPrice;
+				$this->arResult["TOTAL_PRICE"] = \Bitrix\Sale\BasketComponentHelper::getFUserBasketPrice($this->currentFuser, SITE_ID);
 			}
 
-			if (isset($_SESSION["SALE_BASKET_NUM_PRODUCTS"]) && array_key_exists(SITE_ID, $_SESSION["SALE_BASKET_NUM_PRODUCTS"]))
-			{
-				$numProducts = intval($_SESSION["SALE_BASKET_NUM_PRODUCTS"][SITE_ID]);
-			}
-			else
-			{
-				$numProducts = $this->getNumProducts();
-			}
-
-			$this->arResult["NUM_PRODUCTS"] = $numProducts;
+			$this->arResult["NUM_PRODUCTS"] = \Bitrix\Sale\BasketComponentHelper::getFUserBasketQuantity($this->currentFuser, SITE_ID);
 		}
 
 		if($this->arParams["SHOW_TOTAL_PRICE"] == "Y")
@@ -232,71 +225,6 @@ class SaleBasketLineComponent extends CBitrixComponent
 	public static function getNextNumber()
 	{
 		return ++self::$nextNumber;
-	}
-
-	private function getNumProducts()
-	{
-		$numProducts = 0;
-
-		if ($userFilter = $this->getUserFilter())
-		{
-			$rsBasket = CSaleBasket::GetList(
-				array (),
-				$userFilter + $this->readyForOrderFilter,
-				false,
-				false,
-				array('ID', 'SET_PARENT_ID', 'TYPE')
-			);
-			while ($arItem = $rsBasket->Fetch())
-			{
-				if (CSaleBasketHelper::isSetItem($arItem))
-					continue;
-				$numProducts ++;
-			}
-		}
-
-		return $numProducts;
-	}
-
-	private function getTotalPrice()
-	{
-		if (! ($userFilter = $this->getUserFilter()))
-			return array();
-
-		$rsBasket = CSaleBasket::GetList(
-			array(),
-			$userFilter + $this->readyForOrderFilter,
-			false,
-			false,
-			array(
-				"QUANTITY", "PRICE", "CURRENCY", "DISCOUNT_PRICE", "WEIGHT", "VAT_RATE",
-				"ID", "SET_PARENT_ID", "PRODUCT_ID", "CATALOG_XML_ID", "PRODUCT_XML_ID",
-				"PRODUCT_PROVIDER_CLASS", "TYPE", "BASE_PRICE"
-			)
-		);
-
-		$arBasketItems = array();
-
-		while ($arItem = $rsBasket->Fetch())
-		{
-			if (CSaleBasketHelper::isSetItem($arItem))
-				continue;
-
-			if (!isset($arItem['BASE_PRICE']) || (float)$arItem['BASE_PRICE'] <= 0)
-				$arItem['BASE_PRICE'] = $arItem['PRICE'] + $arItem['DISCOUNT_PRICE'];
-
-			$arBasketItems[] = $arItem;
-		}
-
-		$totalPrice = 0;
-
-		if ($arBasketItems)
-		{
-			$arOrder = $this->calculateOrder($arBasketItems);
-			$totalPrice = $arOrder['ORDER_PRICE'];
-		}
-
-		return $totalPrice;
 	}
 
 	private function calculateOrder($arBasketItems)
@@ -329,15 +257,13 @@ class SaleBasketLineComponent extends CBitrixComponent
 
 	private function getProducts()
 	{
-		if (! ($arFilter = $this->getUserFilter()))
+		if (!($arFilter = $this->getUserFilter()))
 			return array();
 
 		if ($this->arParams['SHOW_NOTAVAIL'] == 'N')
 			$arFilter['CAN_BUY'] = 'Y';
 		if ($this->arParams['SHOW_DELAY'] == 'N')
 			$arFilter['DELAY'] = 'N';
-		if ($this->arParams['SHOW_SUBSCRIBE'] == 'N')
-			$arFilter["SUBSCRIBE"] = 'N';
 
 		$dbItems = CSaleBasket::GetList(
 			array("NAME" => "ASC", "ID" => "ASC"),
@@ -347,7 +273,8 @@ class SaleBasketLineComponent extends CBitrixComponent
 			array(
 				"ID", "NAME", "CALLBACK_FUNC", "MODULE", "PRODUCT_ID", "QUANTITY", "DELAY", "CAN_BUY",
 				"PRICE", "WEIGHT", "DETAIL_PAGE_URL", "CURRENCY", "VAT_RATE", "CATALOG_XML_ID", "MEASURE_NAME",
-				"PRODUCT_XML_ID", "SUBSCRIBE", "DISCOUNT_PRICE", "PRODUCT_PROVIDER_CLASS", "TYPE", "SET_PARENT_ID", "BASE_PRICE"
+				"PRODUCT_XML_ID", "SUBSCRIBE", "DISCOUNT_PRICE", "PRODUCT_PROVIDER_CLASS", "TYPE", "SET_PARENT_ID", "BASE_PRICE",
+				"PRODUCT_PRICE_ID", 'CUSTOM_PRICE'
 			)
 		);
 
@@ -360,13 +287,13 @@ class SaleBasketLineComponent extends CBitrixComponent
 			if (CSaleBasketHelper::isSetItem($arItem))
 				continue;
 
-			$arItem["PRICE_FMT"] = CCurrencyLang::CurrencyFormat($arItem["PRICE"], $arItem["CURRENCY"], true);
-			$arItem["FULL_PRICE"] = CCurrencyLang::CurrencyFormat($arItem["PRICE"] + $arItem["DISCOUNT_PRICE"], $arItem["CURRENCY"], true);
-			$arItem['QUANTITY'] += 0; // remove excessive zeros after period
-			if (! $arItem['MEASURE_NAME'])
-				$arItem['MEASURE_NAME'] = GetMessage('TSB1_MEASURE_NAME');
 			if (!isset($arItem['BASE_PRICE']) || (float)$arItem['BASE_PRICE'] <= 0)
 				$arItem['BASE_PRICE'] = $arItem['PRICE'] + $arItem['DISCOUNT_PRICE'];
+			$arItem["PRICE_FMT"] = CCurrencyLang::CurrencyFormat($arItem["PRICE"], $arItem["CURRENCY"], true);
+			$arItem["FULL_PRICE"] = CCurrencyLang::CurrencyFormat($arItem["BASE_PRICE"], $arItem["CURRENCY"], true);
+			$arItem['QUANTITY'] += 0; // remove excessive zeros after period
+			if (!$arItem['MEASURE_NAME'])
+				$arItem['MEASURE_NAME'] = GetMessage('TSB1_MEASURE_NAME');
 
 			if ($this->arParams['SHOW_IMAGE'] == 'Y' && $this->bUseCatalog && $arItem["MODULE"] == 'catalog')
 			{
@@ -427,15 +354,17 @@ class SaleBasketLineComponent extends CBitrixComponent
 
 				if (!empty($arResult["CATEGORIES"]["DELAY"]) && is_array($arResult["CATEGORIES"]["DELAY"]))
 				{
+					Sale\DiscountCouponsManager::freezeCouponStorage();
 					$orderDelay = $this->calculateOrder($arResult["CATEGORIES"]["DELAY"]);
+					Sale\DiscountCouponsManager::unFreezeCouponStorage();
 					$arResult["CATEGORIES"]["DELAY"] = $orderDelay['BASKET_ITEMS'];
 				}
-
 
 				foreach ($arResult["CATEGORIES"]["READY"] as &$arItem)
 				{
 					$arItem["SUM"] = CCurrencyLang::CurrencyFormat($arItem["PRICE"] * $arItem["QUANTITY"], $arItem["CURRENCY"], true);
 					$arItem["PRICE_FMT"] = CCurrencyLang::CurrencyFormat($arItem["PRICE"], $arItem["CURRENCY"], true);
+					$arItem["FULL_PRICE"] = CCurrencyLang::CurrencyFormat($arItem["BASE_PRICE"], $arItem["CURRENCY"], true);
 				}
 				unset($arItem);
 
@@ -445,6 +374,7 @@ class SaleBasketLineComponent extends CBitrixComponent
 					{
 						$arItem["SUM"] = CCurrencyLang::CurrencyFormat($arItem["PRICE"] * $arItem["QUANTITY"], $arItem["CURRENCY"], true);
 						$arItem["PRICE_FMT"] = CCurrencyLang::CurrencyFormat($arItem["PRICE"], $arItem["CURRENCY"], true);
+						$arItem["FULL_PRICE"] = CCurrencyLang::CurrencyFormat($arItem["BASE_PRICE"], $arItem["CURRENCY"], true);
 					}
 					unset($arItem);
 				}
@@ -517,69 +447,7 @@ class SaleBasketLineComponent extends CBitrixComponent
 	 */
 	public function onSaleBasketItemEntitySaved(\Bitrix\Main\Event $event)
 	{
-		$basketItem = $event->getParameter('ENTITY');
-
-		$originalValues = $event->getParameter('VALUES');
-		if ((!$basketItem instanceof \Bitrix\Sale\BasketItem))
-		{
-			return new \Bitrix\Main\EventResult( \Bitrix\Main\EventResult::SUCCESS, null, 'sale');
-		}
-
-		/** @var \Bitrix\Sale\Basket $basket */
-		if ((!$basket = $basketItem->getCollection())
-			|| ($basketItem->getFUserId() != \Bitrix\Sale\Fuser::getId(true))
-		)
-		{
-			return new \Bitrix\Main\EventResult( \Bitrix\Main\EventResult::SUCCESS, null, 'sale');
-		}
-
-		if ($basketItem->isChanged())
-		{
-			$updateSessionData = false;
-			$updateQuantity = false;
-
-			if (!$basket->getOrder())
-			{
-				if (!$updateSessionData && array_key_exists('QUANTITY', $originalValues))
-				{
-					$updateSessionData = true;
-				}
-
-				if (!$updateSessionData && (array_key_exists('PRICE', $originalValues) && \Bitrix\Sale\PriceMaths::roundPrecision($originalValues['PRICE']) !== \Bitrix\Sale\PriceMaths::roundPrecision($basketItem->getPrice())))
-				{
-					$updateSessionData = true;
-				}
-
-				if (!$updateSessionData && (array_key_exists('DISCOUNT_PRICE', $originalValues) && \Bitrix\Sale\PriceMaths::roundPrecision($originalValues['DISCOUNT_PRICE']) !== \Bitrix\Sale\PriceMaths::roundPrecision($basketItem->getDiscountPrice())))
-				{
-					$updateSessionData = true;
-				}
-			}
-
-			if (!$updateSessionData && (array_key_exists('ORDER_ID', $originalValues) && (intval($originalValues['ORDER_ID'])) == 0 && intval($basketItem->getField('ORDER_ID') > 0)))
-			{
-				$updateSessionData = true;
-				$updateQuantity = true;
-			}
-
-
-			if ($updateSessionData)
-			{
-				/** @var \Bitrix\Sale\Basket $allBasket */
-				if ($allBasket = $basketItem->getCollection())
-				{
-
-					$_SESSION["SALE_BASKET_PRICE"][SITE_ID] = static::getActualBasketPrice($allBasket);
-
-					if ($updateQuantity)
-					{
-						$_SESSION["SALE_BASKET_NUM_PRODUCTS"][SITE_ID] = static::getActualBasketQuantity($allBasket);
-					}
-				}
-			}
-		}
-
-		return new \Bitrix\Main\EventResult( \Bitrix\Main\EventResult::SUCCESS, null, 'sale');
+		return \Bitrix\Sale\BasketComponentHelper::onSaleBasketItemEntitySaved($event);
 	}
 
 	/**
@@ -589,19 +457,7 @@ class SaleBasketLineComponent extends CBitrixComponent
 	 */
 	public function onSaleBasketItemDeleted(\Bitrix\Main\Event $event)
 	{
-		$originalValues = $event->getParameter('VALUES');
-		if ($originalValues['FUSER_ID'] != \Bitrix\Sale\Fuser::getId(true))
-		{
-			return new \Bitrix\Main\EventResult( \Bitrix\Main\EventResult::SUCCESS, null, 'sale');
-		}
-
-		$allBasket = \Bitrix\Sale\Basket::loadItemsForFUser($originalValues['FUSER_ID'], SITE_ID);
-		if ($allBasket)
-		{
-			$_SESSION["SALE_BASKET_PRICE"][SITE_ID] = static::getActualBasketPrice($allBasket);
-		}
-
-		return new \Bitrix\Main\EventResult( \Bitrix\Main\EventResult::SUCCESS, null, 'sale');
+		return \Bitrix\Sale\BasketComponentHelper::onSaleBasketItemDeleted($event);
 	}
 
 	/**
@@ -615,6 +471,8 @@ class SaleBasketLineComponent extends CBitrixComponent
 
 		/** @var \Bitrix\Sale\Basket $basketOrderable */
 		$basketOrderable = $basket->getOrderableItems();
+
+		/** @var \Bitrix\Sale\BasketItem $basketItem */
 		foreach ($basketOrderable as $basketItem)
 		{
 			if (intval($basketItem->getField('ORDER_ID')) > 0)
@@ -656,6 +514,11 @@ class SaleBasketLineComponent extends CBitrixComponent
 		}
 
 		return $basketQuantity;
+	}
+
+	protected function loadCurrentFuser()
+	{
+		$this->currentFuser = Sale\Fuser::getId(true);
 	}
 }
 

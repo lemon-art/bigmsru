@@ -46,11 +46,44 @@ class Network
 	}
 
 	/**
+	 * Returns if option is turned on
+	 *
+	 * @return bool
+	 */
+	public function isOptionEnabled()
+	{
+		return Option::get('socialservices', 'network_enable', 'N') == 'Y';
+	}
+
+	/**
+	 * Returns if network communication is avalable for current user
+	 *
 	 * @return boolean
 	 */
 	public function isEnabled()
 	{
-		return Option::get('socialservices', 'network_enable', 'N') == 'Y';
+		if(Loader::includeModule('bitrix24'))
+		{
+			if(method_exists('CBitrix24', 'isEmailConfirmed') && !\CBitrix24::isEmailConfirmed())
+			{
+				return false;
+			}
+		}
+
+		global $USER;
+		if(Loader::includeModule('replica'))
+		{
+			if(is_object($USER) && $USER->GetID() > 0 && \Bitrix\Replica\Client\User::getGuid($USER->GetID()) === false)
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+
+		return $this->isOptionEnabled();
 	}
 
 	/**
@@ -62,10 +95,10 @@ class Network
 	 */
 	public function setEnable($enable = true)
 	{
-		if ($this->isEnabled() && $enable)
+		if ($this->isOptionEnabled() && $enable)
 			return true;
 
-		if (!$this->isEnabled() && !$enable)
+		if (!$this->isOptionEnabled() && !$enable)
 			return true;
 
 		$query = \CBitrix24NetPortalTransport::init();
@@ -80,7 +113,7 @@ class Network
 			'STATUS' => (bool)$enable,
 		));
 
-		Option::set('socialservices', 'network_enable', $enable? 'Y': 'N');
+		Option::set('socialservices', 'network_enable', $enable ? 'Y': 'N');
 
 		return true;
 	}
@@ -176,7 +209,7 @@ class Network
 			'ID' => array_values($networkIds),
 			'QUERY' => trim($lastSearch)
 		));
-		
+
 		$result = null;
 		foreach ($queryResult['result'] as $user)
 		{

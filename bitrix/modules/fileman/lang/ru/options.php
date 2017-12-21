@@ -128,4 +128,6 @@ $MESS["FILEMAN_OPTION_ADD_ERROR_PROPS"] = "Превышен максимальн
 $MESS["FILEMAN_OPTION_ADD_ERROR_MENU"] = "Превышен максимальный объем параметра \"Типы меню\"";
 $MESS["FILEMAN_REPLACE_NEW_LINES_WITH_BR"] = "Автоматически заменять переводы строки на &lt;BR&gt; при переключении режимов
 \"Текст/HTML/Визуальный редактор\"";
+$MESS["FILEMAN_OPTION_GOOGLE_MAP_API_KEY"] = "Ключ JavaScript API для Google Карт";
+$MESS["FILEMAN_OPTION_GOOGLE_MAP_API_KEY_NOTE"] = "Дополнительная информация как получить ключ: #A#";
 ?>

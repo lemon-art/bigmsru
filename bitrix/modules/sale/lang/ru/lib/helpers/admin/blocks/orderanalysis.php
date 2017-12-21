@@ -18,4 +18,4 @@ $MESS['SALE_OANALYSIS_SHIPMENT_CANCELED'] = 'Отменен';
 $MESS['SALE_OANALYSIS_SHIPMENT_ALLOWED'] = 'Отгрузка разрешена';
 $MESS['SALE_OANALYSIS_CREATED_AT'] = 'Дата создания';
 $MESS['SALE_OANALYSIS_RESPONSIBLE'] = 'Ответственный';
-
+$MESS['SALE_OANALYSIS_HIDDEN'] = "[Скрыто]";

@@ -1,6 +1,6 @@
 <?
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
-
+$this->setFrameMode(true);
 $arAllMapOptions = array_merge($arResult['ALL_MAP_OPTIONS'], $arResult['ALL_MAP_CONTROLS']);
 $arMapOptions = array_merge($arParams['OPTIONS'], $arParams['CONTROLS']);
 ?>
@@ -10,7 +10,7 @@ if (!window.GLOBAL_arMapObjects)
 
 function init_<?echo $arParams['MAP_ID']?>()
 {
-	if (!window.google && !window.google.maps)
+	if (!window.google || !window.google.maps)
 		return;
 
 	var opts = {

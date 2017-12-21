@@ -86,13 +86,7 @@
 
 			/* move notify out monitor */
 			BX.removeClass(notifyPopup.popupContainer.firstChild, 'popup-window');
-			if(BX('workarea'))
-			{
-				var pos = BX.pos(BX('workarea'));
-				notifyPopup.popupContainer.style.left = pos.left - 223 +'px';
-			}
-			else
-				notifyPopup.popupContainer.style.left = 10+'px';
+			notifyPopup.popupContainer.style.left = 10+'px';
 			notifyPopup.popupContainer.style.opacity = 0;
 
 			if (this.notifyHeightMax < this.notifyHeightCurrent+notifyPopup.popupContainer.offsetHeight+10)

@@ -81,4 +81,8 @@ $MESS["CP_BN_CACHE_GROUPS"] = "Враховувати права доступу"
 $MESS["CP_BN_DISPLAY_AS_RATING"] = "В якості рейтингу показувати";
 $MESS["CP_BN_AVERAGE"] = "Середнє значення";
 $MESS["CP_BN_RATING"] = "Рейтинг";
+$MESS["CP_BN_DETAIL_SET_CANONICAL_URL"] = "Встановлювати канонічний URL";
+$MESS["CP_BN_SET_LAST_MODIFIED"] = "Встановлювати у заголовках відповіді час модифікації сторінки";
+$MESS["CP_BN_DETAIL_STRICT_SECTION_CHECK"] = "Сувора перевірка розділу для детального показу елемента";
+$MESS["CP_BN_STRICT_SECTION_CHECK"] = "Сувора перевірка розділу";
 ?>

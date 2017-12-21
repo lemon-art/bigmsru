@@ -192,9 +192,13 @@ array(
 					<?
 					$sum = 0.00;
 					$total_nds = 0;
+					$mi = 0;
 					//do
 					foreach ($arBasketOrder as $arBasket)
 					{
+						if (floatval($arQuantities[$mi]) <= 0)
+							$arQuantities[$mi] = DoubleVal($arBasket["QUANTITY"]);
+
 						$b_AMOUNT = DoubleVal($arBasket["PRICE"]);
 						$item_price = $b_AMOUNT;
 						$nds_val = 0;
@@ -217,11 +221,11 @@ array(
 							$taxRate = ($iNds > -1? $arTaxList[$iNds]["VALUE"] : 0);
 						}
 
-						$total_nds += $nds_val*$arBasket["QUANTITY"];
+						$total_nds += $nds_val*$arQuantities[$mi];
 						?>
 						<tr class="tablebodyrow">
 							<td class="tablebodycol" valign="top" align="right">
-								<?echo Bitrix\Sale\BasketItem::formatQuantity($arBasket["QUANTITY"]); ?>&nbsp;x
+								<?echo Bitrix\Sale\BasketItem::formatQuantity($arQuantities[$mi]); ?>&nbsp;x
 							</td>
 							<td class="tablebodycol" valign="top">
 								<?echo "[".$arBasket["PRODUCT_ID"]."] ".$arBasket["NAME"]; ?>
@@ -236,11 +240,12 @@ array(
 								<b><?echo SaleFormatCurrency($nds_val+$item_price, $arOrder["CURRENCY"]);?></b>
 							</td>
 							<td class="tablebodycol" align="right" valign="top">
-								<b><?echo SaleFormatCurrency(($item_price+$nds_val)*$arBasket["QUANTITY"], $arOrder["CURRENCY"]);
-								$sum += ($item_price+$nds_val)*$arBasket["QUANTITY"];?></b>
+								<b><?echo SaleFormatCurrency(($item_price+$nds_val)*$arQuantities[$mi], $arOrder["CURRENCY"]);
+								$sum += ($item_price+$nds_val)*$arQuantities[$mi];?></b>
 							</td>
 						</tr>
 						<?
+						$mi++;
 					}
 					//while ($db_basket->ExtractFields("b_"));
 					?>

@@ -686,6 +686,7 @@ var TagsWindow = function(uniquePopupId, bindElement, tags, params)
 		{
 			content : "",
 			buttons : [this.selectButton, this.cancelButton, this.editButton],
+			closeByEsc: true,
 			events : {
 				onPopupFirstShow : BX.proxy(
 					function(popupWindow)

@@ -65,4 +65,8 @@ $MESS["SEO_HELP_property_window_title"] = "The browser window title. This can be
 $MESS["SEO_HELP_property_keywords"] = "The page keywords. May be inherited from the parent section in which case the property will be saved in the page parameters.";
 $MESS["SEO_HELP_property_description"] = "The page description. May be inherited from the parent section in which case the property will be saved in the page parameters.";
 $MESS["SEO_PAGE_CONNECTION_ERROR_HINT"] = "Possible reason: port is not specified in <a href=\"/bitrix/admin/settings.php?mid=main\">Kernel module settings \"Website URL\"</a>.";
+$MESS["SEO_PAGE_ERROR_FOLDER_ACCESS"] = "Current user needs write permission for <i>#F</i> to use this function.";
+$MESS["SEO_PAGE_REFERERS_PHRASE"] = "Keyword";
+$MESS["SEO_PAGE_REFERERS_SITE"] = "Website";
+$MESS["SEO_PAGE_REFERERS_SEARCHERS_COUNT"] = "Search engine visits";
 ?>

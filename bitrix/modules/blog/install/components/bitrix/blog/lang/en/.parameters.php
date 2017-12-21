@@ -80,4 +80,5 @@ $MESS["BC_SEO_USE"] = "Use SEO";
 $MESS["BC_SEO_N"] = "never";
 $MESS["BC_SEO_Y"] = "use separate fields for description";
 $MESS["BC_SEO_D"] = "default fields";
+$MESS["BPC_IMAGE_MAX_SIZES_TEXT"] = "default";
 ?>

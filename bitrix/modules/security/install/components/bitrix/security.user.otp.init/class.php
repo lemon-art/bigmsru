@@ -149,7 +149,14 @@ class CSecurityUserOtpInit
 		try
 		{
 			$otp = Otp::getByUser($USER->getid());
-			$binarySecret = pack('H*', $this->request->getPost('secret'));
+			if(preg_match("/[^[:xdigit:]]/i", $this->request->getPost('secret')))
+			{
+				$binarySecret = $this->request->getPost('secret');
+			}
+			else
+			{
+				$binarySecret = pack('H*', $this->request->getPost('secret'));
+			}
 			$otp
 				->regenerate($binarySecret)
 				->syncParameters($this->request->getPost('sync1'), $this->request->getPost('sync2'))

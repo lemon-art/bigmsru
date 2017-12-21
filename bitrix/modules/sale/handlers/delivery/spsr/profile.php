@@ -42,7 +42,7 @@ class SpsrProfile extends \Bitrix\Sale\Delivery\Services\Base
 		elseif(isset($this->config['MAIN']['SERVICE_TYPE']) && intval($this->config['MAIN']['SERVICE_TYPE']) > 0)
 			$this->serviceType = $this->config['MAIN']['SERVICE_TYPE'];
 
-		if($this->serviceType > 0)
+		if($this->id <= 0 && $this->serviceType > 0)
 		{
 			$srvRes = $this->spsrHandler->getServiceTypes();
 			$srvTypes = $srvRes->getData();
@@ -112,7 +112,7 @@ class SpsrProfile extends \Bitrix\Sale\Delivery\Services\Base
 	 */
 	protected function calculateConcrete(Shipment $shipment)
 	{
-		$srvRes = $this->spsrHandler->getServiceTypes();
+		$srvRes = $this->spsrHandler->getServiceTypes($shipment);
 		$srvList = $srvRes->getData();
 
 		if(empty($srvList[$this->serviceType]['Name']))
@@ -174,10 +174,6 @@ class SpsrProfile extends \Bitrix\Sale\Delivery\Services\Base
 				)
 			)
 		);
-
-		if($this->serviceType != 20) //colibri
-		{
-		}
 
 		return $result;
 	}

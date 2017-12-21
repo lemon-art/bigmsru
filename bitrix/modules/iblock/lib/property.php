@@ -18,7 +18,7 @@ Loc::loadMessages(__FILE__);
  * <li> ACTIVE bool optional default 'Y'
  * <li> SORT int optional default 500
  * <li> CODE string(50) optional
- * <li> DEFAULT_VALUE string optional
+ * <li> DEFAULT_VALUE text optional
  * <li> PROPERTY_TYPE enum ('S', 'N', 'L', 'F', 'E' or 'G') optional default 'S'
  * <li> ROW_COUNT int optional default 1
  * <li> COL_COUNT int optional default 30
@@ -56,15 +56,7 @@ class PropertyTable extends Main\Entity\DataManager
 	const TYPE_SECTION = 'G';
 	const TYPE_LIST = 'L';
 
-	/**
-	 * Returns path to the file which contains definition of the class.
-	 *
-	 * @return string
-	 */
-	public static function getFilePath()
-	{
-		return __FILE__;
-	}
+	const DEFAULT_MULTIPLE_CNT = 5;
 
 	/**
 	 * Returns DB table name for entity
@@ -84,45 +76,38 @@ class PropertyTable extends Main\Entity\DataManager
 	public static function getMap()
 	{
 		return array(
-			'ID' => array(
-				'data_type' => 'integer',
+			'ID' => new Main\Entity\IntegerField('ID', array(
 				'primary' => true,
 				'autocomplete' => true,
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_ID_FIELD'),
-			),
-			'TIMESTAMP_X' => array(
-				'data_type' => 'datetime',
+			)),
+			'TIMESTAMP_X' => new Main\Entity\DatetimeField('TIMESTAMP_X', array(
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_TIMESTAMP_X_FIELD'),
-			),
-			'IBLOCK_ID' => array(
-				'data_type' => 'integer',
+			)),
+			'IBLOCK_ID' => new Main\Entity\IntegerField('IBLOCK_ID', array(
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_IBLOCK_ID_FIELD'),
-			),
-			'NAME' => array(
-				'data_type' => 'string',
+			)),
+			'NAME' => new Main\Entity\StringField('NAME', array(
 				'validation' => array(__CLASS__, 'validateName'),
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_NAME_FIELD'),
-			),
-			'ACTIVE' => array(
-				'data_type' => 'boolean',
+			)),
+			'ACTIVE' => new Main\Entity\BooleanField('ACTIVE', array(
 				'values' => array('N','Y'),
+				'default_value' => 'Y',
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_ACTIVE_FIELD'),
-			),
-			'SORT' => array(
-				'data_type' => 'integer',
+			)),
+			'SORT' => new Main\Entity\IntegerField('SORT', array(
+				'default_value' => 500,
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_SORT_FIELD'),
-			),
-			'CODE' => array(
-				'data_type' => 'string',
+			)),
+			'CODE' => new Main\Entity\StringField('CODE', array(
 				'validation' => array(__CLASS__, 'validateCode'),
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_CODE_FIELD'),
-			),
-			'DEFAULT_VALUE' => array(
-				'data_type' => 'text',
+			)),
+			'DEFAULT_VALUE' => new Main\Entity\TextField('DEFAULT_VALUE', array(
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_DEFAULT_VALUE_FIELD'),
-			),
-			'PROPERTY_TYPE' => array(
-				'data_type' => 'enum',
+			)),
+			'PROPERTY_TYPE' => new Main\Entity\EnumField('PROPERTY_TYPE', array(
 				'values' => array(
 					self::TYPE_STRING,
 					self::TYPE_NUMBER,
@@ -131,95 +116,91 @@ class PropertyTable extends Main\Entity\DataManager
 					self::TYPE_SECTION,
 					self::TYPE_LIST
 				),
+				'default_value' => self::TYPE_STRING,
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_PROPERTY_TYPE_FIELD'),
-			),
-			'ROW_COUNT' => array(
-				'data_type' => 'integer',
+			)),
+			'ROW_COUNT' => new Main\Entity\IntegerField('ROW_COUNT', array(
+				'default_value' => 1,
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_ROW_COUNT_FIELD'),
-			),
-			'COL_COUNT' => array(
-				'data_type' => 'integer',
+			)),
+			'COL_COUNT' => new Main\Entity\IntegerField('COL_COUNT', array(
+				'default_value' => 30,
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_COL_COUNT_FIELD'),
-			),
-			'LIST_TYPE' => array(
-				'data_type' => 'enum',
+			)),
+			'LIST_TYPE' => new Main\Entity\EnumField('LIST_TYPE', array(
 				'values' => array(self::LISTBOX, self::CHECKBOX),
+				'default_value' => self::LISTBOX,
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_LIST_TYPE_FIELD'),
-			),
-			'MULTIPLE' => array(
-				'data_type' => 'boolean',
+			)),
+			'MULTIPLE' => new Main\Entity\BooleanField('MULTIPLE', array(
 				'values' => array('N','Y'),
+				'default_value' => 'N',
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_MULTIPLE_FIELD'),
-			),
-			'XML_ID' => array(
-				'data_type' => 'string',
+			)),
+			'XML_ID' => new Main\Entity\StringField('XML_ID', array(
 				'validation' => array(__CLASS__, 'validateXmlId'),
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_XML_ID_FIELD'),
-			),
-			'FILE_TYPE' => array(
-				'data_type' => 'string',
+			)),
+			'FILE_TYPE' => new Main\Entity\StringField('FILE_TYPE', array(
 				'validation' => array(__CLASS__, 'validateFileType'),
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_FILE_TYPE_FIELD'),
-			),
-			'MULTIPLE_CNT' => array(
-				'data_type' => 'integer',
+			)),
+			'MULTIPLE_CNT' => new Main\Entity\IntegerField('MULTIPLE_CNT', array(
+				'default_value' => self::DEFAULT_MULTIPLE_CNT,
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_MULTIPLE_CNT_FIELD'),
-			),
-			'TMP_ID' => array(
-				'data_type' => 'string',
+			)),
+			'TMP_ID' => new Main\Entity\StringField('TMP_ID', array(
 				'validation' => array(__CLASS__, 'validateTmpId'),
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_TMP_ID_FIELD'),
-			),
-			'LINK_IBLOCK_ID' => array(
-				'data_type' => 'integer',
+			)),
+			'LINK_IBLOCK_ID' => new Main\Entity\IntegerField('LINK_IBLOCK_ID', array(
+				'default_value' => 0,
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_LINK_IBLOCK_ID_FIELD'),
-			),
-			'WITH_DESCRIPTION' => array(
-				'data_type' => 'boolean',
+			)),
+			'WITH_DESCRIPTION' => new Main\Entity\BooleanField('WITH_DESCRIPTION', array(
 				'values' => array('N','Y'),
+				'default_value' => 'N',
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_WITH_DESCRIPTION_FIELD'),
-			),
-			'SEARCHABLE' => array(
-				'data_type' => 'boolean',
+			)),
+			'SEARCHABLE' => new Main\Entity\BooleanField('SEARCHABLE', array(
 				'values' => array('N','Y'),
+				'default_value' => 'N',
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_SEARCHABLE_FIELD'),
-			),
-			'FILTRABLE' => array(
-				'data_type' => 'boolean',
+			)),
+			'FILTRABLE' => new Main\Entity\BooleanField('FILTRABLE', array(
 				'values' => array('N','Y'),
+				'default_value' => 'N',
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_FILTRABLE_FIELD'),
-			),
-			'IS_REQUIRED' => array(
-				'data_type' => 'boolean',
+			)),
+			'IS_REQUIRED' => new Main\Entity\BooleanField('IS_REQUIRED', array(
 				'values' => array('N','Y'),
+				'default_value' => 'N',
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_IS_REQUIRED_FIELD'),
-			),
-			'VERSION' => array(
-				'data_type' => 'enum',
+			)),
+			'VERSION' => new Main\Entity\EnumField('VERSION', array(
 				'values' => array(1, 2),
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_VERSION_FIELD'),
-			),
-			'USER_TYPE' => array(
-				'data_type' => 'string',
+			)),
+			'USER_TYPE' => new Main\Entity\StringField('USER_TYPE', array(
 				'validation' => array(__CLASS__, 'validateUserType'),
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_USER_TYPE_FIELD'),
-			),
-			'USER_TYPE_SETTINGS' => array(
-				'data_type' => 'text',
+			)),
+			'USER_TYPE_SETTINGS' => new Main\Entity\TextField('USER_TYPE_SETTINGS', array(
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_USER_TYPE_SETTINGS_FIELD'),
-			),
-			'HINT' => array(
-				'data_type' => 'string',
+			)),
+			'HINT' => new Main\Entity\StringField('HINT', array(
 				'validation' => array(__CLASS__, 'validateHint'),
 				'title' => Loc::getMessage('IBLOCK_PROPERTY_ENTITY_HINT_FIELD'),
+			)),
+			'LINK_IBLOCK' => new Main\Entity\ReferenceField(
+				'LINK_IBLOCK',
+				'\Bitrix\Iblock\Iblock',
+				array('=this.LINK_IBLOCK_ID' => 'ref.ID')
 			),
-			'LINK_IBLOCK' => array(
-				'data_type' => 'Bitrix\Iblock\Iblock',
-				'reference' => array('=this.LINK_IBLOCK_ID' => 'ref.ID'),
-			),
-			'IBLOCK' => array(
-				'data_type' => 'Bitrix\Iblock\Iblock',
-				'reference' => array('=this.IBLOCK_ID' => 'ref.ID'),
+			'IBLOCK' => new Main\Entity\ReferenceField(
+				'IBLOCK',
+				'\Bitrix\Iblock\Iblock',
+				array('=this.IBLOCK_ID' => 'ref.ID')
 			),
 		);
 	}

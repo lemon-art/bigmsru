@@ -27,14 +27,20 @@ class CSaleOrderChange extends CAllSaleOrderChange
 
 		if (!array_key_exists("DATE_CREATE", $arFields))
 		{
-			$arInsert[0] .= ", DATE_CREATE";
-			$arInsert[1] .= ", ".$DB->GetNowFunction();
+			$arInsert[0] .= ($arInsert[0] === '') ? '' : ',';
+			$arInsert[0] .= " DATE_CREATE";
+
+			$arInsert[1] .= ($arInsert[1] === '') ? '' : ',';
+			$arInsert[1] .= " ".$DB->GetNowFunction();
 		}
 
 		if (!array_key_exists("DATE_MODIFY", $arFields))
 		{
-			$arInsert[0] .= ", DATE_MODIFY";
-			$arInsert[1] .= ", ".$DB->GetNowFunction();
+			$arInsert[0] .= ($arInsert[0] === '') ? '' : ',';
+			$arInsert[0] .= " DATE_MODIFY";
+
+			$arInsert[1] .= ($arInsert[1] === '') ? '' : ',';
+			$arInsert[1] .= " ".$DB->GetNowFunction();
 		}
 
 		foreach ($arFields1 as $key => $value)

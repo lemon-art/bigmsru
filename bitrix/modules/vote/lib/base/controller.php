@@ -47,10 +47,22 @@ abstract class Controller
 	 */
 	public function __construct()
 	{
-		$this->errorCollection = new ErrorCollection;
-		$this->request = Context::getCurrent()->getRequest();
+		try
+		{
+			$this->errorCollection = new ErrorCollection;
+			$this->request = Context::getCurrent()->getRequest();
 
-		$this->init();
+			$this->init();
+		}
+		catch(\Exception $e)
+		{
+			$this->errorCollection->add(array(new Error($e->getMessage())));
+		}
+
+		if (!$this->errorCollection->isEmpty())
+		{
+			$this->sendJsonErrorResponse();
+		}
 	}
 
 	/**

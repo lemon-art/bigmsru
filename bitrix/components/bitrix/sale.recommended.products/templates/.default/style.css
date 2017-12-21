@@ -102,9 +102,12 @@
     .bx-touch .bx_item_list_recommended.col5 .bx_catalog_item:nth-child(2n+1){clear:both}
 }
 
+.bx-no-touch .bx_item_list_recommended .bx_catalog_item .bx_catalog_item_container{
+    z-index: 10;
+}
 .bx-no-touch .bx_item_list_recommended .bx_catalog_item:hover .bx_catalog_item_container {
     position:absolute;
-    z-index:990;
+    z-index:190;
     top:0;
     left:0;
     right:0;
@@ -211,7 +214,7 @@
 .bx_item_list_recommended .bx_catalog_item_images_double,
 .bx_item_list_recommended .bx_catalog_item_images{
     position:relative;
-    z-index:910;
+    z-index:180;
     display:block;
     padding-top:135%;
     width:100%;
@@ -221,7 +224,7 @@
     background-size:contain;
 }
 .bx_item_list_recommended .bx_catalog_item_images_double{
-    z-index:900;
+    z-index:186;
     margin-top:-135%;
     opacity:0;
 }

@@ -57,7 +57,7 @@ if (
 		'IBLOCK_ID' => $request['iblockId']
 	);
 
-	$catalogReindex = new CCatalogProductAvailable(
+	$catalogReindex = new CCatalogIblockReindex(
 		$params['sessID'],
 		$params['maxExecutionTime'],
 		$params['maxOperationCounter']
@@ -76,7 +76,7 @@ elseif (
 	&& $request['getIblock'] == 'Y'
 )
 {
-	$result = CCatalogProductAvailable::getIblockList($request['iblock']);
+	$result = CCatalogIblockReindex::getIblockList($request['iblock']);
 	header('Content-Type: application/x-javascript; charset='.LANG_CHARSET);
 	echo CUtil::PhpToJSObject($result, false, true);
 	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin_after.php');
@@ -116,7 +116,7 @@ else
 {
 	$APPLICATION->SetTitle(Loc::getMessage('BX_CATALOG_REINDEX_PAGE_TITLE'));
 
-	$oneStepTime = CCatalogProductAvailable::getDefaultExecutionTime();
+	$oneStepTime = CCatalogIblockReindex::getDefaultExecutionTime();
 
 	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_after.php');
 

@@ -126,7 +126,7 @@ if (CModule::IncludeModule("form"))
 	// deleting single form result
 	$del_id = intval($_REQUEST["del_id"]);
 
-	if ($del_id > 0 /* && check_bitrix_sessid()*/)
+	if ($del_id > 0 && check_bitrix_sessid())
 	{
 		$GLOBALS['strError'] = '';
 		CFormResult::Delete($del_id);

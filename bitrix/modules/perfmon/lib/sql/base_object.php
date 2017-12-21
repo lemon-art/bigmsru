@@ -52,6 +52,35 @@ abstract class BaseObject
 	}
 
 	/**
+	 * Returns "unquoted" name of the object.
+	 *
+	 * @param array|string $name Name or array of names to unquote.
+	 *
+	 * @return array|string
+	 */
+	final public function getUnquotedName($name = null)
+	{
+		if ($name === null && $this->name)
+		{
+			return $this->getUnquotedName($this->name);
+		}
+		elseif (is_array($name))
+		{
+			foreach ($name as $key => $value)
+			{
+				$name[$key] = $this->getUnquotedName($value);
+			}
+		}
+		elseif ($name[0] == '`')
+			$name = trim($name, '`');
+		elseif ($name[0] == '"')
+			$name = trim($name, '"');
+		elseif ($name[0] == '[')
+			$name = trim($name, '[]');
+		return $name;
+	}
+
+	/**
 	 * Returns "lowercased" name of the object.
 	 * <p>
 	 * If name is not quoted then it made lowercase.

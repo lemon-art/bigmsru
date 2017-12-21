@@ -9,7 +9,7 @@ Loc::loadMessages(__FILE__);
 			<select id="sale_ebay_category_1" name="sale_ebay_category_1" onchange="BX.Sale.EbayCategories.getCategoryChildren(this, 1);">
 				<option value=""></option>
 				<?foreach($arResult["TOP_CATEGORIES_LIST"] as $categoryId => $categoryName):?>
-					<option value="<?=$categoryId?>"<?=$categoryId == $arResult["TOP_CATEGORY_ID"] ? " selected" : ""?>><?=$categoryName?></option>
+					<option value="<?=htmlspecialcharsbx($categoryId)?>"<?=$categoryId == $arResult["TOP_CATEGORY_ID"] ? " selected" : ""?>><?=htmlspecialcharsbx($categoryName)?></option>
 				<?endforeach;?>
 			</select>
 		</div>
@@ -21,7 +21,7 @@ Loc::loadMessages(__FILE__);
 						<select id="sale_ebay_category_<?=$categoryLevel+1?>" name="sale_ebay_category_<?=$categoryLevel+1?>" onchange="BX.Sale.EbayCategories.getCategoryChildren(this, <?=$categoryLevel+1?>);">
 							<option value=""></option>
 							<?foreach($category["CHILDREN"] as $childId => $child):	?>
-								<option value="<?=$childId?>"<?=isset($arResult["CATEGORY_AND_PARENTS_INFO"][$categoryLevel+1]["CATEGORY_ID"]) && $arResult["CATEGORY_AND_PARENTS_INFO"][$categoryLevel+1]["CATEGORY_ID"] == $childId ? " selected" : ""?>><?=$child["NAME"]?></option>
+								<option value="<?=htmlspecialcharsbx($childId)?>"<?=isset($arResult["CATEGORY_AND_PARENTS_INFO"][$categoryLevel+1]["CATEGORY_ID"]) && $arResult["CATEGORY_AND_PARENTS_INFO"][$categoryLevel+1]["CATEGORY_ID"] == $childId ? " selected" : ""?>><?=htmlspecialcharsbx($child["NAME"])?></option>
 							<?endforeach;?>
 						</select>
 					</div>
@@ -38,7 +38,7 @@ Loc::loadMessages(__FILE__);
 				<select name="<?=$arParams["EBAY_CATEGORY_VARIATIONS_SN"]?>[]">
 					<option value=""></option>
 					<?foreach ($arResult["EBAY_CATEGORY_VARIATIONS"] as $varId => $var):?>
-						<option value="<?=$varId?>"<?=($ebayVariationId == $varId ? ' selected' : '')?>><?=$var["NAME"]?></option>
+						<option value="<?=htmlspecialcharsbx($varId)?>"<?=($ebayVariationId == $varId ? ' selected' : '')?>><?=htmlspecialcharsbx($var["NAME"])?></option>
 					<?endforeach;?>
 				</select>
 
@@ -48,14 +48,14 @@ Loc::loadMessages(__FILE__);
 					<option value=""><?=Loc::getMessage("SALE_EBAY_SEC_CATEGORY_PROPS")?></option>
 					<option value="">------------------</option>
 					<?foreach ($arResult["CATEGORY_PROPS"] as $propId => $prop):?>
-						<option value="<?=$propId?>"<?=($bitrixPropId == $propId ? ' selected' : '')?>><?=$prop["NAME"]?></option>
+						<option value="<?=htmlspecialcharsbx($propId)?>"<?=($bitrixPropId == $propId ? ' selected' : '')?>><?=htmlspecialcharsbx($prop["NAME"])?></option>
 					<?endforeach;?>
 					<?if(isset($arResult["OFFERS_IBLOCK_ID"])):?>
 						<option value="">------------------</option>
 						<option value=""><?=Loc::getMessage("SALE_EBAY_SEC_OFFERS_PROPS")?></option>
 						<option value="">------------------</option>
 						<?foreach ($arResult["CATEGORY_OFFERS_PROPS"] as $propId => $prop):?>
-							<option value="<?=$propId?>"<?=($bitrixPropId == $propId ? ' selected' : '')?>><?=$prop["NAME"]?></option>
+							<option value="<?=htmlspecialcharsbx($propId)?>"<?=($bitrixPropId == $propId ? ' selected' : '')?>><?=htmlspecialcharsbx($prop["NAME"])?></option>
 						<?endforeach;?>
 					<?endif;?>
 				</select>&nbsp;&nbsp;<input type="button" value="<?=Loc::getMessage("SALE_EBAY_SEC_ADD_CATEGORY_PROP")?>" onclick="BX.Sale.EbayCategories.createCategoryProperty(<?=CUtil::PhpToJSObject($arResult["IBLOCK_IDS"])?>, this);" style="margin-top: 10px;">

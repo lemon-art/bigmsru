@@ -13,4 +13,11 @@ $MESS["SALE_DLV_SRV_SPSR_LOC_EX_EAO_1"] = "Еврейская авт. обл.";
 $MESS["SALE_DLV_SRV_SPSR_LOC_EX_EAO_2"] = "ЕВРЕЙСКАЯ АВТОНОМНАЯ ОБЛАСТЬ";
 $MESS["SALE_DLV_SRV_SPSR_LOC_INST_ERROR"] = "Ошибка установки соответствия кодов местоположений СПСР";
 $MESS["SALE_DLV_SRV_SPSR_RUSSIA"] = "Россия";
+$MESS["SALE_DLV_SRV_SPSR_TMP_TBL_ERROR"] = "Ошибка сохранения местоположений СПСР во временную таблицу";
+$MESS["SALE_DLV_SRV_SPSR_LOC_CSV"] = "Сопоставляем местоположения по кодам из файла CSV";
+$MESS["SALE_DLV_SRV_SPSR_LOC_NORM"] = "Нормализуем наименования местоположений";
+$MESS["SALE_DLV_SRV_SPSR_LOC_CHECK_MAPPED"] = "Проверяем какие местоположения уже сопоставлены";
+$MESS["SALE_DLV_SRV_SPSR_LOC_MAP_BY_NAME"] = "Сопоставляем местоположения по наименованиям";
+$MESS["SALE_DLV_SRV_SPSR_LOC_MAP_FINISHED"] = "Сопоставление местоположений завершено";
+$MESS["SALE_DLV_SRV_SPSR_LOC_MAP_STAGE_ERROR"] = "Неизвестный этап сопоставления местоположений";
 ?>

@@ -1,5 +1,4 @@
 <?
-$MESS["BT_UT_SKU_DESCR"] = "SKU";
 $MESS["BT_UT_SKU_SETTING_TITLE"] = "Настройки SKU";
 $MESS["BT_UT_SKU_SETTING_IBLOCK_MESS"] = "Брать название кнопки добавления из настроек инфоблока";
 $MESS["BT_UT_SKU_SETTING_MAX_WIDTH"] = "Максимальная ширина поля ввода в пикселах (0 - не ограничивать)";
@@ -13,4 +12,5 @@ $MESS["BT_UT_SKU_SETTING_BAN_SYMBOLS"] = "Заменяемые при показ
 $MESS["BT_UT_SKU_SETTING_REP_SYMBOL"] = "Символ, который заменит при показе запрещенные символы";
 $MESS["BT_UT_SKU_MESS_NEW_ELEMENT"] = "Добавить товарное предложение";
 $MESS["BT_UT_SKU_MESS_NEW_ELEMENT_DESCR"] = "Добавить новое товарное предложение и выбрать его";
+$MESS["BT_UT_SKU_DESCRIPTION"] = "Привязка к товарам (SKU)";
 ?>

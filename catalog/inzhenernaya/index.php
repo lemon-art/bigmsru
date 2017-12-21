@@ -200,7 +200,8 @@ $arrFilter = Array(
 			102 => "VID_SOEDINENIA",
 			103 => "VID_REM_FITINGA",
 			104 => "MARKIROVKA",
-			105 => "TIP_IZDELIYA"
+			105 => "TIP_IZDELIYA",
+			106 =>"DIAMETR_SHURUPA_MM",
 		),
 		"INCLUDE_SUBSECTIONS" => "Y",
 		"LIST_META_KEYWORDS" => "-",
@@ -319,7 +320,8 @@ $arrFilter = Array(
 			109 => "MAX_BAR",
 			110 => "MAX_WORK_TEMP",
 			111 => "TIME_WORK",
-			112 => "NAZN_TRUBI"
+			112 => "NAZN_TRUBI",
+			113 =>"DIAMETR_SHURUPA_MM",
 		),
 		"DETAIL_META_KEYWORDS" => "-",
 		"DETAIL_META_DESCRIPTION" => "-",
@@ -463,7 +465,8 @@ $arrFilter = Array(
 			96 => "DELIVERY",
 			97 => "GARANTY",
 			98 => "ARMIROVANIE",
-			99 => "DIAMETR_RESBA"
+			99 => "DIAMETR_RESBA",
+			100 =>"DIAMETR_SHURUPA_MM",
 		),
 		"FILTER_PRICE_CODE" => array(
 			0 => "Интернет",
@@ -580,7 +583,8 @@ $arrFilter = Array(
 			96 => "LIDER_PRODAZH",
 			97 => "GARANTY",
 			98 => "ARMIROVANIE",
-			99 => "DIAMETR_RESBA"
+			99 => "DIAMETR_RESBA",
+			100 =>"DIAMETR_SHURUPA_MM",
 		),
 		"COMPARE_ELEMENT_SORT_FIELD" => "CATALOG_PRICE_1",
 		"COMPARE_ELEMENT_SORT_ORDER" => "asc",

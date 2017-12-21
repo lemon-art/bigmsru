@@ -30,7 +30,6 @@ $MESS["MAIN_COMPOSITE_BANNER_BGCOLOR"] = "Change background color";
 $MESS["MAIN_COMPOSITE_BANNER_STYLE"] = "Change logo and caption";
 $MESS["MAIN_COMPOSITE_BANNER_STYLE_WHITE"] = "White background";
 $MESS["MAIN_COMPOSITE_CLEAR_CACHE"] = "Reset cache";
-$MESS["MAIN_COMPOSITE_HITS_WITHOUT_CACHE"] = "Number of hits without page compositing due to lack of disk space:";
 $MESS["MAIN_COMPOSITE_WARNING_EDUCATION"] = "-";
 $MESS["MAIN_COMPOSITE_DOMAINS"] = "Domain names (start each on a new line)";
 $MESS["MAIN_COMPOSITE_STORAGE"] = "Store cache in";

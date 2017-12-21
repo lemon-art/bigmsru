@@ -63,6 +63,8 @@ if (!empty($arResult['ITEMS']))
 	if (!$boolConvert)
 		$strBaseCurrency = CCurrency::GetBaseCurrency();
 
+	$elementIndex = array_keys($arResult['ITEMS']);
+
 	$catalogs = array();
 	foreach($arResult['CATALOGS'] as $catalog)
 	{
@@ -84,15 +86,65 @@ if (!empty($arResult['ITEMS']))
 					'NAME' => '-'
 				)
 			);
+			$skuPropIds[$catalogId] = array();
 
-			$needValues = array();
-			CIBlockPriceTools::getTreePropertyValues($skuPropList[$catalogId], $needValues);
+			if (!empty($skuPropList[$catalogId]))
+			{
+				$shortPropList = array();
+				foreach ($skuPropList[$iblockId] as $property)
+				{
+					$shortPropList[$property['CODE']] = array(
+						'ID' => $property['ID'],
+						'CODE' => $property['CODE'],
+						'PROPERTY_TYPE' => $property['PROPERTY_TYPE'],
+						'USER_TYPE' => $property['USER_TYPE']
+					);
+				}
+				unset($property);
 
-			$skuPropIds[$catalogId] = array_keys($skuPropList[$catalogId]);
-			if (!empty($skuPropIds[$catalogId]))
-				$skuPropKeys[$catalogId] = array_fill_keys($skuPropIds[$catalogId], false);
+				$needValues = array();
+				foreach ($elementIndex as $index)
+				{
+					if ($arResult['ITEMS'][$index]['IBLOCK_ID'] != $catalogId)
+						continue;
+					if (empty($arResult['ITEMS'][$index]['OFFERS']))
+						continue;
+					foreach ($arResult['ITEMS'][$index]['OFFERS'] as $offer)
+					{
+						foreach ($shortPropList as $property)
+						{
+							if (isset($offer['DISPLAY_PROPERTIES'][$property['CODE']]))
+							{
+								if (!isset($needValues[$property['ID']]))
+									$needValues[$property['ID']] = array();
+								$valueId = ($property['PROPERTY_TYPE'] == \Bitrix\Iblock\PropertyTable::TYPE_LIST
+									? $offer['DISPLAY_PROPERTIES'][$property['CODE']]['VALUE_ENUM_ID']
+									: $offer['DISPLAY_PROPERTIES'][$property['CODE']]['VALUE']
+								);
+								$needValues[$property['ID']][$valueId] = $valueId;
+								unset($valueId);
+							}
+						}
+						unset($property);
+					}
+					unset($offer);
+				}
+				unset($index);
+
+				if (!empty($needValues))
+					CIBlockPriceTools::getTreePropertyValues($skuPropList[$catalogId], $needValues);
+				unset($needValues);
+
+				$skuPropIds[$catalogId] = array_keys($skuPropList[$catalogId]);
+				if (!empty($skuPropIds[$catalogId]))
+					$skuPropKeys[$catalogId] = array_fill_keys($skuPropIds[$catalogId], false);
+
+				unset($shortPropList);
+			}
 		}
 	}
+
+	unset($elementIndex);
 
 	$arNewItemsList = array();
 
@@ -237,12 +289,16 @@ if (!empty($arResult['ITEMS']))
 				}
 				$arMatrix[$keyOffer] = $arRow;
 
+				CIBlockPriceTools::clearProperties($arOffer['DISPLAY_PROPERTIES'], $arParams['OFFER_TREE_PROPS'][$arOffer['IBLOCK_ID']]);
 
 				$newOfferProps = array();
 				if(!empty($arParams['PROPERTY_CODE'][$arOffer['IBLOCK_ID']]))
 				{
 					foreach($arParams['PROPERTY_CODE'][$arOffer['IBLOCK_ID']] as $propName)
-						$newOfferProps[$propName] = $arOffer['DISPLAY_PROPERTIES'][$propName];
+					{
+						if (isset($arOffer['DISPLAY_PROPERTIES'][$propName]) && is_array($arOffer['DISPLAY_PROPERTIES'][$propName]))
+							$newOfferProps[$propName] = $arOffer['DISPLAY_PROPERTIES'][$propName];
+					}
 				}
 				$arOffer['DISPLAY_PROPERTIES'] = $newOfferProps;
 

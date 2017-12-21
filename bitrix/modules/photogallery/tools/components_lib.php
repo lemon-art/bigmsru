@@ -171,7 +171,6 @@ class CPGalleryInterface
 					false
 				);
 
-
 				if (!($db_res && $arSection = $db_res->GetNext()))
 				{
 					if ($this->arError["show_error"] == "Y")
@@ -196,6 +195,8 @@ class CPGalleryInterface
 				}
 				else
 				{
+					$arSection["DESCRIPTION"] = htmlspecialcharsbx($arSection["~DESCRIPTION"]);
+
 					$arSection["SECTIONS_CNT"] = 0;
 					if (($arSection["RIGHT_MARGIN"] - $arSection["LEFT_MARGIN"]) > 1)
 						$arSection["SECTIONS_CNT"] = intVal(CIBlockSection::GetCount(array("SECTION_ID" => $arSection["ID"])));

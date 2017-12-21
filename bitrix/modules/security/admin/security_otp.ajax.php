@@ -153,7 +153,14 @@ function checkAndActivate($fields)
 	try
 	{
 		$otp = Otp::getByUser($fields['USER_ID']);
-		$binarySecret = pack('H*', $fields['SECRET']);
+		if(preg_match("/[^[:xdigit:]]/i", $fields['SECRET']))
+		{
+			$binarySecret = $fields['SECRET'];
+		}
+		else
+		{
+			$binarySecret = pack('H*', $fields['SECRET']);
+		}
 		$otp
 			->regenerate($binarySecret)
 			->setType($fields['TYPE'])

@@ -162,6 +162,12 @@ class UserTypePropertyEmployee extends UserTypeProperty
 		return $value;
 	}
 
+	public static function extractValueMultiple(FieldType $fieldType, array $field, array $request)
+	{
+		$values = parent::extractValueMultiple($fieldType, $field, $request);
+		return array_unique($values);
+	}
+
 	/**
 	 * @param FieldType $fieldType
 	 * @param $value

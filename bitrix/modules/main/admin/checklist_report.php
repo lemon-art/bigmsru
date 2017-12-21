@@ -52,7 +52,7 @@ if($_REQUEST["ACTION"] == "INFO" && $_REQUEST["TEST_ID"] && $arPoints[$_REQUEST[
 	$APPLICATION->RestartBuffer();
 
 	$aTabs = array(
-			array("DIV" => "edit1", "TAB" => GetMessage("CL_TAB_TEST"), "ICON" => "checklist_detail", "TITLE" => GetMessage("CL_TEST_NAME").': '.$arPoints[$arTestID]["NAME"].'&nbsp;('.$arTestID.')'),
+			array("DIV" => "edit1", "TAB" => GetMessage("CL_TAB_TEST"), "ICON" => "checklist_detail", "TITLE" => GetMessage("CL_TEST_NAME").': '.$arPoints[$arTestID]["NAME"].'&nbsp;('.htmlspecialcharsbx($arTestID).')'),
 			array("DIV" => "edit2", "TAB" => GetMessage("CL_TAB_DESC"), "ICON" => "checklist_detail", "TITLE" => GetMessage('CL_TAB_DESC')),
 		);
 		$tabControl = new CAdminTabControl("tabControl", $aTabs);
@@ -75,9 +75,9 @@ if($_REQUEST["ACTION"] == "INFO" && $_REQUEST["TEST_ID"] && $arPoints[$_REQUEST[
 						<div class="checklist-popup-name-test"><?=GetMessage("CL_RESULT_TEST");?>:</div>
 							<div class="checklist-popup-test-text">
 							<span id="system_comment"><?=$arPoints[$arTestID]["STATE"]["COMMENTS"]["SYSTEM"]["PREVIEW"];?></span>
-							<a style="display:<?=$display?>" id="show_detail_link" onclick="ShowDetailComment('<?=$arTestID?>')" class="checklist-popup-test-link"><?=GetMessage("CL_MORE_DETAILS");?></a>
+							<a style="display:<?=$display?>" id="show_detail_link" onclick="ShowDetailComment('<?=htmlspecialcharsbx(CUtil::JSEscape($arTestID))?>')" class="checklist-popup-test-link"><?=GetMessage("CL_MORE_DETAILS");?></a>
 							<div style="display:none">
-							<div id="detail_system_comment_<?=$arTestID?>" class="checklist-system-textarea"><?=preg_replace("/\r\n|\r|\n/",'<br>',$arPoints[$arTestID]["STATE"]["COMMENTS"]["SYSTEM"]["DETAIL"]);?></div>
+							<div id="detail_system_comment_<?=htmlspecialcharsbx($arTestID)?>" class="checklist-system-textarea"><?=preg_replace("/\r\n|\r|\n/",'<br>',$arPoints[$arTestID]["STATE"]["COMMENTS"]["SYSTEM"]["DETAIL"]);?></div>
 							</div>
 							</div>
 					</div>
@@ -170,25 +170,6 @@ $tabControl->BeginNextTab();
 		BX(id.substring(9)).style.display='block';
 		return false;
 	}
-/*
-	function ShowDetailComment()
-	{
-		var DetailWindow = new BX.CAdminDialog(
-				{
-					title: '<?=GetMessageJS("CL_MORE_DETAILS");?>',
-					head: "",
-					content: BX("detail_system_comment_<?=$arTestID?>").parentNode.innerHTML,
-					icon: "head-block",
-					resizable: true,
-					draggable: true,
-					height: "400",
-					width: "700",
-					buttons: [BX.CAdminDialog.btnClose]
-				}
-			);
-			DetailWindow.Show();
-	}
-*/
 
 	</script>
 <?
@@ -454,12 +435,12 @@ else:
 				current = next;
 			ShowWaitWindow();
 			BX.ajax.post(
-				"/bitrix/admin/checklist_report.php?bxpublic=Y&ACTION=INFO&TEST_ID="+arStates["POINTS"][current].TEST_ID+"&lang=<?=LANG;?>"+"&ID="+<?=$arReportID;?>+"&<?=bitrix_sessid_get()?>",
+				"/bitrix/admin/checklist_report.php?bxpublic=Y&ACTION=INFO&TEST_ID="+arStates["POINTS"][current].TEST_ID+"&lang=<?=LANG;?>&ID=<?=$arReportID;?>&<?=bitrix_sessid_get()?>",
 				data,
 				function(data)
 				{
 					Dialog.SetContent(data);
-					testtitle = arStates["POINTS"][current].NAME+" - "+arStates["POINTS"][current].TEST_ID;
+					var testtitle = arStates["POINTS"][current].NAME+" - "+arStates["POINTS"][current].TEST_ID;
 					if (arStates["POINTS"][current].IS_REQUIRE == "Y")
 						testtitle = testtitle+" ("+'<?=GetMessageJS("CL_TEST_IS_REQUIRE");?>'+")";
 					Dialog.SetTitle(testtitle);

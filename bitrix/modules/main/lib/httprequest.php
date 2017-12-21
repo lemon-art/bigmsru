@@ -277,7 +277,7 @@ class HttpRequest extends Request
 
 	protected static function decode($url)
 	{
-		return Text\Encoding::convertEncodingToCurrent(urldecode($url));
+		return Text\Encoding::convertEncodingToCurrent(rawurldecode($url));
 	}
 
 	/**
@@ -307,8 +307,10 @@ class HttpRequest extends Request
 		}
 
 		$https = $this->server->get("HTTPS");
-		if($https !== null && strtolower($https) == "on")
+		if($https <> '' && strtolower($https) <> "off")
 		{
+			//From the PHP manual: Set to a non-empty value if the script was queried through the HTTPS protocol.
+			//Note that when using ISAPI with IIS, the value will be off if the request was not made through the HTTPS protocol.
 			return true;
 		}
 
@@ -387,6 +389,7 @@ class HttpRequest extends Request
 	{
 		static $params = array(
 			"login",
+			"login_form",
 			"logout",
 			"register",
 			"forgot_password",
@@ -401,6 +404,7 @@ class HttpRequest extends Request
 			"show_sql_stat",
 			"show_cache_stat",
 			"show_link_stat",
+			"sessid",
 		);
 		return $params;
 	}

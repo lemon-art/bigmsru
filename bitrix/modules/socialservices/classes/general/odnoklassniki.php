@@ -121,11 +121,17 @@ class CSocServOdnoklassniki extends CSocServAuth
 						if($date = MakeTimeStamp($arOdnoklUser['birthday'], "YYYY-MM-DD"))
 							$arFields["PERSONAL_BIRTHDAY"] = ConvertTimeStamp($date);
 					if(isset($arOdnoklUser['pic_2']) && self::CheckPhotoURI($arOdnoklUser['pic_2']))
-						if ($arPic = CFile::MakeFileArray($arOdnoklUser['pic_2'].'&name=/'.md5($arOdnoklUser['pic_2']).'.jpg'))
+					{
+						if($arPic = CFile::MakeFileArray($arOdnoklUser['pic_2']))
+						{
+							$arPic['name'] = md5($arOdnoklUser['pic_2']).'.jpg';
 							$arFields["PERSONAL_PHOTO"] = $arPic;
+						}
+					}
 					$arFields["PERSONAL_WWW"] = "http://odnoklassniki.ru/profile/".$uid;
 					if(strlen(SITE_ID) > 0)
 						$arFields["SITE_ID"] = SITE_ID;
+
 					$bSuccess = $this->AuthorizeUser($arFields);
 				}
 			}

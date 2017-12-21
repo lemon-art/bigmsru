@@ -3,6 +3,7 @@
 if (!$this->__component->__parent || empty($this->__component->__parent->__name) || $this->__component->__parent->__name != "bitrix:blog"):
 	$GLOBALS['APPLICATION']->SetAdditionalCSS('/bitrix/components/bitrix/blog/templates/.default/style.css');
 	$GLOBALS['APPLICATION']->SetAdditionalCSS('/bitrix/components/bitrix/blog/templates/.default/themes/blue/style.css');
+	$GLOBALS['APPLICATION']->SetAdditionalCSS('/bitrix/components/bitrix/blog/templates/.default/styles/additional.css');
 endif;
 ?>
 <div class="blog-post-edit">
@@ -49,35 +50,6 @@ elseif(strlen($arResult["UTIL_MESSAGE"])>0)
 }
 else
 {
-	// Frame with file input to ajax uploading in WYSIWYG editor dialog
-	if($arResult["imageUploadFrame"] == "Y")
-	{
-		?>
-		<script>
-			<?if(!empty($arResult["Image"])):?>
-			var imgTable = top.BX('blog-post-image');
-			if (imgTable)
-			{
-				imgTable.innerHTML += '<div class="blog-post-image-item"><div class="blog-post-image-item-border"><?=$arResult["ImageModified"]?></div>' +
-				'<div class="blog-post-image-item-input"><input name=IMAGE_ID_title[<?=$arResult["Image"]["ID"]?>] value="<?=Cutil::JSEscape($arResult["Image"]["TITLE"])?>"></div>' +
-				'<div><input type=checkbox name=IMAGE_ID_del[<?=$arResult["Image"]["ID"]?>] id=img_del_<?=$arResult["Image"]["ID"]?>> <label for=img_del_<?=$arResult["Image"]["ID"]?>><?=GetMessage("BLOG_DELETE")?></label></div></div>';
-			}
-
-			top.arImages.push('<?=$arResult["Image"]["ID"]?>');
-			window.bxBlogImageId = top.bxBlogImageId = '<?=$arResult["Image"]["ID"]?>';
-			top.bxBlogImageIdWidth = '<?=CUtil::JSEscape($arResult["Image"]["PARAMS"]["WIDTH"])?>';
-			<?elseif(strlen($arResult["ERROR_MESSAGE"]) > 0):?>
-				window.bxBlogImageError = top.bxBlogImageError = '<?=CUtil::JSEscape($arResult["ERROR_MESSAGE"])?>';
-			<?endif;?>
-		</script>
-		<?
-		die();
-	}
-	else
-	{
-		// TODO: Check it!
-		//include($_SERVER["DOCUMENT_ROOT"].$templateFolder."/script.php");
-
 		if($arResult["preview"] == "Y" && !empty($arResult["PostToShow"])>0)
 		{
 			echo "<p><b>".GetMessage("BLOG_PREVIEW_TITLE")."</b></p>";
@@ -138,16 +110,16 @@ else
 		}
 
 		?>
-		<form action="<?=POST_FORM_ACTION_URI?>" id="POST_BLOG_FORM" name="REPLIER" method="post" enctype="multipart/form-data">
+		<form action="<?=POST_FORM_ACTION_URI?>" id=<?=$component->createPostFormId()?> name="REPLIER" method="post" enctype="multipart/form-data">
 		<?=bitrix_sessid_post();?>
 		<?
-		if(COption::GetOptionString("blog", "use_autosave", "Y") == "Y")
+		if($arParams["USE_AUTOSAVE"] == "Y")
 		{
 			$as = new CAutoSave();
 			$as->Init(false);
 			?>
 			<script>
-			BX.ready(BlogPostAutoSave);
+			BX.message({'BLOG_POST_AUTOSAVE':'<?=GetMessage("BLOG_POST_AUTOSAVE")?>'});
 			</script>
 			<?
 		}
@@ -207,7 +179,8 @@ else
 								'delete_repeat_replace' : true,
 								'use_google' : <?echo $arParams['USE_GOOGLE_CODE'] == 'Y'? 'true': 'false'?>,
 								'callback' : function(result){
-										to.value = result; 
+										if(result.length > 0 && isFinite(result)) result = '_'+result;
+										to.value = result;
 										toText.innerHTML = result;
 										setTimeout('transliterate()', 250);
 										}
@@ -233,7 +206,7 @@ else
 				transliterate();
 				</script>
 				<div class="blog-post-field blog-post-field-code blog-edit-field blog-edit-field-code">
-					<label for="CODE" class="blog-edit-field-caption"><?=GetMessage("BLOG_P_CODE")?>: </label><?=$arResult["PATH_TO_POST1"]?><a href="javascript:changeCode()" title="<?=GetMessage("BLOG_CHANGE_CODE")?>" id="post-code-text"><?=(strlen($arResult["PostToShow"]["CODE"]) > 0) ? $arResult["PostToShow"]["CODE"] : GetMessage("BLOG_P_CODE");?></a><span id="post-code-input"><input maxlength="255" size="70" tabindex="2" type="text" name="CODE" id="CODE" value="<?=$arResult["PostToShow"]["CODE"]?>"><image id="code_link" title="<?echo GetMessage("BLOG_LINK_TIP")?>" class="linked" src="/bitrix/themes/.default/icons/iblock/<?if($bLinked) echo 'link.gif'; else echo 'unlink.gif';?>" onclick="set_linked()" /> </span><?=$arResult["PATH_TO_POST2"]?>
+					<label for="CODE" class="blog-edit-field-caption"><?=GetMessage("BLOG_P_CODE")?>:</label> <?=$arResult["PATH_TO_POST1"]?><a href="javascript:changeCode()" title="<?=GetMessage("BLOG_CHANGE_CODE")?>" id="post-code-text"><?=(strlen($arResult["PostToShow"]["CODE"]) > 0) ? $arResult["PostToShow"]["CODE"] : GetMessage("BLOG_P_CODE");?></a><span id="post-code-input"><input maxlength="255" size="70" tabindex="2" type="text" name="CODE" id="CODE" value="<?=$arResult["PostToShow"]["CODE"]?>"><image id="code_link" title="<?echo GetMessage("BLOG_LINK_TIP")?>" class="linked" src="/bitrix/themes/.default/icons/iblock/<?if($bLinked) echo 'link.gif'; else echo 'unlink.gif';?>" onclick="set_linked()" /> </span><?=$arResult["PATH_TO_POST2"]?>
 					
 				</div>
 				<div class="blog-clear-float"></div>
@@ -266,9 +239,8 @@ else
 
 		<div class="blog-post-message blog-edit-editor-area blog-edit-field-text">
 			<div class="blog-comment-field blog-comment-field-bbcode">
-				<?
-				include($_SERVER["DOCUMENT_ROOT"].$templateFolder."/editor.php");
-				?>
+				<? include($_SERVER["DOCUMENT_ROOT"].$templateFolder."/neweditor.php"); ?>
+				<input type="hidden" name="USE_NEW_EDITOR" value="Y">
 				<div style="width:0; height:0; overflow:hidden;"><input type="text" tabindex="3" onFocus="window.oBlogLHE.SetFocus()" name="hidden_focus"></div>
 			</div>
 			<br />
@@ -276,49 +248,40 @@ else
 				<?
 				$eventHandlerID = false;
 				$eventHandlerID = AddEventHandler('main', 'system.field.edit.file', array('CBlogTools', 'blogUFfileEdit'));
-				?>
-				<a id="blog-upload-file" href="javascript:blogShowFile()"><?=GetMessage("BLOG_ADD_FILES")?></a>
-				<div class="blog-post-field blog-post-field-user-prop blog-edit-field">
-					<div id="blog-post-user-fields-UF_BLOG_POST_DOC">
-						<?$APPLICATION->IncludeComponent(
-							"bitrix:system.field.edit",
-							$arResult["POST_PROPERTIES"]["DATA"]["UF_BLOG_POST_DOC"]["USER_TYPE"]["USER_TYPE_ID"],
-							array("arUserField" => $arResult["POST_PROPERTIES"]["DATA"]["UF_BLOG_POST_DOC"]), null, array("HIDE_ICONS"=>"Y"));?>
-					</div>
-				</div>
-				<div class="blog-clear-float"></div>
-				<?		
 				if ($eventHandlerID !== false && ( intval($eventHandlerID) > 0 ))
 					RemoveEventHandler('main', 'system.field.edit.file', $eventHandlerID);
 				unset($arResult["POST_PROPERTIES"]["DATA"]["UF_BLOG_POST_DOC"]);
 				?>
 			<?endif;?>
 
-			<div class="blog-post-field blog-post-field-images blog-edit-field" id="blog-post-image">
-			<?
-			if (!empty($arResult["Images"]))
-			{
-				?><div><?=GetMessage("BLOG_P_IMAGES")?></div><?
-				foreach($arResult["Images"] as $aImg)
-				{
+				<?foreach($arResult["Images"] as $image):
+					$image["DEL_URL"] = CUtil::JSEscape($image["DEL_URL"]);
+					$arJSFiles[strVal($image["ID"])] = array(
+						"element_id" => $image["ID"],
+						"element_name" => $image["FILE_NAME"],
+						"element_size" => $image["FILE_SIZE"],
+						"element_url" => $image["THUMBNAIL"]["src"],
+						"element_content_type" => $image["CONTENT_TYPE"],
+						"element_thumbnail" => $image["SRC"],
+						"element_image" => $image["THUMBNAIL"]["src"],
+						"isImage" => (substr($image["CONTENT_TYPE"], 0, 6) == "image/"),
+						"del_url" => $image["DEL_URL"]
+					);
+				
+					$imageTitle = GetMessage("MPF_INSERT_FILE");
 					?>
-						<div class="blog-post-image-item">
-							<div class="blog-post-image-item-border"><?=$aImg["FileShow"]?></div>
-
-								<div class="blog-post-image-item-input">
-									<input name="IMAGE_ID_title[<?=$aImg["ID"]?>]" value="<?=$aImg["TITLE"]?>" title="<?=GetMessage("BLOG_BLOG_IN_IMAGES_TITLE")?>">
-								</div>
-								<div>
-									<input type="checkbox" name="IMAGE_ID_del[<?=$aImg["ID"]?>]" id="img_del_<?=$aImg["ID"]?>"> <label for="img_del_<?=$aImg["ID"]?>"><?=GetMessage("BLOG_DELETE")?></label>
-								</div>
-
-						</div>
-					<?
-				}
-			}
-			?>
-			</div>
+				<span class="feed-add-photo-block" id="wd-doc<?=$image["ID"]?>">
+					<span class="feed-add-img-wrap" title="<?=$imageTitle?>">
+						<img src="<?=$image["THUMBNAIL"]["src"]?>" border="0" width="90" height="90" />
+					</span>
+					<span class="feed-add-img-title" title="<?=$imageTitle?>"><?=$image["TITLE"]?></span>
+					<span class="feed-add-post-del-but"></span>
+				</span>
+				<?endforeach?>
+				<? $arJSFiles = CUtil::PhpToJSObject($arJSFiles); ?>
+				<script>window['<?=$component->createEditorId()?>Files']=<?=$arJSFiles?>;</script>
 		</div>
+		
 		<div class="blog-clear-float"></div>
 		<div class="blog-post-field blog-post-field-category blog-edit-field blog-edit-field-tags">
 			<div class="blog-post-field-text">
@@ -339,7 +302,7 @@ else
 					}
 					else
 					{
-						?><input type="text" id="TAGS" tabindex="4" name="TAGS" size="30" value="<?=$arResult["PostToShow"]["CategoryText"]?>">
+						?><input type="text" id="TAGS" tabindex="4" name="TAGS" size="30" value="<?=htmlspecialcharsbx($arResult["PostToShow"]["CategoryText"])?>">
 						<?
 					}?>
 			</span>
@@ -502,6 +465,17 @@ else
 				<div class="blog-clear-float"></div>
 			<?endif;?>
 		</div>
+		<script type="text/javascript">
+//			init editor for work with images previews
+			BX.BlogPostInit('<?=$component->createPostFormId()?>', {
+				editorID : '<?=$component->createEditorId()?>',
+				showTitle : true,	//todo: need namana
+				autoSave : "<?=$arParams["USE_AUTOSAVE"]?>",
+				text : '<?=CUtil::JSEscape(isset($arResult['Post']["~DETAIL_TEXT"]) ? $arResult['Post']["~DETAIL_TEXT"] : "")?>',
+				restoreAutosave : <?=(empty($arResult["ERROR_MESSAGE"]) ? 'true' : 'false')?>
+			});
+		</script>
+			
 		<?if($arParams["SEO_USE"] == "Y"):
 			$bShowSEO = false;
 			if(!empty($arResult["PostToShow"]["SEO_TITLE"]) || !empty($arResult["PostToShow"]["SEO_TAGS"]) || !empty($arResult["PostToShow"]["SEO_DESCRIPTION"]))
@@ -527,6 +501,28 @@ else
 				</div>
 			</div>
 		<?endif;?>
+		<?
+//		userconsent only for once for registered early users
+		if ($arParams['USER_CONSENT'] == 'Y' && !$arParams['USER_CONSENT_WAS_GIVEN'])
+		{
+			$APPLICATION->IncludeComponent(
+				"bitrix:main.userconsent.request",
+				"",
+				array(
+					"ID" => $arParams["USER_CONSENT_ID"],
+					"IS_CHECKED" => $arParams["USER_CONSENT_IS_CHECKED"],
+					"AUTO_SAVE" => "Y",
+					"IS_LOADED" => $arParams["USER_CONSENT_IS_LOADED"],
+					"ORIGIN_ID" => "sender/sub",
+					"ORIGINATOR_ID" => "",
+					"REPLACE" => array(
+						'button_caption' => GetMessage("BLOG_PUBLISH"),
+						'fields' => array('Alias', 'Personal site', 'Birthday', 'Photo')
+					),
+				)
+			);
+		}
+		?>
 		<div class="blog-post-buttons blog-edit-buttons">
 			<input type="hidden" name="save" value="Y">
 			<input tabindex="5" type="submit" name="save" value="<?=GetMessage("BLOG_PUBLISH")?>">
@@ -545,7 +541,6 @@ else
 		//-->
 		</script>
 		<?
-	}
 }
 ?>
 </div>

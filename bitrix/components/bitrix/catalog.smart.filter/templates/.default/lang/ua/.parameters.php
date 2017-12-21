@@ -13,4 +13,5 @@ $MESS["CP_BCT_TPL_FILTER_VIEW_V"] = "Вертикальний";
 $MESS["CP_BCT_TPL_POPUP_POSITION"] = "Позиція для відображення спливаючого блоку з інформацією про фільтрації";
 $MESS["CP_BCT_TPL_POPUP_POSITION_LEFT"] = "зліва";
 $MESS["CP_BCT_TPL_POPUP_POSITION_RIGHT"] = "праворуч";
+$MESS["TP_BCSF_DISPLAY_ELEMENT_COUNT"] = "Показувати кількість";
 ?>

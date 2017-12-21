@@ -207,7 +207,14 @@ span.adm-btn.add-file-popup-btn {
 .adm-fileinput-area-container {
 	display: inline-block;
 }
-
+.bxu-popup {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
 .adm-photoeditor-popup-frame-wait span{
 	display: inline-block;
 	vertical-align: middle;
@@ -875,9 +882,6 @@ div.bx-drag-over div.adm-fileinput-item:before {
 	margin: -2px 0 0 10px;
 	transition: opacity 100ms ease-in-out;
 	-webkit-transition: opacity 100ms ease-in-out;
-}
-.adm-photoeditor-btn.adm-photoeditor-btn-ph.disabled {
-	opacity: 0;
 }
 .adm-photoeditor-btn:hover {
 	background-color: #edf2f4;

@@ -18,7 +18,7 @@ $MESS["USMP_F_NAME"] = "Название";
 $MESS["USMP_CAT_0"] = "[любая]";
 $MESS["USMP_TYPE_0"] = "[любой]";
 $MESS["SUP_SUAC_LOAD_M_BUTTON_CONF"] = "Внимание! Компания 1С-Битрикс не несет ответственности за разработки партнеров. По всем вопросам, связанным с работой сторонних модулей, а также в случаях нарушения работы сайта, вызванного некорректной работой сторонних модулей, обращайтесь к партнерам-разработчикам. Загрузить модуль?";
-$MESS["USMP_TITLE"] = "Каталог Marketplace";
+$MESS["USMP_TITLE"] = "Каталог Маркетплейс";
 
 $MESS["USM_SHOW_ALL"] = "Все";
 $MESS["USM_SHOW_NOT_FREE"] = "Платные";
@@ -30,6 +30,7 @@ $MESS["USM_RATING"] = "Рейтинг";
 $MESS["USM_SORT_DATE"] = "дате добавления";
 $MESS["USM_SORT_PRICE"] = "цене";
 $MESS["USM_SORT_ALFA"] = "алфавиту";
+$MESS["USM_SORT_SORT"] = "рейтингу";
 $MESS["USM_SEARCH"] = "Поиск";
 $MESS["USM_INSTALLED"] = "Установлено";
 $MESS["USM_INSTALL"] = "Установить";
@@ -56,6 +57,8 @@ $MESS["USM_ONLINE_DEMO"] = "Онлайн-демо";
 $MESS["USM_MORE_MODULES"] = "Другие решения разработчика";
 $MESS["USM_COMMENTS"] = "Отзывы";
 $MESS["USM_COMMENTS_ADD"] = "Добавить отзыв";
+$MESS["USM_NOTIF_INST"] = "#USER# просит вас установить приложение <b><a href=\"/bitrix/admin/update_system_market.php?lang=#LANG#&module=#MODULE_CODE#\">#MODULE_NAME#</a></b> из Маркетплейс.";
+$MESS["USM_NOTIF_INST_OK"] = "Запрос на установку приложения отправлен Администратору.";
 
 
 ?>

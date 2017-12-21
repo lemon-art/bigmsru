@@ -115,4 +115,10 @@ $MESS["SET_NOTICE_MEASURE"] = "The parameters \"Unit of measurement\" and \"Unit
 $MESS["SET_NOTICE_WEIGHT"] = "The bundle weight is auto calculated using the weight of all the products in a bundle.";
 $MESS["C2IT_STORE_ID"] = "Warehouse ID";
 $MESS["C2IT_CAN_BUY_NULL_EXT"] = "Allow purchase with no available products, including negative values ";
+$MESS["C2IT_SUBSCRIBE_TAB"] = "Subscriptions";
+$MESS["C2IT_SUBSCRIBE_TAB_TITLE"] = "Subscription information";
+$MESS["C2IT_NUMBER_SUBSCRIPTIONS"] = "Number of subscriptions:";
+$MESS["C2IT_NUMBER_ACTIVE_SUBSCRIPTIONS"] = "Active subscriptions:";
+$MESS["C2IT_LIST_SUBSCRIPTIONS"] = "Available subscriptions:";
+$MESS["C2IT_LIST_SUBSCRIPTIONS_TEXT"] = "view";
 ?>

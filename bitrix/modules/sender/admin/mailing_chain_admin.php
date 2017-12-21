@@ -262,6 +262,7 @@ if($_REQUEST["action"]=="js_send" && check_bitrix_sessid() && $POST_RIGHT>="W")
 
 					break;
 
+
 				case MailingChainTable::STATUS_PAUSE:
 					$message = array(
 						"MESSAGE"=> GetMessage("MAILING_ADM_SENDING_PAUSE"),
@@ -278,7 +279,11 @@ if($_REQUEST["action"]=="js_send" && check_bitrix_sessid() && $POST_RIGHT>="W")
 							),
 						),
 					);
-					$actionJs = 'list';
+
+					MailingChainTable::update($mailingChainPrimary, array('STATUS' => MailingChainTable::STATUS_SEND));
+					$actionJsList = true;
+					$actionJsMoveProgress = true;
+
 					break;
 
 				case MailingChainTable::STATUS_END:
@@ -302,7 +307,7 @@ if($_REQUEST["action"]=="js_send" && check_bitrix_sessid() && $POST_RIGHT>="W")
 				$nEmailsTotal = $nEmailsNone + $nEmailsSent + $nEmailsError;
 
 				$message = array_merge($message, array(
-					"DETAILS" => $arMailingChain['SUBJECT'].$messageDetails
+					"DETAILS" => htmlspecialcharsbx($arMailingChain['SUBJECT']) . $messageDetails
 						.'#PROGRESS_BAR#'
 						.'<p>'.GetMessage("MAILING_ADM_SENDING_PROCESSED").' <b>'.($nEmailsSent + $nEmailsError).'</b> '
 						.GetMessage("MAILING_ADM_SENDING_PROCESSED_OF").' <b>'.$nEmailsTotal.'</b></p>'
@@ -424,7 +429,8 @@ $groupListDb = \Bitrix\Sender\MailingChainTable::getList(array(
 		'ID', 'MAILING_ID',  'POSTING_ID',  'CREATED_BY',  'STATUS',
 		'REITERATE', 'LAST_EXECUTED',  'EMAIL_FROM',  'AUTO_SEND_TIME',
 		'DAYS_OF_MONTH', 'DAYS_OF_WEEK', 'TIMES_OF_DAY',
-		'NAME' => 'SUBJECT', 'TITLE'
+		'NAME' => 'SUBJECT', 'TITLE',
+		'MAILING_ACTIVE' => 'MAILING.ACTIVE'
 	),
 	'filter' => $arFilter,
 	'order' => array($by=>$order)
@@ -507,6 +513,7 @@ while($arRes = $rsData->NavNext(true, "f_")):
 		"TEXT"=>GetMessage("sender_mailing_chain_adm_action_edit"),
 		"ACTION"=>$lAdmin->ActionRedirect("sender_mailing_chain_edit.php?MAILING_ID=".$MAILING_ID."&ID=".$f_ID)
 	);
+
 	if ($POST_RIGHT>="W")
 	{
 		$arActions[] = array(
@@ -524,49 +531,62 @@ while($arRes = $rsData->NavNext(true, "f_")):
 
 	$arActions[] = array("SEPARATOR"=>true);
 
-	switch($f_STATUS)
+	if (in_array($f_STATUS, array(MailingChainTable::STATUS_END, MailingChainTable::STATUS_PAUSE)))
 	{
-		case MailingChainTable::STATUS_NEW:
-			if ($POST_RIGHT>="W")
-			{
-				$arActions[] = array(
-					"ICON" => "",
-					"DEFAULT" => false,
-					"TEXT" => GetMessage("sender_mailing_chain_adm_action_send"),
-					"ACTION" => $lAdmin->ActionRedirect("/bitrix/admin/sender_mailing_chain_admin.php?MAILING_ID=".$MAILING_ID."&ID=".$f_ID."&action=send&lang=" . LANGUAGE_ID)
-				);
-			}
-			break;
-		case MailingChainTable::STATUS_WAIT:
-		case MailingChainTable::STATUS_SEND:
-			if ($POST_RIGHT>="W")
-			{
-				$arActions[] = array(
-					"ICON" => "",
-					"DEFAULT" => false,
-					"TEXT" => GetMessage("sender_mailing_chain_adm_action_pause"),
-					"ACTION" => $lAdmin->ActionRedirect("/bitrix/admin/sender_mailing_chain_admin.php?MAILING_ID=".$MAILING_ID."&ID=".$f_ID."&action=pause&lang=" . LANGUAGE_ID)
-				);
-			}
-			break;
-		case MailingChainTable::STATUS_PAUSE:
-			if ($POST_RIGHT>="W")
-			{
-				$arActions[] = array(
-					"ICON" => "",
-					"DEFAULT" => false,
-					"TEXT" => GetMessage("sender_mailing_chain_adm_action_send"),
-					"ACTION" => $lAdmin->ActionRedirect("/bitrix/admin/sender_mailing_chain_admin.php?MAILING_ID=".$MAILING_ID."&ID=".$f_ID."&action=send&lang=" . LANGUAGE_ID)
-				);
+		$arActions[] = array(
+			"ICON"=>"",
+			"DEFAULT" => false,
+			"TEXT"=>GetMessage("sender_mailing_chain_adm_action_stats"),
+			"ACTION"=>$lAdmin->ActionRedirect("sender_mailing_stat.php?MAILING_ID=".$MAILING_ID."&ID=".$f_ID)
+		);
+	}
 
-				$arActions[] = array(
-					"ICON" => "",
-					"DEFAULT" => false,
-					"TEXT" => GetMessage("sender_mailing_chain_adm_action_stop"),
-					"ACTION" => $lAdmin->ActionRedirect("/bitrix/admin/sender_mailing_chain_admin.php?MAILING_ID=".$MAILING_ID."&ID=".$f_ID."&action=stop&lang=" . LANGUAGE_ID)
-				);
-			}
-			break;
+	if ($f_MAILING_ACTIVE == 'Y')
+	{
+		switch($f_STATUS)
+		{
+			case MailingChainTable::STATUS_NEW:
+				if ($POST_RIGHT>="W")
+				{
+					$arActions[] = array(
+						"ICON" => "",
+						"DEFAULT" => false,
+						"TEXT" => GetMessage("sender_mailing_chain_adm_action_send"),
+						"ACTION" => $lAdmin->ActionRedirect("/bitrix/admin/sender_mailing_chain_admin.php?MAILING_ID=".$MAILING_ID."&ID=".$f_ID."&action=send&lang=" . LANGUAGE_ID)
+					);
+				}
+				break;
+			case MailingChainTable::STATUS_WAIT:
+			case MailingChainTable::STATUS_SEND:
+				if ($POST_RIGHT>="W")
+				{
+					$arActions[] = array(
+						"ICON" => "",
+						"DEFAULT" => false,
+						"TEXT" => GetMessage("sender_mailing_chain_adm_action_pause"),
+						"ACTION" => $lAdmin->ActionRedirect("/bitrix/admin/sender_mailing_chain_admin.php?MAILING_ID=".$MAILING_ID."&ID=".$f_ID."&action=pause&lang=" . LANGUAGE_ID)
+					);
+				}
+				break;
+			case MailingChainTable::STATUS_PAUSE:
+				if ($POST_RIGHT>="W")
+				{
+					$arActions[] = array(
+						"ICON" => "",
+						"DEFAULT" => false,
+						"TEXT" => GetMessage("sender_mailing_chain_adm_action_send"),
+						"ACTION" => $lAdmin->ActionRedirect("/bitrix/admin/sender_mailing_chain_admin.php?MAILING_ID=".$MAILING_ID."&ID=".$f_ID."&action=send&lang=" . LANGUAGE_ID)
+					);
+
+					$arActions[] = array(
+						"ICON" => "",
+						"DEFAULT" => false,
+						"TEXT" => GetMessage("sender_mailing_chain_adm_action_stop"),
+						"ACTION" => $lAdmin->ActionRedirect("/bitrix/admin/sender_mailing_chain_admin.php?MAILING_ID=".$MAILING_ID."&ID=".$f_ID."&action=stop&lang=" . LANGUAGE_ID)
+					);
+				}
+				break;
+		}
 	}
 
 

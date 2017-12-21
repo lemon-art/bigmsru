@@ -202,9 +202,6 @@ class CBlogImage extends CAllBlogImage
 			}
 
 			$dbRes = new CDBResult();
-
-			//echo "!2.2!=".htmlspecialcharsbx($strSql)."<br>";
-
 			$dbRes->NavQuery($strSql, $cnt, $arNavStartParams);
 		}
 		else

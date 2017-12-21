@@ -8,6 +8,8 @@
 
 class CComponentEngine
 {
+	public $cacheSalt = '';
+
 	private $component = null;
 	private $greedyParts = array();
 	private $resolveCallback = false;
@@ -224,6 +226,7 @@ class CComponentEngine
 			return false;
 
 		$currentPageUrl = substr($requestURL, strlen($folder404));
+		$this->cacheSalt = md5($currentPageUrl);
 
 		$pageCandidates = array();
 		$arUrlTemplates = $this->sortUrlTemplates($arUrlTemplates, $bHasGreedyPartsInTemplates);

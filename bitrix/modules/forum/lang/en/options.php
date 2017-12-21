@@ -46,7 +46,9 @@ $MESS["FR_ADMINISTRATOR"] = "Administrator";
 $MESS["FR_USER"] = "User";
 $MESS["FR_GUEST"] = "Guest";
 $MESS["FR_ADMIN"] = "Administrator";
-$MESS["FORUM_OPTIONS_SMILE_GALLERY_ID"] = "Emoticon gallery (for use by parser)";
-$MESS["FORUM_OPTIONS_SMILE_SET_ID"] = "Forum emoticons";
 $MESS["FORUM_OPTIONS_SMILE_GALLERY_ID"] = "Forum Gallery";
+$MESS["FORUM_OPTIONS_SMILE_SET_ID"] = "Forum emoticons";
+$MESS["FORUM_USER_EDIT_OWN_POST"] = "Users can edit their own posts:";
+$MESS["FORUM_USER_EDIT_OWN_POST_Y"] = "all own posts";
+$MESS["FORUM_USER_EDIT_OWN_POST_N"] = "last post in thread";
 ?>

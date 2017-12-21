@@ -5,6 +5,9 @@ $MESS ['mnu_sender_sect_title'] = "Email-маркетинг";
 $MESS ['mnu_sender_report'] = "Статистика";
 $MESS ['mnu_sender_report_alt'] = "Статистика";
 
+$MESS ['mnu_sender_stat'] = "Старт";
+$MESS ['mnu_sender_stat_alt'] = "Статистика по всем рассылкам";
+
 $MESS ['mnu_sender_group'] = "Группы адресов";
 $MESS ['mnu_sender_group_alt'] = "Управление получателями писем";
 

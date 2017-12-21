@@ -1,4 +1,6 @@
 <?
+use Bitrix\Main\Config\Option;
+use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\ModuleManager;
 
 global $MESS;
@@ -86,10 +88,11 @@ Class sale extends CModule
 	function GetModuleRightList()
 	{
 		$arr = array(
-			"reference_id" => array("D",/* "R",*/ "U", "W"),
+			"reference_id" => array("D",/* "R",*/ "P", "U", "W"),
 			"reference" => array(
 					"[D] ".GetMessage("SINS_PERM_D"),
 					//"[R] ".GetMessage("SINS_PERM_R"),
+					"[P] ".GetMessage("SINS_PERM_P"),
 					"[U] ".GetMessage("SINS_PERM_U"),
 					"[W] ".GetMessage("SINS_PERM_W")
 				)
@@ -119,6 +122,7 @@ Class sale extends CModule
 
 		$eventManager = \Bitrix\Main\EventManager::getInstance();
 		$eventManager->registerEventHandlerCompatible('main', 'OnUserLogout', 'sale', '\Bitrix\Sale\DiscountCouponsManager', 'logout');
+		$eventManager->registerEventHandler('sale', 'OnSaleBasketItemRefreshData', 'sale', '\Bitrix\Sale\Compatible\DiscountCompatibility', 'OnSaleBasketItemRefreshData');
 
 		RegisterModuleDependences("main", "OnUserLogin", "sale", "CSaleUser", "OnUserLogin");
 		RegisterModuleDependences("main", "OnUserLogout", "sale", "CSaleUser", "OnUserLogout");
@@ -142,6 +146,9 @@ Class sale extends CModule
 		RegisterModuleDependences("main", "OnEventLogGetAuditTypes", "sale", "CSaleYMHandler", 'OnEventLogGetAuditTypes');
 		RegisterModuleDependences("main", "OnEventLogGetAuditTypes", "sale", "CSalePaySystemAction", 'OnEventLogGetAuditTypes');
 
+		RegisterModuleDependences("main", "OnUserConsentProviderList", "sale", "\\Bitrix\\Sale\\UserConsent", "onProviderList");
+		RegisterModuleDependences("main", "OnUserConsentDataProviderList", "sale", "\\Bitrix\\Sale\\UserConsent", "onDataProviderList");
+
 		RegisterModuleDependences("currency", "OnBeforeCurrencyDelete", "sale", "CSaleOrder", "OnBeforeCurrencyDelete");
 		RegisterModuleDependences("currency", "OnBeforeCurrencyDelete", "sale", "CSaleLang", "OnBeforeCurrencyDelete");
 		RegisterModuleDependences("currency", "OnModuleUnInstall", "sale", "", "CurrencyModuleUnInstallSale");
@@ -161,6 +168,9 @@ Class sale extends CModule
 		RegisterModuleDependences("sale", "OnCondSaleActionsControlBuildList", "sale", "CSaleActionGiftCtrlGroup", "GetControlDescr", 200);
 		RegisterModuleDependences("sale", "OnCondSaleControlBuildList", "sale", "CSaleCondCtrlBasketFields", "GetControlDescr", 300);
 		RegisterModuleDependences("sale", "OnCondSaleControlBuildList", "sale", "CSaleCondCtrlOrderFields", "GetControlDescr", 1000);
+		RegisterModuleDependences("sale", "onBuildDiscountConditionInterfaceControls", "sale", "CSaleCondCtrlPastOrder", "onBuildDiscountConditionInterfaceControls", 1000);
+		RegisterModuleDependences("sale", "onBuildDiscountConditionInterfaceControls", "sale", "CSaleCondCumulativeCtrl", "onBuildDiscountConditionInterfaceControls", 1000);
+
 		RegisterModuleDependences("sale", "OnCondSaleControlBuildList", "sale", "CSaleCondCtrlCommon", "GetControlDescr", 10000);
 
 		RegisterModuleDependences("sale", "OnCondSaleActionsControlBuildList", "sale", "CSaleActionCtrlGroup", "GetControlDescr", 100);
@@ -199,7 +209,12 @@ Class sale extends CModule
 		RegisterModuleDependences('sale', 'OnGetBusinessValueGroups', 'sale', '\Bitrix\Sale\PaySystem\Manager', 'getBusValueGroups');
 		RegisterModuleDependences('sale', 'OnGetBusinessValueConsumers', 'sale', '\Bitrix\Sale\PaySystem\Manager', 'getConsumersList');
 
+		RegisterModuleDependences('sale', 'OnGetBusinessValueGroups', 'sale', '\Bitrix\Sale\Delivery\Services\Manager', 'onGetBusinessValueGroups');
+		RegisterModuleDependences('sale', 'OnGetBusinessValueConsumers', 'sale', '\Bitrix\Sale\Delivery\Services\Manager', 'onGetBusinessValueConsumers');
+
 		RegisterModuleDependences("perfmon", "OnGetTableSchema", "sale", "sale", "OnGetTableSchema");
+
+		RegisterModuleDependences('rest', 'OnRestServiceBuildDescription', 'sale', '\Bitrix\Sale\PaySystem\RestService', 'onRestServiceBuildDescription');
 
 		COption::SetOptionString("sale", "viewed_capability", "N");
 		COption::SetOptionString("sale", "viewed_count", 10);
@@ -218,7 +233,11 @@ Class sale extends CModule
 		)));
 
 		if ($clearInstall)
-			\Bitrix\Main\Config\Option::set('sale', 'basket_discount_converted', 'Y', '');
+		{
+			Option::set('sale', 'basket_discount_converted', 'Y', '');
+			//set to use new discounts by default.
+			Option::set('sale', 'use_sale_discount_only', 'Y');
+		}
 
 		CAgent::AddAgent("CSaleRecurring::AgentCheckRecurring();", "sale", "N", 7200, "", "Y");
 		CAgent::AddAgent("CSaleOrder::RemindPayment();", "sale", "N", 86400, "", "Y");
@@ -227,7 +246,7 @@ Class sale extends CModule
 		CAgent::AddAgent("CSaleOrder::ClearProductReservedQuantity();", "sale", "N", 86400, "", "Y");
 		COption::SetOptionString("sale", "product_reserve_clear_period", "3");
 
-		\Bitrix\Main\Config\Option::set('sale', 'sale_locationpro_import_performed', 'Y');
+		Option::set('sale', 'sale_locationpro_import_performed', 'Y');
 
 		// install tasks + operations for statuses
 		$operations = array();
@@ -251,7 +270,7 @@ Class sale extends CModule
 					Bitrix\Main\TaskOperationTable::add(array('TASK_ID' => $taskId, 'OPERATION_ID' => $result->getId()));
 		}
 
-		if (Bitrix\Main\Loader::IncludeModule('sale'))
+		if (\Bitrix\Main\Loader::includeModule('sale'))
 		{
 			\Bitrix\Sale\Compatible\EventCompatibility::registerEvents();
 			
@@ -316,6 +335,21 @@ Class sale extends CModule
 			CSaleYMHandler::install();
 		}
 
+		if(Option::get('sale', 'use_sale_discount_only') !== 'Y')
+		{
+			\CAdminNotify::add(
+				array(
+					"MESSAGE" => Loc::getMessage('SALE_UPDATER_16036_MIGRATE_NOTIFY', array(
+						"#LINK#" => "/bitrix/admin/sale_discount_catalog_migrator.php?lang=" . LANGUAGE_ID,
+					)),
+					"TAG" => "sale_discount_catalog_migrator",
+					"MODULE_ID" => "sale",
+					"ENABLE_CLOSE" => "N",
+				)
+			);
+		}
+
+
 		return true;
 	}
 
@@ -370,8 +404,9 @@ Class sale extends CModule
 		UnRegisterModuleDependences("sale", "OnCondSaleControlBuildList", "sale", "CSaleCondCtrlBasketGroup", "GetControlDescr");
 		UnRegisterModuleDependences("sale", "OnCondSaleActionsControlBuildList", "sale", "CSaleActionGiftCtrlGroup", "GetControlDescr");
 		UnRegisterModuleDependences("sale", "OnCondSaleControlBuildList", "sale", "CSaleCondCtrlBasketFields", "GetControlDescr");
-		UnRegisterModuleDependences("sale", "OnCondSaleControlBuildList", "sale", "CSaleCondCtrlBasketProps", "GetControlDescr");
 		UnRegisterModuleDependences("sale", "OnCondSaleControlBuildList", "sale", "CSaleCondCtrlOrderFields", "GetControlDescr");
+		UnRegisterModuleDependences("sale", "onBuildDiscountConditionInterfaceControls", "sale", "CSaleCondCtrlPastOrder", "onBuildDiscountConditionInterfaceControls");
+		UnRegisterModuleDependences("sale", "onBuildDiscountConditionInterfaceControls", "sale", "CSaleCondCumulativeCtrl", "onBuildDiscountConditionInterfaceControls");
 		UnRegisterModuleDependences("sale", "OnCondSaleControlBuildList", "sale", "CSaleCondCtrlCommon", "GetControlDescr");
 
 		UnRegisterModuleDependences("sale", "OnCondSaleActionsControlBuildList", "sale", "CSaleActionCtrlGroup", "GetControlDescr");
@@ -393,8 +428,14 @@ Class sale extends CModule
 		UnRegisterModuleDependences("main", "OnEventLogGetAuditTypes", "sale", "CSaleYMHandler", 'OnEventLogGetAuditTypes');
 		UnRegisterModuleDependences("main", "OnEventLogGetAuditTypes", "sale", "CSalePaySystemAction", 'OnEventLogGetAuditTypes');
 
+		UnRegisterModuleDependences("main", "OnUserConsentProviderList", "sale", "\\Bitrix\\Sale\\UserConsent", "onProviderList");
+		UnRegisterModuleDependences("main", "OnUserConsentDataProviderList", "sale", "\\Bitrix\\Sale\\UserConsent", "onDataProviderList");
+
 		UnRegisterModuleDependences('sale', 'OnGetBusinessValueGroups', 'sale', '\Bitrix\Sale\PaySystem\Manager', 'getBusValueGroups');
 		UnRegisterModuleDependences('sale', 'OnGetBusinessValueConsumers', 'sale', '\Bitrix\Sale\PaySystem\Manager', 'getConsumersList');
+
+		UnRegisterModuleDependences('sale', 'OnGetBusinessValueGroups', 'sale', '\Bitrix\Sale\Delivery\Services\Manager', 'onGetBusinessValueGroups');
+		UnRegisterModuleDependences('sale', 'OnGetBusinessValueConsumers', 'sale', '\Bitrix\Sale\Delivery\Services\Manager', 'onGetBusinessValueConsumers');
 
 		// conversion
 		UnRegisterModuleDependences('conversion', 'OnGetCounterTypes'    , 'sale', '\Bitrix\Sale\Internals\ConversionHandlers', 'onGetCounterTypes'    );
@@ -408,15 +449,20 @@ Class sale extends CModule
 		UnRegisterModuleDependences('sale'      , 'OnBasketDelete'       , 'sale', '\Bitrix\Sale\Internals\ConversionHandlers', 'onBasketDelete'       );
 		UnRegisterModuleDependences('sale'      , 'OnOrderAdd'           , 'sale', '\Bitrix\Sale\Internals\ConversionHandlers', 'onOrderAdd'           );
 		UnRegisterModuleDependences('sale'      , 'OnSalePayOrder'       , 'sale', '\Bitrix\Sale\Internals\ConversionHandlers', 'onSalePayOrder'       );
-
-		\Bitrix\Sale\Compatible\EventCompatibility::unRegisterEvents();
-
 		UnRegisterModuleDependences("perfmon", "OnGetTableSchema", "sale", "sale", "OnGetTableSchema");
+
+		UnRegisterModuleDependences('rest', 'OnRestServiceBuildDescription', 'sale', '\Bitrix\Sale\PaySystem\RestService', 'onRestServiceBuildDescription');
 
 		$eventManager = \Bitrix\Main\EventManager::getInstance();
 		$eventManager->unRegisterEventHandler('main', 'OnUserLogout', 'sale', '\Bitrix\Sale\DiscountCouponsManager', 'logout');
 		$eventManager->unRegisterEventHandler('sale', 'OnSaleBasketItemEntitySaved', 'sale', '\Bitrix\Sale\Internals\Events', 'onSaleBasketItemEntitySaved');
 		$eventManager->unRegisterEventHandler('sale', 'OnSaleBasketItemDeleted', 'sale', '\Bitrix\Sale\Internals\Events', 'onSaleBasketItemDeleted');
+		$eventManager->unRegisterEventHandler('sale', 'OnSaleBasketItemRefreshData', 'sale', '\Bitrix\Sale\Compatible\DiscountCompatibility', 'OnSaleBasketItemRefreshData');
+
+		if (\Bitrix\Main\Loader::includeModule('sale'))
+		{
+			\Bitrix\Sale\Compatible\EventCompatibility::unRegisterEvents();
+		}
 
 		CAgent::RemoveModuleAgents("sale");
 
@@ -457,6 +503,8 @@ Class sale extends CModule
 		$statusMes[] = "SALE_NEW_ORDER_RECURRING";
 		$statusMes[] = "SALE_ORDER_TRACKING_NUMBER";
 		$statusMes[] = "SALE_SUBSCRIBE_PRODUCT";
+		$statusMes[] = "SALE_CHECK_PRINT";
+		$statusMes[] = "SALE_ORDER_SHIPMENT_STATUS_CHANGED";
 
 		$eventType = new CEventType;
 		$eventM = new CEventMessage;
@@ -478,6 +526,7 @@ Class sale extends CModule
 		if($_ENV["COMPUTERNAME"]!='BX')
 		{
 			CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/install/admin", $_SERVER["DOCUMENT_ROOT"]."/bitrix/admin", true, true);
+			CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/install/panel", $_SERVER["DOCUMENT_ROOT"]."/bitrix/panel", true, true);
 			CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/install/images",  $_SERVER["DOCUMENT_ROOT"]."/bitrix/images/sale", true, true);
 			CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/install/themes", $_SERVER["DOCUMENT_ROOT"]."/bitrix/themes", true, true);
 			CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/install/components", $_SERVER["DOCUMENT_ROOT"]."/bitrix/components", true, true);
@@ -486,6 +535,8 @@ Class sale extends CModule
 			CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/install/wizards", $_SERVER["DOCUMENT_ROOT"]."/bitrix/wizards", true, true);
 			CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/install/js", $_SERVER["DOCUMENT_ROOT"]."/bitrix/js", true, true);
 			CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/install/services", $_SERVER["DOCUMENT_ROOT"]."/bitrix/services", true, true);
+			CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/install/css", $_SERVER["DOCUMENT_ROOT"]."/bitrix/css", true, true);
+			CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/install/fonts", $_SERVER["DOCUMENT_ROOT"]."/bitrix/fonts", true, true);
 		}
 		return true;
 	}
@@ -496,9 +547,11 @@ Class sale extends CModule
 		{
 			DeleteDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/install/admin", $_SERVER["DOCUMENT_ROOT"]."/bitrix/admin");
 			DeleteDirFilesEx("/bitrix/js/sale/");//javascript
+			DeleteDirFilesEx("/bitrix/css/sale/");//javascript
 			DeleteDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/install/themes/.default/", $_SERVER["DOCUMENT_ROOT"]."/bitrix/themes/.default");//css
 			DeleteDirFilesEx("/bitrix/themes/.default/icons/sale/");//icons
 			DeleteDirFilesEx("/bitrix/images/sale/");//images
+			DeleteDirFilesEx("/bitrix/panel/sale/");
 			DeleteDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/install/tools/", $_SERVER["DOCUMENT_ROOT"]."/bitrix/tools");//tools
 			DeleteDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/install/services", $_SERVER["DOCUMENT_ROOT"]."/bitrix/services");
 		}
@@ -565,4 +618,3 @@ Class sale extends CModule
 		);
 	}
 }
-?>

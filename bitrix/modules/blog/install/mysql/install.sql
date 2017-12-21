@@ -37,6 +37,11 @@ create table b_blog
 ,  unique IX_BLOG_BLOG_4(URL)
 ,  index IX_BLOG_BLOG_5(LAST_POST_DATE)
 ,  index IX_BLOG_BLOG_6(SOCNET_GROUP_ID)
+,  EDITOR_USE_FONT CHAR( 1 ) NULL DEFAULT 'N'
+,  EDITOR_USE_LINK CHAR( 1 ) NULL DEFAULT 'N'
+,  EDITOR_USE_IMAGE CHAR( 1 ) NULL DEFAULT 'N'
+,  EDITOR_USE_VIDEO CHAR( 1 ) NULL DEFAULT 'N'
+,  EDITOR_USE_FORMAT CHAR( 1 ) NULL DEFAULT 'N'
 );
 
 create table b_blog_group
@@ -56,13 +61,13 @@ create table b_blog_post
 ,  AUTHOR_ID int not null
 ,  PREVIEW_TEXT text null
 ,  PREVIEW_TEXT_TYPE char(4) not null default 'text'
-,  DETAIL_TEXT text not null
+,  DETAIL_TEXT mediumtext not null
 ,  DETAIL_TEXT_TYPE char(4) not null default 'text'
 ,  DATE_CREATE datetime not null
 ,  DATE_PUBLISH datetime not null
 ,  KEYWORDS varchar(255) null
 ,  PUBLISH_STATUS char(1) not null default 'P'
-,  CATEGORY_ID char(100) null
+,  CATEGORY_ID varchar(255) null
 ,  ATRIBUTE varchar(255) null
 ,  ENABLE_TRACKBACK char(1) not null default 'Y'
 ,  ENABLE_COMMENTS char(1) not null default 'Y'
@@ -125,6 +130,7 @@ create table b_blog_comment
 ,  index IX_BLOG_COMM_1(BLOG_ID, POST_ID)
 ,  index IX_BLOG_COMM_2(AUTHOR_ID)
 ,  index IX_BLOG_COMM_3(DATE_CREATE, AUTHOR_ID)
+,  index IX_BLOG_COMM_4(POST_ID)
 );
 
 create table b_blog_user
@@ -204,37 +210,13 @@ create table b_blog_trackback
 ,  index IX_BLOG_TRBK_2(POST_ID)
 );
 
-
-
-create table b_blog_smile (
-   ID smallint(3) not null auto_increment,
-   SMILE_TYPE char(1) not null default 'S',
-   TYPING varchar(100) null,
-   IMAGE varchar(128) not null,
-   DESCRIPTION varchar(50),
-   CLICKABLE char(1) not null default 'Y',
-   SORT int(10) not null default '150',
-   IMAGE_WIDTH int(11) not null default '0',
-   IMAGE_HEIGHT int(11) not null default '0',
-   primary key (ID));
-
-create table b_blog_smile_lang (
-   ID int(11) not null auto_increment,
-   SMILE_ID int(11) not null default '0',
-   LID char(2) not null,
-   NAME varchar(255) not null,
-   primary key (ID),
-   unique IX_BLOG_SMILE_K (SMILE_ID, LID));
-
-
-
 CREATE TABLE `b_blog_image` (
   ID int(11) NOT NULL auto_increment,
   FILE_ID int(11) NOT NULL default '0',
   BLOG_ID int(11) NOT NULL default '0',
   POST_ID int(11) NOT NULL default '0',
   USER_ID int(11) NOT NULL default '0',
-  TIMESTAMP_X datetime NOT NULL default '0000-00-00 00:00:00',
+  TIMESTAMP_X datetime NOT NULL default '1970-01-01 00:00:01',
   TITLE varchar(255),
   IMAGE_SIZE int(11) NOT NULL default '0',
   IS_COMMENT VARCHAR(1) NOT NULL DEFAULT 'N',

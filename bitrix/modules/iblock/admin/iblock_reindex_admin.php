@@ -115,6 +115,7 @@ if ($arID = $lAdmin->GroupAction())
 					{
 						$conn->commitTransaction();
 						CIBlock::clearIblockTagCache($ID);
+						CIBlock::CleanCache($ID);
 					}
 					unset($result);
 					break;
@@ -202,7 +203,7 @@ while($iblockInfo = $rsIBlocks->Fetch())
 	$row = $lAdmin->AddRow($iblockInfo["ID"], $iblockInfo);
 
 	$row->AddViewField("ID", $iblockInfo["ID"]);
-	$row->AddViewField("NAME", $iblockInfo["NAME"]);
+	$row->AddViewField("NAME", htmlspecialcharsEx($iblockInfo["NAME"]));
 	$row->AddViewField('ACTIVE', ($iblockInfo['ACTIVE'] == 'Y' ? GetMessage('IBLOCK_RADM_ACTIVE_YES') : GetMessage('IBLOCK_RADM_ACTIVE_NO')));
 
 	if ($iblockInfo["PROPERTY_INDEX"] == "I")

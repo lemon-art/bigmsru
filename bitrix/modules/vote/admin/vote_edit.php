@@ -304,7 +304,7 @@ else if (isset($copyVote))
 ?>
 <tr>
 	<td width="40%"><?=GetMessage("VOTE_ACTIVE_TITLE")?></td>
-	<td width="60%"><input type="checkbox" name="ACTIVE" id="ACTIVE" value="Y" <?=($fields["ACTIVE"] == "Y" ? " checked" : "")?> />
+	<td width="60%"><input type="hidden" name="ACTIVE" value="N" /><input type="checkbox" name="ACTIVE" id="ACTIVE" value="Y" <?=($fields["ACTIVE"] == "Y" ? " checked" : "")?> />
 		<label for="ACTIVE"><?=GetMessage("VOTE_ACTIVE")?></label></td>
 	</tr>
 <?
@@ -516,7 +516,7 @@ $tabControl->BeginNextTab();
 </tr>
 <?
 
-$tabControl->Buttons(array("back_url"=>"vote_list.php?lang=".LANGUAGE_ID));
+$tabControl->Buttons(array("back_url"=>"vote_list.php?lang=".LANGUAGE_ID.($channelId > 0 ? "&find_channel_id=" . $channelId . "&set_filter=Y" : "")));
 $tabControl->End();
 ?>
 

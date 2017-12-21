@@ -31,7 +31,7 @@ if (isset($arParams["PRODUCT_DATA"]["STORES"]) && is_array($arParams["PRODUCT_DA
 	{
 		$arData[] =
 			array(
-				"TITLE" => $arStore["STORE_NAME"]." (".$arStore["STORE_ID"].")",
+				"TITLE" => htmlspecialcharsbx($arStore["STORE_NAME"])." (".$arStore["STORE_ID"].")",
 				"TYPE" => "BLOCK",
 				"DATA" => array(
 					array(

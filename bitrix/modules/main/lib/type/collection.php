@@ -7,6 +7,8 @@ class Collection
 	 * Sorting array by column.
 	 * You can use short mode: Collection::sortByColumn($arr, 'value'); This is equal Collection::sortByColumn($arr, array('value' => SORT_ASC))
 	 *
+	 * Pay attention: if two members compare as equal, their relative order in the sorted array is undefined. The sorting is not stable.
+	 *
 	 * More example:
 	 * Collection::sortByColumn($arr, array('value' => array(SORT_NUMERIC, SORT_ASC), 'attr' => SORT_DESC), array('attr' => 'strlen'), 'www');
 	 *

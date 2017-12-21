@@ -3,15 +3,10 @@
 namespace Bitrix\Sale\PaySystem;
 
 use Bitrix\Main\Request;
-use Bitrix\Sale\BusinessValue;
 use Bitrix\Sale\Payment;
-use Bitrix\Sale\Result;
 
 abstract class ServiceHandler extends BaseServiceHandler
 {
-	const TEST_URL = 'test';
-	const ACTIVE_URL = 'active';
-
 	/**
 	 * @return array
 	 */
@@ -59,7 +54,7 @@ abstract class ServiceHandler extends BaseServiceHandler
 	/**
 	 * @param Payment $payment
 	 * @param Request $request
-	 * @return mixed
+	 * @return ServiceResult
 	 */
 	public abstract function processRequest(Payment $payment, Request $request);
 
@@ -80,45 +75,11 @@ abstract class ServiceHandler extends BaseServiceHandler
 	public abstract function getPaymentIdFromRequest(Request $request);
 
 	/**
-	 * @param Payment $payment
-	 * @param $action
-	 * @return array|string
-	 */
-	protected function getUrl(Payment $payment, $action)
-	{
-		$url = $this->getUrlList();
-		if (isset($url[$action]))
-		{
-			$url = $url[$action];
-
-			if (is_array($url))
-			{
-				if ($this->isTestMode($payment) && isset($url[self::TEST_URL]))
-					return $url[self::TEST_URL];
-				else
-					return $url[self::ACTIVE_URL];
-			}
-			else
-			{
-				return $url;
-			}
-		}
-
-		return '';
-	}
-
-	/**
-	 * @param Payment $payment
-	 * @return bool
-	 */
-	protected function isTestMode(Payment $payment = null)
-	{
-		return false;
-	}
-
-	/**
+	 * @param array $paySystemList
 	 * @return array
 	 */
-	protected abstract function getUrlList();
-
+	public static function findMyDataRefundablePage(array $paySystemList)
+	{
+		return array();
+	}
 }

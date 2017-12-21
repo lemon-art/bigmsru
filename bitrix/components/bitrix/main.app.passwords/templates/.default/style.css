@@ -90,11 +90,9 @@ h3.bx-otp-wrap-container-title{
 	-o-transition:background-color .2s ease, transform .2s ease;
 	transition:background-color .2s ease, transform .2s ease;
 	border-radius:50%;
-	/*background-image:url(images/sprite.png);*/
 	background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAMCAQAAAAAab+mAAAASUlEQVQIHTXB0QlAYBSA0a94lxlkEGUWZRwvZlEGkSEYgIdPt+s/BycKHweSetkRDIcNYNqssFiwWDHt1hhOW0C97Qm+jiRnfh9PA0Wiutf+nAAAAABJRU5ErkJggg==');
 	background-repeat:no-repeat;
 	background-position:center;
-	/*background-position:center -227px;*/
 }
 .bx-otp-accordion-container.open        .bx-otp-accordion-action{    
     background-color:#7fc4de;
@@ -293,21 +291,21 @@ h3.bx-otp-wrap-container-title{
     text-align:center;
     vertical-align:middle;
     color:#000;
-    background:#f7fafc url(images/otp_trans_speed_bg.gif) no-repeat center;
+    background:#f7fafc no-repeat center;
 }
+.bx-otp-popup-lottery-black{
+    background:url(images/otp_trans_speed_black.gif);
+}
+
+.bx-otp-popup-lottery-white{
+    background:url(images/otp_trans_speed_bg.gif);
+}
+
 .bx-otp-popup-lottery span{
     padding-right:8px;
 }
 .bx-otp-popup-lottery span:last-child{
     padding-right: 0;
-}
-.bx-otp-popup-lottery-animate{
-    position:absolute;
-    top:0;
-    right:0;
-    bottom:0;
-    left:0;
-    background: no-repeat center;
 }
 
 .bx-otp-popup-content-title{
@@ -348,11 +346,6 @@ h3.bx-otp-wrap-container-title{
             box-sizing:border-box;
     padding:0 15px;
     cursor:pointer;
-    -webkit-transition:border .3s ease, background .3s ease, color .3s ease;
-       -moz-transition:border .3s ease, background .3s ease, color .3s ease;
-        -ms-transition:border .3s ease, background .3s ease, color .3s ease;
-         -o-transition:border .3s ease, background .3s ease, color .3s ease;
-            transition:border .3s ease, background .3s ease, color .3s ease;
     text-align:center;
     vertical-align:middle;
     text-decoration:none;

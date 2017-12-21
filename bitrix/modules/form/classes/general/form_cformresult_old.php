@@ -20,7 +20,7 @@ class CFormResult_old
 	*/
 	function Edit($RESULT_ID, $arrVALUES, $TEMPLATE="", $EDIT_ADDITIONAL="N", $EDIT_STATUS="N")
 	{
-		global $DB, $MESS, $APPLICATION, $USER, $HTTP_POST_VARS, $HTTP_GET_VARS, $arrFIELDS, $arrRESULT_PERMISSION;
+		global $DB, $MESS, $APPLICATION, $USER, $arrFIELDS, $arrRESULT_PERMISSION;
 		$err_mess = (CAllFormResult::err_mess())."<br>Function: Edit<br>Line: ";
 		$z = CFormResult::GetByID($RESULT_ID);
 		if ($zr=$z->Fetch())
@@ -96,7 +96,7 @@ class CFormResult_old
 	*/
 	function Show($RESULT_ID, $TEMPLATE="", $TEMPLATE_TYPE="show", $SHOW_ADDITIONAL="N", $SHOW_ANSWER_VALUE="Y", $SHOW_STATUS="N")
 	{
-		global $DB, $MESS, $APPLICATION, $USER, $HTTP_POST_VARS, $HTTP_GET_VARS, $arrRESULT_PERMISSION, $arrFIELDS;
+		global $DB, $MESS, $APPLICATION, $USER, $arrRESULT_PERMISSION, $arrFIELDS;
 		$err_mess = (CAllFormResult::err_mess())."<br>Function: Show<br>Line: ";
 		$z = CFormResult::GetByID($RESULT_ID);
 		if ($zr=$z->Fetch())

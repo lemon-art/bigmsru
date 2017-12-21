@@ -65,7 +65,7 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admi
 	</div>
 	<div class="connector-create">
 		<?if(Connection::isExist()):?>
-			<a href="https://<?=htmlspecialcharsbx(Connection::getDomain())?>/settings/telephony/lines.php" class="connector-btn-blue"><?=Loc::getMessage('B24C_TEL_GET_TELEPHONY')?></a>
+			<a href=<?=Connection::getTelephonyConfigUrl()?> class="connector-btn-blue"><?=Loc::getMessage('B24C_TEL_GET_TELEPHONY')?></a>
 		<?else:?>
 			<?=Connection::getButtonHtml()?>&nbsp;&nbsp;
 			<?='<a href="https://www.bitrix24.'.$b24Lang.'/" class="connector-button-green">'.Loc::getMessage('B24C_TEL_CREATE_B24').'</a>'?>

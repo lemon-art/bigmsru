@@ -57,8 +57,6 @@ if (
 {
 	CUtil::JSPostUnescape();
 
-	CUtil::JSPostUnescape();
-
 	$params = array(
 		'sessID' => $request['ajaxSessionID'],
 		'maxExecutionTime' => $request['maxExecutionTime'],

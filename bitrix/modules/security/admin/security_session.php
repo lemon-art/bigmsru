@@ -82,7 +82,7 @@ if(COption::GetOptionString("security", "session") == "Y")
 {
 	$messageType = "OK";
 	$messageText = GetMessage("SEC_SESSION_ADMIN_DB_ON");
-	if(COption::GetOptionInt("main", "use_session_id_ttl") == "Y")
+	if(COption::GetOptionString("main", "use_session_id_ttl") == "Y")
 	{
 		$messageText .= "<br>";
 		$messageText .= GetMessage("SEC_SESSION_ADMIN_SESSID_ON");
@@ -94,7 +94,7 @@ else
 {
 	$messageType = "ERROR";
 	$messageText = GetMessage("SEC_SESSION_ADMIN_DB_OFF");
-	if(COption::GetOptionInt("main", "use_session_id_ttl") != "Y")
+	if(COption::GetOptionString("main", "use_session_id_ttl") != "Y")
 	{
 		$messageText .= "<br>";
 		$messageText .= GetMessage("SEC_SESSION_ADMIN_SESSID_OFF");
@@ -105,7 +105,7 @@ else
 
 if($showSecondMessage)
 {
-	if(COption::GetOptionInt("main", "use_session_id_ttl") == "Y")
+	if(COption::GetOptionString("main", "use_session_id_ttl") == "Y")
 	{
 		$messages[] = array(
 			"type" => "OK",
@@ -178,7 +178,7 @@ $tabControl->BeginNextTab();
 <?
 $tabControl->BeginNextTab();
 ?>
-<?if(COption::GetOptionInt("main", "use_session_id_ttl") == "Y"):?>
+<?if(COption::GetOptionString("main", "use_session_id_ttl") == "Y"):?>
 		<td colspan="2" align="left">
 			<input type="submit" name="sessid_ttl_off" value="<?echo GetMessage("SEC_SESSION_ADMIN_SESSID_BUTTON_OFF")?>"<?if(!$canWrite) echo " disabled"?>>
 		</td>

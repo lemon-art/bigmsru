@@ -27,6 +27,7 @@ $MESS["TR_FILEUPLFORM_TAB1"] = "Загрузка файла";
 $MESS["TR_FILEDOWNFORM_TAB2"] = "Выгрузка файла";
 $MESS["TR_UPLOAD_FILE"] = "Импорт CSV файла";
 $MESS["TR_NO_REWRITE_LANG_FILES"] = "добавлять только новые переводы";
+$MESS["TR_UPDATE_LANG_FILES"] = "обновить только фразы, найденные в csv-файле";
 $MESS["TR_DOWNLOAD_LANG"] = "Выгрузить все переводы";
 $MESS["TR_DOWNLOAD_NO_TRANSLATE"] = "Выгрузить только непереведенные";
 $MESS["TR_FILE_ACTIONS"] = "Обработка файлов:";

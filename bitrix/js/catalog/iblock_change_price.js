@@ -14,35 +14,50 @@ BX.Catalog.Admin.IblockChangePrice = function()
 	var messages =
 	{
 		onePriceType : "",
-		nullValue : ""
+		nullValue : "",
+		equalPriceTypes : "",
+		basePriceChange : "",
+		destinationPriceEmpty : "",
+		sourcePriceEmpty : ""
 	};
+	var basePriceType = '';
+
 	return {
+		/** @param {{
+			tableReloadId: string,
+			alertMessages: {},
+			basePriceType: string
+		}} params
+		 */
 		init : function (params)
 		{
-			elements.selectEl.changing = document.getElementById("tableActionChangingSelect");
-			elements.selectEl.unit = document.getElementById("tableUnitsSelect");
-			elements.selectEl.priceTypeInitial = document.getElementById("tablePriceTypeIdSelect");
-			elements.selectEl.resultMask = document.getElementById("resultMaskSelect");
-			elements.selectEl.priceType = document.getElementById("initialPriceTypeSelect");
+			elements.selectEl.changing = BX("tableActionChangingSelect");
+			elements.selectEl.unit = BX("tableUnitsSelect");
+			elements.selectEl.priceTypeInitial = BX("tablePriceTypeIdSelect");
+			elements.selectEl.resultMask = BX("resultMaskSelect");
+			elements.selectEl.priceType = BX("initialPriceTypeSelect");
 
-			elements.spanEl.resultValue = document.getElementById("resultValueSpan");
+			elements.spanEl.resultValue = BX("resultValueSpan");
 
-			elements.inputEl.example = document.getElementById("exampleSourceValueInput");
-			elements.inputEl.difference = document.getElementById("differenceValueInput");
-			elements.inputEl.valuePrice = document.getElementById("tableValueChangingPriceInput");
+			elements.inputEl.example = BX("exampleSourceValueInput");
+			elements.inputEl.difference = BX("differenceValueInput");
+			elements.inputEl.valuePrice = BX("tableValueChangingPriceInput");
 
-			elements.labelEl.priceType = document.getElementById("initialPriceTypeLabel");
-			elements.labelEl.difference = document.getElementById("differenceValueLabel");
-			elements.labelEl.resultMask = document.getElementById("resultMaskLabel");
+			elements.labelEl.priceType = BX("initialPriceTypeLabel");
+			elements.labelEl.difference = BX("differenceValueLabel");
+			elements.labelEl.resultMask = BX("resultMaskLabel");
 
 			elements.radioEl.radioButtons = document.getElementsByName("formatResultRadio");
 
-			elements.checkboxEl.priceType = document.getElementById("initialPriceTypeCheckbox");
-			elements.checkboxEl.difference = document.getElementById("differenceValueCheckbox");
-			elements.checkboxEl.resultMask = document.getElementById("resultMaskCheckbox");
+			elements.checkboxEl.priceType = BX("initialPriceTypeCheckbox");
+			elements.checkboxEl.difference = BX("differenceValueCheckbox");
+			elements.checkboxEl.resultMask = BX("resultMaskCheckbox");
 
 			tableId = params.tableReloadId || null;
 			messages = params.alertMessages || "";
+
+			if (BX.type.isNotEmptyString(params.basePriceType))
+				basePriceType = params.basePriceType;
 
 			BX.bind(elements.inputEl.valuePrice, 'input', BX.delegate(
 				function(event)
@@ -86,7 +101,7 @@ BX.Catalog.Admin.IblockChangePrice = function()
 			BX.bind(elements.checkboxEl.priceType, 'change', BX.delegate(
 				function(event)
 				{
-					if (elements.selectEl.priceType.length == 1)
+					if (elements.selectEl.priceType.length === 1)
 					{
 						event.target.checked = false;
 						window.alert(messages.onePriceType);
@@ -97,13 +112,16 @@ BX.Catalog.Admin.IblockChangePrice = function()
 			);
 
 			BX.bind(elements.selectEl.resultMask, 'change', BX.delegate(this.reloadExample, this));
-			BX.bindDelegate(document.getElementById('chp_radioTable'), 'change', { 'name': 'formatResultRadio' }, BX.proxy(this.reloadExample, this));
+			BX.bindDelegate(BX('chp_radioTable'), 'change', { 'name': 'formatResultRadio' }, BX.proxy(this.reloadExample, this));
 			BX.bind(elements.radioEl, 'change', BX.delegate(this.reloadExample, this));
 
-			BX.bind(document.getElementById("savebtn"), 'click', BX.delegate(
+			BX.bind(BX("savebtn"), 'click', BX.delegate(
 				function()
 				{
-					if (elements.inputEl.valuePrice.value !== "" ||  elements.inputEl.valuePrice.value != 0)
+					if (!this.checkPriceTypes())
+						return;
+
+					if (elements.inputEl.valuePrice.value !== "" || elements.inputEl.valuePrice.value != 0)
 					{
 						var diffValue = 0;
 						var initialPriceId = 0;
@@ -219,6 +237,45 @@ BX.Catalog.Admin.IblockChangePrice = function()
 					}
 					spanResultValue.innerHTML = count;
 			}
+		},
+
+		checkPriceTypes : function()
+		{
+			if (
+				!BX.type.isElementNode(elements.checkboxEl.priceType)
+				|| !BX.type.isElementNode(elements.selectEl.priceType)
+				|| !BX.type.isElementNode(elements.selectEl.priceTypeInitial)
+			)
+					return true;
+
+			if (elements.selectEl.priceTypeInitial.value === '0')
+			{
+				window.alert(messages.destinationPriceEmpty);
+				return false;
+			}
+
+			if (!elements.checkboxEl.priceType.checked)
+				return true;
+
+			if (elements.selectEl.priceType.value === '0')
+			{
+				window.alert(messages.sourcePriceEmpty);
+				return false;
+			}
+
+			if (elements.selectEl.priceTypeInitial.value !== '0' && elements.selectEl.priceType.value !== '0')
+			{
+				if (elements.selectEl.priceTypeInitial.value === elements.selectEl.priceType.value)
+				{
+					window.alert(messages.equalPriceTypes);
+					return false;
+				}
+				else if (elements.selectEl.priceTypeInitial.length > 1 && elements.selectEl.priceTypeInitial.value === basePriceType)
+				{
+					return window.confirm(messages.basePriceChange);
+				}
+			}
+			return true;
 		}
 	};
 };

@@ -451,12 +451,12 @@ if (
 )
 {
 	for($i = 0, $intCount = count($arUserOptions["arCOLUMN_WIDTH"]); $i < $intCount; $i++)
-		$arResult["COLUMN_WIDTH"][$i] = $arUserOptions["arCOLUMN_WIDTH"][$i];
+		$arResult["COLUMN_WIDTH"][$i] = htmlspecialcharsbx($arUserOptions["arCOLUMN_WIDTH"][$i]);
 }
 else
 {
 	for($i = 0; $i < $arResult["COLS"]; $i++)
-		$arResult["COLUMN_WIDTH"][$i] = $arParams["COLUMN_WIDTH_".$i];
+		$arResult["COLUMN_WIDTH"][$i] = htmlspecialcharsbx($arParams["COLUMN_WIDTH_".$i]);
 }
 
 if (

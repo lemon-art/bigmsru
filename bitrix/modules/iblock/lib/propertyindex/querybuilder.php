@@ -80,8 +80,7 @@ class QueryBuilder
 		)
 		{
 			$where = array();
-			if (isset($filter["SECTION_ID"]))
-				$toUnset[] = array(&$filter, "SECTION_ID");
+			$toUnset[] = array(&$filter, "SECTION_ID");
 
 			if ($filter["INCLUDE_SUBSECTIONS"] === "Y")
 			{
@@ -169,7 +168,7 @@ class QueryBuilder
 
 					$fcJoin = "
 						INNER JOIN (
-							SELECT ".($distinctSelectCapable? "": "DISTINCT")." FC0.ELEMENT_ID
+							SELECT ".($distinctSelectCapable? "DISTINCT": "")." FC0.ELEMENT_ID
 							$subJoin
 							WHERE
 							$subWhere

@@ -1,17 +1,20 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
+use Bitrix\Main,
+	Bitrix\Iblock;
+
 class CNewsTools
 {
 	function OnSearchGetURL($arFields)
 	{
-		global $DB, $BX_NEWS_DETAIL_URL, $BX_NEWS_SECTION_URL;
+		global $BX_NEWS_DETAIL_URL, $BX_NEWS_SECTION_URL;
 
 		static $arIBlockCache = array();
 
 		if($arFields["MODULE_ID"] !== "iblock" || substr($arFields["URL"], 0, 1) !== "=")
 			return $arFields["URL"];
 
-		if(!CModule::IncludeModule('iblock'))
+		if(!Main\Loader::includeModule('iblock'))
 			return '';
 
 		$IBLOCK_ID = 0;
@@ -22,25 +25,23 @@ class CNewsTools
 
 		if(!isset($arIBlockCache[$IBLOCK_ID]))
 		{
-			$res = $DB->Query("
-				SELECT
-					DETAIL_PAGE_URL,
-					SECTION_PAGE_URL,
-					CODE as IBLOCK_CODE,
-					XML_ID as IBLOCK_EXTERNAL_ID,
-					IBLOCK_TYPE_ID
-				FROM
-					b_iblock
-				WHERE ID = ".$IBLOCK_ID."
-			");
-			$arIBlockCache[$IBLOCK_ID] = $res->Fetch();
+			$arIBlockCache[$IBLOCK_ID] = Iblock\IblockTable::getList(array(
+				'select' => array(
+					'DETAIL_PAGE_URL',
+					'SECTION_PAGE_URL',
+					'IBLOCK_CODE' => 'CODE',
+					'IBLOCK_EXTERNAL_ID' => 'XML_ID',
+					'IBLOCK_TYPE_ID'
+				),
+				'filter' => array('=ID' => $IBLOCK_ID)
+			))->fetch();
 		}
 
-		if(!is_array($arIBlockCache[$IBLOCK_ID]))
+		if (!is_array($arIBlockCache[$IBLOCK_ID]))
 			return '';
 
 		$arr = array();
-		$arFields["URL"] = LTrim($arFields["URL"], " =");
+		$arFields["URL"] = ltrim($arFields["URL"], " =");
 		parse_str($arFields["URL"], $arr);
 		$arr = $arIBlockCache[$IBLOCK_ID] + $arr;
 		$arr["LANG_DIR"] = $arFields["DIR"];

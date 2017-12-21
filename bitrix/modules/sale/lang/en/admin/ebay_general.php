@@ -76,4 +76,7 @@ $MESS["SALE_EBAY_CAT_EBAY_NAME"] = "eBay category name";
 $MESS["SALE_EBAY_CAT_MAP_ADD"] = "Add mapping";
 $MESS["SALE_EBAY_CAT_SETT_EDIT"] = "Edit category parameters";
 $MESS["SALE_EBAY_NOT_USE"] = "Don't use";
+$MESS["SALE_EBAY_CAT_MAP_EMPTY"] = "<p>Your e-Store's categories are not mapped to eBay categories yet.</p><p>To map a category, open the category properties page, click the \"Commerce platforms\" tab and select an appropriate eBay category.</p>";
+$MESS["SALE_EBAY_MAX_PRODUCT_QUANTITY"] = "Maximum products to export";
+$MESS["SALE_EBAY_TP_EMPTY_ERROR"] = "At least one payer type has to be assigned to the site";
 ?>

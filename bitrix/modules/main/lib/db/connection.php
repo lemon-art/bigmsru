@@ -447,7 +447,7 @@ abstract class Connection extends Data\Connection
 		$insert = $this->getSqlHelper()->prepareInsert($tableName, $data);
 
 		$sql =
-			"INSERT INTO ".$tableName."(".$insert[0].") ".
+			"INSERT INTO ".$this->getSqlHelper()->quote($tableName)."(".$insert[0].") ".
 			"VALUES (".$insert[1].")";
 
 		$this->queryExecute($sql);

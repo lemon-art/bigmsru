@@ -1,4 +1,7 @@
 <?
+use Bitrix\Main\Page\Asset;
+use Bitrix\Main\Application;
+
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
 if (!CModule::IncludeModule("blog"))
@@ -43,23 +46,23 @@ if(strLen($arParams["POST_VAR"])<=0)
 
 $arParams["PATH_TO_BLOG"] = trim($arParams["PATH_TO_BLOG"]);
 if(strlen($arParams["PATH_TO_BLOG"])<=0)
-	$arParams["PATH_TO_BLOG"] = htmlspecialcharsbx($APPLICATION->GetCurPage()."?".$arParams["PAGE_VAR"]."=blog&".$arParams["BLOG_VAR"]."=#blog#");
+	$arParams["PATH_TO_BLOG"] = $APPLICATION->GetCurPage()."?".htmlspecialcharsbx($arParams["PAGE_VAR"])."=blog&".htmlspecialcharsbx($arParams["BLOG_VAR"])."=#blog#";
 
 $arParams["PATH_TO_POST"] = trim($arParams["PATH_TO_POST"]);
 if(strlen($arParams["PATH_TO_POST"])<=0)
-	$arParams["PATH_TO_POST"] = htmlspecialcharsbx($APPLICATION->GetCurPage()."?".$arParams["PAGE_VAR"]."=post&".$arParams["BLOG_VAR"]."=#blog#&".$arParams["POST_VAR"]."=#post_id#");
+	$arParams["PATH_TO_POST"] = $APPLICATION->GetCurPage()."?".htmlspecialcharsbx($arParams["PAGE_VAR"])."=post&".htmlspecialcharsbx($arParams["BLOG_VAR"])."=#blog#&".htmlspecialcharsbx($arParams["POST_VAR"])."=#post_id#";
 
 $arParams["PATH_TO_BLOG_CATEGORY"] = trim($arParams["PATH_TO_BLOG_CATEGORY"]);
 if(strlen($arParams["PATH_TO_BLOG_CATEGORY"])<=0)
-	$arParams["PATH_TO_BLOG_CATEGORY"] = htmlspecialcharsbx($APPLICATION->GetCurPage()."?".$arParams["PAGE_VAR"]."=blog&".$arParams["BLOG_VAR"]."=#blog#"."&category=#category_id#");
+	$arParams["PATH_TO_BLOG_CATEGORY"] = $APPLICATION->GetCurPage()."?".htmlspecialcharsbx($arParams["PAGE_VAR"])."=blog&".htmlspecialcharsbx($arParams["BLOG_VAR"])."=#blog#"."&category=#category_id#";
 
 $arParams["PATH_TO_POST_EDIT"] = trim($arParams["PATH_TO_POST_EDIT"]);
 if(strlen($arParams["PATH_TO_POST_EDIT"])<=0)
-	$arParams["PATH_TO_POST_EDIT"] = htmlspecialcharsbx($APPLICATION->GetCurPage()."?".$arParams["PAGE_VAR"]."=post_edit&".$arParams["BLOG_VAR"]."=#blog#&".$arParams["POST_VAR"]."=#post_id#");
+	$arParams["PATH_TO_POST_EDIT"] = $APPLICATION->GetCurPage()."?".htmlspecialcharsbx($arParams["PAGE_VAR"])."=post_edit&".htmlspecialcharsbx($arParams["BLOG_VAR"])."=#blog#&".htmlspecialcharsbx($arParams["POST_VAR"])."=#post_id#";
 
 $arParams["PATH_TO_USER"] = trim($arParams["PATH_TO_USER"]);
 if(strlen($arParams["PATH_TO_USER"])<=0)
-	$arParams["PATH_TO_USER"] = htmlspecialcharsbx($APPLICATION->GetCurPage()."?".$arParams["PAGE_VAR"]."=user&".$arParams["USER_VAR"]."=#user_id#");
+	$arParams["PATH_TO_USER"] = $APPLICATION->GetCurPage()."?".htmlspecialcharsbx($arParams["PAGE_VAR"])."=user&".htmlspecialcharsbx($arParams["USER_VAR"])."=#user_id#";
 
 $arParams["PATH_TO_SMILE"] = strlen(trim($arParams["PATH_TO_SMILE"]))<=0 ? false : trim($arParams["PATH_TO_SMILE"]);
 
@@ -135,7 +138,18 @@ if(!empty($arBlog) && $arBlog["ACTIVE"] == "Y" && $arGroup["SITE_ID"] == SITE_ID
 		}
 
 		$arResult["urlToPost"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_POST"], array("blog" => $arBlog["URL"], "post_id"=>CBlogPost::GetPostID($arResult["Post"]["ID"], $arResult["Post"]["CODE"], $arParams["ALLOW_POST_CODE"]), "user_id" => $arPost["AUTHOR_ID"]));
-
+//		add some SEO to preserve collision between ID-link and CODE-link
+//		use only if active ALLOW_POST_CODE and if now ID-link
+		if($arParams["ALLOW_POST_CODE"] && !$bIDbyCode
+			&& !empty($arResult["Post"]["CODE"]) &&!is_numeric($arResult["Post"]["CODE"]))
+		{
+			$request = Application::getInstance()->getContext()->getRequest();
+			$path = $request->isHttps() ? "https://" : "http://";
+			$path.= $request->getHttpHost();
+			$path.=	CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_POST"], array("blog" => $arBlog["URL"],"post_id"=> $arResult["Post"]["CODE"],"user_id" => $arPost["AUTHOR_ID"]));
+			Asset::getInstance()->addString('<link rel="canonical" href="'.$path.'" />');
+		}
+		
 		if($_GET["become_friend"]=="Y" && $arResult["PostPerm"]<BLOG_PERMS_READ)
 		{
 			if($USER->IsAuthorized())
@@ -388,31 +402,35 @@ if(!empty($arBlog) && $arBlog["ACTIVE"] == "Y" && $arGroup["SITE_ID"] == SITE_ID
 						$arResult["Post"]["DATE_PUBLISH_D"] = ConvertDateTime($arResult["Post"]["DATE_PUBLISH"], "DD");
 						$arResult["Post"]["DATE_PUBLISH_M"] = ConvertDateTime($arResult["Post"]["DATE_PUBLISH"], "MM");
 						$arResult["Post"]["DATE_PUBLISH_Y"] = ConvertDateTime($arResult["Post"]["DATE_PUBLISH"], "YYYY");
-
-						$arResult["BlogUser"] = CBlogUser::GetByID($arPost["AUTHOR_ID"], BLOG_BY_USER_ID);
-						$arResult["BlogUser"] = CBlogTools::htmlspecialcharsExArray($arResult["BlogUser"]);
+						
+//						get user data from new class
+						$blogUser = new \Bitrix\Blog\BlogUser($CACHE_TIME);
+						$blogUser->setBlogId($arBlog["ID"]);
+						$blogUserData = $blogUser->getUsers($arPost["AUTHOR_ID"]);
+						
+						$arResult["BlogUser"] = $blogUserData[$arPost["AUTHOR_ID"]]["BlogUser"];
 						$dbUser = CUser::GetByID($arPost["AUTHOR_ID"]);
 						$arResult["arUser"] = $dbUser->GetNext();
-						$arResult["AuthorName"] = CBlogUser::GetUserName($arResult["BlogUser"]["ALIAS"], $arResult["arUser"]["NAME"], $arResult["arUser"]["LAST_NAME"], $arResult["arUser"]["LOGIN"]);
-
+						$arResult["AuthorName"] = $blogUserData[$arPost["AUTHOR_ID"]]["AUTHOR_NAME"];
+						
 						if($arResult["PostPerm"] > BLOG_PERMS_MODERATE || ($arResult["PostPerm"] >= BLOG_PERMS_PREMODERATE && $arPost["AUTHOR_ID"] == $arResult["USER_ID"]))
 							$arResult["urlToEdit"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_POST_EDIT"], array("blog" => $arBlog["URL"], "post_id"=>$arPost["ID"], "user_id" => $arParams["USER_ID"]));
 						if($arResult["PostPerm"] >= BLOG_PERMS_MODERATE)
-							$arResult["urlToHide"] = htmlspecialcharsex($APPLICATION->GetCurPageParam("hide=Y", Array("del_id", "sessid", "success", "hide", "delete")));
-						if($arResult["PostPerm"] >= BLOG_PERMS_FULL)
-							$arResult["urlToDelete"] = htmlspecialcharsex($APPLICATION->GetCurPageParam("delete=Y", Array("sessid", "delete", "hide")));
-
-						$arResult["BlogUser"]["AVATAR_file"] = CFile::GetFileArray($arResult["BlogUser"]["AVATAR"]);
-						if ($arResult["BlogUser"]["AVATAR_file"] !== false)
 						{
-							$arResult["BlogUser"]["Avatar_resized"] = CFile::ResizeImageGet(
-										$arResult["BlogUser"]["AVATAR_file"],
-										array("width" => 100, "height" => 100),
-										BX_RESIZE_IMAGE_EXACT,
-										false
-									);
-
-							$arResult["BlogUser"]["AVATAR_img"] = CFile::ShowImage($arResult["BlogUser"]["Avatar_resized"]["src"], 100, 100, "border=0 align='right'");
+							$arResult["urlToHide"] = urlencode($APPLICATION->GetCurPageParam("hide=Y", Array("del_id", "sessid", "success", "hide", "delete")));
+							$arResult["urlToHide"] = htmlspecialcharsbx($arResult["urlToHide"]);
+						}
+						if($arResult["PostPerm"] >= BLOG_PERMS_FULL)
+						{
+							$arResult["urlToDelete"] = urlencode($APPLICATION->GetCurPageParam("delete=Y", Array("sessid", "delete", "hide")));
+							$arResult["urlToDelete"] = htmlspecialcharsbx($arResult["urlToDelete"]);
+						}
+						
+						if($arResult["BlogUser"]["AVATAR_file"] !== false)
+						{
+//							get only size for post
+							$arResult["BlogUser"]["Avatar_resized"] = $arResult["BlogUser"]["Avatar_resized"]["100_100"];
+							$arResult["BlogUser"]["AVATAR_img"] = $arResult["BlogUser"]["AVATAR_img"]["100_100"];
 						}
 
 						if(strlen($arPost["CATEGORY_ID"])>0)
@@ -469,7 +487,7 @@ if(!empty($arBlog) && $arBlog["ACTIVE"] == "Y" && $arGroup["SITE_ID"] == SITE_ID
 		{
 			$arResult["NOTE_MESSAGE"] .= GetMessage("B_B_MES_FR_ONLY").'<br />';
 			if($USER->IsAuthorized())
-				$arResult["NOTE_MESSAGE"] .= GetMessage("B_B_MES_U_CAN").' <a href="'.$APPLICATION->GetCurPageParam("become_friend=Y", Array("become_friend")).'">'.GetMessage("B_B_MES_U_CAN1").'</a> '.GetMessage("B_B_MES_U_CAN2").'</br />';
+				$arResult["NOTE_MESSAGE"] .= GetMessage("B_B_MES_U_CAN").' <a href="'.htmlspecialcharsbx($APPLICATION->GetCurPageParam("become_friend=Y", Array("become_friend"))).'">'.GetMessage("B_B_MES_U_CAN1").'</a> '.GetMessage("B_B_MES_U_CAN2").'</br />';
 			else
 				$arResult["NOTE_MESSAGE"] .= GetMessage("B_B_MES_U_AUTH").'<br />';
 		}

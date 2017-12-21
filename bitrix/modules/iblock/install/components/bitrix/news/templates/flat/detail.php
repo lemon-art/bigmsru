@@ -54,6 +54,8 @@ $this->setFrameMode(true);
 		"CHECK_DATES" => $arParams["CHECK_DATES"],
 		"ELEMENT_ID" => $arResult["VARIABLES"]["ELEMENT_ID"],
 		"ELEMENT_CODE" => $arResult["VARIABLES"]["ELEMENT_CODE"],
+		"SECTION_ID" => $arResult["VARIABLES"]["SECTION_ID"],
+		"SECTION_CODE" => $arResult["VARIABLES"]["SECTION_CODE"],
 		"IBLOCK_URL" => $arResult["FOLDER"].$arResult["URL_TEMPLATES"]["news"],
 		"SEARCH_PAGE" => $arResult["FOLDER"].$arResult["URL_TEMPLATES"]["search"],
 		"USE_SHARE" => $arParams["USE_SHARE"],
@@ -69,6 +71,7 @@ $this->setFrameMode(true);
 		"MEDIA_PROPERTY" => $arParams["MEDIA_PROPERTY"],
 		"SLIDER_PROPERTY" => $arParams["SLIDER_PROPERTY"],
 		"TEMPLATE_THEME" => $arParams["TEMPLATE_THEME"],
+		"STRICT_SECTION_CHECK" => $arParams["STRICT_SECTION_CHECK"],
 	),
 	$component
 );?>

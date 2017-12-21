@@ -22,13 +22,14 @@ $file = Rel2Abs("/", $file);
 if (!isAllowPath($file) || strpos($file, "/lang/") === false || GetFileExtension($file) <> "php")
 	$strError = GetMessage("trans_edit_err")."<br>";
 
+$chain = "";
+$arPath = array();
+
 if($strError == "")
 {
 	if (strlen($show_error)>0) $ONLY_ERROR = "Y"; else $ONLY_ERROR = "N";
 
 	// form a way to get back
-	$chain = "";
-	$arPath = array();
 	$path_back = dirname($file);
 	$arSlash = explode("/",$path_back);
 	if (is_array($arSlash))
@@ -312,17 +313,6 @@ $aMenu[] = array(
 	"TEXT" => GetMessage("TR_FILE_PHP"),
 	"MENU" => $arSubMenu,
 );
-/*$aMenu[] = array(
-		"TEXT"	=> GetMessage("TR_FILE_SHOW"),
-		"LINK"	=> "/bitrix/admin/translate_show_php.php?file=".htmlspecialcharsbx($file)."&lang=".LANGUAGE_ID,
-		"TITLE"	=> GetMessage("TR_FILE_SHOW_TITLE"),
-	);
-
-$aMenu[] = array(
-		"TEXT"	=> GetMessage("TR_FILE_EDIT"),
-		"LINK"	=> "/bitrix/admin/translate_edit_php.php?file=".htmlspecialcharsbx($file)."&lang=".LANGUAGE_ID,
-		"TITLE"	=> GetMessage("TR_FILE_EDIT_TITLE"),
-	); */
 
 $context = new CAdminContextMenu($aMenu);
 $context->Show();
@@ -377,7 +367,7 @@ $tabControl->BeginNextTab();
 	{
 		if (LANG_CHARSET == $arLng["CHARSET"] || $arLng["LID"]=="en")
 		{
-			?><input type="hidden" name="LANGS[]" value="<?=$arLng["LID"]?>"><?
+			?><input type="hidden" name="LANGS[]" value="<?=htmlspecialcharsbx($arLng["LID"]); ?>"><?
 		}
 	}
 	$boolShowDeleteAll = false;
@@ -414,7 +404,7 @@ $tabControl->BeginNextTab();
 					}
 				}
 			}
-			?><input type="hidden" name="KEYS[]" value="<?=$key?>"><?
+			?><input type="hidden" name="KEYS[]" value="<?=htmlspecialcharsbx($key); ?>"><?
 			if (($ONLY_ERROR=="Y" && $red) || $ONLY_ERROR=="N")
 			{
 				$boolShowDeleteAll = true;
@@ -427,11 +417,11 @@ $tabControl->BeginNextTab();
 <?
 				if ($red)
 				{
-					?><span class="required"><b><? echo htmlspecialcharsex($key); ?></b></span><?
+					?><span class="required"><b><?=htmlspecialcharsbx($key); ?></b></span><?
 				}
 				else
 				{
-					?><b><? echo htmlspecialcharsex($key); ?></b><?
+					?><b><?=htmlspecialcharsbx($key); ?></b><?
 				}
 				?><a name="<? echo htmlspecialcharsbx($key); ?>"></a></td>
 <?

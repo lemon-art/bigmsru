@@ -150,7 +150,7 @@ class QueueTable extends Entity\DataManager
 		$hasQueue = false;
 		$queryData = array();
 
-		$audience = Audience::create($type);
+		$audience = Service::getAudience($type);
 		$maxQuantity = $audience->getMaxContactsPerPacket();
 		$maxQuantity = $maxQuantity > 1000 ? 1000 : $maxQuantity;
 		$queueDb = static::getList(array(

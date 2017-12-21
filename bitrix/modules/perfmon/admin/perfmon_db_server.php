@@ -577,16 +577,19 @@ if ($statDB->type == "MYSQL")
 					"#PARAM_NAME#" => "<span class=\"perfmon_code\">innodb_flush_log_at_trx_commit</span>",
 				)),
 			);
-			$data[0]["ITEMS"][] = array(
-				"KPI_NAME" => "sync_binlog",
-				"IS_OK" => $vars['sync_binlog'] == 0 || $vars['sync_binlog'] >= 1000,
-				"KPI_VALUE" => intval($vars['sync_binlog']),
-				"KPI_RECOMMENDATION" => GetMessage("PERFMON_KPI_REC_SYNC_BINLOG", array(
-					"#GOOD_VALUE_1#" => 0,
-					"#GOOD_VALUE_2#" => 1000,
-					"#PARAM_NAME#" => "<span class=\"perfmon_code\">sync_binlog</span>",
-				)),
-			);
+			if ($vars['log_bin'] !== 'OFF')
+			{
+				$data[0]["ITEMS"][] = array(
+					"KPI_NAME" => "sync_binlog",
+					"IS_OK" => $vars['sync_binlog'] == 0 || $vars['sync_binlog'] >= 1000,
+					"KPI_VALUE" => intval($vars['sync_binlog']),
+					"KPI_RECOMMENDATION" => GetMessage("PERFMON_KPI_REC_SYNC_BINLOG", array(
+						"#GOOD_VALUE_1#" => 0,
+						"#GOOD_VALUE_2#" => 1000,
+						"#PARAM_NAME#" => "<span class=\"perfmon_code\">sync_binlog</span>",
+					)),
+				);
+			}
 			$data[0]["ITEMS"][] = array(
 				"KPI_NAME" => "innodb_flush_method",
 				"IS_OK" => $vars['innodb_flush_method'] == "O_DIRECT",

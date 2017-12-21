@@ -1,11 +1,12 @@
 <?
-use Bitrix\Catalog;
+use Bitrix\Main,
+	Bitrix\Catalog;
 
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/catalog/general/product_set.php");
 
 class CCatalogProductSet extends CCatalogProductSetAll
 {
-	public function add($arFields)
+	public static function add($arFields)
 	{
 		global $DB;
 
@@ -55,7 +56,7 @@ class CCatalogProductSet extends CCatalogProductSetAll
 		return false;
 	}
 
-	public function update($intID, $arFields)
+	public static function update($intID, $arFields)
 	{
 		global $DB;
 
@@ -135,7 +136,7 @@ class CCatalogProductSet extends CCatalogProductSetAll
 		return false;
 	}
 
-	public function delete($intID)
+	public static function delete($intID)
 	{
 		global $DB;
 
@@ -177,7 +178,7 @@ class CCatalogProductSet extends CCatalogProductSetAll
 		return false;
 	}
 
-	public function getList($arOrder = array(), $arFilter = array(), $arGroupBy = false, $arNavStartParams = false, $arSelect = array())
+	public static function getList($arOrder = array(), $arFilter = array(), $arGroupBy = false, $arNavStartParams = false, $arSelect = array())
 	{
 		global $DB;
 
@@ -268,7 +269,7 @@ class CCatalogProductSet extends CCatalogProductSetAll
 		return $dbRes;
 	}
 
-	public function isProductInSet($intProductID, $intSetType = 0)
+	public static function isProductInSet($intProductID, $intSetType = 0)
 	{
 		global $DB;
 
@@ -289,13 +290,13 @@ class CCatalogProductSet extends CCatalogProductSetAll
 
 	}
 
-	public function isProductHaveSet($arProductID, $intSetType = 0)
+	public static function isProductHaveSet($arProductID, $intSetType = 0)
 	{
 		global $DB;
 
 		if (!is_array($arProductID))
 			$arProductID = array($arProductID);
-		CatalogClearArray($arProductID, false);
+		Main\Type\Collection::normalizeArrayValuesByInt($arProductID);
 		if (empty($arProductID))
 			return false;
 		$intSetType = (int)$intSetType;
@@ -312,7 +313,7 @@ class CCatalogProductSet extends CCatalogProductSetAll
 		return false;
 	}
 
-	public function getAllSetsByProduct($intProductID, $intSetType)
+	public static function getAllSetsByProduct($intProductID, $intSetType)
 	{
 		global $DB;
 
@@ -380,7 +381,7 @@ class CCatalogProductSet extends CCatalogProductSetAll
 		return (!empty($arResult) ? $arResult : false);
 	}
 
-	public function getSetByID($intID)
+	public static function getSetByID($intID)
 	{
 		global $DB;
 
@@ -498,7 +499,7 @@ class CCatalogProductSet extends CCatalogProductSetAll
 		}
 	}
 
-	protected function getSetID($intID)
+	protected static function getSetID($intID)
 	{
 		global $DB;
 
@@ -523,14 +524,14 @@ class CCatalogProductSet extends CCatalogProductSetAll
 		return false;
 	}
 
-	protected function deleteFromSet($intID, $arEx)
+	protected static function deleteFromSet($intID, $arEx)
 	{
 		global $DB;
 
 		$intID = (int)$intID;
 		if (0 >= $intID)
 			return false;
-		CatalogClearArray($arEx, false);
+		Main\Type\Collection::normalizeArrayValuesByInt($arEx, false);
 		if (empty($arEx))
 			return false;
 
@@ -592,6 +593,16 @@ class CCatalogProductSet extends CCatalogProductSetAll
 		);
 		$fields['AVAILABLE'] = (CCatalogProduct::isAvailable($fields) ? 'Y' : 'N');
 
+		if($productData = Catalog\ProductTable::getRowById($productID))
+		{
+			$fields['SUBSCRIBE'] = $productData['SUBSCRIBE'];
+			if(Catalog\SubscribeTable::checkPermissionSubscribe($productData['SUBSCRIBE']))
+				Catalog\SubscribeTable::setOldProductAvailable($productID, $productData['AVAILABLE']);
+		}
+
+		foreach(GetModuleEvents('catalog', 'OnBeforeProductSetAvailableUpdate', true) as $arEvent)
+			ExecuteModuleEventEx($arEvent, array($productID, &$fields));
+
 		$update = $DB->PrepareUpdate('b_catalog_product', $fields);
 
 		$query = "update b_catalog_product set ".$update." where ID = ".$productID;
@@ -604,7 +615,8 @@ class CCatalogProductSet extends CCatalogProductSetAll
 		$DB->Query($query, false, 'File: '.__FILE__.'<br>Line: '.__LINE__);
 		$fields = array(
 			'PRODUCT_ID' => $productID,
-			'RATIO' => 1
+			'RATIO' => 1,
+			'IS_DEFAULT' => 'Y'
 		);
 		$insert = $DB->PrepareInsert('b_catalog_measure_ratio', $fields);
 		$query = "insert into b_catalog_measure_ratio (".$insert[0].") values(".$insert[1].")";
@@ -613,7 +625,7 @@ class CCatalogProductSet extends CCatalogProductSetAll
 		return true;
 	}
 
-	protected function createSetItemsParamsFromUpdate($setID, $getProductID = false)
+	protected static function createSetItemsParamsFromUpdate($setID, $getProductID = false)
 	{
 		global $DB;
 		$result = array();

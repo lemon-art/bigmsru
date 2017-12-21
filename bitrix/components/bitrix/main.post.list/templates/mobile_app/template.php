@@ -49,7 +49,7 @@ BX.ready(function()
 	<!--/noindex-->
 	#AFTER_HEADER#
 	#BEFORE#
-	<div class="post-comment-wrap">
+	<div class="post-comment-wrap" bx-content-view-xml-id="#CONTENT_ID#" id="post-comment-wrap-#CONTENT_ID#" bx-content-view-save="N">
 		<div class="post-comment-text" id="record-#FULL_ID#-text">#TEXT#</div>
 		<div class="post-comment-more" onclick="mobileExpand(this, event)"><div class="post-comment-more-but"></div></div>
 	</div>
@@ -182,7 +182,7 @@ $thumbFile = preg_replace(array(
 		$USER->getId(),
 		($avatar ? "Y" : "N"),
 		($avatar ? $avatar["src"] : ""),
-		$name,
+		htmlspecialcharsbx($name),
 	), ob_get_clean());
 if (empty($arParams["RECORDS"]))
 {

@@ -43,4 +43,9 @@ $MESS["CM_CONTRACTORS"] = "Suppliers";
 $MESS["CM_STORE_DOCS"] = "Documents";
 $MESS["MEASURE"] = "Units of measurement";
 $MESS["MEASURE_ALT"] = "Units of measurement";
+$MESS["PRICES_SECTION"] = "Prices";
+$MESS["PRICES_SECTION_TITLE"] = "Price types; rounding; surcharges";
+$MESS["PRICE_ROUND"] = "Rounding";
+$MESS["PRICE_ROUND_TITLE"] = "Price rounding";
+$MESS["SUBSCRIPTION_PRODUCT"] = "Product subscriptions";
 ?>

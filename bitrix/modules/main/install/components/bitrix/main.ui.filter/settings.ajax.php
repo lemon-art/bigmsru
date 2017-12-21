@@ -12,15 +12,6 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_befo
 $response = new \Bitrix\Main\HttpResponse(\Bitrix\Main\Application::getInstance()->getContext());
 $response->addHeader("Content-Type", "application/json");
 
-if (!$USER->IsAuthorized())
-{
-	$response->flush(Web\Json::encode(array(
-		"error" => "Not authorized"
-	)));
-
-	die();
-}
-
 $request = Bitrix\Main\Application::getInstance()->getContext()->getRequest();
 $request->addFilter(new Web\PostDecodeFilter);
 
@@ -43,29 +34,49 @@ if (!$request->isPost())
 }
 
 
-$options = new \Bitrix\Main\UI\Filter\Options($request->get("FILTER_ID"));
-$gridOptions = new \Bitrix\Main\Grid\Options($request->get("GRID_ID"));
+$options = new \Bitrix\Main\UI\Filter\Options($request->get("FILTER_ID"), null, $request["common_presets_id"]);
 $error = false;
 
 switch ($request->get("action"))
 {
-	case Actions::SET_FILTER : {
-		$options->setFilters(array($request->getPostList()->toArray()));
-
-		$rows = $request->getPost("filter_rows");
-		$filterId = $request->getPost("filter_id");
-		$filterName = $request->getPost("name");
-		$filterFields = $request->getPost("fields");
-
-		$gridOptions->SetFilterRows($rows, $filterId);
-		$gridOptions->SetFilterSettings($filterId, array(
-			"name" => $filterName,
-			"fields" => $filterFields
-		));
+	case Actions::SET_TMP_PRESET :
+	{
+		$options->setFilterSettings("tmp_filter", $request->getPostList()->toArray());
 		break;
 	}
 
-	default : {
+	case Actions::PIN_PRESET :
+	{
+		$options->pinPreset($request->getPost("preset_id"));
+		break;
+	}
+
+	case Actions::SET_FILTER :
+	{
+		$options->setFilterSettings($request->getPost("preset_id"), $request->getPostList()->toArray());
+		break;
+	}
+
+	case Actions::SET_FILTER_ARRAY :
+	{
+		$options->setFilterSettingsArray($request->getPostList()->toArray());
+		break;
+	}
+
+	case Actions::RESTORE_FILTER :
+	{
+		$options->restore($request->getPostList()->toArray());
+		break;
+	}
+
+	case Actions::REMOVE_FILTER :
+	{
+		$options->deleteFilter($request->getPost("preset_id"), $request->getPost("is_default"));
+		break;
+	}
+
+	default :
+	{
 		$error = true;
 		break;
 	}
@@ -74,7 +85,6 @@ switch ($request->get("action"))
 if (!$error)
 {
 	$options->save();
-	$gridOptions->Save();
 
 	$response->flush(Web\Json::encode($options->getOptions()));
 }

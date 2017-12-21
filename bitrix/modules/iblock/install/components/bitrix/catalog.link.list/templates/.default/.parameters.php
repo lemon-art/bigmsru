@@ -217,4 +217,3 @@ $arTemplateParameters['MESS_NOT_AVAILABLE'] = array(
 	'TYPE' => 'STRING',
 	'DEFAULT' => GetMessage('CP_BCLL_TPL_MESS_NOT_AVAILABLE_DEFAULT')
 );
-?>

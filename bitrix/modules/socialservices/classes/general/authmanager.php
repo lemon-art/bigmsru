@@ -818,6 +818,33 @@ class CSocServAuthManager
 
 		return $result;
 	}
+
+	public static function checkOldUser(&$socservUserFields)
+	{
+		// check for user with old socialservices linking system (socservice ID in user's EXTERNAL_AUTH_ID)
+		$dbUsersOld = CUser::GetList($by = 'ID', $ord = 'ASC', array('XML_ID' => $socservUserFields['XML_ID'], 'EXTERNAL_AUTH_ID' => $socservUserFields['EXTERNAL_AUTH_ID'], 'ACTIVE' => 'Y'), array('NAV_PARAMS' => array("nTopCount" => "1")));
+		$socservUser = $dbUsersOld->Fetch();
+		if($socservUser)
+		{
+			return $socservUser["ID"];
+		}
+
+		return false;
+	}
+
+	public static function checkAbandonedUser(&$socservUserFields)
+	{
+		// theoretically possible situation with abandoned external user w/o b_socialservices_user entry
+		$dbUsersNew = CUser::GetList($by = 'ID', $ord = 'ASC', array('XML_ID' => $socservUserFields['XML_ID'], 'EXTERNAL_AUTH_ID' => 'socservices', 'ACTIVE' => 'Y'), array('NAV_PARAMS' => array("nTopCount" => "1")));
+		$socservUser = $dbUsersNew->Fetch();
+
+		if($socservUser)
+		{
+			return $socservUser["ID"];
+		}
+
+		return false;
+	}
 }
 
 //base class for auth services
@@ -845,6 +872,45 @@ class CSocServAuth
 		{
 			$this->userId = $userId;
 		}
+	}
+
+	public static function getControllerUrl()
+	{
+		return 'https://www.bitrix24.com/controller';
+
+		// this may be needed later
+/*
+		static $controllerUrl = '';
+		if(
+			$controllerUrl === ''
+			&& \Bitrix\Main\Loader::includeModule('bitrix24')
+		)
+		{
+			$controllerUrl = 'https://www.bitrix24.com/controller';
+			$controllerUrlList = array(
+				'de' => 'https://www.bitrix24.de/controller',
+				'ua' => 'https://www.bitrix24.ua/controller',
+				'ru' => 'https://www.bitrix24.ru/controller',
+				'eu' => 'https://www.bitrix24.eu/controller',
+				'la' => 'https://www.bitrix24.es/controller',
+				'br' => 'https://www.bitrix24.com.br/controller',
+				'in' => 'https://www.bitrix24.in/controller',
+				'cn' => 'https://www.bitrix24.cn/controller',
+				'kz' => 'https://www.bitrix24.kz/controller',
+				'by' => 'https://www.bitrix24.by/controller',
+				'fr' => 'https://www.bitrix24.fr/controller',
+				'pl' => 'https://www.bitrix24.pl/controller',
+			);
+
+			$lang = \CBitrix24::getLicensePrefix();
+			if(array_key_exists($lang, $controllerUrlList))
+			{
+				$controllerUrl = $controllerUrlList[$lang];
+			}
+		}
+
+		return $controllerUrl;
+*/
 	}
 
 	public function GetSettings()
@@ -1262,24 +1328,19 @@ class CSocServAuth
 			}
 			else
 			{
-				// check for user with old socialservices linking system (socservice ID in user's EXTERNAL_AUTH_ID)
-				$dbUsersOld = CUser::GetList($by='ID', $ord='ASC', array('XML_ID'=>$socservUserFields['XML_ID'], 'EXTERNAL_AUTH_ID'=>$socservUserFields['EXTERNAL_AUTH_ID'], 'ACTIVE'=>'Y'), array('NAV_PARAMS'=>array("nTopCount"=>"1")));
-				$socservUser = $dbUsersOld->Fetch();
-				if($socservUser)
+				foreach(GetModuleEvents('socialservices', 'OnFindSocialservicesUser', true) as $event)
 				{
-					$USER_ID = $socservUser["ID"];
-				}
-				else
-				{
-					// theoretically possible situation with abandoned external user w/o b_socialservices_user entry
-					$dbUsersNew = CUser::GetList($by='ID', $ord='ASC', array('XML_ID'=>$socservUserFields['XML_ID'], 'EXTERNAL_AUTH_ID'=>'socservices', 'ACTIVE'=>'Y'),  array('NAV_PARAMS'=>array("nTopCount"=>"1")));
-					$socservUser = $dbUsersNew->Fetch();
-
-					if($socservUser)
+					$eventResult = ExecuteModuleEventEx($event, array(&$socservUserFields));
+					if($eventResult > 0)
 					{
-						$USER_ID = $socservUser["ID"];
+						$USER_ID = $eventResult;
+						break;
 					}
-					elseif
+				}
+
+				if(!$USER_ID)
+				{
+					if
 					(
 						COption::GetOptionString("main", "new_user_registration", "N") == "Y"
 						&& COption::GetOptionString("socialservices", "allow_registration", "Y") == "Y"
@@ -1369,7 +1430,6 @@ class CSocServAuth
 
 				if($USER->IsJustAuthorized())
 				{
-					ContactTable::onUserLoginSocserv($socservUserFields);
 					foreach(GetModuleEvents("socialservices", "OnUserLoginSocserv", true) as $arEvent)
 					{
 						ExecuteModuleEventEx($arEvent, array($socservUserFields));

@@ -258,6 +258,7 @@ BX.file_input.prototype.OnUploadInputChange = function(e)
 {
 	var
 		p, name,
+		curFile,
 		inp = e.target || e.srcElement,
 		description = '',
 		value = inp.files || [inp.value];
@@ -286,8 +287,8 @@ BX.file_input.prototype.OnUploadInputChange = function(e)
 			BX.cleanNode(pDelInput, true);
 
 		// Show description
-		var
-			curFile = this.arConfig.files && this.arConfig.files[0] ? this.arConfig.files[0] : false;
+		curFile = this.arConfig.files && this.arConfig.files[0] ? this.arConfig.files[0] : false;
+
 		if (curFile && curFile.DESCRIPTION !== '')
 			description = curFile.DESCRIPTION;
 		this.ShowFileDescription(this.oNewFile, description);
@@ -336,9 +337,8 @@ BX.file_input.prototype.OnUploadInputChange = function(e)
 			oFile.pMenu.style.display = "inline-block";
 			oFile.pMenu.setAttribute('data-bx-meta', fileIndex);
 
-			var
-				curFile = this.arConfig.files && this.arConfig.files[fileIndex] ? this.arConfig.files[fileIndex] : false,
-				fileContainer = BX(this.id + '_file_cont_' + fileIndex);
+			curFile = this.arConfig.files && this.arConfig.files[fileIndex] ? this.arConfig.files[fileIndex] : false;
+			var fileContainer = BX(this.id + '_file_cont_' + fileIndex);
 
 			if (curFile)
 			{
@@ -367,6 +367,19 @@ BX.file_input.prototype.OnUploadInputChange = function(e)
 	// Used to refresh form content - workaround for IE bug (mantis:37969)
 	if (BX.browser.IsIE())
 		BX(this.id + '_ie_bogus_container').innerHTML = BX(this.id + '_ie_bogus_container').innerHTML;
+
+	// mantis: 78822
+	if (BX.browser.IsIE() || BX.browser.IsIE11())
+	{
+		var fakeInp = this.oNewFile.pFileCont.parentNode.appendChild(BX.create('INPUT', {
+			props: {
+				type: 'text',
+				className: 'adm-input-fake-inp'
+			}
+		}));
+		fakeInp.focus();
+		fakeInp.select();
+	}
 };
 
 BX.file_input.prototype.OnSelectFromMedialib = function(file)

@@ -81,4 +81,16 @@ class OrderTable extends Entity\DataManager
 			new Entity\Validator\Length(null, 100),
 		);
 	}
+
+	public static function deleteByOrderId($orderId)
+	{
+		if(intval($orderId) <= 0)
+			return false;
+
+		$con = \Bitrix\Main\Application::getConnection();
+		$sqlHelper = $con->getSqlHelper();
+		$id = $sqlHelper->forSql($orderId);
+		$con->queryExecute("DELETE FROM b_sale_tp_order WHERE ORDER_ID=".$id);
+		return true;
+	}
 }

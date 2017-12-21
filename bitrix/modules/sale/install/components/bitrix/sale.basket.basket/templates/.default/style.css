@@ -195,6 +195,8 @@
 	padding:0;
 	white-space:normal;
 	line-height:18px;
+	font-weight:bold;
+	font-size:14px;
 }
 .bx_ordercart .bx_ordercart_order_table_container .bx_ordercart_itemtitle a{
 	color:#000;
@@ -968,3 +970,5 @@ input.bt2:active{border:1px solid #d2d2d2}
 }
 
 .bx-touch .quantity_control{ display: none; }
+
+#basket_items input {line-height: normal;}

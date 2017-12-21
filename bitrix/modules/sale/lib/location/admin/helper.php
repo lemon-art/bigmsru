@@ -197,10 +197,25 @@ abstract class Helper
 		{
 			$entityClass = static::getEntityClass();
 			$parameters = Helper::getParametersForList($parameters); // from generalized to orm
-			$resItems = $entityClass::getList(array('filter' => $parameters['filter'], 'select' => array('ID')));
+
+			$glParams = array('select' => array('ID'));
+
+			if(is_array($parameters['filter']) && !empty($parameters['filter']))
+				$glParams['filter'] = $parameters['filter'];
+
+			$resItems = $entityClass::getList($glParams);
 
 			while ($item = $resItems->fetch())
 			{
+
+				/* Locations have tree-style structure so
+				 * we could have deleted some of them
+				 * during previous iterations. Let's check this.
+				*/
+				if(!$entityClass::getById($item['ID'])->fetch())
+					continue;
+				/**/
+
 				$res = static::delete($item['ID']);
 				if(!$res['success'])
 				{

@@ -554,7 +554,7 @@ if ($can_edit) :
 							$arAnswer["FIELD_PARAM"]);
 
 						echo $input;
-						echo "<label for=\"".$arAnswer['ID']."\">".$arAnswer["MESSAGE"]."</label><br />";
+						echo "<label for=\"".$arAnswer['ID']."\">".htmlspecialcharsbx($arAnswer["MESSAGE"])."</label><br />";
 
 					break;
 					case "checkbox":
@@ -578,7 +578,7 @@ if ($can_edit) :
 							$value,
 							$arAnswer["FIELD_PARAM"]);
 
-						echo $input."<label for=\"".$arAnswer['ID']."\">".$arAnswer["MESSAGE"]."</label><br />";
+						echo $input."<label for=\"".$arAnswer['ID']."\">".htmlspecialcharsbx($arAnswer["MESSAGE"])."</label><br />";
 
 					break;
 					case "dropdown":
@@ -611,7 +611,7 @@ if ($can_edit) :
 
 					break;
 					case "text":
-						echo $arAnswer["MESSAGE"] ? $arAnswer['MESSAGE'].'<br />' : '';
+						echo $arAnswer["MESSAGE"] ? htmlspecialcharsbx($arAnswer['MESSAGE']).'<br />' : '';
 
 						$value = CForm::GetTextValue($arAnswer["ID"], $arAnswer, $arrVALUES);
 						echo CForm::GetTextField(
@@ -622,7 +622,7 @@ if ($can_edit) :
 
 					break;
 					case "hidden":
-						echo $arAnswer["MESSAGE"] ? $arAnswer['MESSAGE'].'<br />' : '';
+						echo $arAnswer["MESSAGE"] ? htmlspecialcharsbx($arAnswer['MESSAGE']).'<br />' : '';
 
 						$value = CForm::GetHiddenValue($arAnswer["ID"], $arAnswer, $arrVALUES);
 						$input = CForm::GetHiddenField(
@@ -636,7 +636,7 @@ if ($can_edit) :
 
 					break;
 					case "password":
-						echo $arAnswer["MESSAGE"] ? $arAnswer['MESSAGE'].'<br />' : '';
+						echo $arAnswer["MESSAGE"] ? htmlspecialcharsbx($arAnswer['MESSAGE']).'<br />' : '';
 
 						$value = CForm::GetPasswordValue($arAnswer["ID"], $arAnswer, $arrVALUES);
 						echo CForm::GetPasswordField(
@@ -647,7 +647,7 @@ if ($can_edit) :
 
 					break;
 					case "email":
-						echo $arAnswer["MESSAGE"] ? $arAnswer['MESSAGE'].'<br />' : '';
+						echo $arAnswer["MESSAGE"] ? htmlspecialcharsbx($arAnswer['MESSAGE']).'<br />' : '';
 
 						$value = CForm::GetEmailValue($arAnswer["ID"], $arAnswer, $arrVALUES);
 						echo CForm::GetEmailField(
@@ -657,7 +657,7 @@ if ($can_edit) :
 							$arAnswer["FIELD_PARAM"]).'<br />';
 					break;
 					case "url":
-						echo $arAnswer["MESSAGE"] ? $arAnswer['MESSAGE'].'<br />' : '';
+						echo $arAnswer["MESSAGE"] ? htmlspecialcharsbx($arAnswer['MESSAGE']).'<br />' : '';
 
 						$value = CForm::GetUrlValue($arAnswer["ID"], $arAnswer, $arrVALUES);
 						echo CForm::GetUrlField(
@@ -668,7 +668,7 @@ if ($can_edit) :
 
 						break;
 					case "textarea":
-						echo $arAnswer["MESSAGE"] ? $arAnswer['MESSAGE'].'<br />' : '';
+						echo $arAnswer["MESSAGE"] ? htmlspecialcharsbx($arAnswer['MESSAGE']).'<br />' : '';
 
 						if (intval($arAnswer["FIELD_WIDTH"]) <= 0) $arAnswer["FIELD_WIDTH"] = "40";
 						if (intval($arAnswer["FIELD_HEIGHT"]) <= 0) $arAnswer["FIELD_HEIGHT"] = "5";
@@ -684,7 +684,7 @@ if ($can_edit) :
 
 						break;
 					case "date":
-						echo $arAnswer["MESSAGE"] ? $arAnswer['MESSAGE'].'<br />' : '';
+						echo $arAnswer["MESSAGE"] ? htmlspecialcharsbx($arAnswer['MESSAGE']).'<br />' : '';
 
 						$value = CForm::GetDateValue($arAnswer["ID"], $arAnswer, $arrVALUES);
 						echo CForm::GetDateField(
@@ -696,7 +696,7 @@ if ($can_edit) :
 
 						break;
 					case "image":
-						echo $arAnswer["MESSAGE"] ? $arAnswer['MESSAGE'].'<br />' : '';
+						echo $arAnswer["MESSAGE"] ? htmlspecialcharsbx($arAnswer['MESSAGE']).'<br />' : '';
 
 						if ($arFile = CFormResult::GetFileByAnswerID($RESULT_ID, $arAnswer["ID"]))
 						{
@@ -721,7 +721,7 @@ if ($can_edit) :
 
 						break;
 					case "file":
-						echo $arAnswer["MESSAGE"] ? $arAnswer['MESSAGE'].'<br />' : '';
+						echo $arAnswer["MESSAGE"] ? htmlspecialcharsbx($arAnswer['MESSAGE']).'<br />' : '';
 
 						if ($arFile = CFormResult::GetFileByAnswerID($RESULT_ID, $arAnswer["ID"]))
 						{

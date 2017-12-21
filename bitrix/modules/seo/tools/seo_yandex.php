@@ -64,20 +64,22 @@ if(isset($_REQUEST['action']))
 				break;
 
 				case 'top-queries':
-					$res = $engine->getQueriesFeed($arDomain['DOMAIN'], $arDomain['SITE_DIR']);
+					$res = $engine->getSiteInfoQueries($arDomain['DOMAIN']);
 				break;
 
 				case 'site_verify':
 					$res = array('error' => array('message' => 'Unknown domain'));
-
+					
 					if(is_array($arDomain))
 					{
 						$arFeeds = $engine->getFeeds();
 						if(isset($arFeeds[$arDomain['DOMAIN']]) && is_array($arFeeds[$arDomain['DOMAIN']]))
 						{
-							if($arFeeds[$arDomain['DOMAIN']]['verification'] != 'VERIFIED')
+//							todo: remove 'VERIFIED' after complete migration to v3
+							if(/*$arFeeds[$arDomain['DOMAIN']]['verification'] != 'VERIFIED' || */$arFeeds[$arDomain['DOMAIN']]['verified'] === false)
 							{
-								$uin = $engine->verifySite($arDomain['DOMAIN'], false);
+//								get unnicue string for verification
+								$uin = $engine->getVerifySiteUin($arDomain['DOMAIN']);
 								if($uin)
 								{
 									$filename = "yandex_".$uin.".html";
@@ -90,7 +92,7 @@ if(isset($_REQUEST['action']))
 									$obFile = new \Bitrix\Main\IO\File($path);
 									$obFile->putContents('<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>Verification: '.$uin.'</body></html>');
 
-									$res = $engine->verifySite($arDomain['DOMAIN'], true);
+									$res = $engine->verifySite($arDomain['DOMAIN']);
 
 									//$obFile->delete();
 								}
@@ -107,18 +109,11 @@ if(isset($_REQUEST['action']))
 
 				case 'original_text':
 					$textContent = $_POST['original_text'];
-					$res = $engine->addOriginalText($textContent, $arDomain['DOMAIN'], $arDomain['SITE_DIR']);
+					$res = $engine->addOriginalText($textContent, $arDomain['DOMAIN']);
 				break;
 
 				case 'original_texts':
-					$res = $engine->getOriginalTexts($arDomain['DOMAIN'], $arDomain['SITE_DIR']);
-				break;
-
-				case 'crawling':
-					$res = array(
-						'excluded' => $engine->getExcluded($arDomain['DOMAIN'], $arDomain['SITE_DIR']),
-						'indexed' => $engine->getIndexed($arDomain['DOMAIN'], $arDomain['SITE_DIR']),
-					);
+					$res = $engine->getOriginalTexts($arDomain['DOMAIN']);
 				break;
 
 				default:
@@ -149,6 +144,13 @@ elseif (isset($_REQUEST['get']))
 		case 'original_text_form':
 			$arSettings = $engine->getSettings();
 			$arDomains = \CSeoUtils::getDomainsList();
+			
+//			if empty - save list of webmaster-sites in settings
+			if(empty($arSettings['SITES']))
+			{
+				$engine->getFeeds();
+				$arSettings = $engine->getSettings();
+			}
 
 			foreach($arDomains as $key => $domain)
 			{

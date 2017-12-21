@@ -86,14 +86,16 @@ if ($page<=0) $page = 1;
 			<?
 			if (count($arBasketIDs)>0)
 			{
+				$arCurFormat = CCurrencyLang::GetCurrencyFormat($arOrder["CURRENCY"]);
+				$currency = preg_replace('/(^|[^&])#/', '${1}', $arCurFormat['FORMAT_STRING']);
 				?>
 				<table class="blank">
 					<tr>
 						<td align="center">№</td>
 						<td align="center">Наименование</td>
 						<td align="center">Количество</td>
-						<td align="center">Цена, руб</td>
-						<td align="center">Cумма, руб</td>
+						<td align="center">Цена,<?=$currency;?></td>
+						<td align="center">Cумма,<?=$currency;?></td>
 					</tr>
 					<?
 					$priceTotal = 0;

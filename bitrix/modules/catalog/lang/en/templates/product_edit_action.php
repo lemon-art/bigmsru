@@ -20,4 +20,6 @@ $MESS["C2IT_ERROR_NO_PRICE"] = "No prices exist";
 $MESS["C2IT_ERROR_SAVE_BARCODE"] = "A product with this bar code already exists.";
 $MESS["C2IT_ERROR_SAVE_MULTIBARCODE"] = "This product has multiple instances, each with a unique bar code.";
 $MESS["C2IT_ERROR_USE_MULTIBARCODE"] = "This product is present in the warehouse without unique barcodes. Please remove this product from all warehouses before enabling unique barcodes.";
+$MESS["C2IT_ERROR_PRODUCT_SAVE_UNKNOWN_ERROR"] = "Unknown error saving product data. Please contact your website administrator.";
+$MESS["C2IT_ERROR_PRODUCT_SAVE_ERROR"] = "Error saving product data: #ERROR#";
 ?>

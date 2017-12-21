@@ -294,7 +294,7 @@ $tabControl->BeginNextTab();
 							<select name="VALUE_<?=$key?>" id="VALUE_<?=$key?>" style="display:none;">
 								<option value="">--</option>
 							</select>					
-							<input type="text" name="VALUE2_<?=$key?>" id="VALUE2_<?=$key?>" value="<?if(strlen($val["TYPE"]) <= 0) echo htmlspecialcharsEx($val["VALUE"])?>"  size="40">
+							<input type="text" name="VALUE2_<?=$key?>" id="VALUE2_<?=$key?>" value="<?if(strlen($val["TYPE"]) <= 0) echo htmlspecialcharsbx($val["VALUE"])?>"  size="40">
 							<?if(strlen($val["VALUE"]) > 0 && strlen($val["TYPE"]) > 0)
 							{
 								?>

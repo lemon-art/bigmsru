@@ -23,6 +23,7 @@ $MESS["SUP_SUBT_LICENCE"] = "License Agreement";
 $MESS["SUP_SUBT_LICENCE_HINT"] = "You must accept the new license agreement to use the update system.";
 $MESS["SUP_SUBT_LICENCE_BUTTON"] = "View License Agreement";
 $MESS["SUP_SUBT_AGREE"] = "I accept the Licence Agreement";
+$MESS["SUP_SUBT_AGREE_PRIVACY"] = "I have read and agree to <a href=\"http://marketplace.1c-bitrix.ru/about/privacy.php\" target=\"_blank\">Privacy policy</a>";
 $MESS["SUP_APPLY"] = "Apply";
 $MESS["SUP_SUBT_ERROR_LICENCE"] = "Error accepting the license.";
 $MESS["SUP_SUBK_KEY"] = "License Key";

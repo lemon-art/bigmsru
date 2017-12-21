@@ -166,7 +166,7 @@ while ($arCCard = $dbResultList->NavNext(true, "f_"))
 	$fieldValue  = "[<a href=\"/bitrix/admin/user_edit.php?ID=".$f_USER_ID."&lang=".LANG."\">".$f_USER_ID."</a>] ";
 	$fieldValue .= htmlspecialcharsEx($arCCard["USER_NAME"].((strlen($arCCard["USER_NAME"])<=0 || strlen($arCCard["USER_LAST_NAME"])<=0) ? "" : " ").$arCCard["USER_LAST_NAME"])."<br>";
 	$fieldValue .= htmlspecialcharsEx($arCCard["USER_LOGIN"])."&nbsp;&nbsp;&nbsp; ";
-	$fieldValue .= "<a href=\"mailto:".htmlspecialcharsEx($arCCard["USER_EMAIL"])."\">".htmlspecialcharsEx($arCCard["USER_EMAIL"])."</a>";
+	$fieldValue .= "<a href=\"mailto:".htmlspecialcharsbx($arCCard["USER_EMAIL"])."\">".htmlspecialcharsEx($arCCard["USER_EMAIL"])."</a>";
 	$row->AddField("USER_ID", $fieldValue);
 
 	$row->AddCheckField("ACTIVE");
@@ -249,19 +249,19 @@ $oFilter->Begin();
 	<tr>
 		<td><?= GetMessage("SCA_USER") ?>:</td>
 		<td>
-			<input type="text" name="filter_user" size="50" value="<?= htmlspecialcharsEx($filter_user) ?>">&nbsp;<?=ShowFilterLogicHelp()?>
+			<input type="text" name="filter_user" size="50" value="<?= htmlspecialcharsbx($filter_user) ?>">&nbsp;<?=ShowFilterLogicHelp()?>
 		</td>
 	</tr>
 	<tr>
 		<td><?= GetMessage("SCA_USER_ID") ?>:</td>
 		<td>
-			<input type="text" name="filter_user_id" size="5" value="<?= htmlspecialcharsEx($filter_user_id) ?>">
+			<input type="text" name="filter_user_id" size="5" value="<?= htmlspecialcharsbx($filter_user_id) ?>">
 		</td>
 	</tr>
 	<tr>
 		<td><?= GetMessage("SCA_USER_LOGIN") ?>:</td>
 		<td>
-			<input type="text" name="filter_login" size="50" value="<?= htmlspecialcharsEx($filter_login) ?>">
+			<input type="text" name="filter_login" size="50" value="<?= htmlspecialcharsbx($filter_login) ?>">
 		</td>
 	</tr>
 	<tr>
@@ -288,7 +288,7 @@ $oFilter->End();
 
 <?
 if (!CSaleUserCards::CheckPassword())
-	echo CAdminMessage::ShowMessage(Array("DETAILS"=>GetMessage("SCA_NO_VALID_PASSWORD"), "TYPE"=>"ERROR", "MESSAGE"=>GetMessage("SCA_ATTENTION")));
+	CAdminMessage::ShowMessage(array("DETAILS"=>GetMessage("SCA_NO_VALID_PASSWORD"), "TYPE"=>"ERROR", "MESSAGE"=>GetMessage("SCA_ATTENTION")));
 ?>
 
 <?

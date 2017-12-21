@@ -189,10 +189,17 @@
 
 			if(result.ACTION_RESULT[this.id].OUTPUT.DATA.params)
 			{
-				for(var i in result.ACTION_RESULT[this.id].OUTPUT.DATA.params)
+				if(result.ACTION_RESULT[this.id].OUTPUT.DATA.params.task_name)
 				{
-					BX.Scale.AdminFrame.currentAsyncActionBID = i;
-					break;
+					BX.Scale.AdminFrame.currentAsyncActionBID = result.ACTION_RESULT[this.id].OUTPUT.DATA.params.task_name;
+				}
+				else
+				{
+					for(var i in result.ACTION_RESULT[this.id].OUTPUT.DATA.params)
+					{
+						BX.Scale.AdminFrame.currentAsyncActionBID = i;
+						break;
+					}
 				}
 			}
 		}
@@ -202,12 +209,16 @@
 
 		if(BX.Scale.AdminFrame.currentAsyncActionBID.length <= 0)
 		{
-			BX.Scale.ActionProcessDialog.addActionMessage(result.ACTION_RESULT[this.id].OUTPUT.TEXT);
+			var message;
 
 			if(result.ACTION_RESULT[this.id].ERROR.length > 0)
-				BX.Scale.ActionProcessDialog.addActionMessage(result.ACTION_RESULT[this.id].ERROR);
+				message = result.ACTION_RESULT[this.id].ERROR;
+			else if(result.ACTION_RESULT[this.id].OUTPUT && result.ACTION_RESULT[this.id].OUTPUT.TEXT)
+				message = result.ACTION_RESULT[this.id].OUTPUT.TEXT;
+			else
+				message = BX.message("SCALE_PANEL_JS_BID_ERROR");
 
-			BX.Scale.ActionProcessDialog.setActionResult(false, BX.message("SCALE_PANEL_JS_BID_ERROR"));
+			BX.Scale.ActionProcessDialog.setActionResult(false, message);
 		}
 	};
 

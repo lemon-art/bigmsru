@@ -1,6 +1,7 @@
 <?
 abstract class CCloudStorageService
 {
+	public $tokenHasExpired = false;
 	/**
 	 * @return CCloudStorageService
 	 * @deprecated
@@ -11,7 +12,7 @@ abstract class CCloudStorageService
 	*/
 	public static function GetObjectInstance()
 	{
-		return new static;
+		return new static();
 	}
 	/**
 	 * @return string

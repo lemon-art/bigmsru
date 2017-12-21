@@ -170,6 +170,22 @@ class Path
 		return implode('/', array_map("rawurlencode", explode('/', $path)));
 	}
 
+	public static function convertUriToPhysical($path)
+	{
+		if (self::$physicalEncoding == "")
+			self::$physicalEncoding = self::getPhysicalEncoding();
+
+		if (self::$directoryIndex == null)
+			self::$directoryIndex = self::getDirectoryIndexArray();
+
+		$path = implode('/', array_map("rawurldecode", explode('/', $path)));
+
+		if ('utf-8' !== self::$physicalEncoding)
+			$path = Text\Encoding::convertEncoding($path, 'utf-8', self::$physicalEncoding);
+
+		return $path;
+	}
+
 	protected static function getLogicalEncoding()
 	{
 		if (defined('BX_UTF'))

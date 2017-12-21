@@ -45,4 +45,7 @@ $MESS["BLOG_COMMENT_GROUP_USER_MAX_RIGHTS"] = "Blog user groups: permission for 
 $MESS["BLOG_USE_AUTOSAVE"] = "Autosave blog posts";
 $MESS["BLOG_USE_IMAGE_PERM"] = "Check image permissions";
 $MESS["BLO_SITE_PATH3"] = "Path templates";
+$MESS["MAIN_RESTORE_DEFAULTS"] = "Default settings";
+$MESS["BLOG_OPTIONS_SMILE_GALLERY_ID"] = "Blog emoticon gallery";
+$MESS["BLOG_OPTIONS_SMILE_SET_ID"] = "Blog emoticons";
 ?>

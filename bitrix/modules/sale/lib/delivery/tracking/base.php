@@ -3,6 +3,7 @@
 namespace Bitrix\Sale\Delivery\Tracking;
 
 use \Bitrix\Sale\Delivery\Services;
+use Bitrix\Sale\Result;
 
 /**
  * Class Base
@@ -43,13 +44,39 @@ abstract class Base
 	 * @param $trackingNumber
 	 * @return \Bitrix\Sale\Delivery\Tracking\StatusResult.
 	 */
-	abstract public function getStatus($trackingNumber);
+	public function getStatus($trackingNumber)
+	{
+		return new StatusResult();
+	}
+
+	/**
+	 * @param string $trackingNumber
+	 * @param array $shipmentData
+	 * @return StatusResult
+	 */
+	public function getStatusShipment($shipmentData)
+	{
+		return $this->getStatus($shipmentData['TRACKING_NUMBER']);
+	}
 
 	/**
 	 * @param string[] $trackingNumbers
 	 * @return \Bitrix\Sale\Result.
 	 */
-	abstract public function getStatuses(array $trackingNumbers);
+	public function getStatuses(array $trackingNumbers)
+	{
+		return new Result();
+	}
+
+	/**
+	 * @param array $shipmentsData
+	 * @return \Bitrix\Sale\Result
+	 */
+	public function getStatusesShipment(array $shipmentsData)
+	{
+		$trackingNumbers = array_keys($shipmentsData);
+		return $this->getStatuses($trackingNumbers);
+	}
 
 	/**
 	 * Returns params structure
@@ -72,5 +99,14 @@ abstract class Base
 			$paramsStructure[$paramKey],
 			$this->params[$paramKey]
 		);
+	}
+
+	/**
+	 * @param string $trackingNumber
+	 * @return string Url were we can see tracking information
+	 */
+	public function getTrackingUrl($trackingNumber = '')
+	{
+		return '';
 	}
 }

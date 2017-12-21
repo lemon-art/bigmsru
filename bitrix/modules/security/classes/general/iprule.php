@@ -711,10 +711,14 @@ class CSecurityIPRule
 				case "SITE_ID":
 				case "SORT":
 				case "NAME":
+					$arSelect[] = $strColumn;
+					$arQueryOrder[$strColumn] = $strColumn." ".$strDirection;
+					break;
 				case "ACTIVE_FROM":
 				case "ACTIVE_TO":
 					$arSelect[] = $strColumn;
-					$arQueryOrder[$strColumn] = $strColumn." ".$strDirection;
+					$arSelect[] = $strColumn."_TIMESTAMP";
+					$arQueryOrder[$strColumn] = $strColumn."_TIMESTAMP ".$strDirection;
 					break;
 			}
 		}

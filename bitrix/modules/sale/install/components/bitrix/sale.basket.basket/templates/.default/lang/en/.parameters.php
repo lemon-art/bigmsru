@@ -8,4 +8,8 @@ $MESS["CP_SBB_TPL_THEME_WOOD"] = "wood";
 $MESS["CP_SBB_TPL_THEME_YELLOW"] = "yellow";
 $MESS["CP_SBB_TPL_THEME_BLACK"] = "dark";
 $MESS["CP_SBB_TPL_TEMPLATE_THEME"] = "Color theme";
+$MESS["CP_SBB_TPL_USE_ENHANCED_ECOMMERCE"] = "Submit e-commerce data to Google";
+$MESS["USE_ENHANCED_ECOMMERCE_TIP"] = "This requires Google Analytics Enhanced Ecommerce options to be configured";
+$MESS["CP_SBB_TPL_DATA_LAYER_NAME"] = "Data container name";
+$MESS["CP_SBB_TPL_BRAND_PROPERTY"] = "Brand property";
 ?>

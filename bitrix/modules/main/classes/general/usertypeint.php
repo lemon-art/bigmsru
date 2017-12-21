@@ -1,15 +1,19 @@
 <?
 IncludeModuleLangFile(__FILE__);
 
-class CUserTypeInteger
+class CUserTypeInteger extends \Bitrix\Main\UserField\TypeBase
 {
+	const USER_TYPE_ID = 'integer';
+
 	function GetUserTypeDescription()
 	{
 		return array(
-			"USER_TYPE_ID" => "integer",
-			"CLASS_NAME" => "CUserTypeInteger",
+			"USER_TYPE_ID" => static::USER_TYPE_ID,
+			"CLASS_NAME" => __CLASS__,
 			"DESCRIPTION" => GetMessage("USER_TYPE_INTEGER_DESCRIPTION"),
-			"BASE_TYPE" => "int",
+			"BASE_TYPE" => \CUserTypeManager::BASE_TYPE_INT,
+			"EDIT_CALLBACK" => array(__CLASS__, 'GetPublicEdit'),
+			"VIEW_CALLBACK" => array(__CLASS__, 'GetPublicView'),
 		);
 	}
 
@@ -127,6 +131,16 @@ class CUserTypeInteger
 			'>';
 	}
 
+	function GetFilterData($arUserField, $arHtmlControl)
+	{
+		return array(
+			"id" => $arHtmlControl["ID"],
+			"name" => $arHtmlControl["NAME"],
+			"type" => "number",
+			"filterable" => ""
+		);
+	}
+
 	function GetAdminListViewHTML($arUserField, $arHtmlControl)
 	{
 		if(strlen($arHtmlControl["VALUE"])>0)
@@ -181,5 +195,91 @@ class CUserTypeInteger
 		else
 			return $arUserField["VALUE"];
 	}
+
+	public static function GetPublicView($arUserField, $arAdditionalParameters = array())
+	{
+		$value = static::normalizeFieldValue($arUserField["VALUE"]);
+
+		$html = '';
+		$first = true;
+		foreach($value as $res)
+		{
+			if(!$first)
+			{
+				$html .= static::getHelper()->getMultipleValuesSeparator();
+			}
+			$first = false;
+
+			if(strlen($arUserField['PROPERTY_VALUE_LINK']) > 0)
+			{
+				$res = '<a href="'.htmlspecialcharsbx(str_replace('#VALUE#', intval($res), $arUserField['PROPERTY_VALUE_LINK'])).'">'.$res.'</a>';
+			}
+			else
+			{
+				$res = intval($res);
+			}
+
+			$html .= static::getHelper()->wrapSingleField($res);
+		}
+
+		static::initDisplay();
+
+		return static::getHelper()->wrapDisplayResult($html);
+	}
+
+
+	public function getPublicEdit($arUserField, $arAdditionalParameters = array())
+	{
+		$fieldName = static::getFieldName($arUserField, $arAdditionalParameters);
+		$value = static::getFieldValue($arUserField, $arAdditionalParameters);
+
+		$html = '';
+
+		foreach($value as $res)
+		{
+			$attrList = array();
+
+			if($arUserField["EDIT_IN_LIST"] != "Y")
+			{
+				$attrList['disabled'] = 'disabled';
+			}
+
+			if($arUserField["SETTINGS"]["SIZE"] > 0)
+			{
+				$attrList['size'] = intval($arUserField["SETTINGS"]["SIZE"]);
+			}
+
+			if(array_key_exists('attribute', $arAdditionalParameters))
+			{
+				$attrList = array_merge($attrList, $arAdditionalParameters['attribute']);
+			}
+
+			if(isset($attrList['class']) && is_array($attrList['class']))
+			{
+				$attrList['class'] = implode(' ', $attrList['class']);
+			}
+
+			$attrList['class'] = static::getHelper()->getCssClassName().(isset($attrList['class']) ? ' '.$attrList['class'] : '');
+
+			$attrList['name'] = $fieldName;
+
+			$attrList['type'] = 'text';
+			$attrList['value'] = $res;
+			$attrList['tabindex'] = '0';
+
+			$html .= static::getHelper()->wrapSingleField('<input '.static::buildTagAttributes($attrList).'/>');
+		}
+
+		if($arUserField["MULTIPLE"] == "Y" && $arAdditionalParameters["SHOW_BUTTON"] != "N")
+		{
+			$html .= static::getHelper()->getCloneButton($fieldName);
+		}
+
+		static::initDisplay();
+
+		return static::getHelper()->wrapDisplayResult($html);
+	}
+
+
 }
 ?>

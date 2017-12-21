@@ -40,7 +40,7 @@ if(($arID = $lAdmin->GroupAction()) && $isAdmin)
 		case "export":
 			?>
 			<script type="text/javascript">
-				exportWizard('<?=$ID?>');
+				exportWizard('<?=CUtil::JSEscape($ID)?>');
 			</script>
 			<?
 			break;

@@ -189,7 +189,7 @@ HTML
 
 			<center>
 				<div class="iframe-wrapper">
-					<iframe class="preview-iframe" src=""></iframe>
+					<iframe sandbox="allow-same-origin" class="preview-iframe" src=""></iframe>
 				</div>
 			</center>
 		</div>
@@ -986,6 +986,7 @@ HTML
 		$charsetPlaceholder = '#CHARSET#';
 		$html = static::replaceCharset($html, $charsetPlaceholder);
 		$html = str_replace($charsetPlaceholder, HtmlFilter::encode($charset), $html);
+		$html = Sanitizer::clean($html);
 
 		return $html;
 	}

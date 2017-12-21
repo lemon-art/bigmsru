@@ -461,7 +461,7 @@ if($canViewUserList)
 {
 	$aMenu[] = array(
 		"TEXT"	=> GetMessage("RECORD_LIST"),
-		"LINK"	=> "/bitrix/admin/user_admin.php?lang=".LANGUAGE_ID."&set_default=Y",
+		"LINK"	=> "/bitrix/admin/user_admin.php?lang=".LANGUAGE_ID."&apply_filter=Y",
 		"ICON"	=> "btn_list",
 		"TITLE"	=> GetMessage("RECORD_LIST_TITLE"),
 	);
@@ -707,6 +707,7 @@ if($showGroupTabs):
 			$dbGroups = CGroup::GetList(($b = "c_sort"), ($o = "asc"), array("ANONYMOUS" => "N"));
 			while ($arGroups = $dbGroups->Fetch())
 			{
+				$arGroups["ID"] = intval($arGroups["ID"]);
 				if (!$USER->CanDoOperation('edit_all_users') && $USER->CanDoOperation('edit_subordinate_users') && !in_array($arGroups["ID"], $arUserSubordinateGroups) || $arGroups["ID"] == 2)
 					continue;
 				if($arGroups["ID"]==1 && !$USER->IsAdmin())

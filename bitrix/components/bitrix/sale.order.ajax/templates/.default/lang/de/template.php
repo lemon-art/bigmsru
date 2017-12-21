@@ -29,6 +29,7 @@ $MESS["SOA_NUM_STEP"] = "entspricht nicht dem Schritt";
 $MESS["SOA_LESS"] = "mindestens";
 $MESS["SOA_MORE"] = "maximal";
 $MESS["SOA_SYMBOLS"] = "Zeichen";
+$MESS["SOA_INVALID_PATTERN"] = "entspricht nicht der Vorlage";
 $MESS["SOA_PROP_NEW_PROFILE"] = "Neue Profile";
 $MESS["SOA_PAY_SYSTEM"] = "Zahlungssystem";
 $MESS["SOA_PAY_ACCOUNT3"] = "Ihre Mittel sind ausreichen, um die Bestellung komplett zu bezahlen.";
@@ -115,20 +116,21 @@ $MESS["SELECT_PICKUP_DEFAULT"] = "Auswählen";
 $MESS["INNER_PS_BALANCE_DEFAULT"] = "Ihr Guthaben:";
 $MESS["ORDER_DESC_DEFAULT"] = "Kommentare zur Bestellung:";
 $MESS["SELECT_FILE_DEFAULT"] = "Auswählen";
+$MESS["SUCCESS_PRELOAD_TEXT_DEFAULT"] = "Sie haben bei uns früher eingekauft, und wir können uns an Sie erinnern, deshalb haben wir uns erlaubt, Felder für
+ Sie auszufüllen.<br />
+Sind die Informationen korrekt, klicken Sie auf \"#ORDER_BUTTON#\".
+";
+$MESS["FAIL_PRELOAD_TEXT_DEFAULT"] = "Sie haben bei uns früher eingekauft, und wir können uns an Sie erinnern, deshalb haben wir uns erlaubt, Felder für
+ Sie auszufüllen.<br />
+Überprüfen Sie bitte die Bestellinformationen und ändern Sie diese, wenn erforderlich. Wenn alles stimmt, klicken Sie auf \"#ORDER_BUTTON#\".
+";
 $MESS["DELIVERY_CALC_ERROR_TITLE_DEFAULT"] = "Lieferpreis kann nicht berechnet werden.";
 $MESS["DELIVERY_CALC_ERROR_TEXT_DEFAULT"] = "Sie können Checkout fortsetzen. Unsere Mitarbeiter werden sich mit Ihnen wegen Lieferung in Verbindung setzen.";
 $MESS["EMPTY_BASKET_TITLE"] = "Ihr Warenkorb ist leer.";
 $MESS["EMPTY_BASKET_HINT"] = "#A1#Klicken Sie hier#A2# um weiter einzukaufen";
 $MESS["SOA_BAD_EXTENSION"] = "Ungültiger Dateityp";
 $MESS["SOA_MAX_SIZE"] = "Max. Dateigröße überschritten";
-$MESS["SUCCESS_PRELOAD_TEXT_DEFAULT"] = "
-Sie haben bei uns früher eingekauft, und wir können uns an Sie erinnern, deshalb haben wir uns erlaubt, Felder für
- Sie auszufüllen.<br />
-Sind die Informationen korrekt, klicken Sie auf \"#ORDER_BUTTON#\".
-";
-$MESS["FAIL_PRELOAD_TEXT_DEFAULT"] = "
-Sie haben bei uns früher eingekauft, und wir können uns an Sie erinnern, deshalb haben wir uns erlaubt, Felder für
- Sie auszufüllen.<br />
-Überprüfen Sie bitte die Bestellinformationen und ändern Sie diese, wenn erforderlich. Wenn alles stimmt, klicken Sie auf \"#ORDER_BUTTON#\".
-";
+$MESS["PAY_SYSTEM_PAYABLE_ERROR_DEFAULT"] = "Sie werden die Bestellung bezahlen können, nachdem wir feststellen, dass die von Ihnen bestellte Produkte am Lager sind. Wird Ihre Bestellung erfüllt, erhalten Sie eine E-Mail mit Zahlungsanweisungen. Sie werden dann die Bestellung innerhalb Ihres Accounts abschließen können.";
+$MESS["PRICE_FREE_DEFAULT"] = "kostenlos";
+$MESS["ECONOMY_DEFAULT"] = "Sie sparen";
 ?>

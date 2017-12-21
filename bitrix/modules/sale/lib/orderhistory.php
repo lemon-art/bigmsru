@@ -368,6 +368,48 @@ class OrderHistory
 	}
 
 	/**
+	 * Delete old records on an agent
+	 *
+	 * @param $days
+	 * @param $hitLimit
+	 * @return string
+	 */
+	public static function deleteOldAgent($days, $hitLimit = null)
+	{
+		$days = (int)$days;
+
+		\CSaleOrderChange::deleteOld($days, $hitLimit);
+
+		if ($days)
+		{
+			$expired = new Main\Type\DateTime();
+			$expired->add("-$days days");
+			$resultSelecting = \CSaleOrderChange::GetList(
+				array(),
+				array("<DATE_CREATE" => $expired->toString()),
+				false,
+				array("nTopCount" => 1)
+			);
+
+			if ($resultSelecting->Fetch())
+				$interval = 60;
+			else
+				$interval = 24*60*60;
+
+			$agentsList = \CAgent::GetList(array("ID"=>"DESC"), array(
+				"MODULE_ID" => "sale",
+				"NAME" => "\\Bitrix\\Sale\\OrderHistory::deleteOldAgent(%"
+			));
+			if ($agent = $agentsList->Fetch())
+			{
+				\CAgent::Update($agent['ID'], array("AGENT_INTERVAL" => $interval));
+			}
+		}
+
+		return "\\Bitrix\\Sale\\OrderHistory::deleteOldAgent(\"$days\", \"$hitLimit\");";
+	}
+
+	/**
 	 * @return array
 	 */
 	public static function getManagerLogItems()

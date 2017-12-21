@@ -22,6 +22,7 @@ $tabControl = new CAdminTabControl("tabControl", $aTabs);
 $ID = intval($ID);		// Id of the edited record
 $message = null;
 $bVarsFromForm = false;
+$blockTemplateId = $ID;
 
 if($REQUEST_METHOD == "POST" && ($save!="" || $apply!="") && $POST_RIGHT=="W" && check_bitrix_sessid())
 {
@@ -55,7 +56,11 @@ if($REQUEST_METHOD == "POST" && ($save!="" || $apply!="") && $POST_RIGHT=="W" &&
 		$mailingUpdateDb = \Bitrix\Sender\TemplateTable::update($ID, $arFields);
 		$res = $mailingUpdateDb->isSuccess();
 		if(!$res)
+		{
 			$arError = $mailingUpdateDb->getErrorMessages();
+			$_SESSION['bx_sender_template_tmp'] = base64_encode($CONTENT);
+			$blockTemplateId = '';
+		}
 	}
 	else
 	{
@@ -64,10 +69,14 @@ if($REQUEST_METHOD == "POST" && ($save!="" || $apply!="") && $POST_RIGHT=="W" &&
 		{
 			$ID = $mailingAddDb->getId();
 			$res = ($ID > 0);
+			$_SESSION['bx_sender_template_tmp'] = '';
+			$blockTemplateId = '';
 		}
 		else
 		{
 			$arError = $mailingAddDb->getErrorMessages();
+			$_SESSION['bx_sender_template_tmp'] = base64_encode($CONTENT);
+			$blockTemplateId = '';
 		}
 	}
 
@@ -184,7 +193,7 @@ $tabControl->BeginNextTab();
 			<?=\Bitrix\Sender\TemplateTable::initEditor(array(
 				'FIELD_NAME' => 'MESSAGE',
 				'FIELD_VALUE' => $str_CONTENT,
-				'CONTENT_URL' => '/bitrix/admin/sender_template_admin.php?action=get_template&template_type=USER&template_id=' . $ID . '&lang=' . LANGUAGE_ID . '&' . bitrix_sessid_get(),
+				'CONTENT_URL' => '/bitrix/admin/sender_template_admin.php?action=get_template&template_type=USER&template_id=' . $blockTemplateId . '&lang=' . LANGUAGE_ID . '&' . bitrix_sessid_get(),
 				'HAVE_USER_ACCESS' => $isUserHavePhpAccess,
 				'SHOW_SAVE_TEMPLATE' => false,
 				'IS_TEMPLATE_MODE' => false,
@@ -245,10 +254,8 @@ $tabControl->End();
 			ShowTemplateListL(false);
 		});
 
-		letterManager.onShowTemplateList(function()
-		{
-			ShowTemplateListL(true);
-		});
+		letterManager.onShowTemplateList(function(){ ShowTemplateListL(true); });
+		letterManager.onHideTemplateList(function(){ ShowTemplateListL(false); });
 
 	</script>
 <?

@@ -1,17 +1,15 @@
 <?
 /** @global CMain $APPLICATION */
 /** @global CDatabase $DB */
-use Bitrix\Main\Localization\Loc,
+use Bitrix\Main,
+	Bitrix\Main\Localization\Loc,
 	Bitrix\Main\Loader,
-	Bitrix\Main\Web\HttpClient,
 	Bitrix\Currency;
 
 define('STOP_STATISTICS', true);
 define('BX_SECURITY_SHOW_MESSAGE', true);
-define('NO_AGENT_CHECK', true);
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_before.php');
-header('Content-Type: application/x-javascript; charset='.LANG_CHARSET);
 
 Loc::loadMessages(__FILE__);
 
@@ -70,18 +68,18 @@ else
 			switch ($baseCurrency)
 			{
 				case 'UAH':
-					$url = 'http://bank.gov.ua/NBUStatService/v1/statdirectory?exchange&date='.$DB->FormatDate($date, CLang::GetDateFormat('SHORT', LANGUAGE_ID), 'YMD');
+					$url = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange/?date='.$DB->FormatDate($date, CLang::GetDateFormat('SHORT', LANGUAGE_ID), 'YMD');
 					break;
 				case 'BYR':
 				case 'BYN':
-					$url = 'http://www.nbrb.by/Services/XmlExRates.aspx?ondate='.$DB->FormatDate($date, CLang::GetDateFormat('SHORT', LANGUAGE_ID), 'Y-M-D');
+					$url = 'https://www.nbrb.by/Services/XmlExRates.aspx?ondate='.$DB->FormatDate($date, CLang::GetDateFormat('SHORT', LANGUAGE_ID), 'Y-M-D');
 					break;
 				case 'RUB':
 				case 'RUR':
-					$url = 'http://www.cbr.ru/scripts/XML_daily.asp?date_req='.$DB->FormatDate($date, CLang::GetDateFormat('SHORT', LANGUAGE_ID), 'D.M.Y');
+					$url = 'https://www.cbr.ru/scripts/XML_daily.asp?date_req='.$DB->FormatDate($date, CLang::GetDateFormat('SHORT', LANGUAGE_ID), 'D.M.Y');
 					break;
 			}
-			$http = new HttpClient();
+			$http = new Main\Web\HttpClient();
 			$data = $http->get($url);
 
 			$charset = 'windows-1251';
@@ -101,62 +99,65 @@ else
 			else
 				$data = false;
 
-			switch ($baseCurrency)
+			if (!empty($data) && is_array($data))
 			{
-				case 'UAH':
-					if (is_array($data) && count($data["exchange"]["#"]['currency'])>0)
-					{
-						$currencyList = $data['exchange']['#']['currency'];
-						foreach ($currencyList as &$currencyRate)
+				switch ($baseCurrency)
+				{
+					case 'UAH':
+						if (!empty($data["exchange"]["#"]['currency']) && is_array($data["exchange"]["#"]['currency']))
 						{
-							if ($currencyRate['#']['cc'][0]['#'] == $currency)
+							$currencyList = $data['exchange']['#']['currency'];
+							foreach ($currencyList as $currencyRate)
 							{
+								if ($currencyRate['#']['cc'][0]['#'] == $currency)
+								{
 
-								$result['STATUS'] = 'OK';
-								$result['RATE_CNT'] = 1;
-								$result['RATE'] = (float)str_replace(",", ".", $currencyRate['#']['rate'][0]['#']);
-								break;
+									$result['STATUS'] = 'OK';
+									$result['RATE_CNT'] = 1;
+									$result['RATE'] = (float)str_replace(",", ".", $currencyRate['#']['rate'][0]['#']);
+									break;
+								}
 							}
+							unset($currencyRate, $currencyList);
 						}
-						unset($currencyRate, $currencyList);
-					}
-					break;
-				case 'BYR':
-				case 'BYN':
-					if (is_array($data) && count($data["DailyExRates"]["#"]["Currency"])>0)
-					{
-						$currencyList = $data['DailyExRates']['#']['Currency'];
-						foreach ($currencyList as &$currencyRate)
+						break;
+					case 'BYR':
+					case 'BYN':
+						if (!empty($data["DailyExRates"]["#"]["Currency"]) && is_array($data["DailyExRates"]["#"]["Currency"]))
 						{
-							if ($currencyRate["#"]["CharCode"][0]["#"] == $currency)
+							$currencyList = $data['DailyExRates']['#']['Currency'];
+							foreach ($currencyList as $currencyRate)
 							{
-								$result['STATUS'] = 'OK';
-								$result['RATE_CNT'] = (int)$currencyRate["#"]["Scale"][0]["#"];
-								$result['RATE'] = (float)str_replace(",", ".", $currencyRate["#"]["Rate"][0]["#"]);
-								break;
+								if ($currencyRate["#"]["CharCode"][0]["#"] == $currency)
+								{
+									$result['STATUS'] = 'OK';
+									$result['RATE_CNT'] = (int)$currencyRate["#"]["Scale"][0]["#"];
+									$result['RATE'] = (float)str_replace(",", ".", $currencyRate["#"]["Rate"][0]["#"]);
+									break;
+								}
 							}
+							unset($currencyRate, $currencyList);
 						}
-						unset($currencyRate, $currencyList);
-					}
-					break;
-				case 'RUB':
-				case 'RUR':
-					if (is_array($data) && count($data["ValCurs"]["#"]["Valute"])>0)
-					{
-						$currencyList = $data["ValCurs"]["#"]["Valute"];
-						foreach ($currencyList as &$currencyRate)
+						break;
+					case 'RUB':
+					case 'RUR':
+						if (!empty($data["ValCurs"]["#"]["Valute"]) && is_array($data["ValCurs"]["#"]["Valute"]))
 						{
-							if ($currencyRate["#"]["CharCode"][0]["#"] == $currency)
+							$currencyList = $data["ValCurs"]["#"]["Valute"];
+							foreach ($currencyList as $currencyRate)
 							{
-								$result['STATUS'] = 'OK';
-								$result['RATE_CNT'] = (int)$currencyRate["#"]["Nominal"][0]["#"];
-								$result['RATE'] = (float)str_replace(",", ".", $currencyRate["#"]["Value"][0]["#"]);
-								break;
+								if ($currencyRate["#"]["CharCode"][0]["#"] == $currency)
+								{
+									$result['STATUS'] = 'OK';
+									$result['RATE_CNT'] = (int)$currencyRate["#"]["Nominal"][0]["#"];
+									$result['RATE'] = (float)str_replace(",", ".", $currencyRate["#"]["Value"][0]["#"]);
+									break;
+								}
 							}
+							unset($currencyRate, $currencyList);
 						}
-						unset($currencyRate, $currencyList);
-					}
-					break;
+						break;
+				}
 			}
 		}
 		if ($result['STATUS'] != 'OK')
@@ -166,5 +167,7 @@ else
 		}
 	}
 }
-echo CUtil::PhpToJSObject($result, false, true, true);
+$APPLICATION->RestartBuffer();
+header('Content-Type: application/json');
+echo Main\Web\Json::encode($result);
 require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin_after.php');

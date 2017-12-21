@@ -44,4 +44,5 @@ $MESS["sender_mailing_chain_adm_action_stop"] = "Stop";
 $MESS["sender_mailing_chain_adm_action_stat"] = "sent";
 $MESS["sender_mailing_chain_adm_field_title"] = "Name";
 $MESS["sender_mailing_chain_adm_action_copy"] = "Copy";
+$MESS["sender_mailing_chain_adm_action_stats"] = "Statistics";
 ?>

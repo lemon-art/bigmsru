@@ -38,9 +38,22 @@ $arAllOptions = array(
 );
 
 $aTabs = array(
-	array("DIV" => "edit1", "TAB" => GetMessage("MAIN_TAB_SET"), "ICON" => "security_settings", "TITLE" => GetMessage("MAIN_TAB_TITLE_SET")),
-	array("DIV" => "edit2", "TAB" => GetMessage("MAIN_TAB_RIGHTS"), "ICON" => "security_settings", "TITLE" => GetMessage("MAIN_TAB_TITLE_RIGHTS")),
+	array(
+		"DIV" => "edit1",
+		"TAB" => GetMessage("MAIN_TAB_SET"),
+		"ICON" => "security_settings",
+		"TITLE" => GetMessage("MAIN_TAB_TITLE_SET"),
+	),
 );
+if ($USER->IsAdmin())
+{
+	$aTabs[] = array(
+		"DIV" => "edit2",
+		"TAB" => GetMessage("MAIN_TAB_RIGHTS"),
+		"ICON" => "security_settings",
+		"TITLE" => GetMessage("MAIN_TAB_TITLE_RIGHTS"),
+	);
+}
 $tabControl = new CAdminTabControl("tabControl", $aTabs);
 
 if($_SERVER["REQUEST_METHOD"]=="POST" && $_REQUEST["Update"].$_REQUEST["Apply"].$_REQUEST["RestoreDefaults"] != "" && $canWrite && check_bitrix_sessid())
@@ -68,10 +81,13 @@ if($_SERVER["REQUEST_METHOD"]=="POST" && $_REQUEST["Update"].$_REQUEST["Apply"].
 		}
 	}
 
-	ob_start();
-	$Update = $_REQUEST["Update"].$_REQUEST["Apply"];
-	require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/admin/group_rights2.php");
-	ob_end_clean();
+	if ($USER->IsAdmin())
+	{
+		ob_start();
+		$Update = $_REQUEST["Update"].$_REQUEST["Apply"];
+		require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/admin/group_rights2.php");
+		ob_end_clean();
+	}
 
 	if($_REQUEST["back_url_settings"] != "")
 	{
@@ -155,9 +171,14 @@ $tabControl->BeginNextTab();
 			<?=EndNote(); ?>
 		</td>
 	</tr>
-<?$tabControl->BeginNextTab();?>
-<?require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/admin/group_rights2.php");?>
-<?$tabControl->Buttons();?>
+<?
+if ($USER->IsAdmin())
+{
+	$tabControl->BeginNextTab();
+	require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/admin/group_rights2.php");
+}
+
+$tabControl->Buttons();?>
 	<input <?if(!$canWrite) echo "disabled" ?> type="submit" name="Update" value="<?=GetMessage("MAIN_SAVE")?>" title="<?=GetMessage("MAIN_OPT_SAVE_TITLE")?>">
 	<input <?if(!$canWrite) echo "disabled" ?> type="submit" name="Apply" value="<?=GetMessage("MAIN_OPT_APPLY")?>" title="<?=GetMessage("MAIN_OPT_APPLY_TITLE")?>">
 	<?if($_REQUEST["back_url_settings"] != "" ):?>

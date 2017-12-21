@@ -193,6 +193,10 @@
 	width: 100%;
 }
 
+.adm-loc-table-block-wrap .adm-list-table-cell {
+	padding: 7px 5px;
+}
+
 .adm-loc-middle-wrap {
 	/*cursor: e-resize;*/
 	float: left;

@@ -614,7 +614,7 @@ class RetailCrmHistory
                                         'CURRENCY' => \Bitrix\Currency\CurrencyManager::getBaseCurrency(),
                                         'LID' => $site,
                                         'BASE_PRICE' => $product['initialPrice'],
-                                        'NAME' => $product['name'] ? RCrmActions::fromJSON($product['name']) : $elem['NAME'],
+                                        'NAME' => $product['offer']['name'] ? RCrmActions::fromJSON($product['offer']['name']) : $elem['NAME'],
                                         'DETAIL_PAGE_URL' => $elem['URL']
                                     ));
                                 } else {
@@ -624,7 +624,6 @@ class RetailCrmHistory
                             }
                             if ($product['delete']) {
                                 $item->delete();
-                                $basket->save();
                                 
                                 continue;
                             }
@@ -653,8 +652,6 @@ class RetailCrmHistory
                                     $item->setField('DISCOUNT_VALUE', '');
                                 }
                             }
-
-                            $basket->save();  
                         }
                     }
                     
@@ -1186,16 +1183,16 @@ class RetailCrmHistory
         return $outputArray;
     }
     
-    public static function setProp($obj, $value = '', $prop)
+    public static function setProp($obj, $value = '', $prop = '')
     {
         if (!isset($obj)) {
             return false;
         }
-        if ($prop) {
+        if ($prop && $value) {
             $obj->setField($prop, $value);
-        } elseif ($value) {
+        } elseif ($value && !$prop) {
             $obj->setValue($value);
-        } else {
+        } elseif (!$value && !$prop) {
             $obj->delete();
         }
 

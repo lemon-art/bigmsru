@@ -8,7 +8,7 @@ class CAllIBlockSection
 	protected static $arSectionPathCache = array();
 	protected static $arSectionNavChainCache = array();
 
-	function GetFilter($arFilter=Array())
+	public static function GetFilter($arFilter=Array())
 	{
 		global $DB;
 		$arIBlockFilter = Array();
@@ -77,16 +77,16 @@ class CAllIBlockSection
 				$arSqlSearch[] = CIBlock::FilterCreate("BS.".$key, $val, "number", $cOperationType);
 				break;
 			case "SECTION_ID":
-				if(!is_array($val) && IntVal($val)<=0)
+				if(!is_array($val) && (int)$val<=0)
 					$arSqlSearch[] = CIBlock::FilterCreate("BS.IBLOCK_SECTION_ID", "", "number", $cOperationType, false);
 				else
 					$arSqlSearch[] = CIBlock::FilterCreate("BS.IBLOCK_SECTION_ID", $val, "number", $cOperationType);
 				break;
 			case "RIGHT_MARGIN":
-				$arSqlSearch[] = "BS.RIGHT_MARGIN ".($cOperationType=="N"?">":"<=").IntVal($val);
+				$arSqlSearch[] = "BS.RIGHT_MARGIN ".($cOperationType=="N"?">":"<=").(int)$val;
 				break;
 			case "LEFT_MARGIN":
-				$arSqlSearch[] = "BS.LEFT_MARGIN ".($cOperationType=="N"?"<":">=").IntVal($val);
+				$arSqlSearch[] = "BS.LEFT_MARGIN ".($cOperationType=="N"?"<":">=").(int)$val;
 				break;
 			case "LEFT_BORDER":
 				$arSqlSearch[] = CIBlock::FilterCreate("BS.LEFT_MARGIN", $val, "number", $cOperationType);
@@ -284,7 +284,7 @@ class CAllIBlockSection
 	///////////////////////////////////////////////////////////////////
 	public static function GetByID($ID)
 	{
-		return CIBlockSection::GetList(Array(), Array("ID"=>IntVal($ID)));
+		return CIBlockSection::GetList(Array(), Array("ID"=>(int)$ID));
 	}
 
 	///////////////////////////////////////////////////////////////////
@@ -300,6 +300,8 @@ class CAllIBlockSection
 		Unset($arFields["DEPTH_LEVEL"]);
 		Unset($arFields["LEFT_MARGIN"]);
 		Unset($arFields["RIGHT_MARGIN"]);
+
+		$strWarning = '';
 
 		$arIBlock = CIBlock::GetArrayByID($arFields["IBLOCK_ID"]);
 		if($bResizePictures && is_array($arIBlock))
@@ -362,7 +364,7 @@ class CAllIBlockSection
 					$arFields["PICTURE"]["tmp_name"] = $tmp_name;
 				}
 
-				CIBLock::FilterPicture($arFields["PICTURE"]["tmp_name"], array(
+				CIBlock::FilterPicture($arFields["PICTURE"]["tmp_name"], array(
 					"name" => "watermark",
 					"position" => $arDef["WATERMARK_FILE_POSITION"],
 					"type" => "file",
@@ -393,7 +395,7 @@ class CAllIBlockSection
 					$arFields["PICTURE"]["tmp_name"] = $tmp_name;
 				}
 
-				CIBLock::FilterPicture($arFields["PICTURE"]["tmp_name"], array(
+				CIBlock::FilterPicture($arFields["PICTURE"]["tmp_name"], array(
 					"name" => "watermark",
 					"position" => $arDef["WATERMARK_TEXT_POSITION"],
 					"type" => "text",
@@ -446,7 +448,7 @@ class CAllIBlockSection
 					$arFields["DETAIL_PICTURE"]["tmp_name"] = $tmp_name;
 				}
 
-				CIBLock::FilterPicture($arFields["DETAIL_PICTURE"]["tmp_name"], array(
+				CIBlock::FilterPicture($arFields["DETAIL_PICTURE"]["tmp_name"], array(
 					"name" => "watermark",
 					"position" => $arDef["WATERMARK_FILE_POSITION"],
 					"type" => "file",
@@ -477,7 +479,7 @@ class CAllIBlockSection
 					$arFields["DETAIL_PICTURE"]["tmp_name"] = $tmp_name;
 				}
 
-				CIBLock::FilterPicture($arFields["DETAIL_PICTURE"]["tmp_name"], array(
+				CIBlock::FilterPicture($arFields["DETAIL_PICTURE"]["tmp_name"], array(
 					"name" => "watermark",
 					"position" => $arDef["WATERMARK_TEXT_POSITION"],
 					"type" => "text",
@@ -811,6 +813,8 @@ class CAllIBlockSection
 		unset($arFields["DATE_CREATE"]);
 		unset($arFields["CREATED_BY"]);
 
+		$strWarning = '';
+
 		$arIBlock = CIBlock::GetArrayByID($db_record["IBLOCK_ID"]);
 		if($bResizePictures)
 		{
@@ -896,7 +900,7 @@ class CAllIBlockSection
 					$arFields["PICTURE"]["tmp_name"] = $tmp_name;
 				}
 
-				CIBLock::FilterPicture($arFields["PICTURE"]["tmp_name"], array(
+				CIBlock::FilterPicture($arFields["PICTURE"]["tmp_name"], array(
 					"name" => "watermark",
 					"position" => $arDef["WATERMARK_FILE_POSITION"],
 					"type" => "file",
@@ -927,7 +931,7 @@ class CAllIBlockSection
 					$arFields["PICTURE"]["tmp_name"] = $tmp_name;
 				}
 
-				CIBLock::FilterPicture($arFields["PICTURE"]["tmp_name"], array(
+				CIBlock::FilterPicture($arFields["PICTURE"]["tmp_name"], array(
 					"name" => "watermark",
 					"position" => $arDef["WATERMARK_TEXT_POSITION"],
 					"type" => "text",
@@ -980,7 +984,7 @@ class CAllIBlockSection
 					$arFields["DETAIL_PICTURE"]["tmp_name"] = $tmp_name;
 				}
 
-				CIBLock::FilterPicture($arFields["DETAIL_PICTURE"]["tmp_name"], array(
+				CIBlock::FilterPicture($arFields["DETAIL_PICTURE"]["tmp_name"], array(
 					"name" => "watermark",
 					"position" => $arDef["WATERMARK_FILE_POSITION"],
 					"type" => "file",
@@ -1012,7 +1016,7 @@ class CAllIBlockSection
 					$arFields["DETAIL_PICTURE"]["tmp_name"] = $tmp_name;
 				}
 
-				CIBLock::FilterPicture($arFields["DETAIL_PICTURE"]["tmp_name"], array(
+				CIBlock::FilterPicture($arFields["DETAIL_PICTURE"]["tmp_name"], array(
 					"name" => "watermark",
 					"position" => $arDef["WATERMARK_TEXT_POSITION"],
 					"type" => "text",
@@ -1027,7 +1031,11 @@ class CAllIBlockSection
 		$ipropTemplates = new \Bitrix\Iblock\InheritedProperty\SectionTemplates($db_record["IBLOCK_ID"], $db_record["ID"]);
 		if(is_set($arFields, "PICTURE"))
 		{
-			if(strlen($arFields["PICTURE"]["name"])<=0 && strlen($arFields["PICTURE"]["del"])<=0)
+			if (
+				(!isset($arFields["PICTURE"]["name"]) || $arFields["PICTURE"]["name"] === '')
+				&& (!isset($arFields["PICTURE"]["del"]) || $arFields["PICTURE"]["del"] === '')
+				&& !array_key_exists("description", $arFields["PICTURE"])
+			)
 			{
 				unset($arFields["PICTURE"]);
 			}
@@ -1046,7 +1054,11 @@ class CAllIBlockSection
 
 		if(is_set($arFields, "DETAIL_PICTURE"))
 		{
-			if(strlen($arFields["DETAIL_PICTURE"]["name"])<=0 && strlen($arFields["DETAIL_PICTURE"]["del"])<=0)
+			if (
+				(!isset($arFields["DETAIL_PICTURE"]["name"]) || $arFields["DETAIL_PICTURE"]["name"] === '')
+				&& (!isset($arFields["DETAIL_PICTURE"]["del"]) || $arFields["DETAIL_PICTURE"]["del"] === '')
+				&& !array_key_exists("description", $arFields["DETAIL_PICTURE"])
+			)
 			{
 				unset($arFields["DETAIL_PICTURE"]);
 			}
@@ -1140,6 +1152,7 @@ class CAllIBlockSection
 
 			if($bResort)
 			{
+				$move_distance = 0;
 				//Move inside the tree
 				if((isset($arFields["SORT"]) && $arFields["SORT"]!=$db_record["SORT"])
 					|| (isset($arFields["NAME"]) && $arFields["NAME"]!=$db_record["NAME"])
@@ -1351,7 +1364,7 @@ class CAllIBlockSection
 						//and we changed
 						//so need to recalc
 						if(!$arParent || $arParent["GLOBAL_ACTIVE"] == "Y")
-							$this->RecalcGlobalActiveFlag($db_record);
+							$this->RecalcGlobalActiveFlag($db_record, -$move_distance);
 					}
 				}
 			}
@@ -1464,7 +1477,7 @@ class CAllIBlockSection
 				$err = GetMessage("MAIN_BEFORE_DEL_ERR").' '.$arEvent['TO_NAME'];
 				if($ex = $APPLICATION->GetException())
 					$err .= ': '.$ex->GetString();
-				$APPLICATION->throwException($err);
+				$APPLICATION->ThrowException($err);
 				return false;
 			}
 		}
@@ -1474,14 +1487,21 @@ class CAllIBlockSection
 		{
 			CIBlock::_transaction_lock($s["IBLOCK_ID"]);
 
-			$iblockelements = CIBlockElement::GetList(Array(), Array("SECTION_ID"=>$ID, "SHOW_HISTORY"=>"Y", "IBLOCK_ID"=>$s["IBLOCK_ID"]), false, false, array("ID", "IBLOCK_ID", "WF_PARENT_ELEMENT_ID"));
+			$iblockelements = CIBlockElement::GetList(
+				array(),
+				array("SECTION_ID" => $ID, "SHOW_HISTORY" => "Y", "IBLOCK_ID" => $s["IBLOCK_ID"]),
+				false,
+				false,
+				array("ID", "IBLOCK_ID", "WF_PARENT_ELEMENT_ID", "IBLOCK_SECTION_ID")
+			);
 			while($iblockelement = $iblockelements->Fetch())
 			{
+				$elementId = (int)$iblockelement["ID"];
 				$strSql = "
 					SELECT IBLOCK_SECTION_ID
 					FROM b_iblock_section_element
 					WHERE
-						IBLOCK_ELEMENT_ID = ".$iblockelement["ID"]."
+						IBLOCK_ELEMENT_ID = ".$elementId."
 						AND IBLOCK_SECTION_ID<>".$ID."
 						AND ADDITIONAL_PROPERTY_ID IS NULL
 					ORDER BY
@@ -1490,13 +1510,16 @@ class CAllIBlockSection
 				$db_section_element = $DB->Query($strSql);
 				if($ar_section_element = $db_section_element->Fetch())
 				{
-					$DB->Query("
-						UPDATE b_iblock_element
-						SET IBLOCK_SECTION_ID=".$ar_section_element["IBLOCK_SECTION_ID"]."
-						WHERE ID=".IntVal($iblockelement["ID"])."
-					", false, $err_mess.__LINE__);
+					if ((int)$iblockelement["IBLOCK_SECTION_ID"] == $ID)
+					{
+						$DB->Query("
+							UPDATE b_iblock_element
+							SET IBLOCK_SECTION_ID=".$ar_section_element["IBLOCK_SECTION_ID"]."
+							WHERE ID=".$elementId."
+						", false, $err_mess . __LINE__);
+					}
 				}
-				elseif(IntVal($iblockelement["WF_PARENT_ELEMENT_ID"])<=0)
+				elseif((int)$iblockelement["WF_PARENT_ELEMENT_ID"]<=0)
 				{
 					if(!CIBlockElement::Delete($iblockelement["ID"]))
 						return false;
@@ -1506,9 +1529,10 @@ class CAllIBlockSection
 					$DB->Query("
 						UPDATE b_iblock_element
 						SET IBLOCK_SECTION_ID=NULL, IN_SECTIONS='N'
-						WHERE ID=".IntVal($iblockelement["ID"])."
+						WHERE ID=".$elementId."
 					", false, $err_mess.__LINE__);
 				}
+				unset($elementId);
 			}
 
 			$iblocksections = CIBlockSection::GetList(
@@ -1597,7 +1621,7 @@ class CAllIBlockSection
 			}
 
 			CIBlockSectionPropertyLink::DeleteBySection($ID);
-			$DB->Query("DELETE FROM b_iblock_section_element WHERE IBLOCK_SECTION_ID=".IntVal($ID), false, $err_mess.__LINE__);
+			$DB->Query("DELETE FROM b_iblock_section_element WHERE IBLOCK_SECTION_ID=".$ID, false, $err_mess.__LINE__);
 
 			if(CModule::IncludeModule("search"))
 				CSearch::DeleteIndex("iblock", "S".$ID);
@@ -1679,7 +1703,7 @@ class CAllIBlockSection
 				}
 			}
 
-			$res = $DB->Query("DELETE FROM b_iblock_section WHERE ID=".IntVal($ID), false, $err_mess.__LINE__);
+			$res = $DB->Query("DELETE FROM b_iblock_section WHERE ID=".$ID, false, $err_mess.__LINE__);
 
 			if($res)
 			{
@@ -1939,7 +1963,7 @@ class CAllIBlockSection
 	public static function TreeReSort($IBLOCK_ID, $ID=0, $cnt=0, $depth=0, $ACTIVE="Y")
 	{
 		global $DB;
-		$IBLOCK_ID = IntVal($IBLOCK_ID);
+		$IBLOCK_ID = (int)$IBLOCK_ID;
 
 		if($ID==0)
 		{
@@ -1953,10 +1977,10 @@ class CAllIBlockSection
 					b_iblock_section
 				SET
 					TIMESTAMP_X=".($DB->type=="ORACLE"?"NULL":"TIMESTAMP_X")."
-					,RIGHT_MARGIN=".IntVal($cnt)."
-					,LEFT_MARGIN=".IntVal($cnt)."
+					,RIGHT_MARGIN=".(int)$cnt."
+					,LEFT_MARGIN=".(int)$cnt."
 				WHERE
-					ID=".IntVal($ID)
+					ID=".(int)$ID
 			);
 		}
 
@@ -1964,7 +1988,7 @@ class CAllIBlockSection
 			SELECT BS.ID, BS.ACTIVE
 			FROM b_iblock_section BS
 			WHERE BS.IBLOCK_ID = ".$IBLOCK_ID."
-			AND ".($ID>0? "BS.IBLOCK_SECTION_ID=".IntVal($ID): "BS.IBLOCK_SECTION_ID IS NULL")."
+			AND ".($ID>0? "BS.IBLOCK_SECTION_ID=".(int)$ID: "BS.IBLOCK_SECTION_ID IS NULL")."
 			ORDER BY BS.SORT, BS.NAME
 		";
 
@@ -1983,11 +2007,11 @@ class CAllIBlockSection
 				b_iblock_section
 			SET
 				TIMESTAMP_X=".($DB->type=="ORACLE"?"NULL":"TIMESTAMP_X")."
-				,RIGHT_MARGIN=".IntVal($cnt)."
-				,DEPTH_LEVEL=".IntVal($depth)."
+				,RIGHT_MARGIN=".(int)$cnt."
+				,DEPTH_LEVEL=".(int)$depth."
 				,GLOBAL_ACTIVE='".$ACTIVE."'
 			WHERE
-				ID=".IntVal($ID)
+				ID=".(int)$ID
 		);
 
 		return $cnt+1;
@@ -2133,6 +2157,7 @@ class CAllIBlockSection
 			"EXTERNAL_ID"		=>$arFilter["EXTERNAL_ID"],
 			"ACTIVE"		=>$arFilter["ACTIVE"],
 
+			"CNT_ACTIVE"		=>$arFilter["CNT_ACTIVE"],
 			"CNT_ALL"		=>$arFilter["CNT_ALL"],
 			"ELEMENT_SUBSECTIONS"	=>$arFilter["ELEMENT_SUBSECTIONS"],
 		);
@@ -2229,7 +2254,7 @@ class CAllIBlockSection
 	///////////////////////////////////////////////////////////////////
 	function GetSectionElementsCount($ID, $arFilter=Array())
 	{
-		global $DB, $USER;
+		global $DB;
 
 		$arJoinProps = array();
 		$bJoinFlatProp = false;
@@ -2341,22 +2366,36 @@ class CAllIBlockSection
 		return $res["CNT"];
 	}
 
-	function _check_rights_sql($min_permission)
+	protected static function _check_rights_sql($min_permission, $permissionsBy = null)
 	{
 		global $DB, $USER;
 		$min_permission = (strlen($min_permission)==1) ? $min_permission : "R";
 
-		if(is_object($USER))
+		if ($permissionsBy !== null)
+			$permissionsBy = (int)$permissionsBy;
+		if ($permissionsBy < 0)
+			$permissionsBy = null;
+
+		if ($permissionsBy !== null)
 		{
-			$iUserID = intval($USER->GetID());
-			$strGroups = $USER->GetGroups();
-			$bAuthorized = $USER->IsAuthorized();
+			$iUserID = $permissionsBy;
+			$strGroups = implode(',', CUser::GetUserGroup($permissionsBy));
+			$bAuthorized = false;
 		}
 		else
 		{
-			$iUserID = 0;
-			$strGroups = "2";
-			$bAuthorized = false;
+			if (is_object($USER))
+			{
+				$iUserID = (int)$USER->GetID();
+				$strGroups = $USER->GetGroups();
+				$bAuthorized = $USER->IsAuthorized();
+			}
+			else
+			{
+				$iUserID = 0;
+				$strGroups = "2";
+				$bAuthorized = false;
+			}
 		}
 
 		$stdPermissions = "
@@ -2382,7 +2421,7 @@ class CAllIBlockSection
 		if($operation)
 		{
 			$acc = new CAccess;
-			$acc->UpdateCodes();
+			$acc->UpdateCodes($permissionsBy !== null ? array('USER_ID' => $permissionsBy) : false);
 		}
 
 		if($operation == "section_read")
@@ -2447,11 +2486,16 @@ class CAllIBlockSection
 
 		$bCheckPermissions = !array_key_exists("CHECK_PERMISSIONS", $arFilter) || $arFilter["CHECK_PERMISSIONS"]!=="N";
 		$bIsAdmin = is_object($USER) && $USER->IsAdmin();
-		if($bCheckPermissions && !$bIsAdmin)
+		$permissionsBy = null;
+		if ($bCheckPermissions && isset($arFilter['PERMISSIONS_BY']))
 		{
-			$min_permission = (strlen($arFilter["MIN_PERMISSION"])==1) ? $arFilter["MIN_PERMISSION"] : "R";
-			$arSqlSearch[] = CIBlockSection::_check_rights_sql($min_permission);
+			$permissionsBy = (int)$arFilter['PERMISSIONS_BY'];
+			if ($permissionsBy < 0)
+				$permissionsBy = null;
 		}
+		if($bCheckPermissions && ($permissionsBy !== null || !$bIsAdmin))
+			$arSqlSearch[] = self::_check_rights_sql($arFilter["MIN_PERMISSION"], $permissionsBy);
+		unset($permissionsBy);
 
 		$strSqlSearch = "";
 		foreach($arSqlSearch as $i=>$strSearch)
@@ -2468,7 +2512,7 @@ class CAllIBlockSection
 
 		$res = $DB->Query($strSql, false, "FILE: ".__FILE__."<br> LINE: ".__LINE__);
 		$res_cnt = $res->Fetch();
-		return IntVal($res_cnt["C"]);
+		return (int)$res_cnt["C"];
 	}
 
 	function UserTypeRightsCheck($entity_id)
@@ -2481,9 +2525,13 @@ class CAllIBlockSection
 			return "D";
 	}
 
-	function RecalcGlobalActiveFlag($arSection)
+	function RecalcGlobalActiveFlag($arSection, $distance = 0)
 	{
 		global $DB;
+
+		$distance = (int)$distance;
+		$arSection['LEFT_MARGIN'] += $distance;
+		$arSection['RIGHT_MARGIN'] += $distance;
 
 		//Make all children globally active
 		$DB->Query("
@@ -2563,5 +2611,3 @@ class CAllIBlockSection
 		return self::$arSectionCodeCache[$sectionId];
 	}
 }
-
-?>

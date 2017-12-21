@@ -19,4 +19,7 @@ $MESS["BX_SALE_DISCOUNT_ERR_EMPTY_RULE_ID_EXT_DISCOUNT"] = "Отсутствуе
 $MESS["BX_SALE_DISCOUNT_ERR_EMPTY_RULE_ID_SALE_DISCOUNT"] = "Отсутствует идентификатор записи о применении правила корзины";
 $MESS["BX_SALE_DISCOUNT_ERR_BAD_USE_MODE"] = "Неизвестный режим расчета скидок";
 $MESS["BX_SALE_DISCOUNT_ERR_SALE_DISCOUNT_MODULES_ABSENT"] = "Невозможно пересчитать правило, использованное в заказе - отсутствуют требуемые модули";
+$MESS["BX_SALE_DISCOUNT_MESS_SIMPLE_DESCRIPTION_BASKET"] = "Изменение стоимости корзины";
+$MESS["BX_SALE_DISCOUNT_MESS_SIMPLE_DESCRIPTION_DELIVERY"] = "Изменение стоимости доставки";
+$MESS["BX_SALE_DISCOUNT_MESS_SIMPLE_DESCRIPTION_UNKNOWN"] = "Неизвестное правило";
 ?>

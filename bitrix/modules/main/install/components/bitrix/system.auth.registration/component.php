@@ -19,6 +19,11 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
 global $USER_FIELD_MANAGER;
 
+if(!is_array($arParams["~AUTH_RESULT"]) && $arParams["~AUTH_RESULT"] <> '')
+{
+	$arParams["~AUTH_RESULT"] = array("MESSAGE" => $arParams["~AUTH_RESULT"], "TYPE" => "ERROR");
+}
+
 $def_group = COption::GetOptionString("main", "new_user_registration_def_group", "");
 if($def_group!="")
 {
@@ -112,6 +117,10 @@ if ($arResult["USE_CAPTCHA"] == "Y")
 {
 	$arResult["CAPTCHA_CODE"] = htmlspecialcharsbx($APPLICATION->CaptchaGetCode());
 }
+
+$arResult["AGREEMENT_ORIGINATOR_ID"] = "main/reg";
+$arResult["AGREEMENT_ORIGIN_ID"] = "register";
+$arResult["AGREEMENT_INPUT_NAME"] = "USER_AGREEMENT";
 
 $arResult["EMAIL_REQUIRED"] = (COption::GetOptionString("main", "new_user_email_required", "Y") <> "N");
 $arResult["USE_EMAIL_CONFIRMATION"] = (COption::GetOptionString("main", "new_user_registration_email_confirmation", "N") == "Y" && $arResult["EMAIL_REQUIRED"]? "Y" : "N");

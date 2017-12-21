@@ -314,6 +314,8 @@ function UpdateActivateCoupon($coupon, &$errorMessage)
 		UpdateSetOption("PARAM_MAX_SITES", intval($arContent["MAX_SITES"]));
 	if (isset($arContent["MAX_USERS"]))
 		UpdateSetOption("PARAM_MAX_USERS", intval($arContent["MAX_USERS"]));
+    if (isset($arContent["MAX_USERS_STRING"]))
+        UpdateSetOption("~PARAM_MAX_USERS", $arContent["MAX_USERS_STRING"]);
 	if (isset($arContent["ISLC"]))
 	{
 		if (is_writable($_SERVER['DOCUMENT_ROOT']."/bitrix/license_key.php"))

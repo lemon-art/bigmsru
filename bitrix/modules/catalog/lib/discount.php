@@ -43,7 +43,6 @@ Loc::loadMessages(__FILE__);
  * <li> NOTES string(255) optional
  * <li> CONDITIONS string optional
  * <li> UNPACK string optional
- * <li> COUPON reference to {@link \Bitrix\Catalog\DiscountCoupon}
  * <li> CREATED_BY_USER reference to {@link \Bitrix\Main\UserTable}
  * <li> MODIFIED_BY_USER reference to {@link \Bitrix\Main\UserTable}
  * <li> RESTRICTION reference to {@link \Bitrix\Catalog\DiscountRestriction}
@@ -225,26 +224,21 @@ class DiscountTable extends Main\Entity\DataManager
 				'title' => Loc::getMessage('DISCOUNT_ENTITY_CONDITIONS_LIST_FIELD')
 			)),
 			'UNPACK' => new Main\Entity\TextField('UNPACK', array()),
-			'COUPON' => new Main\Entity\ReferenceField(
-				'COUPON',
-				'Bitrix\Catalog\DiscountCoupon',
-				array('=this.ID' => 'ref.DISCOUNT_ID'),
-				array('join_type' => 'LEFT')
-			),
+			'SALE_ID' => new Main\Entity\IntegerField('SALE_ID'),
 			'CREATED_BY_USER' => new Main\Entity\ReferenceField(
 				'CREATED_BY_USER',
-				'Bitrix\Main\User',
+				'\Bitrix\Main\User',
 				array('=this.CREATED_BY' => 'ref.ID')
 			),
 			'MODIFIED_BY_USER' => new Main\Entity\ReferenceField(
 				'MODIFIED_BY_USER',
-				'Bitrix\Main\User',
+				'\Bitrix\Main\User',
 				array('=this.MODIFIED_BY' => 'ref.ID')
 			),
-			'RESTRICTION' => new Main\Entity\ReferenceField(
-				'RESTRICTIONS',
-				'Bitrix\Catalog\DiscountRestriction',
-				array('=this.ID' => 'ref.DISCOUNT_ID')
+			'SALE_DISCOUNT' => new Main\Entity\ReferenceField(
+				'SALE_DISCOUNT',
+				'Bitrix\Sale\Internals\DiscountTable',
+				array('=this.SALE_ID' => 'ref.ID')
 			)
 		);
 	}

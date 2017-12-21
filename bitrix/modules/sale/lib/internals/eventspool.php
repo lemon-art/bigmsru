@@ -1,45 +1,66 @@
 <?php
 namespace Bitrix\Sale\Internals;
 
-use Bitrix\Sale\Order;
-
-class EventsPool
+class EventsPool extends PoolBase
 {
 	protected static $events = array();
 
-
-	public static function getEvents(Order $order)
+	public static function getEvents($code)
 	{
-		if (isset(static::$events[$order->getInternalId()]))
+		$resultList = array();
+		$list = parent::getPoolByCode($code);
+
+		if (is_array($list) && !empty($list))
 		{
-			return static::$events[$order->getInternalId()];
+			foreach ($list as $eventName => $eventData)
+			{
+				$resultList[$eventName] = reset($eventData);
+			}
+
+			$list = $resultList;
 		}
 
-		return null;
+		return $list;
+	}
+
+	public static function getEventsByType($code, $type)
+	{
+		$data = parent::get($code, $type);
+		if (!empty($data))
+		{
+			$data = reset($data);
+		}
+
+		return $data;
 	}
 
 	/**
-	 * @param Order $order
+	 * @param $code
 	 * @param $type
 	 * @param $event
 	 */
-	public static function addEvent(Order $order, $type, $event)
+	public static function addEvent($code, $type, $event)
 	{
-		static::$events[$order->getInternalId()][$type] = $event;
+		parent::add($code, $type, $event);
 	}
 
 	/**
-	 * @param Order $order
+	 * @param $code
+	 * @param $type
+	 *
+	 * @return bool
 	 */
-	public static function resetEvents(Order $order = null)
+	public static function isEventTypeExists($code, $type)
 	{
-		if ($order !== null)
-		{
-			unset(static::$events[$order->getInternalId()]);
-		}
-		else
-		{
-			static::$events = array();
-		}
+		return parent::isTypeExists($code, $type);
+	}
+
+	/**
+	 * @param null $code
+	 * @param null $type
+	 */
+	public static function resetEvents($code = null, $type = null)
+	{
+		parent::resetPool($code, $type);
 	}
 }

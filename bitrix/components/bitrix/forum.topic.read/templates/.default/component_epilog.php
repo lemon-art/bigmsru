@@ -10,10 +10,7 @@
 $request = \Bitrix\Main\Context::getCurrent()->getRequest();
 if ($arParams['AJAX_POST'] == 'Y' && $arParams['ACTION'] == 'REPLY')
 {
-	$response = str_replace(array("\r\n", "\n", "\t"), "", ob_get_clean());
-
-	$FHParser = new CForumSimpleHTMLParser($response);
-
+	$FHParser = new CForumSimpleHTMLParser(ob_get_clean());
 	$statusMessage = $FHParser->getTagHTML('div[class=forum-note-box]');
 	$JSResult = array("statusMessage" => $statusMessage);
 
@@ -109,7 +106,6 @@ if ($arParams['AJAX_POST'] == 'Y' && $arParams['ACTION'] == 'REPLY')
 	{
 		header('Content-Type:application/json; charset=UTF-8');
 		echo \Bitrix\Main\Web\Json::encode($JSResult);
-
 	}
 	else
 	{

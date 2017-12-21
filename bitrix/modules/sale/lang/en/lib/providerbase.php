@@ -1,5 +1,6 @@
 <?
 $MESS["SALE_PROVIDER_RESERVE_SHIPMENT_ITEM_QUANTITY_NOT_ENOUGH"] = "Insufficient stock";
+$MESS["SALE_PROVIDER_RESERVE_SHIPMENT_ITEM_WRONG_AVAILABLE_QUANTITY"] = "There are no sufficient quantity of \"#PRODUCT_NAME#\" in stock.";
 $MESS["SALE_PROVIDER_RESERVE_BASKET_ITEM_ERROR"] = "Error reserving a cart item";
 $MESS["SALE_PROVIDER_RESERVE_BASKET_ITEM_WRONG_QUANTITY"] = "Incorrect reserved product quantity";
 $MESS["SALE_PROVIDER_RESERVE_BASKET_ITEM_QUANTITY_NOT_ENOUGH"] = "Quantity of product items to reserve exceeds that in the cart";

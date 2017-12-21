@@ -18,17 +18,7 @@ require_once(str_replace(array("\\", "//"), "/", dirname(__FILE__)."/functions.p
 
 $arParams["UPLOADER_ID"] = getImageUploaderId(); // Unique ID of the Image uploader on the page
 
-if (isset($_REQUEST["view_mode"]))
-{
-	$arParams["VIEW_MODE"] = $_REQUEST["view_mode"] == "form" ? "form" : "applet";
-	CUserOptions::SetOption('photogallery', "view_mode_".$arParams["UPLOADER_ID"], $arParams["VIEW_MODE"]);
-	return LocalRedirect($arParams["ACTION_URL"]);
-}
-else
-{
-	$arParams["VIEW_MODE"] = CUserOptions::GetOption('photogallery', "view_mode_".$arParams["UPLOADER_ID"], "form");
-}
-$arParams["VIEW_MODE"] = $arParams["VIEW_MODE"] == "form" ? "form" : "applet";
+$arParams["VIEW_MODE"] = "form";
 
 if ($arParams["USE_WATERMARK"] == "Y")
 {
@@ -90,28 +80,7 @@ if ($arParams["BEHAVIOUR"] == "USER" && empty($arParams["USER_ALIAS"]))
 // Include updater class
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/uploader.php");
 
-// Check uploader type: Java/ActiveX - default
-if (!isset($arParams["UPLOADER_TYPE"]))
-{
-	$arParams["UPLOADER_TYPE"] = 'form';
-}
-
-if (ini_get_bool("magic_quotes_gpc") && $arParams["UPLOADER_TYPE"] == 'flash')
-{
-	if ($USER->CanDoOperation('edit_php'))
-	{
-		$arParams["SHOW_MAGIC_QUOTES_NOTICE_ADMIN"] = true;
-	}
-	else
-	{
-		$arParams["SHOW_MAGIC_QUOTES_NOTICE"] = true;
-		$arParams["UPLOADER_TYPE"] = 'applet';
-	}
-}
-
-// Check layout
-if ($arParams["UPLOADER_TYPE"] == 'applet')
-	$arParams["APPLET_LAYOUT"] = $arParams["APPLET_LAYOUT"] == 'simple' ? 'simple' : 'extended';
+$arParams["UPLOADER_TYPE"] = 'form';
 
 /********************************************************************
 				Input params
@@ -192,15 +161,6 @@ if ($arParams["UPLOADER_TYPE"] == 'applet')
 	$arParams["MODERATION"] = ($arParams["MODERATION"] == "Y" ? "Y" : "N");
 	$arParams["PUBLIC_BY_DEFAULT"] = ($arParams["SHOW_PUBLIC"] == "N" || $arParams["PUBLIC_BY_DEFAULT"] != "N" ? "Y" : "N");
 	$arParams["APPROVE_BY_DEFAULT"] = ($arParams["APPROVE_BY_DEFAULT"] == "N" ? "N" : "Y");
-
-	$arParams["UPLOADER_HEIGHT"] = intVal($arParams["UPLOADER_HEIGHT"]);
-	if (intVal($arParams["UPLOADER_HEIGHT"]) <= 0)
-	{
-		if (($arParams["UPLOADER_TYPE"] == 'applet' && $arParams["APPLET_LAYOUT"] == 'simple') || $arParams["UPLOADER_TYPE"] == 'flash')
-			$arParams["UPLOADER_HEIGHT"] = 400;
-		else
-			$arParams["UPLOADER_HEIGHT"] = 500;
-	}
 
 	// Sizes
 	$arParams['SIZES'] = array(1280, 1024, 800);
@@ -484,7 +444,11 @@ $params = array(
 	)
 );
 
-$arParams["bxu"] = (class_exists("CFileUploader") ? new CFileUploader($params, "get") : false);
+if (class_exists("CFileUploader"))
+{
+	$arParams["bxu"] = new CFileUploader($params, "get");
+	$arParams["bxu"]->checkPost();
+}
 /********************************************************************
 				/Default params
 ********************************************************************/
@@ -494,37 +458,8 @@ $arParams["bxu"] = (class_exists("CFileUploader") ? new CFileUploader($params, "
 if (($_REQUEST["save_upload"] == "Y" && $_REQUEST["uploader_redirect"] != "Y" &&
 		$_SERVER['REQUEST_METHOD'] == "POST" && !empty($_POST)) || isset($_POST["PackageGuid"]))
 {
-	if (!(is_object($arParams["bxu"]) && $arParams["bxu"]->checkPost()) && $arParams["UPLOADER_TYPE"] == 'flash' && $arParams["VIEW_MODE"] == 'applet')
-	{
-		CUtil::JSPostUnEscape();
-		CFlashUploader::UploadFileHandler("handleFile", array(
-			'convCount' => count($arConverters),
-			'pathToTmp' => $arParams["PATH_TO_TMP"],
-			'onBeforeUpload' => 'onBeforeUpload',
-			'onAfterUpload' => 'onAfterUpload',
-			'arParams' => $arParams,
-			'~arResult' => array("SECTION" => $arResult["SECTION"], "URL" => $arResult["URL"], "GALLERY" => $arResult["GALLERY"]),
-			'sessid' => bitrix_sessid()
-		));
-	}
-	elseif($arParams["UPLOADER_TYPE"] == 'applet' && $arParams["VIEW_MODE"] == 'applet')
-	{
-		CUtil::JSPostUnEscape();
-		CImageUploader::UploadFileHandler('handleFile', array(
-			'convCount' => count($arConverters),
-			'pathToTmp' => $arParams["PATH_TO_TMP"],
-			'onBeforeUpload' => 'onBeforeUpload',
-			'onAfterUpload' => 'onAfterUpload',
-			'arParams' => $arParams,
-			'~arResult' => array("SECTION" => $arResult["SECTION"], "URL" => $arResult["URL"], "GALLERY" => $arResult["GALLERY"]),
-			'sessid' => bitrix_sessid()
-		));
-	}
-	else // Simple form
-	{
-		//RestartBuffer and DIE inside!
-		simpleUploadHandler($arParams, array("SECTION" => $arResult["SECTION"], "URL" => $arResult["URL"], "GALLERY" => $arResult["GALLERY"]));
-	}
+	//RestartBuffer and DIE inside!
+	simpleUploadHandler($arParams, array("SECTION" => $arResult["SECTION"], "URL" => $arResult["URL"], "GALLERY" => $arResult["GALLERY"]));
 	return;
 }
 /********************************************************************
@@ -589,8 +524,6 @@ CUtil::InitJSCore(array('window', 'ajax'));
 
 // Clean saved data before show
 CImageUploader::CleanSavedData();
-
-$oPhoto::CheckUploaderType($arParams["UPLOADER_TYPE"]);
 
 $this->IncludeComponentTemplate();
 /********************************************************************

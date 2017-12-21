@@ -48,8 +48,11 @@ if ($arParams["UID"] > 0)
 	{
 		while (list($key, $val) = each($ar_user))
 		{
-			${"str_".$key} = htmlspecialcharsbx($val);
-			$arResult["str_".$key] = htmlspecialcharsbx($val);
+			if (is_string($val))
+			{
+				${"str_".$key} = htmlspecialcharsbx($val);
+				$arResult["str_".$key] = htmlspecialcharsbx($val);
+			}
 		}
 		$arResult["USER"] = $ar_user;
 

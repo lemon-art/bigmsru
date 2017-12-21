@@ -212,7 +212,7 @@ $MESS["admin_lib_filter_sett_common"] = "Доступен всем:";
 $MESS["admin_lib_filter_sett_name"] = "Название фильтра:";
 $MESS["admin_lib_filter_new"] = "Создать новый фильтр";
 $MESS["admin_lib_menu_marketplace"] = "Marketplace";
-$MESS["admin_lib_menu_marketplace_title"] = "Marketplace";
+$MESS["admin_lib_menu_marketplace_title"] = "Маркетплейс";
 $MESS["admin_lib_filter_savedel_title"] = "Действия с фильтром";
 $MESS["admin_lib_filter_goto_filter"] = "Перейти к сохраненному фильтру";
 $MESS["admin_lib_calend_period_title"] = "Выбор периода";
@@ -222,4 +222,5 @@ $MESS["admin_lib_required"] = "Обязательные поля";
 $MESS["admin_lib_menu_marketing"] = "Маркетинг";
 $MESS["admin_lib_sso_auth"] = "Авторизация";
 $MESS["admin_lib_sso_auth_title"] = "Для отображения списка сайтов необходимо авторизоваться с вашим аккаунтом Битрикс24 и разрешить доступ к списку сайтов.";
+$MESS["admin_lib_grid_page_sizes_all_title"] = "Все";
 ?>

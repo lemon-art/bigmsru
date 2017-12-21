@@ -87,12 +87,18 @@ else
 	$arComponentVariables[] = "rss";
 }
 
+/* Compatibility with deleted DETAIL_STRICT_SECTION_CHECK */
+if (isset($arParams["STRICT_SECTION_CHECK"]))
+	$arParams["DETAIL_STRICT_SECTION_CHECK"] = $arParams["STRICT_SECTION_CHECK"];
+else
+	$arParams["STRICT_SECTION_CHECK"] = $arParams["DETAIL_STRICT_SECTION_CHECK"];
+
 if($arParams["SEF_MODE"] == "Y")
 {
 	$arVariables = array();
 
-	$arUrlTemplates = CComponentEngine::MakeComponentUrlTemplates($arDefaultUrlTemplates404, $arParams["SEF_URL_TEMPLATES"]);
-	$arVariableAliases = CComponentEngine::MakeComponentVariableAliases($arDefaultVariableAliases404, $arParams["VARIABLE_ALIASES"]);
+	$arUrlTemplates = CComponentEngine::makeComponentUrlTemplates($arDefaultUrlTemplates404, $arParams["SEF_URL_TEMPLATES"]);
+	$arVariableAliases = CComponentEngine::makeComponentVariableAliases($arDefaultVariableAliases404, $arParams["VARIABLE_ALIASES"]);
 
 	$engine = new CComponentEngine($this);
 	if (CModule::IncludeModule('iblock'))
@@ -113,12 +119,13 @@ if($arParams["SEF_MODE"] == "Y")
 		$b404 = true;
 	}
 
-	if(
-		$componentPage == "section"
-		&& isset($arVariables["SECTION_ID"])
-		&& intval($arVariables["SECTION_ID"])."" !== $arVariables["SECTION_ID"]
-	)
-		$b404 = true;
+	if($componentPage == "section")
+	{
+		if (isset($arVariables["SECTION_ID"]))
+			$b404 |= (intval($arVariables["SECTION_ID"])."" !== $arVariables["SECTION_ID"]);
+		else
+			$b404 |= !isset($arVariables["SECTION_CODE"]);
+	}
 
 	if($b404 && CModule::IncludeModule('iblock'))
 	{
@@ -140,7 +147,7 @@ if($arParams["SEF_MODE"] == "Y")
 		}
 	}
 
-	CComponentEngine::InitComponentVariables($componentPage, $arComponentVariables, $arVariableAliases, $arVariables);
+	CComponentEngine::initComponentVariables($componentPage, $arComponentVariables, $arVariableAliases, $arVariables);
 
 	$arResult = array(
 		"FOLDER" => $arParams["SEF_FOLDER"],
@@ -151,8 +158,8 @@ if($arParams["SEF_MODE"] == "Y")
 }
 else
 {
-	$arVariableAliases = CComponentEngine::MakeComponentVariableAliases($arDefaultVariableAliases, $arParams["VARIABLE_ALIASES"]);
-	CComponentEngine::InitComponentVariables(false, $arComponentVariables, $arVariableAliases, $arVariables);
+	$arVariableAliases = CComponentEngine::makeComponentVariableAliases($arDefaultVariableAliases, $arParams["VARIABLE_ALIASES"]);
+	CComponentEngine::initComponentVariables(false, $arComponentVariables, $arVariableAliases, $arVariables);
 
 	$componentPage = "";
 
@@ -185,7 +192,7 @@ else
 
 	$arResult = array(
 		"FOLDER" => "",
-		"URL_TEMPLATES" => Array(
+		"URL_TEMPLATES" => array(
 			"news" => htmlspecialcharsbx($APPLICATION->GetCurPage()),
 			"section" => htmlspecialcharsbx($APPLICATION->GetCurPage()."?".$arVariableAliases["SECTION_ID"]."=#SECTION_ID#"),
 			"detail" => htmlspecialcharsbx($APPLICATION->GetCurPage()."?".$arVariableAliases["ELEMENT_ID"]."=#ELEMENT_ID#"),
@@ -206,6 +213,4 @@ if($componentPage=="search")
 	$BX_NEWS_SECTION_URL = $arResult["FOLDER"].$arResult["URL_TEMPLATES"]["section"];
 	AddEventHandler("search", "OnSearchGetURL", array("CNewsTools","OnSearchGetURL"), 20);
 }
-$this->IncludeComponentTemplate($componentPage);
-
-?>
+$this->includeComponentTemplate($componentPage);

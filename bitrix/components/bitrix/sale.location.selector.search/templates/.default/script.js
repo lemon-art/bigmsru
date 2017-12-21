@@ -55,8 +55,11 @@ if(typeof BX.Sale.component.location.selector.search == 'undefined' && typeof BX
 							itemData.PATH = path;
 						}else
 							itemData.PATH = '';
+	
+						var query = '';
 
-						var query = this.vars.lastQuery.QUERY;
+						if(this.vars && this.vars.lastQuery && this.vars.lastQuery.QUERY)
+							query = this.vars.lastQuery.QUERY;
 
 						if(BX.type.isNotEmptyString(query)){
 							var chunks = [];
@@ -165,6 +168,18 @@ if(typeof BX.Sale.component.location.selector.search == 'undefined' && typeof BX
 		// location id is just a value in terms of autocomplete
 		setValueByLocationId: function(id, autoSelect){
 			BX.Sale.component.location.selector.search.superclass.setValue.apply(this, [id, autoSelect]);
+		},
+
+		setValueByLocationIds: function(locationsData){
+			if(locationsData.IDS)
+			{
+				this.displayPage(
+					{
+						'VALUE': locationsData.IDS,
+						'order': {'TYPE_ID': 'ASC', 'NAME.NAME': 'ASC'}
+					}
+				);
+			}
 		},
 
 		setValueByLocationCode: function(code, autoSelect){
@@ -331,7 +346,7 @@ if(typeof BX.Sale.component.location.selector.search == 'undefined' && typeof BX
 			if(BX.type.isNotEmptyString(this.opts.query.FILTER.SITE_ID))
 				filter['=SITE_ID'] = this.opts.query.FILTER.SITE_ID;
 
-			return {
+			var result = {
 				'select': {
 					'VALUE': 'ID',
 					'DISPLAY': 'NAME.NAME',
@@ -344,6 +359,11 @@ if(typeof BX.Sale.component.location.selector.search == 'undefined' && typeof BX
 				'filter': filter,
 				'version': '2'
 			};
+
+			if(typeof request['order'] != 'undefined')
+				result['order'] = request.order;
+
+			return result;
 		},
 
 		refineResponce: function(responce, request){

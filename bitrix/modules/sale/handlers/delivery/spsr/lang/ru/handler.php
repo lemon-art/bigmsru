@@ -2,7 +2,7 @@
 $MESS["SALE_DLV_SRV_SPSR_TITLE"] = "СПСР-ЭКСПРЕСС";
 $MESS["SALE_DLV_SRV_SPSR_DESCRIPTION"] = "#A1#СПСР-ЭКСПРЕСС#A2# предлагает широкий спектр услуг по экспресс-доставке документов, почты и грузов по всей России и за границу.";
 $MESS["SALE_DLV_SRV_SPSR_MAIN_TITLE"] = "Настройки";
-$MESS["SALE_DLV_SRV_SPSR_MAIN_DSCR"] = "Настрйки службы доставки";
+$MESS["SALE_DLV_SRV_SPSR_MAIN_DSCR"] = "Настройки службы доставки";
 $MESS["SALE_DLV_SRV_SPSR_LOGIN"] = "Логин";
 $MESS["SALE_DLV_SRV_SPSR_PASS"] = "Пароль";
 $MESS["SALE_DLV_SRV_SPSR_ICN"] = "Индивидуальный клиентский номер";
@@ -58,7 +58,8 @@ $MESS["SALE_DLV_SRV_SPSR_NATURE_22"] = "Техника и электроника
 $MESS["SALE_DLV_SRV_SPSR_NATURE_23"] = "Опасные грузы";
 $MESS["SALE_DLV_SRV_SPSR_NATURE_24"] = "Товары народного потребления (без техники, партия)";
 $MESS["SALE_DLV_SRV_SPSR_AMOUNT_CHECK"] = "Страхование объявления / объявленная стоимость";
-$MESS["SALE_DLV_SRV_SPSR_AMOUNT_CHECK_0"] = "Страхование объявления";
-$MESS["SALE_DLV_SRV_SPSR_AMOUNT_CHECK_1"] = "Объявленная стоимость";
+$MESS["SALE_DLV_SRV_SPSR_AMOUNT_CHECK_1"] = "Страхование объявления";
+$MESS["SALE_DLV_SRV_SPSR_AMOUNT_CHECK_0"] = "Объявленная стоимость";
 $MESS["SALE_DLV_SRV_SPSR_AMOUNT_CHECK__1"] = "Не страховать";
+$MESS["SALE_DLV_SRV_SPSR_BV_AUTH"] = "Авторизация службы доставки СПСР (для холдинга)";
 ?>

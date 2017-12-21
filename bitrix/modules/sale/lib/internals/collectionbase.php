@@ -11,11 +11,18 @@ use Bitrix\Main\Localization\Loc;
 
 Loc::loadMessages(__FILE__);
 
+/**
+ * Class CollectionBase
+ * @package Bitrix\Sale\Internals
+ */
 abstract class CollectionBase
 	implements \ArrayAccess, \Countable, \IteratorAggregate
 {
 	protected $collection = array();
 
+	/**
+	 * @return \ArrayIterator
+	 */
 	public function getIterator()
 	{
 		return new \ArrayIterator($this->collection);
@@ -115,5 +122,13 @@ abstract class CollectionBase
 		return reset($this->collection);
 	}
 
-
+	/**
+	 * Checks if collection is empty.
+	 *
+	 * @return bool
+	 */
+	public function isEmpty()
+	{
+		return empty($this->collection);
+	}
 }

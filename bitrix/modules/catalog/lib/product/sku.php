@@ -25,6 +25,8 @@ class Sku
 	protected static $changeActive = array();
 	protected static $currentActive = array();
 
+	private static $useCatalogTab = null;
+
 	/**
 	 * Enable automatic update product available.
 	 *
@@ -116,12 +118,15 @@ class Sku
 			return true;
 		static::disableUpdateAvailable();
 
-		$useCatalogTab = (string)Main\Config\Option::get('catalog', 'show_catalog_tab_with_offers') == 'Y';
+		if (self::$useCatalogTab === null)
+			self::$useCatalogTab = (string)Main\Config\Option::get('catalog', 'show_catalog_tab_with_offers') == 'Y';
 
 		$result = true;
 		$process = true;
 		$iblockData = false;
 		$fields = array();
+		$parentId = 0;
+		$parentIblockId = 0;
 
 		$productId = (int)$productId;
 		if ($productId <= 0)
@@ -133,10 +138,7 @@ class Sku
 		{
 			$iblockId = (int)$iblockId;
 			if ($iblockId <= 0)
-			{
-				/** @noinspection PhpMethodOrClassCallIsNotCaseSensitiveInspection */
-				$iblockId = (int)\CIBlockElement::getIBlockByID($productId);
-			}
+				$iblockId = (int)\CIBlockElement::GetIBlockByID($productId);
 			if ($iblockId <= 0)
 			{
 				$process = false;
@@ -146,8 +148,7 @@ class Sku
 
 		if ($process)
 		{
-			/** @noinspection PhpMethodOrClassCallIsNotCaseSensitiveInspection */
-			$iblockData = \CCatalogSku::getInfoByIBlock($iblockId);
+			$iblockData = \CCatalogSku::GetInfoByIBlock($iblockId);
 			if (empty($iblockData))
 			{
 				$process = false;
@@ -160,7 +161,7 @@ class Sku
 			switch ($iblockData['CATALOG_TYPE'])
 			{
 				case \CCatalogSku::TYPE_PRODUCT:
-					if ($useCatalogTab)
+					if (self::$useCatalogTab)
 						$fields = static::getParentDataAsProduct($productId, $productFields);
 					else
 						$fields = static::getDefaultParentSettings(static::getOfferState($productId, $iblockId));
@@ -173,7 +174,7 @@ class Sku
 						{
 							case self::OFFERS_AVAILABLE:
 							case self::OFFERS_NOT_AVAILABLE:
-								if ($useCatalogTab)
+								if (self::$useCatalogTab)
 									$fields = static::getParentDataAsProduct($productId, $productFields);
 								else
 									$fields = static::getDefaultParentSettings($offerState);
@@ -213,90 +214,51 @@ class Sku
 					}
 					else
 					{
-						/** @noinspection PhpMethodOrClassCallIsNotCaseSensitiveInspection */
-						$parentIBlock = \CCatalogSku::getInfoByIblock($parent[$productId]['IBLOCK_ID']);
-						if ($useCatalogTab && $parentIBlock['CATALOG_TYPE'] == \CCatalogSku::TYPE_FULL)
-							$parentFields = static::getParentDataAsProduct($parent[$productId]['ID']);
-						else
-							$parentFields = static::getDefaultParentSettings(static::getOfferState(
-								$parent[$productId]['ID'],
-								$parent[$productId]['IBLOCK_ID']
-							));
-						$existParent = Catalog\ProductTable::getList(array(
-							'select' => array('ID'),
-							'filter' => array('=ID' => $parent[$productId]['ID'])
-						))->fetch();
-						if ($existParent)
-						{
-							$updateResult = Catalog\ProductTable::update($parent[$productId]['ID'], $parentFields);
-						}
-						else
-						{
-							$parentFields['ID'] = $parent[$productId]['ID'];
-							$updateResult = Catalog\ProductTable::add($parentFields);
-						}
-						unset($existParent);
-						if (!$updateResult->isSuccess())
-						{
-							$process = false;
-							$result = false;
-						}
-						else
-						{
-							$fields = array(
-								'TYPE' => Catalog\ProductTable::TYPE_OFFER,
-							);
-						}
-						unset($updateResult, $parentFields);
+						$fields = array(
+							'TYPE' => Catalog\ProductTable::TYPE_OFFER,
+						);
+						$parentId = $parent[$productId]['ID'];
+						$parentIblockId = $parent[$productId]['IBLOCK_ID'];
 					}
-					if ($process)
-					{
-						$offer = Catalog\ProductTable::getList(array(
-							'select' => array('ID', 'TYPE', 'QUANTITY', 'QUANTITY_TRACE', 'CAN_BUY_ZERO'),
-							'filter' => array('=ID' => $productId)
-						))->fetch();
-						if (!empty($offer))
-							$fields['AVAILABLE'] = Catalog\ProductTable::calculateAvailable($offer);
-						unset($offer);
-					}
-					unset($parent);
+					$fields = array_merge(
+						self::getProductAvailable($productId, $productFields),
+						$fields
+					);
 					break;
 				case \CCatalogSku::TYPE_CATALOG:
-					$product = Catalog\ProductTable::getList(array(
-						'select' => array('ID', 'TYPE', 'QUANTITY', 'QUANTITY_TRACE', 'CAN_BUY_ZERO'),
-						'filter' => array('=ID' => $productId)
-					))->fetch();
-					if (!empty($product))
-					{
-						switch ($product['TYPE'])
-						{
-							case Catalog\ProductTable::TYPE_PRODUCT:
-							case Catalog\ProductTable::TYPE_SET:
-								$fields['AVAILABLE'] = Catalog\ProductTable::calculateAvailable($product);
-								break;
-							default:
-								break;
-						}
-					}
-					unset($product);
+					$fields = self::getProductAvailable($productId, $productFields);
 					break;
 			}
 		}
-		if ($process)
+
+		if (
+			$process
+			&& !empty($fields)
+		)
 		{
-			if (!empty($fields))
+			$updateResult = Catalog\ProductTable::update($productId, $fields);
+			if (!$updateResult->isSuccess())
 			{
-				$updateResult = Catalog\ProductTable::update($productId, $fields);
-				if (!$updateResult->isSuccess())
-				{
-					$process = false;
-					$result = false;
-				}
-				unset($updateResult);
+				$process = false;
+				$result = false;
 			}
+			unset($updateResult);
 		}
-		unset($fields, $iblockData, $process);
+
+		if (
+			$process
+			&& $parentId > 0
+			&& $parentIblockId > 0
+		)
+		{
+			$result = self::updateParentAvailable($parentId, $parentIblockId);
+			if (!$result)
+				$process = false;
+		}
+		unset($parentIblockId, $parentId, $fields, $iblockData);
+		unset($process);
 		static::enableUpdateAvailable();
+
 		return $result;
 	}
 
@@ -332,8 +294,8 @@ class Sku
 	public static function handlerIblockElementUpdate($newFields, $oldFields)
 	{
 		static::disablePropertyHandler();
-		/** @noinspection PhpMethodOrClassCallIsNotCaseSensitiveInspection */
-		$iblockData = \CCatalogSku::getInfoByOfferIBlock($newFields['IBLOCK_ID']);
+
+		$iblockData = \CCatalogSku::GetInfoByOfferIBlock($newFields['IBLOCK_ID']);
 		if (empty($iblockData))
 			return;
 
@@ -373,8 +335,7 @@ class Sku
 
 		if ($process)
 		{
-			/** @noinspection PhpMethodOrClassCallIsNotCaseSensitiveInspection */
-			$iblockData = \CCatalogSku::getInfoByOfferIBlock($fields['IBLOCK_ID']);
+			$iblockData = \CCatalogSku::GetInfoByOfferIBlock($fields['IBLOCK_ID']);
 			$process = !empty($iblockData);
 		}
 
@@ -386,7 +347,8 @@ class Sku
 				if (!empty($parent[$elementId]))
 					self::$offers[$elementId] = array(
 						'CURRENT_PRODUCT' => $parent[$elementId]['ID'],
-						'NEW_PRODUCT' => $parent[$elementId]['ID']
+						'NEW_PRODUCT' => $parent[$elementId]['ID'],
+						'PRODUCT_IBLOCK_ID' => $parent[$elementId]['IBLOCK_ID']
 					);
 				unset($parent);
 			}
@@ -440,8 +402,8 @@ class Sku
 	{
 		if ((int)$elementData['WF_PARENT_ELEMENT_ID'] > 0)
 			return;
-		/** @noinspection PhpMethodOrClassCallIsNotCaseSensitiveInspection */
-		$iblockData = \CCatalogSku::getInfoByOfferIBlock($elementData['IBLOCK_ID']);
+
+		$iblockData = \CCatalogSku::GetInfoByOfferIBlock($elementData['IBLOCK_ID']);
 		if (empty($iblockData))
 			return;
 
@@ -449,8 +411,8 @@ class Sku
 		if (!empty($parent[$elementId]))
 			self::$offers[$elementId] = array(
 				'CURRENT_PRODUCT' => $parent[$elementId]['ID'],
-				'NEW_PRODUCT' => $parent[$elementId]['ID'],
-				'PRODUCT_IBLOCK_ID' => $iblockData['PRODUCT_IBLOCK_ID']
+				'NEW_PRODUCT' => 0,
+				'PRODUCT_IBLOCK_ID' => $parent[$elementId]['IBLOCK_ID']
 			);
 		unset($parent);
 	}
@@ -483,10 +445,16 @@ class Sku
 	 * @param array $currentValues						Current properties values.
 	 * @return void
 	 */
-	public static function handlerIblockElementSetPropertyValues($elementId, $iblockId, $newValues, $propertyIdentifyer, $propertyList, $currentValues)
+	public static function handlerIblockElementSetPropertyValues(
+		$elementId,
+		$iblockId,
+		$newValues,
+		$propertyIdentifyer,
+		$propertyList,
+		$currentValues
+	)
 	{
-		/** @noinspection PhpMethodOrClassCallIsNotCaseSensitiveInspection */
-		$iblockData = \CCatalogSku::getInfoByOfferIBlock($iblockId);
+		$iblockData = \CCatalogSku::GetInfoByOfferIBlock($iblockId);
 		if (empty($iblockData))
 			return;
 
@@ -563,7 +531,8 @@ class Sku
 		{
 			self::$offers[$elementId] = array(
 				'CURRENT_PRODUCT' => $currentSkuPropertyValue,
-				'NEW_PRODUCT' => $newSkuPropertyValue
+				'NEW_PRODUCT' => $newSkuPropertyValue,
+				'PRODUCT_IBLOCK_ID' => $iblockData['PRODUCT_IBLOCK_ID']
 			);
 		}
 	}
@@ -590,8 +559,7 @@ class Sku
 		if (!isset(self::$offers[$elementId]))
 			return;
 
-		/** @noinspection PhpMethodOrClassCallIsNotCaseSensitiveInspection */
-		$iblockData = \CCatalogSku::getInfoByOfferIBlock($iblockId);
+		$iblockData = \CCatalogSku::GetInfoByOfferIBlock($iblockId);
 		if (!empty($iblockData))
 		{
 			$existCurrentProduct = (self::$offers[$elementId]['CURRENT_PRODUCT'] > 0);
@@ -628,10 +596,7 @@ class Sku
 			return $result;
 		$iblockId = (int)$iblockId;
 		if ($iblockId <= 0)
-		{
-			/** @noinspection PhpMethodOrClassCallIsNotCaseSensitiveInspection */
-			$iblockId = (int)\CIBlockElement::getIBlockByID($productId);
-		}
+			$iblockId = (int)\CIBlockElement::GetIBlockByID($productId);
 		if ($iblockId <= 0)
 			return $result;
 
@@ -792,5 +757,126 @@ class Sku
 			'TYPE' => Catalog\ProductTable::TYPE_SKU,
 			'AVAILABLE' => Catalog\ProductTable::calculateAvailable($productFields)
 		);
+	}
+
+	/**
+	 * Returns the current calculated availability of the product if it is necessary to update it.
+	 * @internal
+	 *
+	 * @param int $productId            Product id.
+	 * @param array $productFields      Current product values. Can be empty.
+	 * @return array
+	 */
+	private static function getProductAvailable($productId, array $productFields)
+	{
+		$fields = array();
+
+		$availableFieldsList = array('QUANTITY', 'QUANTITY_TRACE', 'CAN_BUY_ZERO');
+
+		$needFields = array();
+		if (empty($productFields))
+		{
+			$needCalculateAvailable = true;
+			$needFields = $availableFieldsList;
+		}
+		else
+		{
+			if (isset($productFields['AVAILABLE']))
+				return $fields;
+			$needCalculateAvailable = false;
+			foreach ($availableFieldsList as $availableField)
+			{
+				if (isset($productFields[$availableField]))
+					$needCalculateAvailable = true;
+				else
+					$needFields[] = $availableField;
+			}
+		}
+
+		if ($needCalculateAvailable)
+		{
+			if (!empty($needFields))
+			{
+				$existProduct = Catalog\ProductTable::getList(array(
+					'select' => $needFields,
+					'filter' => array('=ID' => $productId)
+				))->fetch();
+				if (empty($existProduct))
+					return $fields;
+
+				$productFields = array_merge($existProduct, $productFields);
+			}
+			$fields['AVAILABLE'] = Catalog\ProductTable::calculateAvailable($productFields);
+		}
+
+		return $fields;
+	}
+
+	/**
+	 * Change parent available.
+	 * @internal
+	 *
+	 * @param int $parentId             Parent id.
+	 * @param int $parentIblockId       Parent iblock id.
+	 * @return bool
+	 */
+	private static function updateParentAvailable($parentId, $parentIblockId)
+	{
+		$result = true;
+
+		if (self::$useCatalogTab)
+			self::$useCatalogTab = (string)Main\Config\Option::get('catalog', 'show_catalog_tab_with_offers') == 'Y';
+
+		$parentIBlock = \CCatalogSku::GetInfoByIblock($parentIblockId);
+		if (
+			empty($parentIBlock)
+			|| (self::$useCatalogTab && $parentIBlock['CATALOG_TYPE'] == \CCatalogSku::TYPE_FULL)
+		)
+			return $result;
+
+		$parentFields = static::getDefaultParentSettings(static::getOfferState(
+			$parentId,
+			$parentIblockId
+		));
+
+		$iterator = Catalog\ProductTable::getList(array(
+			'select' => array('ID', 'AVAILABLE', 'SUBSCRIBE'),
+			'filter' => array('=ID' => $parentId)
+		));
+		$row = $iterator->fetch();
+
+		if (!empty($row))
+		{
+			$updateResult = Catalog\ProductTable::update($parentId, $parentFields);
+
+			//TODO: remove this block after refactioring subscription
+			if (Catalog\SubscribeTable::checkPermissionSubscribe($row['SUBSCRIBE']))
+			{
+				if (
+					$row['AVAILABLE'] == Catalog\ProductTable::STATUS_NO
+					&& $parentFields['AVAILABLE'] == Catalog\ProductTable::STATUS_YES
+				)
+				{
+					Catalog\SubscribeTable::runAgentToSendNotice($parentId);
+				}
+				elseif (
+					$row['AVAILABLE'] == Catalog\ProductTable::STATUS_YES
+					&& $parentFields['AVAILABLE'] == Catalog\ProductTable::STATUS_NO
+				)
+				{
+					Catalog\SubscribeTable::runAgentToSendRepeatedNotice($parentId);
+				}
+			}
+		}
+		else
+		{
+			$parentFields['ID'] = $parentId;
+			$updateResult = Catalog\ProductTable::add($parentFields);
+		}
+		if (!$updateResult->isSuccess())
+			$result = false;
+		unset($updateResult);
+
+		return $result;
 	}
 }

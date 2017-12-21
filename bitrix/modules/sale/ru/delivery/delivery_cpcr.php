@@ -22,7 +22,7 @@ define('DELIVERY_CPCR_COUNTRY_DEFAULT', '209|0'); // default country - Russia
 define('DELIVERY_CPCR_CITY_DEFAULT', '992|0'); // default city - Moscow
 
 //define('DELIVERY_CPCR_SERVER', 'old.cpcr.ru'); // server name to send data
-define('DELIVERY_CPCR_SERVER', 'spsr.ru'); // server name to send data
+define('DELIVERY_CPCR_SERVER', 'www.spsr.ru'); // server name to send data
 
 define('DELIVERY_CPCR_SERVER_PORT', 80); // server port
 //define('DELIVERY_CPCR_SERVER_PAGE', '/components/tarifcalc2/tarifcalc.php?JsHttpRequest='); // server page url
@@ -91,6 +91,8 @@ class CDeliveryCPCR
 
 			"COMPABILITY" => array("CDeliveryCPCR", "Compability"), // callback method to check whether services is compatible with current order
 			"CALCULATOR" => array("CDeliveryCPCR", "Calculate"), // callback method to calculate delivery price
+			"DEPRECATED" => "Y",
+			'GET_ADMIN_MESSAGE' => array('CDeliveryCPCR', 'getAdminMessage'),
 
 			/* List of delivery profiles */
 			"PROFILES" => array(
@@ -521,7 +523,21 @@ class CDeliveryCPCR
 			fclose($fp);
 		}
 	}
-}
 
+	public function getAdminMessage()
+	{
+		return array(
+			'MESSAGE' => GetMessage(
+				'SALE_DH_DEPRECATED_MESSAGE',
+				array(
+					'#A1#' => '<a href="/bitrix/admin/sale_delivery_service_edit.php?lang='.LANGUAGE_ID.'&PARENT_ID=0&CLASS_NAME=%5CSale%5CHandlers%5CDelivery%5CSpsrHandler">',
+					'#A2#' => '</a>'
+				)
+			),
+			"TYPE" => "ERROR",
+			"HTML" => true
+		);
+	}
+}
 AddEventHandler("sale", "onSaleDeliveryHandlersBuildList", array('CDeliveryCPCR', 'Init'));
 ?>

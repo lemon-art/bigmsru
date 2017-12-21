@@ -2144,6 +2144,19 @@ BX.adminList.prototype.DeleteSettings = function(bCommon)
 	}, this));
 };
 
+/****************************** For new grid ********************************/
+BX.adminList.SendSelected = function(gridId)
+{
+	var gridInstance = BX.Main.gridManager.getById(gridId).instance;
+	var values = gridInstance.getActionsPanel().getValues();
+	var selectedRows = gridInstance.getRows().getSelectedIds();
+	var data = {
+		ID: selectedRows,
+		action: values
+	};
+	gridInstance.reloadTable("POST", data);
+};
+
 BX.adminList._onpopupmenushow = function(){BX.addClass(this, 'adm-list-row-active');};
 BX.adminList._onpopupmenuclose = function(){BX.removeClass(this, 'adm-list-row-active');};
 
@@ -2998,6 +3011,12 @@ BX.adminHistory.prototype._get = function(e)
 
 /*************************** fixed elements *********************************/
 
+BX.FixOffsets = {
+	top: 0,
+	bottom: 0,
+	right: 0
+};
+
 BX.Fix = function(el, params)
 {
 	if (!el.BXFIXER)
@@ -3033,6 +3052,10 @@ BX.CFixer = function(node, params)
 	this.bFixed = false;
 
 	this.gutter = null;
+
+	this.clingTop = null;
+	this.clingBottom = null;
+	this.clingRight = null;
 };
 
 BX.CFixer.prototype.Start = function()
@@ -3121,6 +3144,14 @@ BX.CFixer.prototype._Fix = function()
 			this.node.style[this.params.type] = this['position_' + this.params.type] + 'px';
 
 		this.bFixed = true;
+
+		if(this.params.type == 'top')
+		{
+			this.clingTop = BX.FixOffsets.top;
+			BX.FixOffsets.top += this.pos.height;
+		}
+
+		BX.addCustomEvent('onAdminFixerUnfix', BX.proxy(this._cling_offset_correction, this));
 	}
 };
 
@@ -3144,6 +3175,19 @@ BX.CFixer.prototype._UnFix = function(bRefix)
 
 			this._check_scroll(this.pos.left, this.pos.top);
 		}
+
+		var clingPoint, offsetSize;
+
+		if(this.params.type == 'top')
+		{
+			clingPoint = this.clingTop;
+			offsetSize = this.pos.height;
+			this.clingTop = null;
+			BX.FixOffsets.top -= this.pos.height;
+		}
+
+		BX.removeCustomEvent('onAdminFixerUnfix', BX.proxy(this._cling_offset_correction, this));
+		BX.onCustomEvent('onAdminFixerUnfix', [{type: this.params.type, clingPoint: clingPoint, offsetSize: offsetSize}]);
 	}
 };
 
@@ -3152,6 +3196,17 @@ BX.CFixer.prototype._ReFix = function()
 	if (this.bFixed)
 	{
 		this._UnFix(true); BX.defer(this._Fix, this)();
+	}
+};
+
+BX.CFixer.prototype._cling_offset_correction = function(params)
+{
+	if(this.params.type == params.type)
+	{
+		if(this.params.type == 'top' && params.clingPoint < this.clingTop )
+			this.clingTop -= params.offsetSize;
+
+		this._scroll_listener();
 	}
 };
 
@@ -3187,9 +3242,10 @@ BX.CFixer.prototype._scroll_listener = function()
 		switch(this.params.type)
 		{
 			case 'top':
-				this.position_top = BX.adminPanel.isFixed() ? BX.adminPanel.panel.offsetHeight : 0;
+				var additive = this.clingTop !== null ? this.clingTop : BX.FixOffsets.top;
+				this.position_top = BX.adminPanel.isFixed() ? BX.adminPanel.panel.offsetHeight + additive : additive;
 
-				if (this.limit > 0 && wndScroll.scrollTop + this.position_top > this.limit)
+				if (this.limit > additive && wndScroll.scrollTop + this.position_top > this.limit)
 					this._UnFix();
 				else if (!this.bFixed && wndScroll.scrollTop + this.position_top >= pos.top)
 					this._Fix();
@@ -3199,7 +3255,6 @@ BX.CFixer.prototype._scroll_listener = function()
 			break;
 			case 'bottom':
 				wndSize = BX.GetWindowInnerSize();
-
 				wndScroll.scrollBottom = wndScroll.scrollTop + wndSize.innerHeight;
 
 				if (this.limit > 0 && wndScroll.scrollBottom < this.limit)
@@ -3570,50 +3625,14 @@ BX.AdminFilter = function(filter_id, aRows)
 		if(!this.ApplyFilter(flterId))
 			return false;
 
-		//required filter exists
-		if(flterId)
+		if(this.state.folded)
 		{
-			if(this.state.folded)
-			{
-				this.oOptions["0"]["tab"].UnSetActive();
-				this.oOptions[flterId]["tab"].SetActive();
-			}
-
-			var setFilterButton = this.GetFormButton('set_filter');
-
-			if(this.filter_id  && this.url)
-			{
-				this.OnSet(this.table_id, this.url, setFilterButton);
-			}
-			else
-			{
-				if(setFilterButton)
-				{
-					setFilterButton.onclick();
-				}
-			}
-
-			this.oOptions[flterId]["tab"].SetFiltered(true);
-			return true;
+			this.oOptions["0"]["tab"].UnSetActive();
+			this.oOptions[flterId]["tab"].SetActive();
 		}
-		else //not exist
-		{
-			var delFilterButt = this.GetFormButton('del_filter');
 
-			if(this.filter_id  && this.url)
-			{
-				this.OnClear(this.table_id, this.url, delFilterButt);
-			}
-			else
-			{
-				if(delFilterButt)
-				{
-					delFilterButt.onclick();
-				}
-			}
-
-			return false;
-		}
+		this.oOptions[flterId]["tab"].SetFiltered(true);
+		return true;
 	};
 
 	this.InitOpenedTab = function(tabIdUri, tabIdSes)
@@ -3858,7 +3877,6 @@ BX.AdminFilter = function(filter_id, aRows)
 
 	this.ApplyFilter = function(id)
 	{
-
 		if(this.state.requesting && !this.state.init)
 			return false;
 
@@ -5350,7 +5368,7 @@ BX.admFltWrap = {
 			case "checkbox":
 
 				var label = BX.findChild(el.parentNode, {tagName: "label", htmlFor: el.id});
-				if(label)
+				if(!label)
 				{
 					var wraplabel = BX.admFltWrap.Element(el, "", "label", "");
 
@@ -5462,8 +5480,7 @@ BX.admFltWrap = {
 		row.cells[0].className = "adm-filter-item-left";
 		row.cells[1].className = "adm-filter-item-center";
 		row.cells[2].className = 'adm-filter-item-right';
-
-		row.cells[0].innerHTML = row.cells[0].textContent || row.cells[0].innerText;
+		row.cells[0].innerHTML = row.cells[0].innerHTML.replace(/<\/?[^>]+>/gi, ''); // strip_tags
 
 		var calendarInput = ( !!BX.findChild(row.cells[1], {'className': 'adm-input adm-input-calendar'}, true));
 

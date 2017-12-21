@@ -3,9 +3,11 @@
 namespace Bitrix\Seo\Retargeting\Services;
 
 use \Bitrix\Main\Error;
+use \Bitrix\Main\Localization\Loc;
 use \Bitrix\Main\Web\Json;
 use \Bitrix\Seo\Retargeting\Response;
 
+Loc::loadMessages(__FILE__);
 
 class ResponseFacebook extends Response
 {
@@ -16,7 +18,12 @@ class ResponseFacebook extends Response
 		$parsed = Json::decode($data);
 		if ($parsed['error'])
 		{
-			$this->addError(new Error($parsed['error']['message'], $parsed['error']['code']));
+			$errorText = (isset($parsed['error']['error_user_msg']) && $parsed['error']['error_user_msg']) ? $parsed['error']['error_user_msg'] : $parsed['error']['message'];
+			if ($errorText == '(#100) The parameter follow_up_action_url is required')
+			{
+				$errorText = Loc::getMessage('SEO_RETARGETING_SERVICE_RESPONSE_FACEBOOK_ERROR_URL_REQUIRED');
+			}
+			$this->addError(new Error($errorText, $parsed['error']['code']));
 		}
 
 		if ($parsed['data'])

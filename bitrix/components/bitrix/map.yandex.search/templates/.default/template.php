@@ -1,6 +1,6 @@
 <?
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
-
+$this->setFrameMode(true);
 if ($arParams['BX_EDITOR_RENDER_MODE'] == 'Y'):
 ?>
 <img src="/bitrix/components/bitrix/map.yandex.search/templates/.default/images/screenshot.png" border="0" />

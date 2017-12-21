@@ -81,4 +81,5 @@ $MESS["IBLOCK_SORT_FIELD_ID"] = "ID";
 $MESS["IBLOCK_SORT_FIELD_ACTIVE_FROM"] = "дата активности (с)";
 $MESS["IBLOCK_SORT_FIELD_ACTIVE_TO"] = "дата активности (по)";
 $MESS["IBLOCK_SORT_FIELD_DEPTH_LEVEL"] = "уровень вложенности раздела";
+$MESS["IBLOCK_FIELD_SUBSCRIPTIONS"] = "Количество подписок";
 ?>

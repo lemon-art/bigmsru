@@ -14,5 +14,5 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.ph
 
 $hours = is_array($argv) && count($argv) > 1 && intval($argv[1]) > 0 ? intval($argv[1]) : 24;
 $validTime = time() - $hours * 60 * 60;
-$bytes = \Bitrix\Main\Data\StaticHtmlFileStorage::deleteRecursive("/", $validTime);
-CHTMLPagesCache::updateQuota(-$bytes);
+$bytes = \Bitrix\Main\Composite\Data\FileStorage::deleteRecursive("/", $validTime);
+\Bitrix\Main\Composite\Helper::updateQuota(-$bytes);

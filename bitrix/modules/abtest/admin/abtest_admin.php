@@ -7,29 +7,29 @@ Bitrix\Main\Loader::includeModule('abtest');
 
 $arLang = $APPLICATION->getLang();
 
-
-if (!$USER->canDoOperation('view_other_settings'))
+$MOD_RIGHT = $APPLICATION->getGroupRight('abtest');
+if ($MOD_RIGHT < 'R')
 	$APPLICATION->authForm(getMessage('ACCESS_DENIED'));
-
-$isAdmin = $USER->canDoOperation('edit_php');
-
 
 $sTableID = "t_abtest_admin";
 $oSort = new CAdminSorting($sTableID, 'id', 'asc');
 $lAdmin = new CAdminList($sTableID, $oSort);
 
-$aContext = array(
-	array(
+$aContext = array();
+
+if ($MOD_RIGHT >= 'W')
+{
+	$aContext[] = array(
 		"ICON" => "btn_new",
 		"TEXT" => getMessage('ABTEST_BTN_NEW'),
 		"LINK" => "abtest_edit.php?lang=".LANGUAGE_ID,
-		"TITLE" => getMessage('ABTEST_BTN_NEW')
-	),
-);
+		"TITLE" => getMessage('ABTEST_BTN_NEW'),
+	);
+}
 
 $lAdmin->addAdminContextMenu($aContext);
 
-if ($isAdmin && $arID = $lAdmin->groupAction())
+if ($MOD_RIGHT >= 'W' && $arID = $lAdmin->groupAction())
 {
 	if ($_REQUEST['action'] == 'start')
 	{
@@ -194,7 +194,7 @@ foreach ($arRows as &$abtest)
 			$status .= '<span style="white-space: nowrap; ">'.getMessage('ABTEST_STARTED_BY').': <a href="/bitrix/admin/user_edit.php?ID='.$abtest['USER_ID'].'&lang='.LANG.'">'.$user_name.'</a></span>';
 			$status .= '</td>';
 
-			if ($isAdmin)
+			if ($MOD_RIGHT >= 'W')
 				$status .= '<td style="width: 1px; padding: 0px; vertical-align: top; "><span class="adm-btn" onclick="if (confirm(\''.CUtil::JSEscape(getMessage('ABTEST_STOP_CONFIRM')).'\')) '.$lAdmin->actionDoGroup($abtest['ID'], 'stop').'">'.getMessage('ABTEST_BTN_STOP').'</span></td>';
 
 			$status .= '</tr></table>';
@@ -227,7 +227,7 @@ foreach ($arRows as &$abtest)
 				$status .= '<span style="white-space: nowrap; ">'.getMessage('ABTEST_STOPPED_BY').': <a href="/bitrix/admin/user_edit.php?ID='.$abtest['USER_ID'].'&lang='.LANG.'">'.$user_name.'</a></span>';
 			$status .= '</td>';
 
-			if ($isAdmin)
+			if ($MOD_RIGHT >= 'W')
 			{
 				if ($abtest['ENABLED'] == 'T')
 					$action = $lAdmin->actionRedirect('abtest_edit.php?ID='.$abtest['ID'].'&lang='.LANG);
@@ -300,7 +300,7 @@ foreach ($arRows as &$abtest)
 		'ACTION' => "if (confirm('".CUtil::JSEscape(getMessage('ABTEST_DELETE_CONFIRM'))."')) ".$lAdmin->actionDoGroup($abtest['ID'], 'delete'),
 	);
 
-	if ($isAdmin)
+	if ($MOD_RIGHT >= 'W')
 		$row->addActions($arActions);
 }
 

@@ -98,32 +98,32 @@ class CCatalogProductSetAll
 		return true;
 	}
 
-	public function add($arFields)
+	public static function add($arFields)
 	{
 		return false;
 	}
 
-	public function update($intID, $arFields)
+	public static function update($intID, $arFields)
 	{
 		return false;
 	}
 
-	public function delete($intID)
+	public static function delete($intID)
 	{
 		return false;
 	}
 
-	public function isProductInSet($intProductID, $intSetType = 0)
+	public static function isProductInSet($intProductID, $intSetType = 0)
 	{
 		return false;
 	}
 
-	public function isProductHaveSet($arProductID, $intSetType = 0)
+	public static function isProductHaveSet($arProductID, $intSetType = 0)
 	{
 		return false;
 	}
 
-	public function canCreateSetByProduct($intProductID, $intSetType)
+	public static function canCreateSetByProduct($intProductID, $intSetType)
 	{
 		$intProductID = (int)$intProductID;
 		if ($intProductID <= 0)
@@ -138,12 +138,12 @@ class CCatalogProductSetAll
 		return true;
 	}
 
-	public function getAllSetsByProduct($intProductID, $intSetType)
+	public static function getAllSetsByProduct($intProductID, $intSetType)
 	{
 		return false;
 	}
 
-	public function getSetByID($intID)
+	public static function getSetByID($intID)
 	{
 		return false;
 	}
@@ -211,7 +211,7 @@ class CCatalogProductSetAll
 		}
 	}
 
-	protected function checkFieldsToAdd(&$arFields, $boolCheckNew = false)
+	protected static function checkFieldsToAdd(&$arFields, $boolCheckNew = false)
 	{
 		global $DB;
 		global $USER;
@@ -382,7 +382,7 @@ class CCatalogProductSetAll
 		return empty(self::$arErrors);
 	}
 
-	protected function checkFieldsToUpdate($intID, &$arFields)
+	protected static function checkFieldsToUpdate($intID, &$arFields)
 	{
 		global $DB;
 		global $USER;
@@ -571,12 +571,12 @@ class CCatalogProductSetAll
 		return empty(self::$arErrors);
 	}
 
-	protected function getSetID($intID)
+	protected static function getSetID($intID)
 	{
 		return false;
 	}
 
-	protected function getEmptySet($intSetType)
+	protected static function getEmptySet($intSetType)
 	{
 		if (self::TYPE_SET == $intSetType)
 		{
@@ -606,12 +606,12 @@ class CCatalogProductSetAll
 		}
 	}
 
-	protected function deleteFromSet($intID, $arEx)
+	protected static function deleteFromSet($intID, $arEx)
 	{
 		return false;
 	}
 
-	protected function setItemFieldsForAdd(&$arFields)
+	protected static function setItemFieldsForAdd(&$arFields)
 	{
 		$arClear = array(
 			'ID', 'DATE_CREATE', 'TIMESTAMP_X'
@@ -636,7 +636,7 @@ class CCatalogProductSetAll
 		unset($arOneItem);
 	}
 
-	protected function setItemFieldsForUpdate(&$arFields, $arCurrent)
+	protected static function setItemFieldsForUpdate(&$arFields, $arCurrent)
 	{
 		$strActive = (isset($arFields['ACTIVE']) ? $arFields['ACTIVE'] : $arCurrent['ACTIVE']);
 
@@ -683,7 +683,7 @@ class CCatalogProductSetAll
 		unset($arOneItem);
 	}
 
-	protected function clearFieldsForUpdate(&$arFields, $intSetType)
+	protected static function clearFieldsForUpdate(&$arFields, $intSetType)
 	{
 		$intSetType = (int)$intSetType;
 		$arClear = array(
@@ -699,7 +699,7 @@ class CCatalogProductSetAll
 		unset($strKey);
 	}
 
-	protected function getEmptyFields()
+	protected static function getEmptyFields()
 	{
 		return array(
 			'TYPE' => 0,
@@ -716,7 +716,7 @@ class CCatalogProductSetAll
 		);
 	}
 
-	protected function getEmptyItemFields()
+	protected static function getEmptyItemFields()
 	{
 		return array(
 			'TYPE' => 0,
@@ -732,7 +732,7 @@ class CCatalogProductSetAll
 		);
 	}
 
-	protected function searchItem($intItemID, &$arItems)
+	protected static function searchItem($intItemID, &$arItems)
 	{
 		$mxResult = false;
 		foreach ($arItems as &$arOneItem)
@@ -752,7 +752,7 @@ class CCatalogProductSetAll
 		return false;
 	}
 
-	protected function fillSetItemsParams(&$items)
+	protected static function fillSetItemsParams(&$items)
 	{
 		$productIterator = CCatalogProduct::GetList(
 			array(),
@@ -771,7 +771,7 @@ class CCatalogProductSetAll
 		}
 	}
 
-	protected function createSetItemsParamsFromAdd($items)
+	protected static function createSetItemsParamsFromAdd($items)
 	{
 		$result = array();
 		foreach ($items as &$oneItem)
@@ -785,7 +785,7 @@ class CCatalogProductSetAll
 		return $result;
 	}
 
-	protected function createSetItemsParamsFromUpdate($setID, $getProductID = false)
+	protected static function createSetItemsParamsFromUpdate($setID, $getProductID = false)
 	{
 		return array();
 	}

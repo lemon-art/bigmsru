@@ -78,6 +78,9 @@ else
 		}
 		?>
 		<div id="blog-post-edit-micro-form" class="blog-edit-form blog-edit-post-form blog-post-edit-form" style="display:none;">
+			<div class="blog-post-field blog-post-field-title blog-edit-field blog-edit-field-title">
+				<input maxlength="255" size="70" tabindex="1" type="text" name="POST_TITLE" id="POST_TITLE" value="<?=$arResult["PostToShow"]["TITLE"]?>">
+			</div>
 			<div class="blog-post-message blog-edit-editor-area blog-edit-field-text">
 				<div class="blog-post-field blog-post-field-bbcode">
 					<?
@@ -85,6 +88,29 @@ else
 					?>
 					<div id="blog-post-micro-lhe-hide"></div>
 				</div>
+				<?
+//				userconsent only for once for registered early users
+				if ($arParams['USER_CONSENT'] == 'Y' && !$arParams['USER_CONSENT_WAS_GIVEN'])
+				{
+					$APPLICATION->IncludeComponent(
+						"bitrix:main.userconsent.request",
+						"",
+						array(
+							"ID" => $arParams["USER_CONSENT_ID"],
+							"IS_CHECKED" => $arParams["USER_CONSENT_IS_CHECKED"],
+							"AUTO_SAVE" => "Y",
+							"IS_LOADED" => $arParams["USER_CONSENT_IS_LOADED"],
+							"ORIGIN_ID" => "sender/sub",
+							"ORIGINATOR_ID" => "",
+							"REPLACE" => array(
+								'button_caption' => GetMessage("B_B_MS_SEND"),
+								'fields' => array('Alias', 'Personal site', 'Birthday', 'Photo')
+							),
+							"SUBMIT_EVENT_NAME" => "OnUCFormCheckConsent"
+						)
+					);
+				}
+				?>
 				<div class="blog-post-buttons blog-edit-buttons">
 					<input type="hidden" name="save" value="Y">
 					<span class="blog-small-button" onclick="blogCtrlEnterHandler()">

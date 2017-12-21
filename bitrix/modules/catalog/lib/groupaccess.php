@@ -62,7 +62,7 @@ class GroupAccessTable extends Main\Entity\DataManager
 			)),
 			'CATALOG_GROUP' => new Main\Entity\ReferenceField(
 				'CATALOG_GROUP',
-				'Bitrix\Catalog\Group',
+				'\Bitrix\Catalog\Group',
 				array('=this.CATALOG_GROUP_ID' => 'ref.ID')
 			)
 		);

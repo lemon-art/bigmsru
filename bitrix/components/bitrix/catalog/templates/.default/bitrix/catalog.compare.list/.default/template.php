@@ -12,7 +12,7 @@
 /** @var CBitrixComponent $component */
 
 $itemCount = count($arResult);
-$isAjax = (isset($_REQUEST["ajax_action"]) && $_REQUEST["ajax_action"] == "Y");
+$needReload = (isset($_REQUEST["compare_list_reload"]) && $_REQUEST["compare_list_reload"] == "Y");
 $idCompareCount = 'compareList'.$this->randString();
 $obCompare = 'ob'.$idCompareCount;
 $idCompareTable = $idCompareCount.'_tbl';
@@ -26,7 +26,7 @@ if ($arParams['POSITION_FIXED'] == 'Y')
 $style = ($itemCount == 0 ? ' style="display: none;"' : '');
 ?><div id="<? echo $idCompareCount; ?>" class="<? echo $mainClass; ?> "<? echo $style; ?>><?
 unset($style, $mainClass);
-if ($isAjax)
+if ($needReload)
 {
 	$APPLICATION->RestartBuffer();
 }
@@ -57,7 +57,7 @@ if (!empty($arResult))
 </div><?
 }
 $frame->end();
-if ($isAjax)
+if ($needReload)
 {
 	die();
 }
@@ -79,6 +79,9 @@ $jsParams = array(
 		'url' => $currentPath,
 		'params' => array(
 			'ajax_action' => 'Y'
+		),
+		'reload' => array(
+			'compare_list_reload' => 'Y'
 		),
 		'templates' => array(
 			'delete' => (strpos($currentPath, '?') === false ? '?' : '&').$arParams['ACTION_VARIABLE'].'=DELETE_FROM_COMPARE_LIST&'.$arParams['PRODUCT_ID_VARIABLE'].'='

@@ -134,4 +134,9 @@ $MESS["FD_YEARS_DIFF_MOD_OTHER"] = "#VALUE# years";
 $MESS["CAL_BUTTON"] = "Select";
 $MESS["CAL_TIME_SET"] = "Set time";
 $MESS["CAL_TIME"] = "Time";
+$MESS["FD_LAST_SEEN_TOMORROW"] = "tomorrow at #TIME#";
+$MESS["FD_LAST_SEEN_NOW"] = "just now";
+$MESS["FD_LAST_SEEN_TODAY"] = "today at #TIME#";
+$MESS["FD_LAST_SEEN_YESTERDAY"] = "yesterday at #TIME#";
+$MESS["FD_LAST_SEEN_MORE_YEAR"] = "more than a year ago";
 ?>

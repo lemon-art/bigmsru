@@ -43,7 +43,8 @@ $arComponentParameters = array(
 	"GROUPS" => Array(
 		"COMMENT" => array("NAME" => GetMessage("BLOG_COMMENT_SETTINGS")),
 		),
-	"PARAMETERS" => array( 
+	"PARAMETERS" => array(
+		"USER_CONSENT" => array(),
 		"VARIABLE_ALIASES" => Array(
 			"blog" => Array(
 					"NAME" => GetMessage("BC_BLOG_VAR"),
@@ -343,15 +344,15 @@ $arComponentParameters = array(
 				"PARENT" => "VISUAL",
 			),
 		"IMAGE_MAX_WIDTH" => Array(
-				"NAME" => GetMessage("BPC_IMAGE_MAX_WIDTH"),
+				"NAME" => GetMessage("BPC_IMAGE_MAX_WIDTH").' ('.GetMessage("BPC_IMAGE_MAX_SIZES_TEXT").' '.COption::GetOptionString('blog', 'image_max_width').')',
 				"TYPE" => "STRING",
-				"DEFAULT" => 800,
+				"DEFAULT" => COption::GetOptionString('blog', 'image_max_width'),
 				"PARENT" => "VISUAL",
 			),		
 		"IMAGE_MAX_HEIGHT" => Array(
-				"NAME" => GetMessage("BPC_IMAGE_MAX_HEIGHT"),
+				"NAME" => GetMessage("BPC_IMAGE_MAX_HEIGHT").' ('.GetMessage("BPC_IMAGE_MAX_SIZES_TEXT").' '.COption::GetOptionString('blog', 'image_max_height').')',
 				"TYPE" => "STRING",
-				"DEFAULT" => 800,
+				"DEFAULT" => COption::GetOptionString('blog', 'image_max_height'),
 				"PARENT" => "VISUAL",
 			),
 		"EDITOR_RESIZABLE" => Array(

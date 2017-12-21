@@ -58,7 +58,8 @@ $MESS["SALE_DLV_SRV_SPSR_NATURE_22"] = "Equipment and electronics w\\o fuel, wit
 $MESS["SALE_DLV_SRV_SPSR_NATURE_23"] = "Dangerous items";
 $MESS["SALE_DLV_SRV_SPSR_NATURE_24"] = "Consumer goods (batch, ex. equipment)";
 $MESS["SALE_DLV_SRV_SPSR_AMOUNT_CHECK"] = "Insurance or value";
-$MESS["SALE_DLV_SRV_SPSR_AMOUNT_CHECK_0"] = "Insurance";
-$MESS["SALE_DLV_SRV_SPSR_AMOUNT_CHECK_1"] = "Declared value";
+$MESS["SALE_DLV_SRV_SPSR_AMOUNT_CHECK_1"] = "Insurance";
+$MESS["SALE_DLV_SRV_SPSR_AMOUNT_CHECK_0"] = "Declared value";
 $MESS["SALE_DLV_SRV_SPSR_AMOUNT_CHECK__1"] = "No insurance";
+$MESS["SALE_DLV_SRV_SPSR_BV_AUTH"] = "SPSR delivery service authentication (for holdings)";
 ?>

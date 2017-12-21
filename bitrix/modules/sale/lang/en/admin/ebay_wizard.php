@@ -91,4 +91,7 @@ $MESS["SALE_EBAY_W_STEP_DEFAULT_POLICY_DESCR"] = "Select eBay policies to be use
 $MESS["SALE_EBAY_W_STEP_DEFAULT_POLICY_P"] = "Payment policies";
 $MESS["SALE_EBAY_W_STEP_DEFAULT_POLICY_S"] = "Delivery policies";
 $MESS["SALE_EBAY_W_STEP_DEFAULT_POLICY_R"] = "Return policies";
+$MESS["SALE_EBAY_W_USER_INFO_ERROR"] = "Cannot get eBay user data.";
+$MESS["SALE_EBAY_W_PAYMENT_METHOD_ERROR"] = "Only PayPal can be used for eBay payments. Currently, \"#PAYMENT_METHOD#\" is selected.";
+$MESS["SALE_EBAY_W_SITE_ERROR"] = "The user has to be bound to the eBay site ID'd as \"Russia\". The user is currently bound to the site \"#SITE#\".";
 ?>

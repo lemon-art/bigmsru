@@ -3,7 +3,6 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/classes/general/xml.php');
 
-
 $APPLICATION->SetAdditionalCSS('/bitrix/gadgets/bitrix/weather/styles.css');
 
 if($arGadgetParams["CITY"]!='')
@@ -15,28 +14,15 @@ $cache = new CPageCache();
 if($arGadgetParams["CACHE_TIME"]>0 && !$cache->StartDataCache($arGadgetParams["CACHE_TIME"], 'c'.$arGadgetParams["CITY"], "gdweather"))
 	return;
 
-$ob = new CHTTP();
-$ob->http_timeout = 10;
-$ob->Query(
-	"GET",
-	"export.yandex.ru",
-	80,
-	"/bar/reginfo.xml?".$url,
-	false,
-	"",
-	"N"
-	);
-
-
-$errno = $ob->errno;
-$errstr = $ob->errstr;
-
-$res = $ob->result;
+$http = new \Bitrix\Main\Web\HttpClient();
+$http->setTimeout(10);
+$res = $http->get("https://export.yandex.ru/bar/reginfo.xml?".$url);
 
 $res = str_replace("\xE2\x88\x92", "-", $res);
+$res = $APPLICATION->ConvertCharset($res, 'UTF-8', SITE_CHARSET);
 
 $xml = new CDataXML();
-$xml->LoadString($APPLICATION->ConvertCharset($res, 'UTF-8', SITE_CHARSET));
+$xml->LoadString($res);
 $node = $xml->SelectNodes('/info/region/title');
 ?>
 <h3><?=$node->content?></h3>

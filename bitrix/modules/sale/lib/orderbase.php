@@ -72,10 +72,10 @@ abstract class OrderBase
 			"MARKED", "DATE_MARKED", "EMP_MARKED_ID", "REASON_MARKED",
 			"PRICE", "CURRENCY", "DISCOUNT_VALUE", "USER_ID",
 			"DATE_INSERT", "DATE_UPDATE", "USER_DESCRIPTION", "ADDITIONAL_INFO", "COMMENTS", "TAX_VALUE",
-			"STAT_GID", "RECURRING_ID", "LOCKED_BY",
+			"STAT_GID", "RECURRING_ID", "LOCKED_BY", "IS_RECURRING",
 			"DATE_LOCK", "RECOUNT_FLAG", "AFFILIATE_ID", "DELIVERY_DOC_NUM", "DELIVERY_DOC_DATE", "UPDATED_1C",
 			"STORE_ID", "ORDER_TOPIC", "RESPONSIBLE_ID", "DATE_BILL", "DATE_PAY_BEFORE", "ACCOUNT_NUMBER",
-			"XML_ID", "ID_1C", "VERSION_1C", "VERSION", "EXTERNAL_ORDER"
+			"XML_ID", "ID_1C", "VERSION_1C", "VERSION", "EXTERNAL_ORDER", "COMPANY_ID"
 		);
 
 		return array_merge($result, static::getCalculatedFields());
@@ -126,9 +126,14 @@ abstract class OrderBase
 		return static::$mapFields;
 	}
 
-	protected function __construct(array $fields = array())
+	/**
+	 * @param array $fields
+	 * @throws Main\NotImplementedException
+	 * @return Order
+	 */
+	protected static function createOrderObject(array $fields = array())
 	{
-		parent::__construct($fields);
+		throw new Main\NotImplementedException();
 	}
 
 	/**
@@ -139,8 +144,7 @@ abstract class OrderBase
 	 */
 	public static function create($siteId, $userId = null, $currency = null)
 	{
-		$order = new static();
-
+		$order = static::createOrderObject();
 		$order->setFieldNoDemand('LID', $siteId);
 		if (intval($userId) > 0)
 			$order->setFieldNoDemand('USER_ID', $userId);
@@ -171,13 +175,10 @@ abstract class OrderBase
 			'select' => array('*'),
 		);
 
-		if ($orderDat = static::loadFromDb($filter))
+		$list = static::loadByFilter($filter);
+		if (!empty($list) && is_array($list))
 		{
-			$order = new static($orderDat);
-
-			$order->calculateType = static::SALE_ORDER_CALC_TYPE_CHANGE;
-
-			return $order;
+			return reset($list);
 		}
 
 		return null;
@@ -185,7 +186,30 @@ abstract class OrderBase
 
 	/**
 	 * @param array $filter
-	 * @return array
+	 * @return array|false
+	 * @throws Main\ArgumentNullException
+	 * @throws Main\NotImplementedException
+	 */
+	public static function loadByFilter(array $filter)
+	{
+		$list = array();
+
+		/** @var Main\DB\Result $res */
+		$res = static::loadFromDb($filter);
+		while($orderData = $res->fetch())
+		{
+			$order = static::createOrderObject($orderData);
+
+			$order->calculateType = static::SALE_ORDER_CALC_TYPE_CHANGE;
+			$list[] = $order;
+		}
+
+		return (!empty($list) ? $list : null);
+	}
+
+	/**
+	 * @param array $filter
+	 * @return Main\DB\Result
 	 * @throws Main\NotImplementedException
 	 */
 	static protected function loadFromDb(array $filter)
@@ -207,14 +231,14 @@ abstract class OrderBase
 	public function setBasket(Basket $basket)
 	{
 		if ($this->getId())
+		{
 			throw new Main\NotSupportedException();
+		}
 
 		$result = new Result();
 
 		$basket->setOrder($this);
-
 		$this->basketCollection = $basket;
-//		$basket->refreshData(array('PRICE', 'QUANTITY'));
 
 		if (!$this->isMathActionOnly())
 		{
@@ -227,16 +251,26 @@ abstract class OrderBase
 			}
 		}
 
-//		/** @var Result $r */
-//		$r = $this->setField("PRICE", $basket->getPrice());
-//		if (!$r->isSuccess(true))
-//		{
-//			$result->addErrors($r->getErrors());
-//			return $result;
-//		}
-		//$this->setField("CURRENCY", $basket->get)
-
 		return $result;
+	}
+
+	/**
+	 * @param BasketBase $basket
+	 *
+	 * @return Result
+	 * @throws Main\NotSupportedException
+	 */
+	public function appendBasket(BasketBase $basket)
+	{
+		if ($this->getId())
+		{
+			throw new Main\NotSupportedException();
+		}
+
+		$basket->setOrder($this);
+		$this->basketCollection = $basket;
+
+		return new Result();
 	}
 
 	/**
@@ -272,11 +306,23 @@ abstract class OrderBase
 	/**
 	 * @param $name
 	 * @param $value
-	 * @return bool|void
+	 * @return Result
 	 * @throws Main\ArgumentException
 	 */
 	public function setField($name, $value)
 	{
+		$priceRoundedFields = array(
+			'PRICE' => 'PRICE',
+			'PRICE_DELIVERY' => 'PRICE_DELIVERY',
+			'SUM_PAID' => 'SUM_PAID',
+			'PRICE_PAYMENT' => 'PRICE_PAYMENT',
+			'DISCOUNT_VALUE' => 'DISCOUNT_VALUE',
+		);
+		if (isset($priceRoundedFields[$name]))
+		{
+			$value = PriceMaths::roundPrecision($value);
+		}
+
 		if ($this->isCalculatedField($name))
 		{
 			$this->calculatedFields->set($name, $value);
@@ -299,6 +345,18 @@ abstract class OrderBase
 	 */
 	public function setFieldNoDemand($name, $value)
 	{
+		$priceRoundedFields = array(
+			'PRICE' => 'PRICE',
+			'PRICE_DELIVERY' => 'PRICE_DELIVERY',
+			'SUM_PAID' => 'SUM_PAID',
+			'PRICE_PAYMENT' => 'PRICE_PAYMENT',
+			'DISCOUNT_VALUE' => 'DISCOUNT_VALUE',
+		);
+		if (isset($priceRoundedFields[$name]))
+		{
+			$value = PriceMaths::roundPrecision($value);
+		}
+
 		if ($this->isCalculatedField($name))
 		{
 			$this->calculatedFields->set($name, $value);
@@ -373,8 +431,18 @@ abstract class OrderBase
 		return $this->propertyCollection;
 	}
 
-	abstract protected function loadPropertyCollection();
+	abstract public function loadPropertyCollection();
 
+	/**
+	 * Full refresh order data.
+	 *
+	 * @param array $select
+	 * @return Result
+	 */
+	public function refreshData($select = array())
+	{
+		return new Result();
+	}
 
 	/**
 	 * @return int
@@ -449,7 +517,7 @@ abstract class OrderBase
 	 */
 	public function getTaxValue()
 	{
-		return $this->getField('TAX_VALUE');
+		return floatval($this->getField('TAX_VALUE'));
 	}
 
 	/**
@@ -497,7 +565,7 @@ abstract class OrderBase
 			$this->refreshVat();
 		}
 
-		return $this->getField('USE_VAT') == "Y"? true : false;
+		return $this->getField('USE_VAT') === 'Y';
 	}
 
 	/**
@@ -559,8 +627,27 @@ abstract class OrderBase
 		{
 			$this->resetVat();
 
-			$basketVatRate = $basket->getVatRate();
-			if ($basketVatRate > 0)
+			$vatRate = $basket->getVatRate();
+			$isUsedVat = ($vatRate > 0) ? 'Y' : 'N';
+			$vatSum = $basket->getVatSum();
+
+			$shipmentCollection = $this->shipmentCollection;
+			if ($shipmentCollection)
+			{
+				/** @var Shipment $shipment */
+				foreach ($shipmentCollection as $shipment)
+				{
+					$shipmentVatRate = $shipment->getVatRate();
+					if ($shipmentVatRate)
+					{
+						$isUsedVat = 'Y';
+						$vatSum += $shipment->getVatSum();
+						$vatRate = max($vatRate, $shipmentVatRate);
+					}
+				}
+			}
+
+			if ($isUsedVat === 'Y')
 			{
 				/** @var Result $r */
 				$r = $this->setField('USE_VAT', 'Y');
@@ -570,14 +657,14 @@ abstract class OrderBase
 				}
 
 				/** @var Result $r */
-				$r = $this->setField('VAT_RATE', $basketVatRate);
+				$r = $this->setField('VAT_RATE', $vatRate);
 				if (!$r->isSuccess())
 				{
 					$result->addErrors($r->getErrors());
 				}
 
 				/** @var Result $r */
-				$r = $this->setField('VAT_SUM', $basket->getVatSum());
+				$r = $this->setField('VAT_SUM', $vatSum);
 				if (!$r->isSuccess())
 				{
 					$result->addErrors($r->getErrors());
@@ -625,16 +712,7 @@ abstract class OrderBase
 	 */
 	abstract public function save();
 
-
-
-	private static function setStatus($value)
-	{
-
-	}
-
-
-
-
+	
 	/**
 	 * @param $price
 	 */
@@ -670,10 +748,69 @@ abstract class OrderBase
 
 	/**
 	 * @param string $event
-	 * @return bool
+	 * @return array
 	 */
 	public static function getEventListUsed($event)
 	{
 		return array();
 	}
+
+	/**
+	 * @param $action
+	 * @param BasketItemBase $basketItem
+	 * @param null $name
+	 * @param null $oldValue
+	 * @param null $value
+	 * @return Result
+	 */
+	public function onBasketModify($action, BasketItemBase $basketItem, $name = null, $oldValue = null, $value = null)
+	{
+		return new Result();
+	}
+
+
+	/**
+	 * @return Result
+	 */
+	public function onBeforeBasketRefresh()
+	{
+		return new Result();
+	}
+
+
+	/**
+	 * @return Result
+	 */
+	public function onAfterBasketRefresh()
+	{
+		return new Result();
+	}
+
+	/**
+	 * @param string $reasonMarked
+	 * @return Result
+	 */
+	public function addMarker($reasonMarked)
+	{
+		return new Result();
+	}
+
+	/**
+	 * Get the entity of taxes
+	 *
+	 * @return Tax
+	 */
+	public function getTax()
+	{
+		if ($this->tax === null)
+		{
+			$this->tax = $this->loadTax();
+		}
+		return $this->tax;
+	}
+
+	/**
+	 * @return Tax
+	 */
+	abstract protected function loadTax();
 }

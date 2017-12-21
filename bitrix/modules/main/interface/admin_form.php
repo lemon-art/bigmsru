@@ -683,6 +683,9 @@ class CAdminForm extends CAdminTabControl
 	{
 		if($value === false)
 			$value = htmlspecialcharsbx($this->arFieldValues[$id]);
+		else
+			$value = htmlspecialcharsbx(htmlspecialcharsback($value));
+
 		$html = '<input type="text" name="'.$id.'" value="'.$value.'"';
 		if(intval($arParams["size"]) > 0)
 			$html .= ' size="'.intval($arParams["size"]).'"';
@@ -703,6 +706,8 @@ class CAdminForm extends CAdminTabControl
 
 	function AddTextField($id, $label, $value, $arParams=array(), $required=false)
 	{
+		$value = htmlspecialcharsbx(htmlspecialcharsback($value));
+
 		$html = '<textarea name="'.$id.'"';
 		if(intval($arParams["cols"]) > 0)
 			$html .= ' cols="'.intval($arParams["cols"]).'"';
@@ -723,6 +728,8 @@ class CAdminForm extends CAdminTabControl
 	function AddCalendarField($id, $label, $value, $required=false)
 	{
 		$html = CalendarDate($id, $value, $this->GetFormName());
+
+		$value = htmlspecialcharsbx(htmlspecialcharsback($value));
 
 		$this->tabs[$this->tabIndex]["FIELDS"][$id] = array(
 			"id" => $id,

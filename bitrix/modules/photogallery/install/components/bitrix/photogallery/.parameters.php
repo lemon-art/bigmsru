@@ -228,6 +228,11 @@ $arComponentParameters = array(
 			"NAME" => GetMessage("P_THUMBS_SIZE"),
 			"DEFAULT" => "100"
 		),
+		"SECTION_LIST_THUMBNAIL_SIZE" => array(
+			"PARENT" => "PHOTO_SETTINGS",
+			"NAME" => GetMessage("P_SECTION_LIST_THUMBS_SIZE"),
+			"DEFAULT" => "70"
+		),
 		"JPEG_QUALITY1" => Array(
 			"PARENT" => "PHOTO_SETTINGS",
 			"NAME" => GetMessage("P_JPEG_QUALITY1"),

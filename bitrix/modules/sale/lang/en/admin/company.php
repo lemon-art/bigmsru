@@ -20,4 +20,5 @@ $MESS["SALE_COMPANY_ERROR_NO_NAME"] = "Company name is missing.";
 $MESS["SALE_COMPANY_ERROR_NO_LOCATION_ID"] = "Company address is missing.";
 $MESS["SALE_COMPANY_LOCATION"] = "Locations.";
 $MESS["SALE_COMPANY_ERROR_DELETE_LINK"] = "Company is linked to payment or shipment";
+$MESS["SALE_COMPANY_SORT"] = "Sort";
 ?>

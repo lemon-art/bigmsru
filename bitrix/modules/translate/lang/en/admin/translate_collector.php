@@ -31,4 +31,7 @@ $MESS["TR_LANGUAGE_COLLECTED_ARCHIVE"] = "The localization \"%LANG%\" has been c
 $MESS["TR_LANGUAGE_COLLECTED_FOLDER"] = "The localization \"%LANG%\" has been compiled to folder \"%PATH%\".";
 $MESS["TR_UPLOAD_FILE"] = "Localization File (tar.gz)";
 $MESS["TR_LANGUAGE_DOWNLOADED"] = "Localization has been loaded";
+$MESS["TR_ERROR_LANGUAGE_ID"] = "Selected language was not found";
+$MESS["TR_ERROR_LANGUAGE_CHARSET_NON_UTF"] = "Selected language encoding is not UTF-8. Please disable national character encoding conversion.";
+$MESS["TR_ERROR_TARFILE_EXTENTION"] = "Invalid file type";
 ?>

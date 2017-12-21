@@ -51,6 +51,7 @@ class ServersData
 					{
 						$server["BX_ENV_VER"] = static::getBxEnvVer($hostname);
 						$bxInfo = static::getBxInfo($hostname);
+						$server["BX_INFO"] = $bxInfo;
 
 						if(isset($bxInfo["bx_last_password_change"]))
 							$server["LAST_PASSWORD_CHANGE"] = $bxInfo["bx_last_password_change"];

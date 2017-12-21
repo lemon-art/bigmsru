@@ -46,7 +46,9 @@ class AccountNumberGenerator
 		{
 			if (strval($itemCollection->getField("ACCOUNT_NUMBER")) != "")
 			{
-				list($orderAccountNumber, $itemAccountNumber) = explode(static::ACCOUNT_NUMBER_SEPARATOR, $itemCollection->getField("ACCOUNT_NUMBER"));
+				$accountNumberIdList = explode(static::ACCOUNT_NUMBER_SEPARATOR, $itemCollection->getField("ACCOUNT_NUMBER"));
+
+				$itemAccountNumber = trim(end($accountNumberIdList));
 
 				if ($count <= $itemAccountNumber)
 					$count = $itemAccountNumber + 1;

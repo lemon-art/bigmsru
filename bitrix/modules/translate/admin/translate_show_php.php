@@ -24,15 +24,16 @@ if (!isAllowPath($file) || strpos($file, "/lang/") === false || GetFileExtension
 $APPLICATION->SetTitle(GetMessage("TRANS_TITLE"));
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
 
+$aTabs = array(
+	array("DIV" => "edit1", "TAB" => GetMessage("TRANS_TITLE"), "ICON" => "translate_edit", "TITLE" => GetMessage("TRANS_TITLE_TITLE")),
+);
+$tabControl = new CAdminTabControl("tabControl", $aTabs);
+
+$chain = "";
+$arPath = array();
+
 if($strError == "")
 {
-	$aTabs = array(
-		array("DIV" => "edit1", "TAB" => GetMessage("TRANS_TITLE"), "ICON" => "translate_edit", "TITLE" => GetMessage("TRANS_TITLE_TITLE")),
-	);
-	$tabControl = new CAdminTabControl("tabControl", $aTabs);
-
-	$chain = "";
-	$arPath = array();
 	$path_back = dirname($file);
 	$arSlash = explode("/",$path_back);
 	if (is_array($arSlash))

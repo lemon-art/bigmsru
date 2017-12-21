@@ -162,7 +162,7 @@ class CFormOutput_old
 	/*****************************************/
 	function __checkFilter(&$str_error) // check of filter values
 	{
-		global $strError, $MESS, $HTTP_GET_VARS, $arrFORM_FILTER;
+		global $strError, $MESS, $arrFORM_FILTER;
 		global $find_date_create_1, $find_date_create_2;
 		$str = "";
 
@@ -183,8 +183,8 @@ class CFormOutput_old
 						$title = ($arr["TITLE_TYPE"]=="html") ? strip_tags(htmlspecialcharsback($arr["TITLE"])) : $arr["TITLE"];
 						if ($arr["FILTER_TYPE"]=="date")
 						{
-							$date1 = $HTTP_GET_VARS["find_".$arr["FID"]."_1"];
-							$date2 = $HTTP_GET_VARS["find_".$arr["FID"]."_2"];
+							$date1 = $_GET["find_".$arr["FID"]."_1"];
+							$date2 = $_GET["find_".$arr["FID"]."_2"];
 							CheckFilterDates($date1, $date2, $date1_wrong, $date2_wrong, $date2_less);
 							if ($date1_wrong=="Y")
 								$str .= str_replace("#TITLE#", $title, GetMessage("FORM_WRONG_DATE1"))."<br>";
@@ -195,8 +195,8 @@ class CFormOutput_old
 						}
 						if ($arr["FILTER_TYPE"]=="integer")
 						{
-							$int1 = intval($HTTP_GET_VARS["find_".$arr["FID"]."_1"]);
-							$int2 = intval($HTTP_GET_VARS["find_".$arr["FID"]."_2"]);
+							$int1 = intval($_GET["find_".$arr["FID"]."_1"]);
+							$int2 = intval($_GET["find_".$arr["FID"]."_2"]);
 							if ($int1>0 && $int2>0 && $int2<$int1)
 							{
 								$str .= str_replace("#TITLE#", $title, GetMessage("FORM_INT2_LESS"))."<br>";

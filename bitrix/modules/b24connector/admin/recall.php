@@ -8,14 +8,24 @@ use Bitrix\B24Connector\Connection;
 Loc::loadMessages(__FILE__);
 $APPLICATION->SetTitle(Loc::getMessage('B24C_REC_TITLE'));
 
+$listParams = array(
+	'FILTER' => array(
+		'TYPE' => 'callback'
+	),
+	'EMPTY_BUTTON' => array(
+		'TITLE' => Loc::getMessage('B24C_REC_GET_RECALL'),
+		'URL_METHOD' => '\Bitrix\B24Connector\Connection::getWebformConfigUrl'
+	)
+);
+
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
 
 if(!empty($errorMsgs))
 {
 	$admMessage = new CAdminMessage(array(
-			"TYPE" => "ERROR",
-			"MESSAGE" => implode("<br>\n", $errorMsgs),
-			"HTML" => true
+		"TYPE" => "ERROR",
+		"MESSAGE" => implode("<br>\n", $errorMsgs),
+		"HTML" => true
 	));
 
 	echo $admMessage->Show();
@@ -34,15 +44,7 @@ if(!empty($errorMsgs))
 	$APPLICATION->IncludeComponent(
 		"bitrix:b24connector.button.list",
 		".default",
-		array(
-			'FILTER' => array(
-				'TYPE' => 'callback'
-			),
-			'EMPTY_BUTTON' => array(
-				'TITLE' => Loc::getMessage('B24C_REC_GET_RECALL'),
-				'URL' => 'https://'.htmlspecialcharsbx(Connection::getDomain()).'/crm/webform/'
-			)
-		),
+		$listParams,
 		false
 	);
 	?>

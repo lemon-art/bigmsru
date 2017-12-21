@@ -120,7 +120,7 @@ function Form_Filter_Click_<?=$arResult["filter_id"]?>()
 							?>
 		<tr>
 			<td>
-				<?=$arrF["FILTER_TITLE"] ? $arrF['FILTER_TITLE'] : $arrF['TITLE']?>
+				<?=htmlspecialcharsbx($arrF["FILTER_TITLE"] ? $arrF['FILTER_TITLE'] : $arrF['TITLE'])?>
 				<?=($arrF["FILTER_TYPE"]=="date" ? " (".CSite::GetDateFormat("SHORT").")" : "")?>
 			</td>
 			<td>
@@ -373,7 +373,7 @@ if (strlen($arResult["FORM_NOTE"]) > 0) ShowNote($arResult["FORM_NOTE"]);
 				if ($arParams["SHOW_STATUS"] == "Y")
 				{
 ?>
-						<?=GetMessage("FORM_STATUS")?>:&nbsp;[<span class="<?=$arRes["STATUS_CSS"]?>"><?=$arRes["STATUS_TITLE"]?></span>]
+						<?=GetMessage("FORM_STATUS")?>:&nbsp;[<span class="<?=htmlspecialcharsbx($arRes["STATUS_CSS"])?>"><?=htmlspecialcharsbx($arRes["STATUS_TITLE"])?></span>]
 <?
 					if ($arRes["can_edit"] && $arParams["F_RIGHT"] >= 20)
 					{

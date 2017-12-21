@@ -61,14 +61,14 @@ if (CModule::IncludeModule("sale"))
 	if ($order_amount != $lmi_payment_amount)
 	{
 		$err=2;
-		$err_text='ERR: НЕВЕРНАЯ СУММА : '.$lmi_payment_amount;
+		$err_text='ERR: НЕВЕРНАЯ СУММА : '.htmlspecialcharsbx($lmi_payment_amount);
 	}  
 
 	//проверяем ID магазина
 	if($lmi_payee_purse != $IdM) 
 	{
 		$err=3;
-		$err_text='ERR: НЕВЕРЕН ID МАГАЗИНА : '.$lmi_payee_purse;
+		$err_text='ERR: НЕВЕРЕН ID МАГАЗИНА : '.htmlspecialcharsbx($lmi_payee_purse);
 	}
 
 

@@ -92,6 +92,7 @@ $arParams["SET_META_DESCRIPTION"] = (isset($arParams["SET_META_DESCRIPTION"]) &&
 $arParams["ADD_SECTIONS_CHAIN"] = $arParams["ADD_SECTIONS_CHAIN"]!="N"; //Turn on by default
 $arParams["SET_LAST_MODIFIED"] = $arParams["SET_LAST_MODIFIED"]==="Y";
 $arParams["USE_MAIN_ELEMENT_SECTION"] = $arParams["USE_MAIN_ELEMENT_SECTION"]==="Y";
+$arParams["STRICT_SECTION_CHECK"] = (isset($arParams["STRICT_SECTION_CHECK"]) && $arParams["STRICT_SECTION_CHECK"] === "Y");
 $arParams["ADD_ELEMENT_CHAIN"] = (isset($arParams["ADD_ELEMENT_CHAIN"]) && $arParams["ADD_ELEMENT_CHAIN"] == "Y");
 
 if(!isset($arParams["PROPERTY_CODE"]) || !is_array($arParams["PROPERTY_CODE"]))
@@ -332,15 +333,12 @@ if (isset($_REQUEST[$arParams["ACTION_VARIABLE"]]) && isset($_REQUEST[$arParams[
 			if ($addByAjax)
 			{
 				if ($successfulAdd)
-				{
 					$addResult = array('STATUS' => 'OK', 'MESSAGE' => GetMessage('CATALOG_SUCCESSFUL_ADD_TO_BASKET'));
-				}
 				else
-				{
 					$addResult = array('STATUS' => 'ERROR', 'MESSAGE' => $strError);
-				}
 				$APPLICATION->RestartBuffer();
-				echo CUtil::PhpToJSObject($addResult);
+				header('Content-Type: application/json');
+				echo Main\Web\Json::encode($addResult);
 				die();
 			}
 			else
@@ -379,6 +377,16 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 	{
 		$this->abortResultCache();
 		ShowError(GetMessage("IBLOCK_MODULE_NOT_INSTALLED"));
+		return 0;
+	}
+
+	$existIblock = Iblock\IblockSiteTable::getList(array(
+		'select' => array('IBLOCK_ID'),
+		'filter' => array('=IBLOCK_ID' => $arParams['IBLOCK_ID'], '=SITE_ID' => SITE_ID, '=IBLOCK.ACTIVE' => 'Y')
+	))->fetch();
+	if (empty($existIblock))
+	{
+		$this->abortResultCache();
 		return 0;
 	}
 
@@ -424,7 +432,6 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 		$findFilter = array(
 			"IBLOCK_ID" => $arParams["IBLOCK_ID"],
 			"IBLOCK_LID" => SITE_ID,
-			"IBLOCK_ACTIVE" => "Y",
 			"ACTIVE_DATE" => "Y",
 			"CHECK_PERMISSIONS" => "Y",
 			"MIN_PERMISSION" => 'R',
@@ -434,7 +441,7 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 
 		$arParams["ELEMENT_ID"] = CIBlockFindTools::GetElementID(
 			$arParams["ELEMENT_ID"],
-			$arParams["ELEMENT_CODE"],
+			$arParams["~ELEMENT_CODE"],
 			false,
 			false,
 			$findFilter
@@ -476,23 +483,27 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 		unset($comparePath, $currentPath);
 
 		$bIBlockCatalog = false;
+		$existIblockOffers = false;
 		$arCatalog = false;
 		$boolNeedCatalogCache = false;
 		$bCatalog = Loader::includeModule('catalog');
 		$useCatalogButtons = array();
+		$showCatalogWithOffers = false;
 		if ($bCatalog)
 		{
 			$arResultModules['catalog'] = true;
 			$arResultModules['currency'] = true;
-			$arCatalog = CCatalogSKU::GetInfoByIBlock($arParams["IBLOCK_ID"]);
+			$arCatalog = CCatalogSku::GetInfoByIBlock($arParams["IBLOCK_ID"]);
 			if (!empty($arCatalog) && is_array($arCatalog))
 			{
-				$bIBlockCatalog = $arCatalog['CATALOG_TYPE'] != CCatalogSKU::TYPE_PRODUCT;
+				$bIBlockCatalog = $arCatalog['CATALOG_TYPE'] != CCatalogSku::TYPE_PRODUCT;
+				$existIblockOffers = $arCatalog['CATALOG_TYPE'] == CCatalogSku::TYPE_FULL || $arCatalog['CATALOG_TYPE'] == CCatalogSku::TYPE_PRODUCT;
 				$boolNeedCatalogCache = true;
-				if ($arCatalog['CATALOG_TYPE'] == CCatalogSKU::TYPE_CATALOG || $arCatalog['CATALOG_TYPE'] == CCatalogSKU::TYPE_FULL)
+				if ($arCatalog['CATALOG_TYPE'] == CCatalogSku::TYPE_CATALOG || $arCatalog['CATALOG_TYPE'] == CCatalogSku::TYPE_FULL)
 					$useCatalogButtons['add_product'] = true;
-				if ($arCatalog['CATALOG_TYPE'] == CCatalogSKU::TYPE_PRODUCT || $arCatalog['CATALOG_TYPE'] == CCatalogSKU::TYPE_FULL)
+				if ($arCatalog['CATALOG_TYPE'] == CCatalogSku::TYPE_PRODUCT || $arCatalog['CATALOG_TYPE'] == CCatalogSku::TYPE_FULL)
 					$useCatalogButtons['add_sku'] = true;
+				$showCatalogWithOffers = (string)Main\Config\Option::get('catalog', 'show_catalog_tab_with_offers') === 'Y';
 			}
 		}
 		$arResult['CATALOG'] = $arCatalog;
@@ -547,8 +558,8 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 			"PREVIEW_PICTURE",
 			"PROPERTY_*",
 		);
-		if ($bIBlockCatalog)
-			$arSelect[] = 'CATALOG_QUANTITY';
+		if ($bIBlockCatalog || $existIblockOffers)
+			$arSelect[] = 'CATALOG_TYPE';
 		if ($arParams['SET_CANONICAL_URL'] === 'Y')
 			$arSelect[] = 'CANONICAL_PAGE_URL';
 		//WHERE
@@ -556,7 +567,6 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 			"ID" => $arParams["ELEMENT_ID"],
 			"IBLOCK_ID" => $arParams["IBLOCK_ID"],
 			"IBLOCK_LID" => SITE_ID,
-			"IBLOCK_ACTIVE" => "Y",
 			"ACTIVE_DATE" => "Y",
 			"CHECK_PERMISSIONS" => "Y",
 			"MIN_PERMISSION" => 'R',
@@ -575,7 +585,7 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 		{
 			if (!$arParams["USE_PRICE_COUNT"])
 			{
-				foreach ($arResultPrices as &$value)
+				foreach ($arResultPrices as $value)
 				{
 					if (!$value['CAN_VIEW'] && !$value['CAN_BUY'])
 						continue;
@@ -586,7 +596,7 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 			}
 			else
 			{
-				foreach ($arResultPrices as &$value)
+				foreach ($arResultPrices as $value)
 				{
 					if (!$value['CAN_VIEW'] && !$value['CAN_BUY'])
 						continue;
@@ -633,12 +643,26 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 			$arSection = $rsSection->GetNext();
 		}
 
+		if ($arParams["STRICT_SECTION_CHECK"])
+		{
+			$sectionId = (!empty($arSection) ? $arSection["ID"] : 0);
+			if ($arParams["USE_MAIN_ELEMENT_SECTION"])
+			{
+				$arFilter["IBLOCK_SECTION_ID"] = $sectionId;
+			}
+			else
+			{
+				$arFilter["SECTION_ID"] = $sectionId;
+				$arFilter["INCLUDE_SUBSECTIONS"] = "N";
+			}
+		}
+
 		$rsElement = CIBlockElement::GetList($arSort, $arFilter, false, false, $arSelect);
 		$rsElement->SetUrlTemplates($arParams["DETAIL_URL"]);
 		if(!$arParams["USE_MAIN_ELEMENT_SECTION"])
 			$rsElement->SetSectionContext($arSection);
 
-		if($obElement = $rsElement->GetNextElement())
+		if ($obElement = $rsElement->GetNextElement())
 		{
 			$arResult = $obElement->GetFields();
 			$arResult = array_merge($arResult, $arUrlTemplates);
@@ -651,6 +675,8 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 
 			$arResult["CAT_PRICES"] = $arResultPrices;
 			$arResult['PRICES_ALLOW'] = $arResultPricesAllow;
+			if (!empty($arCatalog))
+				$arResult['CATALOG_TYPE'] = (int)$arResult['CATALOG_TYPE'];
 
 			$ipropValues = new \Bitrix\Iblock\InheritedProperty\ElementValues($arResult["IBLOCK_ID"], $arResult["ID"]);
 			$arResult["IPROPERTY_VALUES"] = $ipropValues->getValues();
@@ -664,7 +690,7 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 
 			$arResult["PROPERTIES"] = $obElement->GetProperties();
 			if ($bCatalog && $boolNeedCatalogCache)
-				CCatalogDiscount::SetProductPropertiesCache($arResult['ID'], $arResult["PROPERTIES"]);
+				Catalog\Discount\DiscountManager::setProductPropertiesCache($arResult['ID'], $arResult["PROPERTIES"]);
 
 			$arResult["DISPLAY_PROPERTIES"] = array();
 			$propertyList = array();
@@ -691,7 +717,7 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 			}
 			if (!empty($propertyList))
 			{
-				foreach ($propertyList as &$pid)
+				foreach ($propertyList as $pid)
 				{
 					if (!isset($arResult["PROPERTIES"][$pid]))
 						continue;
@@ -699,7 +725,7 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 					$boolArr = is_array($prop["VALUE"]);
 					if (
 							($boolArr && !empty($prop["VALUE"]))
-							|| (!$boolArr && strlen($prop["VALUE"]) > 0)
+							|| (!$boolArr && (string)$prop["VALUE"] !== '')
 					)
 					{
 						$arResult["DISPLAY_PROPERTIES"][$pid] = CIBlockFormatProperties::GetDisplayValue($arResult, $prop, "catalog_out");
@@ -770,20 +796,43 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 					"IBLOCK_ID" => $arResult["IBLOCK_ID"],
 					"ACTIVE" => "Y",
 				);
-				$rsSection = CIBlockSection::GetList(Array(),$arSectionFilter);
+				$rsSection = CIBlockSection::GetList(array(), $arSectionFilter);
 				$rsSection->SetUrlTemplates("", $arParams["SECTION_URL"]);
 				$arSection = $rsSection->GetNext();
 			}
 
 			if($arSection)
 			{
+				$blackList = array(
+					'SEARCHABLE_CONTENT', '~SEARCHABLE_CONTENT',
+					'TIMESTAMP_X', '~TIMESTAMP_X',
+					'DATE_CREATE', '~DATE_CREATE',
+				);
+				foreach ($blackList as $fieldName)
+				{
+					if (array_key_exists($fieldName, $arSection))
+						unset($arSection[$fieldName]);
+				}
+				unset($fieldName, $blackList);
+
 				$arSection["PATH"] = array();
-				$rsPath = CIBlockSection::GetNavChain($arResult["IBLOCK_ID"], $arSection["ID"]);
+				$rsPath = CIBlockSection::GetNavChain(
+					$arResult["IBLOCK_ID"],
+					$arSection["ID"],
+					array(
+						"ID", "CODE", "XML_ID", "EXTERNAL_ID", "IBLOCK_ID",
+						"IBLOCK_SECTION_ID", "SORT", "NAME", "ACTIVE",
+						"DEPTH_LEVEL", "SECTION_PAGE_URL"
+					)
+				);
 				$rsPath->SetUrlTemplates("", $arParams["SECTION_URL"]);
 				while($arPath = $rsPath->GetNext())
 				{
-					$ipropValues = new \Bitrix\Iblock\InheritedProperty\SectionValues($arParams["IBLOCK_ID"], $arPath["ID"]);
-					$arPath["IPROPERTY_VALUES"] = $ipropValues->getValues();
+					if ($arParams["ADD_SECTIONS_CHAIN"])
+					{
+						$ipropValues = new \Bitrix\Iblock\InheritedProperty\SectionValues($arParams["IBLOCK_ID"], $arPath["ID"]);
+						$arPath["IPROPERTY_VALUES"] = $ipropValues->getValues();
+					}
 					$arSection["PATH"][] = $arPath;
 				}
 				$arResult["SECTION"] = $arSection;
@@ -791,34 +840,14 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 
 			if ($bCatalog && $bIBlockCatalog)
 			{
-				if (!isset($arResult["CATALOG_MEASURE_RATIO"]))
-					$arResult["CATALOG_MEASURE_RATIO"] = 1;
 				if (!isset($arResult['CATALOG_MEASURE']))
 					$arResult['CATALOG_MEASURE'] = 0;
 				$arResult['CATALOG_MEASURE'] = (int)$arResult['CATALOG_MEASURE'];
-				if (0 > $arResult['CATALOG_MEASURE'])
+				if ($arResult['CATALOG_MEASURE'] < 0)
 					$arResult['CATALOG_MEASURE'] = 0;
 				if (!isset($arResult['CATALOG_MEASURE_NAME']))
 					$arResult['CATALOG_MEASURE_NAME'] = '';
-				$rsRatios = CCatalogMeasureRatio::getList(
-					array(),
-					array('PRODUCT_ID' => $arResult['ID']),
-					false,
-					false,
-					array('PRODUCT_ID', 'RATIO')
-				);
-				if ($arRatio = $rsRatios->Fetch())
-				{
-					$intRatio = (int)$arRatio['RATIO'];
-					$dblRatio = doubleval($arRatio['RATIO']);
-					$mxRatio = ($dblRatio > $intRatio ? $dblRatio : $intRatio);
-					if (CATALOG_VALUE_EPSILON > abs($mxRatio))
-						$mxRatio = 1;
-					elseif (0 > $mxRatio)
-						$mxRatio = 1;
-					$arResult["CATALOG_MEASURE_RATIO"] = $mxRatio;
-				}
-				if (0 < $arResult['CATALOG_MEASURE'])
+				if ($arResult['CATALOG_MEASURE'] > 0)
 				{
 					$rsMeasures = CCatalogMeasure::getList(
 						array(),
@@ -832,20 +861,58 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 						$arResult['CATALOG_MEASURE_NAME'] = $arMeasure['SYMBOL_RUS'];
 						$arResult['~CATALOG_MEASURE_NAME'] = $arMeasure['~SYMBOL_RUS'];
 					}
+					unset($arMeasure, $rsMeasures);
 				}
-				if ('' == $arResult['CATALOG_MEASURE_NAME'])
+				if ($arResult['CATALOG_MEASURE_NAME'] == '')
 				{
 					$arDefaultMeasure = CCatalogMeasure::getDefaultMeasure(true, true);
 					$arResult['CATALOG_MEASURE_NAME'] = $arDefaultMeasure['SYMBOL_RUS'];
 					$arResult['~CATALOG_MEASURE_NAME'] = $arDefaultMeasure['~SYMBOL_RUS'];
 				}
+
+				if (!isset($arResult["CATALOG_MEASURE_RATIO"]))
+					$arResult["CATALOG_MEASURE_RATIO"] = 1;
+				$rsRatios = CCatalogMeasureRatio::getList(
+					array(),
+					array('PRODUCT_ID' => $arResult['ID']),
+					false,
+					false,
+					array('PRODUCT_ID', 'RATIO')
+				);
+				if ($arRatio = $rsRatios->Fetch())
+				{
+					$intRatio = (int)$arRatio['RATIO'];
+					$dblRatio = (float)($arRatio['RATIO']);
+					$mxRatio = ($dblRatio > $intRatio ? $dblRatio : $intRatio);
+					if ($mxRatio < CATALOG_VALUE_EPSILON)
+						$mxRatio = 1;
+					$arResult["CATALOG_MEASURE_RATIO"] = $mxRatio;
+				}
+				unset($arRatio, $rsRatios);
 			}
 			$arResult["PRICE_MATRIX"] = false;
 			$arResult["PRICES"] = array();
 			$arResult['MIN_PRICE'] = false;
+
+			$calculatePrice = (
+				!empty($arCatalog) &&
+				(
+					$showCatalogWithOffers && $arResult['CATALOG_TYPE'] == Catalog\ProductTable::TYPE_SKU
+					|| in_array(
+						$arResult['CATALOG_TYPE'],
+						array(
+							Catalog\ProductTable::TYPE_PRODUCT,
+							Catalog\ProductTable::TYPE_SET,
+							Catalog\ProductTable::TYPE_OFFER,
+							Catalog\ProductTable::TYPE_FREE_OFFER
+						)
+					)
+				)
+			);
+
 			if($arParams["USE_PRICE_COUNT"])
 			{
-				if($bCatalog)
+				if ($calculatePrice)
 				{
 					$arResult["PRICE_MATRIX"] = CatalogGetPriceTableEx($arResult["ID"], 0, $arPriceTypeID, 'Y', $arConvertParams);
 					if (isset($arResult["PRICE_MATRIX"]["COLS"]) && is_array($arResult["PRICE_MATRIX"]["COLS"]))
@@ -857,10 +924,14 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 			}
 			else
 			{
-				$arResult["PRICES"] = CIBlockPriceTools::GetItemPrices($arParams["IBLOCK_ID"], $arResult["CAT_PRICES"], $arResult, $arParams['PRICE_VAT_INCLUDE'], $arConvertParams);
-				if (!empty($arResult['PRICES']))
-					$arResult['MIN_PRICE'] = CIBlockPriceTools::getMinPriceFromList($arResult['PRICES']);
+				if (empty($arCatalog) || $calculatePrice)
+				{
+					$arResult["PRICES"] = CIBlockPriceTools::GetItemPrices($arParams["IBLOCK_ID"], $arResult["CAT_PRICES"], $arResult, $arParams['PRICE_VAT_INCLUDE'], $arConvertParams);
+					if (!empty($arResult['PRICES']))
+						$arResult['MIN_PRICE'] = CIBlockPriceTools::getMinPriceFromList($arResult['PRICES']);
+				}
 			}
+			unset($calculatePrice);
 
 			$arResult["CAN_BUY"] = CIBlockPriceTools::CanBuy($arParams["IBLOCK_ID"], $arResult["CAT_PRICES"], $arResult);
 
@@ -904,7 +975,8 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 			$arResult['OFFERS'] = array();
 			$arResult['OFFER_ID_SELECTED'] = 0;
 			if(
-				$bCatalog
+				$existIblockOffers
+				&& $arResult['CATALOG_TYPE'] == Catalog\ProductTable::TYPE_SKU
 				&& (
 					!empty($arParams["OFFERS_FIELD_CODE"])
 					|| !empty($arParams["OFFERS_PROPERTY_CODE"])
@@ -979,7 +1051,7 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 				{
 					if (!empty($arResult["PRICES"]))
 					{
-						foreach ($arResult["PRICES"] as &$arOnePrices)
+						foreach ($arResult["PRICES"] as $arOnePrices)
 						{
 							if (isset($arOnePrices['ORIG_CURRENCY']))
 								$currencyList[$arOnePrices['ORIG_CURRENCY']] = $arOnePrices['ORIG_CURRENCY'];
@@ -989,24 +1061,24 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 				}
 				if (!empty($arResult["OFFERS"]))
 				{
-					foreach ($arResult["OFFERS"] as &$arOneOffer)
+					foreach ($arResult["OFFERS"] as $arOneOffer)
 					{
-						if (!empty($arOneOffer['PRICES']))
+						if (empty($arOneOffer['PRICES']))
+							continue;
+
+						foreach ($arOneOffer['PRICES'] as $arOnePrices)
 						{
-							foreach ($arOneOffer['PRICES'] as &$arOnePrices)
-							{
-								if (isset($arOnePrices['ORIG_CURRENCY']))
-									$currencyList[$arOnePrices['ORIG_CURRENCY']] = $arOnePrices['ORIG_CURRENCY'];
-							}
-							unset($arOnePrices);
+							if (isset($arOnePrices['ORIG_CURRENCY']))
+								$currencyList[$arOnePrices['ORIG_CURRENCY']] = $arOnePrices['ORIG_CURRENCY'];
 						}
+						unset($arOnePrices);
 					}
 					unset($arOneOffer);
 				}
 				if (!empty($currencyList) && defined("BX_COMP_MANAGED_CACHE"))
 				{
 					$currencyList[$arConvertParams['CURRENCY_ID']] = $arConvertParams['CURRENCY_ID'];
-					foreach ($currencyList as &$oneCurrency)
+					foreach ($currencyList as $oneCurrency)
 						$CACHE_MANAGER->RegisterTag('currency_id_'.$oneCurrency);
 					unset($oneCurrency);
 				}
@@ -1022,7 +1094,6 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 				"NAME",
 				"LIST_PAGE_URL",
 				"CANONICAL_PAGE_URL",
-				"PROPERTIES",
 				"SECTION",
 				"IPROPERTY_VALUES",
 				"TIMESTAMP_X",
@@ -1140,6 +1211,77 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 				}
 			}
 
+			if (
+				$arParams["SET_TITLE"]
+				|| $arParams["ADD_ELEMENT_CHAIN"]
+				|| $arParams["SET_BROWSER_TITLE"] === 'Y'
+				|| $arParams["SET_META_KEYWORDS"] === 'Y'
+				|| $arParams["SET_META_DESCRIPTION"] === 'Y'
+			)
+			{
+				$arResult["META_TAGS"] = array();
+				$resultCacheKeys[] = "META_TAGS";
+
+				if ($arParams["SET_TITLE"])
+				{
+					$arResult["META_TAGS"]["TITLE"] = (
+						$arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"] != ""
+						? $arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"]
+						: $arResult["NAME"]
+					);
+				}
+
+				if ($arParams["ADD_ELEMENT_CHAIN"])
+				{
+					$arResult["META_TAGS"]["ELEMENT_CHAIN"] = (
+						$arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"] != ""
+						? $arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"]
+						: $arResult["NAME"]
+					);
+				}
+
+				if ($arParams["SET_BROWSER_TITLE"] === 'Y')
+				{
+					$browserTitle = Collection::firstNotEmpty(
+						$arResult["PROPERTIES"], array($arParams["BROWSER_TITLE"], "VALUE")
+						, $arResult, $arParams["BROWSER_TITLE"]
+						, $arResult["IPROPERTY_VALUES"], "ELEMENT_META_TITLE"
+					);
+					$arResult["META_TAGS"]["BROWSER_TITLE"] = (
+						is_array($browserTitle)
+						? implode(" ", $browserTitle)
+						: $browserTitle
+					);
+					unset($browserTitle);
+				}
+				if ($arParams["SET_META_KEYWORDS"] === 'Y')
+				{
+					$metaKeywords = Collection::firstNotEmpty(
+						$arResult["PROPERTIES"], array($arParams["META_KEYWORDS"], "VALUE")
+						, $arResult["IPROPERTY_VALUES"], "ELEMENT_META_KEYWORDS"
+					);
+					$arResult["META_TAGS"]["KEYWORDS"] = (
+						is_array($metaKeywords)
+						? implode(" ", $metaKeywords)
+						: $metaKeywords
+					);
+					unset($metaKeywords);
+				}
+				if ($arParams["SET_META_DESCRIPTION"] === 'Y')
+				{
+					$metaDescription = Collection::firstNotEmpty(
+						$arResult["PROPERTIES"], array($arParams["META_DESCRIPTION"], "VALUE")
+						, $arResult["IPROPERTY_VALUES"], "ELEMENT_META_DESCRIPTION"
+					);
+					$arResult["META_TAGS"]["DESCRIPTION"] = (
+						is_array($metaDescription)
+						? implode(" ", $metaDescription)
+						: $metaDescription
+					);
+					unset($metaDescription);
+				}
+			}
+
 			$this->setResultCacheKeys($resultCacheKeys);
 
 			// standard output
@@ -1197,26 +1339,34 @@ if(isset($arResult["ID"]))
 	if ($arParams['SET_CANONICAL_URL'] === 'Y' && $arResult["CANONICAL_PAGE_URL"])
 		$APPLICATION->SetPageProperty('canonical', $arResult["CANONICAL_PAGE_URL"]);
 
-	if (!isset($_SESSION["VIEWED_ENABLE"]) && isset($_SESSION["VIEWED_PRODUCT"]) && $_SESSION["VIEWED_PRODUCT"] != $arResult["ID"] && Loader::includeModule("sale"))
-	{
-		$_SESSION["VIEWED_ENABLE"] = "Y";
-		$arFields = array(
-			"PRODUCT_ID" => (int)$_SESSION["VIEWED_PRODUCT"],
-			"MODULE" => "catalog",
-			"LID" => SITE_ID
-		);
-		CSaleViewedProduct::Add($arFields);
-	}
 
-	if (isset($_SESSION["VIEWED_ENABLE"]) && $_SESSION["VIEWED_ENABLE"] == "Y" && $_SESSION["VIEWED_PRODUCT"] != $arResult["ID"] && Loader::includeModule("sale"))
+
+	$productViewedSave = Main\Config\Option::get('sale', 'product_viewed_save', 'Y');
+
+	if ($productViewedSave === 'Y')
 	{
-		$arFields = array(
-			"PRODUCT_ID" => $arResult["ID"],
-			"MODULE" => "catalog",
-			"LID" => SITE_ID,
-			"IBLOCK_ID" => $arResult["IBLOCK_ID"]
-		);
-		CSaleViewedProduct::Add($arFields);
+		//viewed_save
+		if (!isset($_SESSION["VIEWED_ENABLE"]) && isset($_SESSION["VIEWED_PRODUCT"]) && $_SESSION["VIEWED_PRODUCT"] != $arResult["ID"] && Loader::includeModule("sale"))
+		{
+			$_SESSION["VIEWED_ENABLE"] = "Y";
+			$arFields = array(
+				"PRODUCT_ID" => (int)$_SESSION["VIEWED_PRODUCT"],
+				"MODULE" => "catalog",
+				"LID" => SITE_ID
+			);
+			CSaleViewedProduct::Add($arFields);
+		}
+
+		if (isset($_SESSION["VIEWED_ENABLE"]) && $_SESSION["VIEWED_ENABLE"] == "Y" && $_SESSION["VIEWED_PRODUCT"] != $arResult["ID"] && Loader::includeModule("sale"))
+		{
+			$arFields = array(
+				"PRODUCT_ID" => $arResult["ID"],
+				"MODULE" => "catalog",
+				"LID" => SITE_ID,
+				"IBLOCK_ID" => $arResult["IBLOCK_ID"]
+			);
+			CSaleViewedProduct::Add($arFields);
+		}
 	}
 
 	$_SESSION["VIEWED_PRODUCT"] = $arResult["ID"];
@@ -1274,48 +1424,24 @@ if(isset($arResult["ID"]))
 	}
 
 	if($arParams["SET_TITLE"])
-	{
-		if ($arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"] != "")
-			$APPLICATION->SetTitle($arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"], $arTitleOptions);
-		else
-			$APPLICATION->SetTitle($arResult["NAME"], $arTitleOptions);
-	}
+		$APPLICATION->SetTitle($arResult["META_TAGS"]["TITLE"], $arTitleOptions);
 
 	if ($arParams["SET_BROWSER_TITLE"] === 'Y')
 	{
-		$browserTitle = Collection::firstNotEmpty(
-			$arResult["PROPERTIES"], array($arParams["BROWSER_TITLE"], "VALUE")
-			,$arResult, $arParams["BROWSER_TITLE"]
-			,$arResult["IPROPERTY_VALUES"], "ELEMENT_META_TITLE"
-		);
-		if (is_array($browserTitle))
-			$APPLICATION->SetPageProperty("title", implode(" ", $browserTitle), $arTitleOptions);
-		elseif ($browserTitle != "")
-			$APPLICATION->SetPageProperty("title", $browserTitle, $arTitleOptions);
+		if ($arResult["META_TAGS"]["BROWSER_TITLE"] !== '')
+			$APPLICATION->SetPageProperty("title", $arResult["META_TAGS"]["BROWSER_TITLE"], $arTitleOptions);
 	}
 
 	if ($arParams["SET_META_KEYWORDS"] === 'Y')
 	{
-		$metaKeywords = Collection::firstNotEmpty(
-			$arResult["PROPERTIES"], array($arParams["META_KEYWORDS"], "VALUE")
-			,$arResult["IPROPERTY_VALUES"], "ELEMENT_META_KEYWORDS"
-		);
-		if (is_array($metaKeywords))
-			$APPLICATION->SetPageProperty("keywords", implode(" ", $metaKeywords), $arTitleOptions);
-		elseif ($metaKeywords != "")
-			$APPLICATION->SetPageProperty("keywords", $metaKeywords, $arTitleOptions);
+		if ($arResult["META_TAGS"]["KEYWORDS"] !== '')
+			$APPLICATION->SetPageProperty("keywords", $arResult["META_TAGS"]["KEYWORDS"], $arTitleOptions);
 	}
 
 	if ($arParams["SET_META_DESCRIPTION"] === 'Y')
 	{
-		$metaDescription = Collection::firstNotEmpty(
-			$arResult["PROPERTIES"], array($arParams["META_DESCRIPTION"], "VALUE")
-			,$arResult["IPROPERTY_VALUES"], "ELEMENT_META_DESCRIPTION"
-		);
-		if (is_array($metaDescription))
-			$APPLICATION->SetPageProperty("description", implode(" ", $metaDescription), $arTitleOptions);
-		elseif ($metaDescription != "")
-			$APPLICATION->SetPageProperty("description", $metaDescription, $arTitleOptions);
+		if ($arResult["META_TAGS"]["DESCRIPTION"] !== '')
+			$APPLICATION->SetPageProperty("description", $arResult["META_TAGS"]["DESCRIPTION"], $arTitleOptions);
 	}
 
 	if (!empty($arResult['BACKGROUND_IMAGE']) && is_array($arResult['BACKGROUND_IMAGE']))
@@ -1332,12 +1458,7 @@ if(isset($arResult["ID"]))
 		}
 	}
 	if ($arParams["ADD_ELEMENT_CHAIN"])
-	{
-		if ($arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"] != "")
-			$APPLICATION->AddChainItem($arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"]);
-		else
-			$APPLICATION->AddChainItem($arResult["NAME"]);
-	}
+		$APPLICATION->AddChainItem($arResult["META_TAGS"]["ELEMENT_CHAIN"]);
 
 	if ($arParams["SET_LAST_MODIFIED"] && $arResult["TIMESTAMP_X"])
 		Context::getCurrent()->getResponse()->setLastModified(DateTime::createFromUserTime($arResult["TIMESTAMP_X"]));

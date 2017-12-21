@@ -50,4 +50,9 @@ class DateField extends ScalarField
 
 		return $value;
 	}
+
+	public function convertValueToDb($value)
+	{
+		return $this->getConnection()->getSqlHelper()->convertToDbDate($value);
+	}
 }

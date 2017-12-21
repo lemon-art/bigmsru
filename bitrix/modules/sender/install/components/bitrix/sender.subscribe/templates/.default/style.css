@@ -116,3 +116,8 @@
   vertical-align: middle;
   color: #aaa;
 }
+
+.bx-sender-subscribe-agreement .main-user-consent-request a {
+	font-weight: 100;
+	font: 11px/10px "Open Sans", Arial, "Helvetica Neue", Helvetica, sans-serif;
+}

@@ -53,7 +53,7 @@ if (BX.CommentAux)
 
 BX.message({
 	MPL_HAVE_WRITTEN : ' <?=GetMessageJS("MPL_HAVE_WRITTEN")?>', // space here is important
-	B_B_MS_LINK : '<?=GetMessageJS("B_B_MS_LINK")?>',
+	B_B_MS_LINK : '<?=GetMessageJS("B_B_MS_LINK2")?>',
 	MPL_MES_HREF : '<?=GetMessageJS("MPL_MES_HREF")?>',
 	BPC_MES_EDIT : '<?=GetMessageJS("BPC_MES_EDIT")?>',
 	BPC_MES_HIDE : '<?=GetMessageJS("BPC_MES_HIDE")?>',
@@ -70,7 +70,8 @@ BX.message({
 	FC_ERROR : '<?=GetMessageJS("B_B_PC_COM_ERROR")?>',
 	MPL_SAFE_EDIT : '<?=GetMessageJS('MPL_SAFE_EDIT')?>',
 	MPL_ERROR_OCCURRED : '<?=GetMessageJS('MPL_ERROR_OCCURRED')?>',
-	MPL_CLOSE : '<?=GetMessageJS('MPL_CLOSE')?>'
+	MPL_CLOSE : '<?=GetMessageJS('MPL_CLOSE')?>',
+	MPL_LINK_COPIED : '<?=GetMessageJS('MPL_LINK_COPIED')?>'
 	<?
 		if (IsModuleInstalled("socialnetwork"))
 		{

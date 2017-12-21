@@ -213,4 +213,8 @@ $MESS["MAIN_OPTIONS_IMAGES"] = "Изображения в профиле пол�
 $MESS["MAIN_OPTIONS_IMAGES_WIDTH"] = "Максимальная ширина в пикселях:";
 $MESS["MAIN_OPTIONS_IMAGES_HEIGHT"] = "Максимальная высота в пикселях:";
 $MESS["MAIN_OPTIONS_IMAGES_SIZE"] = "Максимальный размер файла в байтах:";
+$MESS["MAIN_REGISTER_AGREEMENT_TITLE"] = "Настройка соглашений. <a href=\"#AGGREMENT_CREATE_URL#\" target=\"_blank\">Создать новое соглашение.</a>";
+$MESS["MAIN_REGISTER_AGREEMENT_DEFAUTL_VALUE"] = "(Выберите соглашение)";
+$MESS["MAIN_OPTIONS_PHONE_NUMBER_FORMAT"] = "Форматирование телефонных номеров";
+$MESS["MAIN_OPTIONS_PHONE_NUMBER_DEFAULT_COUNTRY"] = "Страна по умолчанию:";
 ?>

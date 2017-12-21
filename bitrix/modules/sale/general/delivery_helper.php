@@ -248,6 +248,7 @@ class CSaleDeliveryHelper
 				$tmpPackageVolume = 0;
 				$tmpPackageWeight = 0;
 				$tmpPackagePrice = 0;
+
 				foreach ($arTmpItems as $arItem)
 				{
 					if(
@@ -293,6 +294,11 @@ class CSaleDeliveryHelper
 						$arResultPacksParams[$packCount-1]["VOLUME"] = $packVolume;
 						$arResultPacksParams[$packCount-1]["WEIGHT"] = $tmpPackageWeight;
 						$arResultPacksParams[$packCount-1]["PRICE"] = $tmpPackagePrice;
+						$arResultPacksParams[$packCount-1]["DIMENSIONS"] = array(
+							"WIDTH" => $arPacks[$FIRST_PACK]['DIMENSIONS'][$P_WIDTH_IDX],
+							"HEIGHT" => $arPacks[$FIRST_PACK]['DIMENSIONS'][$P_HEIGHT_IDX],
+							"LENGTH" => $arPacks[$FIRST_PACK]['DIMENSIONS'][$P_LENGTH_IDX]
+						);
 
 						$tmpPackageVolume = $arItem["VOLUME"];
 						$tmpPackageWeight = $arItem["WEIGHT"];
@@ -301,9 +307,8 @@ class CSaleDeliveryHelper
 					}
 				}
 
-
 				$arResultPacksParams[$packCount-1] = array();
-				$arResultPacksParams[$packCount-1]["VOLUME"] = $packVolume;
+				$arResultPacksParams[$packCount-1]["VOLUME"] = intval($packVolume) > 0 ? $packVolume : $tmpPackageVolume;
 				$arResultPacksParams[$packCount-1]["WEIGHT"] = $tmpPackageWeight;
 				$arResultPacksParams[$packCount-1]["PRICE"] = $tmpPackagePrice;
 				$arResultPacksParams[$packCount-1]["DIMENSIONS"] = array(
@@ -311,7 +316,6 @@ class CSaleDeliveryHelper
 					"HEIGHT" => $arPacks[$FIRST_PACK]['DIMENSIONS'][$P_HEIGHT_IDX],
 					"LENGTH" => $arPacks[$FIRST_PACK]['DIMENSIONS'][$P_LENGTH_IDX]
 				);
-
 			}
 		}
 

@@ -2,7 +2,6 @@
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
 $type = $arCurrentValues["PLAYER_TYPE"] ? $arCurrentValues["PLAYER_TYPE"] : 'auto';
-$type_ = $type;
 $adv_mode = ($arCurrentValues["ADVANCED_MODE_SETTINGS"] == 'Y');
 $hidden = ($adv_mode) ? "N" : "Y";
 
@@ -12,7 +11,7 @@ if (!function_exists('getSkinsFromDir'))
 	{
 		$arSkins = Array();
 		$basePath = $_SERVER["DOCUMENT_ROOT"].Rel2Abs("/", $path);
-		$arSkinExt = array('swf', 'zip');
+		$arSkinExt = array('swf', 'zip', 'css');
 		$arPreviewExt = array('png', 'gif', 'jpg', 'jpeg');
 		$prExtCnt = count($arPreviewExt);
 
@@ -28,6 +27,9 @@ if (!function_exists('getSkinsFromDir'))
 			{
 				$name = substr($f, 0, - strlen($ext) - 1); // name of the skin
 				if (strlen($name) <= 0)
+					continue;
+
+				if (strpos($name, '.min') !== false)
 					continue;
 
 				$Skin = array('filename' => $f);
@@ -82,61 +84,25 @@ $fp = $arCurrentValues["PATH"];
 if ($type == 'auto' && strlen($fp) > 0 && strpos($fp, '.') !== false)
 {
 	$ext = strtolower(GetFileExtension($fp));
-	$type = (in_array($ext, array('wmv', 'wma'))) ? 'wmv' : 'flv';
+	$type = (in_array($ext, array('wmv', 'wma'))) ? 'wmv' : 'videojs';
 }
 
 $arComponentParameters = array();
 $arComponentParameters["GROUPS"] = array(
 	"BASE_SETTINGS" => array("NAME" => GetMessage("PC_GROUP_BASE_SETTINGS"), "SORT" => "100"),
+	"PLAYBACK" =>array("NAME" => GetMessage("PC_GROUP_PLAYBACK"), "SORT" => "200"),
 	"ADDITIONAL_SETTINGS" => array("NAME" => GetMessage("PC_GROUP_ADDITIONAL_SETTINGS"), "SORT" => "300")
 );
 
-if ($type == 'auto' && $adv_mode)
+if ($adv_mode)
 {
 	$arComponentParameters["GROUPS"]["APPEARANCE"] = array(
 		"NAME" => GetMessage("PC_GROUP_APPEARANCE_COMMON"),
 		"SORT" => "140"
 	);
-	$arComponentParameters["GROUPS"]["PLAYBACK_FLV"] = array(
-		"NAME" => GetMessage("PC_GROUP_PLAYBACK_FLV"),
-		"SORT" => "210"
-	);
-}
-
-if ($type == 'flv' || $type == 'auto')
-{
-	if ($adv_mode)
-	{
-		$arComponentParameters["GROUPS"]["APPEARANCE_FLV"] = array(
-			"NAME" => ($type == 'auto') ? GetMessage("PC_GROUP_APPERANCE_FLV") : GetMessage("PC_GROUP_APPERANCE"),
-			"SORT" => "150"
-		);
-
-		$arComponentParameters["GROUPS"]["ADDITIONAL_FLV"] = array(
-			"NAME" => GetMessage("PC_GROUP_ADDITIONAL_FLV"),
-			"SORT" => "220"
-		);
-	}
-}
-
-if ($type != 'flv')
-{
-	if ($adv_mode)
-		$arComponentParameters["GROUPS"]["APPEARANCE_WMV"] = array(
-			"NAME" => ($type == 'auto') ? GetMessage("PC_GROUP_APPERANCE_WMV") : GetMessage("PC_GROUP_APPERANCE"),
-			"SORT" => "160"
-		);
 
 	$arComponentParameters["GROUPS"]["PLAYBACK"] = array(
 		"NAME" => GetMessage("PC_GROUP_PLAYBACK"),
-		"SORT" => "200"
-	);
-}
-
-if ($type == 'flv')
-{
-	$arComponentParameters["GROUPS"]["PLAYBACK_FLV"] = array(
-		"NAME" =>  GetMessage("PC_GROUP_PLAYBACK"),
 		"SORT" => "210"
 	);
 }
@@ -149,31 +115,66 @@ $arParams["PLAYER_TYPE"] = Array(
 	"TYPE" => "LIST",
 	"VALUES" => array(
 		"auto" => GetMessage("PC_PAR_PLAYER_AUTODETECT"),
+		"videojs" => "video.js",
 		"flv" => GetMessage("PC_PAR_PLAYER_FLV"),
-		"wmv" => GetMessage("PC_PAR_PLAYER_WMV")
+		"wmv" => GetMessage("PC_PAR_PLAYER_WMV"),
 	),
 	"DEFAULT" => $type,
 	"REFRESH" => "Y",
-	"HIDDEN" => $hidden,
 );
 
-$arParams["USE_PLAYLIST"] = Array(
-	"PARENT" => "BASE_SETTINGS",
-	"NAME" => GetMessage("PC_PAR_USE_PLAYLIST"),
-	"TYPE" => "CHECKBOX",
-	"DEFAULT" => "N",
-	"REFRESH" => "Y",
-	"HIDDEN" => $hidden,
-);
+if ($adv_mode)
+{
+	$arParams["USE_PLAYLIST"] = Array(
+		"PARENT" => "BASE_SETTINGS",
+		"NAME" => GetMessage("PC_PAR_USE_PLAYLIST"),
+		"TYPE" => "CHECKBOX",
+		"DEFAULT" => "N",
+		"REFRESH" => "Y",
+		"HIDDEN" => $hidden,
+	);
+}
+
 
 if ($arCurrentValues["USE_PLAYLIST"] == 'Y')
 	$ext = 'xml';
 elseif($type == 'flv')
-	$ext = 'flv,vp6,mp3,mp4,aac,jpg,jpeg,gif,png';
+	$ext = 'flv,mp3,mp4,aac,jpg,jpeg,gif,png';
 elseif($type == 'wmv')
 	$ext = 'wmv,wma';
+elseif ($type == 'videojs')
+	$ext = 'flv,mp3,mp4,m4v,aac,webm,ogv,ogg,weba,wav,m4a';
 else
-	$ext = 'wmv,wma,flv,vp6,mp3,mp4,aac,jpg,jpeg,gif,png';
+	$ext = 'wmv,wma,flv,mp3,mp4,aac,jpg,jpeg,gif,png,m4v,webm,ogv,ogg,weba,wav';
+
+/*if ($type == 'videojs')
+{
+	if ($arCurrentValues["USE_PLAYLIST"] != 'Y')
+	{
+		$arParams["STREAM"] = Array(
+			"PARENT" => "BASE_SETTINGS",
+			"NAME" => GetMessage("PC_PAR_STREAM"),
+			"TYPE" => "CHECKBOX",
+			"DEFAULT" => "N",
+			"REFRESH" => "Y",
+		);
+		if ($arCurrentValues["STREAM"] == "Y")
+		{
+			$arParams["STREAM_TYPE"] = Array (
+				"PARENT" => "BASE_SETTINGS",
+				"NAME" => GetMessage("PC_PAR_STREAM_TYPE"),
+				"TYPE" => "LIST",
+				"DEFAULT" => "rtmp",
+				"VALUES" => Array (
+					"rtmp" => "RTMP",
+					"rtmpt" => "RTMPT",
+					"rtmpe" => "RTMPE",
+					"rtmps" => "RTMPS",
+				)
+			);
+		}
+	}
+}*/
 
 $arParams["PATH"] = Array(
 	"PARENT" => "BASE_SETTINGS",
@@ -203,9 +204,17 @@ if ($arCurrentValues["USE_PLAYLIST"] == 'Y')
 		"DEFAULT" => "",
 		"HIDDEN" => $hidden,
 	);
+
+	$arParams["USE_PLAYLIST_AS_SOURCES"] = Array(
+		"PARENT" => "BASE_SETTINGS",
+		"NAME" => GetMessage("PC_PAR_USE_PLAYLIST_AS_SOURCES"),
+		"TYPE" => "CHECKBOX",
+		"DEFAULT" => "N",
+		"HIDDEN" => $hidden,
+	);
 }
 
-if ($type != 'wmv')
+if ($type == 'flv')
 {
 	if($arCurrentValues["USE_PLAYLIST"]!='Y')
 	{
@@ -235,27 +244,66 @@ if ($type != 'wmv')
 	);
 }
 
-
-//if ($type_ == 'auto' && $adv_mode)
-//	$arParams["PATH"]["REFRESH"] = "Y";
-
-$arParams["WIDTH"] = Array(
-	"PARENT" => "BASE_SETTINGS",
-	"NAME" => GetMessage("PC_PAR_WIDTH"),
-	"COLS" => 10,
-	"DEFAULT" => 400,
-);
-$arParams["HEIGHT"] = Array(
-	"PARENT" => "BASE_SETTINGS",
-	"NAME" => GetMessage("PC_PAR_HEIGHT"),
-	"COLS" => 10,
-	"DEFAULT" => 300,
-);
-
-if($arCurrentValues["USE_PLAYLIST"]!='Y')
+if ($type == 'videojs' || $type == 'auto')
 {
-	$arParams["PREVIEW"] = Array(
+	$arParams["SIZE_TYPE"] = Array(
 		"PARENT" => "BASE_SETTINGS",
+		"NAME" => GetMessage ("PC_PAR_SIZES_TYPE"),
+		"TYPE" => "LIST",
+		"VALUES" => array (
+			"absolute" => GetMessage("PC_PAR_SIZES_ABSOLUTE"),
+			"fluid" => GetMessage("PC_PAR_SIZES_FLUID"),
+			"auto" => GetMessage("PC_PAR_SIZES_AUTO"),
+		),
+		"DEFAULT" => "absolute",
+		"REFRESH" => "Y",
+	);
+	if ($arCurrentValues["USE_PLAYLIST"] == "Y")
+	{
+		unset ($arParams["SIZE_TYPE"]["VALUES"]["auto"]);
+	}
+	if ($arCurrentValues["SIZE_TYPE"] == "absolute" || $arCurrentValues["SIZE_TYPE"] == "")
+	{
+		$arParams["WIDTH"] = Array(
+			"PARENT" => "BASE_SETTINGS",
+			"NAME" => GetMessage("PC_PAR_WIDTH"),
+			"COLS" => 10,
+			"DEFAULT" => 400,
+		);
+		$arParams["HEIGHT"] = Array(
+			"PARENT" => "BASE_SETTINGS",
+			"NAME" => GetMessage("PC_PAR_HEIGHT"),
+			"COLS" => 10,
+			"DEFAULT" => 300,
+		);
+	}
+}
+else
+{
+	$arParams["WIDTH"] = Array(
+		"PARENT" => "BASE_SETTINGS",
+		"NAME" => GetMessage("PC_PAR_WIDTH"),
+		"COLS" => 10,
+		"DEFAULT" => 400,
+	);
+	$arParams["HEIGHT"] = Array(
+		"PARENT" => "BASE_SETTINGS",
+		"NAME" => GetMessage("PC_PAR_HEIGHT"),
+		"COLS" => 10,
+		"DEFAULT" => 300,
+	);
+}
+
+if ($adv_mode)
+{
+	$arParams["TYPE"] = array(
+		"PARENT" => "ADDITIONAL_SETTINGS",
+		"NAME" => GetMessage("PC_PAR_FILE_TYPE"),
+		"DEFAULT" => "",
+		"HIDDEN" => $hidden,
+	);
+	$arParams["PREVIEW"] = Array(
+		"PARENT" => "APPEARANCE",
 		"NAME" => GetMessage("PC_PAR_PREVIEW_IMAGE"),
 		"TYPE" => "FILE",
 		"FD_TARGET" => "F",
@@ -266,6 +314,25 @@ if($arCurrentValues["USE_PLAYLIST"]!='Y')
 		"DEFAULT" => '',
 		"HIDDEN" => $hidden,
 	);
+}
+
+/*if($arCurrentValues["USE_PLAYLIST"]!='Y')
+{
+	if ($adv_mode)
+	{
+		$arParams["PREVIEW"] = Array(
+			"PARENT" => "APPEARANCE",
+			"NAME" => GetMessage("PC_PAR_PREVIEW_IMAGE"),
+			"TYPE" => "FILE",
+			"FD_TARGET" => "F",
+			"FD_EXT" => "png,gif,jpg,jpeg",
+			"FD_UPLOAD" => true,
+			"FD_USE_MEDIALIB" => true,
+			"FD_MEDIALIB_TYPES" => Array('image'),
+			"DEFAULT" => '',
+			"HIDDEN" => $hidden,
+		);
+	}
 
 	$arParams["FILE_TITLE"] = Array(
 		"PARENT" => "BASE_SETTINGS",
@@ -306,13 +373,13 @@ if($arCurrentValues["USE_PLAYLIST"]!='Y')
 		"DEFAULT" => "",
 		"HIDDEN" => $hidden
 	);
-}
+}*/
 
 //APPEARANCE   -FLV-
-if ($type != 'wmv')
+if ($type == 'flv')
 {
 	$arParams["SKIN_PATH"] = Array(
-		"PARENT" => "APPEARANCE_FLV",
+		"PARENT" => "APPEARANCE",
 		"NAME" => GetMessage("PC_PAR_SKIN_PATH"),
 		"TYPE" => "FILE",
 		"FD_TARGET" => "D",
@@ -322,11 +389,12 @@ if ($type != 'wmv')
 		"HIDDEN" => $hidden,
 	);
 
+	if ($arCurrentValues['SKIN_PATH'] == "/bitrix/components/bitrix/player/videojs/skins")
+		$arCurrentValues['SKIN_PATH'] = "/bitrix/components/bitrix/player/mediaplayer/skins";
 	$arSkins = getSkinsEx($arCurrentValues['SKIN_PATH'] ? $arCurrentValues['SKIN_PATH'] : "/bitrix/components/bitrix/player/mediaplayer/skins");
-	//print_r($arSkins);
 
 	$arParams["SKIN"] = Array(
-		"PARENT" => "APPEARANCE_FLV",
+		"PARENT" => "APPEARANCE",
 		"NAME" => GetMessage("PC_PAR_SKIN"),
 		"TYPE" => "CUSTOM",
 		"JS_FILE" => "/bitrix/components/bitrix/player/js/prop_skin_selector.js",
@@ -340,7 +408,7 @@ if ($type != 'wmv')
 	);
 
 	$arParams["CONTROLBAR"] = Array(
-		"PARENT" => "APPEARANCE_FLV",
+		"PARENT" => "APPEARANCE",
 		"NAME" => GetMessage("PC_PAR_CONTROLS"),
 		"TYPE" => "LIST",
 		"VALUES" => array(
@@ -352,7 +420,7 @@ if ($type != 'wmv')
 		"HIDDEN" => $hidden,
 	);
 	$arParams["WMODE"] = Array(
-		"PARENT" => "APPEARANCE_FLV",
+		"PARENT" => "APPEARANCE",
 		"NAME" => GetMessage("PC_PAR_WMODE"),
 		"TYPE" => "LIST",
 		"VALUES" => array(
@@ -366,7 +434,7 @@ if ($type != 'wmv')
 	if ($arCurrentValues['USE_PLAYLIST'] == 'Y')
 	{
 		$arParams["PLAYLIST"] = Array(
-			"PARENT" => "APPEARANCE_FLV",
+			"PARENT" => "APPEARANCE",
 			"NAME" => GetMessage("PC_PAR_PLAYLIST"),
 			"TYPE" => "LIST",
 			"VALUES" => array(
@@ -379,7 +447,7 @@ if ($type != 'wmv')
 			"HIDDEN" => $hidden,
 		);
 		$arParams["PLAYLIST_SIZE"] = Array(
-			"PARENT" => "APPEARANCE_FLV",
+			"PARENT" => "APPEARANCE",
 			"NAME" => GetMessage("PC_PAR_PLAYLIST_SIZE"),
 			"COLS" => 10,
 			"DEFAULT" => "180",
@@ -388,7 +456,7 @@ if ($type != 'wmv')
 	}
 
 	$arParams["LOGO"] = Array(
-		"PARENT" => "APPEARANCE_FLV",
+		"PARENT" => "APPEARANCE",
 		"NAME" => GetMessage("PC_PAR_LOGO"),
 		"TYPE" => "FILE",
 		"FD_TARGET" => "F",
@@ -400,13 +468,13 @@ if ($type != 'wmv')
 		"HIDDEN" => $hidden,
 	);
 	$arParams["LOGO_LINK"] = Array(
-		"PARENT" => "APPEARANCE_FLV",
+		"PARENT" => "APPEARANCE",
 		"NAME" => GetMessage("PC_PAR_LOGO_LINK"),
 		"DEFAULT" => "",
 		"HIDDEN" => $hidden,
 	);
 	$arParams["LOGO_POSITION"] = Array(
-		"PARENT" => "APPEARANCE_FLV",
+		"PARENT" => "APPEARANCE",
 		"NAME" => GetMessage("PC_PAR_LOGO_POSITION"),
 		"TYPE" => "LIST",
 		"VALUES" => array(
@@ -419,7 +487,7 @@ if ($type != 'wmv')
 		"DEFAULT" => "none",
 		"HIDDEN" => $hidden,
 	);
-	$addGroupPar = $type == 'auto' ? 'ADDITIONAL_FLV' : 'ADDITIONAL_SETTINGS';
+	$addGroupPar = 'ADDITIONAL_SETTINGS';
 
 	$arPluginList = array(
 		'tweetit-1' => array(
@@ -539,10 +607,10 @@ if ($type != 'wmv')
 	);
 }
 
-if ($type != 'flv')
+if ($type == 'wmv')
 {
 	$arParams["WMODE_WMV"] = Array(
-		"PARENT" => "APPEARANCE_WMV",
+		"PARENT" => "APPEARANCE",
 		"NAME" => GetMessage("PC_PAR_WMODE_WMV"),
 		"TYPE" => "LIST",
 		"VALUES" => array(
@@ -554,7 +622,7 @@ if ($type != 'flv')
 	);
 
 	$arParams["SHOW_CONTROLS"] = Array(
-		"PARENT" => "APPEARANCE_WMV",
+		"PARENT" => "APPEARANCE",
 		"NAME" => GetMessage("PC_PAR_SHOW_CONTROLS"),
 		"TYPE" => "CHECKBOX",
 		"DEFAULT" => "Y",
@@ -564,7 +632,7 @@ if ($type != 'flv')
 	if ($arCurrentValues['USE_PLAYLIST'] == 'Y')
 	{
 		$arParams["PLAYLIST"] = Array(
-			"PARENT" => "APPEARANCE_WMV",
+			"PARENT" => "APPEARANCE",
 			"NAME" => GetMessage("PC_PAR_PLAYLIST"),
 			"TYPE" => "LIST",
 			"VALUES" => array(
@@ -575,7 +643,7 @@ if ($type != 'flv')
 			"HIDDEN" => $hidden,
 		);
 		$arParams["PLAYLIST_TYPE"] = Array(
-			"PARENT" => "APPEARANCE_WMV",
+			"PARENT" => "APPEARANCE",
 			"NAME" => GetMessage("PC_PAR_PLAYLIST_TYPE"),
 			"TYPE" => "LIST",
 			"VALUES" => array(
@@ -588,21 +656,21 @@ if ($type != 'flv')
 			"HIDDEN" => $hidden,
 		);
 		$arParams["PLAYLIST_SIZE"] = Array(
-			"PARENT" => "APPEARANCE_WMV",
+			"PARENT" => "APPEARANCE",
 			"NAME" => GetMessage("PC_PAR_PLAYLIST_SIZE"),
 			"COLS" => 10,
 			"DEFAULT" => "180",
 			"HIDDEN" => $hidden,
 		);
 		$arParams["PLAYLIST_PREVIEW_WIDTH"] = Array(
-			"PARENT" => "APPEARANCE_WMV",
+			"PARENT" => "APPEARANCE",
 			"NAME" => GetMessage("PC_PAR_PLAYLIST_PREVIEW_WIDTH"),
 			"COLS" => 4,
 			"DEFAULT" => "64",
 			"HIDDEN" => $hidden,
 		);
 		$arParams["PLAYLIST_PREVIEW_HEIGHT"] = Array(
-			"PARENT" => "APPEARANCE_WMV",
+			"PARENT" => "APPEARANCE",
 			"NAME" => GetMessage("PC_PAR_PLAYLIST_PREVIEW_HEIGHT"),
 			"COLS" => 4,
 			"DEFAULT" => "48",
@@ -613,14 +681,14 @@ if ($type != 'flv')
 	if ($arCurrentValues['SHOW_CONTROLS'] != 'N')
 	{
 		$arParams["SHOW_DIGITS"] = Array(
-			"PARENT" => "APPEARANCE_WMV",
+			"PARENT" => "APPEARANCE",
 			"NAME" => GetMessage("PC_PAR_SHOW_DIGITS"),
 			"TYPE" => "CHECKBOX",
 			"DEFAULT" => "Y",
 			"HIDDEN" => $hidden,
 		);
 		$arParams["CONTROLS_BGCOLOR"] = Array(
-			"PARENT" => "APPEARANCE_WMV",
+			"PARENT" => "APPEARANCE",
 			"NAME" => GetMessage("PC_PAR_BGCOLOR"),
 			"COLS" => 10,
 			"DEFAULT" => "FFFFFF",
@@ -628,21 +696,21 @@ if ($type != 'flv')
 			"HIDDEN" => $hidden,
 		);
 		$arParams["CONTROLS_COLOR"] = Array(
-			"PARENT" => "APPEARANCE_WMV",
+			"PARENT" => "APPEARANCE",
 			"NAME" => GetMessage("PC_PAR_COLOR"),
 			"COLS" => 10,
 			"DEFAULT" => "000000",
 			"HIDDEN" => $hidden,
 		);
 		$arParams["CONTROLS_OVER_COLOR"] = Array(
-			"PARENT" => "APPEARANCE_WMV",
+			"PARENT" => "APPEARANCE",
 			"NAME" => GetMessage("PC_PAR_OVER_COLOR"),
 			"COLS" => 10,
 			"DEFAULT" => "000000",
 			"HIDDEN" => $hidden,
 		);
 		$arParams["SCREEN_COLOR"] = Array(
-			"PARENT" => "APPEARANCE_WMV",
+			"PARENT" => "APPEARANCE",
 			"NAME" => GetMessage("PC_PAR_SCREEN_COLOR"),
 			"COLS" => 10,
 			"DEFAULT" => "000000",
@@ -651,8 +719,80 @@ if ($type != 'flv')
 	}
 }
 
+if ($type == 'videojs' || $type == 'auto')
+{
+	$arParams["PRELOAD"] = Array (
+		"PARENT" => "ADDITIONAL_SETTINGS",
+		"NAME" => GetMessage("PC_PAR_AUTOLOAD"),
+		"TYPE" => "CHECKBOX",
+		"DEFAULT" => "N",
+	);
+	$arParams["SHOW_CONTROLS"] = Array(
+		"PARENT" => "APPEARANCE",
+		"NAME" => GetMessage("PC_PAR_SHOW_CONTROLS"),
+		"TYPE" => "CHECKBOX",
+		"DEFAULT" => "Y",
+		"REFRESH" => "Y",
+	);
+	if ($arCurrentValues['USE_PLAYLIST'] == 'Y')
+	{
+		$arParams['PLAYLIST_HIDE'] = Array (
+			"PARENT" => "APPEARANCE",
+			"NAME" => GetMessage("PC_PAR_PLAYLIST_HIDE"),
+			"TYPE" => "CHECKBOX",
+			"DEFAULT" => "N",
+			"REFRESH" => "Y",
+		);
+		$arParams["PLAYLIST_SIZE"] = Array(
+			"PARENT" => "APPEARANCE",
+			"NAME" => GetMessage("PC_PAR_PLAYLIST_SIZE"),
+			"COLS" => 10,
+			"DEFAULT" => "190",
+			"HIDDEN" => $arCurrentValues['PLAYLIST_HIDE'] == "Y" ? "Y" : "N",
+		);
+		$arParams["PLAYLIST_NUMBER"] = Array (
+			"PARENT" => "APPEARANCE",
+			"NAME" => GetMessage("PC_PAR_PLAYLIST_NUM"),
+			"TYPE" => "STRING",
+			"DEFAULT" => 3,
+			"HIDDEN" => $arCurrentValues['PLAYLIST_HIDE'] == "Y" ? "Y" : "N",
+		);
+	}
+
+	$arParams["SKIN_PATH"] = Array(
+		"PARENT" => "APPEARANCE",
+		"NAME" => GetMessage("PC_PAR_SKIN_PATH"),
+		"TYPE" => "FILE",
+		"FD_TARGET" => "D",
+		"FD_UPLOAD" => false,
+		"DEFAULT" => "/bitrix/components/bitrix/player/videojs/skins",
+		"REFRESH" => "Y",
+		"HIDDEN" => $hidden,
+	);
+
+	if ($arCurrentValues['SKIN_PATH'] == "/bitrix/components/bitrix/player/mediaplayer/skins")
+		$arCurrentValues['SKIN_PATH'] = "/bitrix/components/bitrix/player/videojs/skins";
+
+	$arSkins = getSkinsEx($arCurrentValues['SKIN_PATH'] ? $arCurrentValues['SKIN_PATH'] : "/bitrix/components/bitrix/player/videojs/skins");
+
+	$arParams["SKIN"] = Array(
+		"PARENT" => "APPEARANCE",
+		"NAME" => GetMessage("PC_PAR_SKIN"),
+		"TYPE" => "CUSTOM",
+		"JS_FILE" => "/bitrix/components/bitrix/player/js/prop_skin_selector.js",
+		"JS_EVENT" => "ComponentPropsSkinSelector",
+		"JS_DATA" => CUtil::PhpToJSObject(array($arSkins, array(
+			'NoPreview' => GetMessage("PC_PAR_NO_PREVIEW")
+		),
+			array ('defaultImage' => '/bitrix/components/bitrix/player/images/default_skin_videojs.jpg')
+		)),
+		"DEFAULT" => "",
+		"HIDDEN" => $hidden,
+	);
+}
+
 // PLAYBACK
-$playback_parent = $type == 'flv' ? 'PLAYBACK_FLV' : 'PLAYBACK';
+$playback_parent = 'PLAYBACK';
 $arParams["AUTOSTART"] = Array(
 	"PARENT" => $playback_parent,
 	"NAME" => GetMessage("PC_PAR_AUTOSTART"),
@@ -660,25 +800,38 @@ $arParams["AUTOSTART"] = Array(
 	"DEFAULT" => "N"
 );
 
+if ($arCurrentValues['AUTOSTART'] != 'Y')
+{
+	$arParams["AUTOSTART_ON_SCROLL"] = Array(
+		"PARENT" => $playback_parent,
+		"NAME" => GetMessage("PC_PAR_AUTOSTART_ON_SCROLL"),
+		"TYPE" => "CHECKBOX",
+		"DEFAULT" => "N"
+	);
+}
+
 $arParams["REPEAT"] = Array(
 	"PARENT" => $playback_parent,
 	"NAME" => GetMessage("PC_PAR_REPEAT"),
 	"TYPE" => "LIST",
 	"VALUES" => array(
 		"none" => GetMessage("PC_PAR_REPEAT_NONE"),
-		"list" => GetMessage("PC_PAR_REPEAT_LIST"),
 		"always" => GetMessage("PC_PAR_REPEAT_ALWAYS"),
-		"single" => GetMessage("PC_PAR_REPEAT_SINGLE")
 	),
 	"DEFAULT" => "N"
 );
-
-if ($type == 'wmv')
-	$arParams["REPEAT"]["VALUES"] = array(
-		"none" => GetMessage("PC_PAR_REPEAT_NONE"),
-		"always" => GetMessage("PC_PAR_REPEAT_ALWAYS")
-	);
-
+if ($type == 'flv')
+{
+	$arParams["REPEAT"]["VALUES"]["list"] = GetMessage("PC_PAR_REPEAT_LIST");
+	$arParams["REPEAT"]["VALUES"]["single"] = GetMessage("PC_PAR_REPEAT_SINGLE");
+}
+if ($type == 'videojs' || $type == 'auto')
+{
+	if ($arCurrentValues['USE_PLAYLIST'] == "Y")
+	{
+		unset ($arParams["REPEAT"]);
+	}
+}
 $arParams["VOLUME"] = Array(
 	"PARENT" => $playback_parent,
 	"NAME" => GetMessage("PC_PAR_VOLUME"),
@@ -686,10 +839,38 @@ $arParams["VOLUME"] = Array(
 	"DEFAULT" => "90"
 );
 
-if ($type != 'wmv')
+if ($type == 'videojs' || $type == 'auto')
+{
+	$arParams["MUTE"] = Array(
+		"PARENT" => $playback_parent,
+		"NAME" => GetMessage("PC_PAR_MUTE"),
+		"TYPE" => "CHECKBOX",
+		"DEFAULT" => "N",
+		"HIDDEN" => $hidden,
+	);
+	if ($arCurrentValues['USE_PLAYLIST'] != 'Y')
+	{
+		$arParams["START_TIME"] = Array(
+			"PARENT" => $playback_parent,
+			"NAME" => GetMessage("PC_PAR_START_TIME"),
+			"COLS" => 10,
+			"DEFAULT" => "0",
+			"HIDDEN" => $hidden,
+		);
+	}
+	$arParams["PLAYBACK_RATE"] = Array(
+		"PARENT" => $playback_parent,
+		"NAME" => GetMessage("PC_PAR_PLAYBACK_RATE"),
+		"COLS" => 10,
+		"DEFAULT" => "1",
+		"HIDDEN" => $hidden,
+	);
+}
+
+if ($type == 'flv')
 {
 	//$arParams["DISPLAY_CLICK"] = Array(
-	//	"PARENT" => "PLAYBACK_FLV",
+	//	"PARENT" => "PLAYBACK",
 	//	"NAME" => GetMessage("PC_PAR_DISPLAY_CLICK"),
 	//	"TYPE" => "LIST",
 	//	"VALUES" => array(
@@ -705,7 +886,7 @@ if ($type != 'wmv')
 	//);
 
 	$arParams["MUTE"] = Array(
-		"PARENT" => "PLAYBACK_FLV",
+		"PARENT" => $playback_parent,
 		"NAME" => GetMessage("PC_PAR_MUTE"),
 		"TYPE" => "CHECKBOX",
 		"DEFAULT" => "N",
@@ -715,7 +896,7 @@ if ($type != 'wmv')
 	if ($arCurrentValues['USE_PLAYLIST'] == 'Y')
 	{
 		$arParams["SHUFFLE"] = Array(
-			"PARENT" => "PLAYBACK_FLV",
+			"PARENT" => $playback_parent,
 			"NAME" => GetMessage("PC_PAR_SHUFFLE"),
 			"TYPE" => "CHECKBOX",
 			"DEFAULT" => "N",
@@ -731,7 +912,6 @@ if ($type != 'wmv')
 	}
 }
 
-//ADDITIONAL_SETTINGS
 $arParams["ADVANCED_MODE_SETTINGS"] = Array(
 	"PARENT" => "ADDITIONAL_SETTINGS",
 	"NAME" => GetMessage("PC_PAR_ADVANCED_MODE"),
@@ -747,16 +927,15 @@ $arParams["PLAYER_ID"] = Array(
 	"HIDDEN" => $hidden,
 );
 
-$arParams["BUFFER_LENGTH"] = Array(
-	"PARENT" => "ADDITIONAL_SETTINGS",
-	"NAME" => GetMessage("PC_PAR_BUFFER_LENGTH"),
-	"COLS" => "10",
-	"DEFAULT" => "10",
-	"HIDDEN" => $hidden,
-);
-
-if ($type != 'flv')
+if ($type == 'wmv')
 {
+	$arParams["BUFFER_LENGTH"] = Array(
+		"PARENT" => "ADDITIONAL_SETTINGS",
+		"NAME" => GetMessage("PC_PAR_BUFFER_LENGTH"),
+		"COLS" => "10",
+		"DEFAULT" => "10",
+		"HIDDEN" => $hidden,
+	);
 	$arParams["DOWNLOAD_LINK"] = Array(
 		"PARENT" => "ADDITIONAL_SETTINGS",
 		"NAME" => GetMessage("PC_PAR_DOWNLOAD_LINK"),
@@ -786,8 +965,15 @@ if ($type != 'flv')
 	);
 }
 
-if ($type != 'wmv')
+if ($type == 'flv')
 {
+	$arParams["BUFFER_LENGTH"] = Array(
+		"PARENT" => "ADDITIONAL_SETTINGS",
+		"NAME" => GetMessage("PC_PAR_BUFFER_LENGTH"),
+		"COLS" => "10",
+		"DEFAULT" => "10",
+		"HIDDEN" => $hidden,
+	);
 	$arParams["ALLOW_SWF"] = Array(
 		"PARENT" => "ADDITIONAL_SETTINGS",
 		"NAME" => GetMessage("PC_PAR_ALLOW_SWF"),

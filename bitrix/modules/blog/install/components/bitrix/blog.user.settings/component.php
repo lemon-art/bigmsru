@@ -206,7 +206,7 @@ if (StrLen($arParams["BLOG_URL"]) > 0)
 						$arUsers["urlToUser"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_USER"], array("user_id" => $arUsers["USER_ID"]));
 						$arUsers["NameFormated"] = CBlogUser::GetUserName($arUsers["BLOG_USER_ALIAS"], $arUsers["USER_NAME"], $arUsers["USER_LAST_NAME"], $arUsers["USER_LOGIN"], $arUsers["USER_SECOND_NAME"]);
 						$arUsers["urlToEdit"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_USER_SETTINGS_EDIT"], array("user_id" => $arUsers["USER_ID"], "blog"=>$arBlog["URL"]));
-						$arUsers["urlToDelete"] = htmlspecialcharsex($APPLICATION->GetCurPageParam("del_id=".$arUsers["USER_ID"].'&'.bitrix_sessid_get(), Array("del_id", "sessid")));
+						$arUsers["urlToDelete"] = htmlspecialcharsbx($APPLICATION->GetCurPageParam("del_id=".$arUsers["USER_ID"].'&'.bitrix_sessid_get(), Array("del_id", "sessid")));
 						$arResult["Candidate"][] = $arUsers;
 					}
 
@@ -221,7 +221,7 @@ if (StrLen($arParams["BLOG_URL"]) > 0)
 						$arUsers["urlToUser"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_USER"], array("user_id" => $arUsers["USER_ID"]));
 						$arUsers["NameFormated"] = CBlogUser::GetUserName($arUsers["BLOG_USER_ALIAS"], $arUsers["USER_NAME"], $arUsers["USER_LAST_NAME"], $arUsers["USER_LOGIN"], $arUsers["USER_SECOND_NAME"]);
 						$arUsers["urlToEdit"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_USER_SETTINGS_EDIT"], array("user_id" => $arUsers["USER_ID"], "blog"=>$arBlog["URL"]));
-						$arUsers["urlToDelete"] = htmlspecialcharsex($APPLICATION->GetCurPageParam("del_id=".$arUsers["USER_ID"].'&'.bitrix_sessid_get(), Array("del_id", "sessid")));
+						$arUsers["urlToDelete"] = htmlspecialcharsbx($APPLICATION->GetCurPageParam("del_id=".$arUsers["USER_ID"].'&'.bitrix_sessid_get(), Array("del_id", "sessid")));
 											
 						$dbUserGroups = CBlogUserGroup::GetList(
 							array(),

@@ -14,4 +14,5 @@ $MESS["UPLOADER_UPLOADING_ERROR5"] = "The file cannot be uploaded because no ser
 $MESS["UPLOADER_UPLOADING_ERROR3"] = "The file cannot be merged at server.";
 $MESS["UPLOADER_UPLOADING_ONBEFOREUNLOAD"] = "Files are still being uploaded. Do you want to leave this page?";
 $MESS["UPLOADER_UPLOADING_ERROR4"] = "File size exceeds quota.";
+$MESS["UPLOADER_UPLOADING_ERROR6"] = "Insufficient server disk space.";
 ?>

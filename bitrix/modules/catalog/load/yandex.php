@@ -10,11 +10,7 @@ if (!CCatalog::IsUserExists())
 {
 	$bTmpUserCreated = true;
 	if (isset($USER))
-	{
 		$USER_TMP = $USER;
-		unset($USER);
-	}
-
 	$USER = new CUser();
 }
 
@@ -58,6 +54,8 @@ if (!function_exists("yandex_text2xml"))
 	}
 }
 
+$usedProtocol = (CMain::IsHTTPS() ? 'https://' : 'http://');
+
 $strAll = '<?if (!isset($_GET["referer1"]) || strlen($_GET["referer1"])<=0) $_GET["referer1"] = "yandext"?>';
 $strAll .= '<? $strReferer1 = htmlspecialchars($_GET["referer1"]); ?>';
 $strAll .= '<?if (!isset($_GET["referer2"]) || strlen($_GET["referer2"])<=0) $_GET["referer2"] = "";?>';
@@ -69,7 +67,7 @@ $strAll.= "<yml_catalog date=\"".date("Y-m-d H:i")."\">\n";
 $strAll.= "<shop>\n";
 $strAll.= "<name>".$APPLICATION->ConvertCharset(htmlspecialcharsbx(COption::GetOptionString("main", "site_name", "")), LANG_CHARSET, 'windows-1251')."</name>\n";
 $strAll.= "<company>".$APPLICATION->ConvertCharset(htmlspecialcharsbx(COption::GetOptionString("main", "site_name", "")), LANG_CHARSET, 'windows-1251')."</company>\n";
-$strAll.= "<url>http://".htmlspecialcharsbx(COption::GetOptionString("main", "server_name", ""))."</url>\n";
+$strAll.= "<url>".$usedProtocol.htmlspecialcharsbx(COption::GetOptionString("main", "server_name", ""))."</url>\n";
 $strAll.= "<platform>1C-Bitrix</platform>\n";
 
 //*****************************************//
@@ -83,7 +81,7 @@ $currencyIterator = Currency\CurrencyTable::getList(array(
 if ($currency = $currencyIterator->fetch())
 	$RUR = 'RUR';
 unset($currency, $currencyIterator);
-$arCurrencyAllowed = array('RUR', 'RUB', 'USD', 'EUR', 'UAH', 'BYR', 'KZT');
+$arCurrencyAllowed = array('RUR', 'RUB', 'USD', 'EUR', 'UAH', 'BYR', 'BYN', 'KZT');
 $strTmp = "<currencies>\n";
 $currencyIterator = Currency\CurrencyTable::getList(array(
 	'select' => array('CURRENCY', 'SORT'),
@@ -243,7 +241,7 @@ while ($arCatalog_list = $db_catalog_list->Fetch())
 		}
 
 		$strTmpOff.= "<offer id=\"".$arAcc["ID"]."\"".$str_AVAILABLE.">\n";
-		$strTmpOff.= "<url>http://".$arAcc['SERVER_NAME'].htmlspecialcharsbx($arAcc["~DETAIL_PAGE_URL"]).(strstr($arAcc['DETAIL_PAGE_URL'], '?') === false ? '?' : '&amp;')."r1=<?echo \$strReferer1; ?>&amp;r2=<?echo \$strReferer2; ?></url>\n";
+		$strTmpOff.= "<url>".$usedProtocol.$arAcc['SERVER_NAME'].htmlspecialcharsbx($arAcc["~DETAIL_PAGE_URL"]).(strstr($arAcc['DETAIL_PAGE_URL'], '?') === false ? '?' : '&amp;')."r1=<?echo \$strReferer1; ?>&amp;r2=<?echo \$strReferer2; ?></url>\n";
 
 		$strTmpOff.= "<price>".$minPrice."</price>\n";
 		$strTmpOff.= "<currencyId>".$minPriceCurrency."</currencyId>\n";
@@ -259,7 +257,7 @@ while ($arCatalog_list = $db_catalog_list->Fetch())
 			if (is_array($arPictInfo))
 			{
 				if(substr($arPictInfo["SRC"], 0, 1) == "/")
-					$strFile = "http://".$arAcc['SERVER_NAME'].CHTTP::urnEncode($arPictInfo["SRC"], 'utf-8');
+					$strFile = $usedProtocol.$arAcc['SERVER_NAME'].CHTTP::urnEncode($arPictInfo["SRC"], 'utf-8');
 				else
 					$strFile = $arPictInfo["SRC"];
 				$strTmpOff.="<picture>".$strFile."</picture>\n";
@@ -272,7 +270,7 @@ while ($arCatalog_list = $db_catalog_list->Fetch())
 			yandex_text2xml(TruncateText(
 				($arAcc["PREVIEW_TEXT_TYPE"]=="html"?
 				strip_tags(preg_replace_callback("'&[^;]*;'", "yandex_replace_special", $arAcc["~PREVIEW_TEXT"])) : preg_replace_callback("'&[^;]*;'", "yandex_replace_special", $arAcc["~PREVIEW_TEXT"])),
-				255), true).
+				3000), true).
 			"</description>\n";
 		$strTmpOff.= "</offer>\n";
 		if (100 <= $cnt)
@@ -322,7 +320,6 @@ CCatalogDiscountSave::Enable();
 
 if ($bTmpUserCreated)
 {
-	unset($USER);
 	if (isset($USER_TMP))
 	{
 		$USER = $USER_TMP;

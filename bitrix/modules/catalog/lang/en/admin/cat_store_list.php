@@ -24,4 +24,6 @@ $MESS["CSTORE_SORT"] = "Sort";
 $MESS["STORE_SITE_ID"] = "Website";
 $MESS["SHIPPING_CENTER"] = "Shipping center";
 $MESS["ISSUING_CENTER"] = "Pick-up location";
+$MESS["STORE_CODE"] = "Symbolic code";
+$MESS["STORE_XML_ID"] = "External ID";
 ?>

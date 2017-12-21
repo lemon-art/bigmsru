@@ -9,6 +9,9 @@ class BaseApiObject
 	/** @var Request $request */
 	protected $request;
 
+	/** @var Service $service */
+	protected $service;
+
 	protected static $listRowMap = array();
 
 	public static function normalizeListRow(array $row)
@@ -44,17 +47,32 @@ class BaseApiObject
 
 	public function setRequest(Request $request)
 	{
-		return $this->request = $request;
+		$this->request = $request;
+		return $this;
 	}
-
 
 	/**
 	 * @param $type
 	 * @param null $parameters
+	 * @param IService|null $service
 	 * @return static
 	 */
-	public static function create($type, $parameters = null)
+	public static function create($type, $parameters = null, IService $service = null)
 	{
-		return Factory::create(get_called_class(), $type, $parameters);
+		$instance = Factory::create(get_called_class(), $type, $parameters);
+		if ($service)
+		{
+			$instance->setService($service);
+		}
+
+		return $instance;
+	}
+
+	public function setService(IService $service)
+	{
+		$this->service = $service;
+		$this->request->setAuthAdapter($this->service->getAuthAdapter(static::TYPE_CODE));
+
+		return $this;
 	}
 }

@@ -49,7 +49,7 @@ if(!defined("B_PROLOG_INCLUDED") && isset($_REQUEST["AJAX_CALL"]) && $_REQUEST["
 		}
 	}
 
-	require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/include/epilog_after.php");
+	CMain::FinalActions();
 	die();
 }
 
@@ -96,7 +96,7 @@ if($arParams["ELEMENT_ID"] <= 0)
 {
 	$arParams["ELEMENT_ID"] = CIBlockFindTools::GetElementID(
 		$arParams["ELEMENT_ID"],
-		$arParams["ELEMENT_CODE"],
+		$arParams["~ELEMENT_CODE"],
 		false,
 		false,
 		array(

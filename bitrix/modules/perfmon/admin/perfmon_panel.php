@@ -425,7 +425,7 @@ elseif(isset($_REQUEST["test"]))
 					$i--;
 				?>
 					<tr>
-						<td><a href="perfmon_hit_list.php?lang=<?echo LANGUAGE_ID?>&amp;set_filter=Y&amp;find_script_name=<?echo urlencode(htmlspecialcharsbx($ar["SCRIPT_NAME"]))?>"><?echo $ar["SCRIPT_NAME"]?></a></td>
+						<td><a href="<?echo htmlspecialcharsbx("perfmon_hit_list.php?lang=".LANGUAGE_ID."&set_filter=Y&find_script_name=".urlencode($ar["SCRIPT_NAME"]))?>"><?echo htmlspecialcharsEx($ar["SCRIPT_NAME"])?></a></td>
 						<td class="bx-digit-cell" id="err_count_<?echo $i?>"><?
 							$rsHit = CPerfomanceHit::GetList(array("COUNT" => "DESC"), array(
 								'=SCRIPT_NAME' => $ar["SCRIPT_NAME"],
@@ -1421,7 +1421,7 @@ else
 				$i--;
 			?>
 			<tr>
-				<td><a href="perfmon_hit_list.php?lang=<?echo LANGUAGE_ID?>&amp;set_filter=Y&amp;find_script_name=<?echo urlencode(htmlspecialcharsbx($ar["SCRIPT_NAME"]))?>"><?echo $ar["SCRIPT_NAME"]?></a></td>
+				<td><a href="<?echo htmlspecialcharsbx("perfmon_hit_list.php?lang=".LANGUAGE_ID."&set_filter=Y&find_script_name=".urlencode($ar["SCRIPT_NAME"]))?>"><?echo htmlspecialcharsEx($ar["SCRIPT_NAME"])?></a></td>
 				<td class="bx-digit-cell" id="err_count_<?echo $i?>"><?
 					$rsHit = CPerfomanceHit::GetList(array("COUNT" => "DESC"), array(
 						'=SCRIPT_NAME' => $ar["SCRIPT_NAME"],

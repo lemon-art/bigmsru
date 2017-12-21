@@ -1,0 +1,626 @@
+/*region Icons*/
+.ui-btn:after,
+.ui-btn-main:after {
+	transition: 160ms color linear, 160ms transform linear, 160ms opacity linear, 160ms background-color linear;
+}
+
+/*region ui-btn-icon-arrow*/
+.ui-btn.ui-btn-icon-arrow,
+.ui-btn-double.ui-btn-icon-arrow .ui-btn-main {
+	padding-right: 29px;
+}
+
+.ui-btn.ui-btn-icon-arrow:after,
+.ui-btn-double.ui-btn-icon-arrow .ui-btn-main:after {
+	position: absolute;
+	top: 50%;
+	right: 13px;
+	display: block;
+	box-sizing: border-box;
+	margin-top: -2.5px;
+	width: 8px;
+	height: 8px;
+	border-bottom: 2px solid;
+	border-left: 2px solid;
+	content: '';
+	transform: translateY(-50%) rotate(-45deg);
+}
+
+.ui-btn.ui-btn-xs.ui-btn-icon-arrow:after,
+.ui-btn-double.ui-btn-xs.ui-btn-icon-arrow .ui-btn-main:after {
+	margin-top: .5px;
+}
+
+.ui-btn.ui-btn-link.ui-btn-icon-arrow:after,
+.ui-btn.ui-btn-secondary.ui-btn-icon-arrow:after,
+.ui-btn.ui-btn-light.ui-btn-icon-arrow:after,
+.ui-btn.ui-btn-success.ui-btn-icon-arrow:after,
+.ui-btn.ui-btn-light-border.ui-btn-icon-arrow:after,
+.ui-btn-double.ui-btn-link.ui-btn-icon-arrow .ui-btn-main:after,
+.ui-btn-double.ui-btn-secondary.ui-btn-icon-arrow .ui-btn-main:after,
+.ui-btn-double.ui-btn-light.ui-btn-icon-arrow .ui-btn-main:after,
+.ui-btn-double.ui-btn-success.ui-btn-icon-arrow .ui-btn-main:after,
+.ui-btn-double.ui-btn-light-border.ui-btn-icon-arrow .ui-btn-main:after {
+	border-color: #535c69;
+}
+
+.ui-btn.ui-btn-icon-arrow:after,
+.ui-btn.ui-btn-danger.ui-btn-icon-arrow:after,
+.ui-btn.ui-btn-primary.ui-btn-icon-arrow:after,
+.ui-btn.ui-btn-default.ui-btn-icon-arrow:after,
+.ui-btn-double.ui-btn-icon-arrow .ui-btn-main:after,
+.ui-btn-double.ui-btn-danger.ui-btn-icon-arrow .ui-btn-main:after,
+.ui-btn-double.ui-btn-primary.ui-btn-icon-arrow .ui-btn-main:after,
+.ui-btn-double.ui-btn-default.ui-btn-icon-arrow .ui-btn-main:after {
+	border-color: #fff;
+}
+
+/*endregion*/
+
+/*region ui-btn-icon-stop*/
+.ui-btn.ui-btn-icon-stop,
+.ui-btn-double.ui-btn-icon-stop .ui-btn-main {
+	padding-left: 29px;
+}
+
+.ui-btn.ui-btn-icon-stop:after,
+.ui-btn-double.ui-btn-icon-stop .ui-btn-main:after {
+	position: absolute;
+	top: 50%;
+	left: 13px;
+	display: block;
+	box-sizing: border-box;
+	width: 9px;
+	height: 9px;
+	border: 4.5px solid;
+	content: '';
+	transform: translateY(-50%);
+}
+
+.ui-btn.ui-btn-link.ui-btn-icon-stop:after,
+.ui-btn.ui-btn-secondary.ui-btn-icon-stop:after,
+.ui-btn.ui-btn-light.ui-btn-icon-stop:after,
+.ui-btn.ui-btn-success.ui-btn-icon-stop:after,
+.ui-btn.ui-btn-light-border.ui-btn-icon-stop:after,
+.ui-btn-double.ui-btn-link.ui-btn-icon-stop .ui-btn-main:after,
+.ui-btn-double.ui-btn-secondary.ui-btn-icon-stop .ui-btn-main:after,
+.ui-btn-double.ui-btn-light.ui-btn-icon-stop .ui-btn-main:after,
+.ui-btn-double.ui-btn-success.ui-btn-icon-stop .ui-btn-main:after,
+.ui-btn-double.ui-btn-light-border.ui-btn-icon-stop .ui-btn-main:after {
+	border-color: #535c69;
+}
+
+.ui-btn.ui-btn-icon-stop:after,
+.ui-btn.ui-btn-danger.ui-btn-icon-stop:after,
+.ui-btn.ui-btn-primary.ui-btn-icon-stop:after,
+.ui-btn.ui-btn-default.ui-btn-icon-stop:after,
+.ui-btn-double.ui-btn-icon-stop .ui-btn-main:after,
+.ui-btn-double.ui-btn-danger.ui-btn-icon-stop .ui-btn-main:after,
+.ui-btn-double.ui-btn-primary.ui-btn-icon-stop .ui-btn-main:after,
+.ui-btn-double.ui-btn-default.ui-btn-icon-stop .ui-btn-main:after {
+	border-color: #fff;
+}
+
+/*endregion*/
+
+/*region ui-btn-icon-pause*/
+.ui-btn.ui-btn-icon-pause,
+.ui-btn-double.ui-btn-icon-pause .ui-btn-main {
+	padding-left: 29px;
+}
+
+.ui-btn.ui-btn-icon-pause:after,
+.ui-btn-double.ui-btn-icon-pause .ui-btn-main:after {
+	position: absolute;
+	top: 50%;
+	left: 13px;
+	display: block;
+	box-sizing: border-box;
+	width: 7px;
+	height: 9px;
+	border-right: 2px solid;
+	border-left: 2px solid;
+	background-color: transparent;
+	content: '';
+	transform: translateY(-50%);
+}
+
+.ui-btn.ui-btn-link.ui-btn-icon-pause:after,
+.ui-btn.ui-btn-secondary.ui-btn-icon-pause:after,
+.ui-btn.ui-btn-light.ui-btn-icon-pause:after,
+.ui-btn.ui-btn-success.ui-btn-icon-pause:after,
+.ui-btn.ui-btn-light-border.ui-btn-icon-pause:after,
+.ui-btn-double.ui-btn-link.ui-btn-icon-pause .ui-btn-main:after,
+.ui-btn-double.ui-btn-secondary.ui-btn-icon-pause .ui-btn-main:after,
+.ui-btn-double.ui-btn-light.ui-btn-icon-pause .ui-btn-main:after,
+.ui-btn-double.ui-btn-success.ui-btn-icon-pause .ui-btn-main:after,
+.ui-btn-double.ui-btn-light-border.ui-btn-icon-pause .ui-btn-main:after {
+	border-color: #535c69;
+}
+
+.ui-btn.ui-btn-icon-pause:after,
+.ui-btn.ui-btn-danger.ui-btn-icon-pause:after,
+.ui-btn.ui-btn-primary.ui-btn-icon-pause:after,
+.ui-btn.ui-btn-default.ui-btn-icon-pause:after,
+.ui-btn-double.ui-btn-icon-pause .ui-btn-main:after,
+.ui-btn-double.ui-btn-danger.ui-btn-icon-pause .ui-btn-main:after,
+.ui-btn-double.ui-btn-primary.ui-btn-icon-pause .ui-btn-main:after,
+.ui-btn-double.ui-btn-default.ui-btn-icon-pause .ui-btn-main:after {
+	border-color: #fff;
+}
+
+/*endregion*/
+
+/*region ui-btn-icon-start*/
+.ui-btn.ui-btn-icon-start,
+.ui-btn-double.ui-btn-icon-start .ui-btn-main {
+	padding-left: 29px;
+}
+
+.ui-btn.ui-btn-icon-start:after,
+.ui-btn-double.ui-btn-icon-start .ui-btn-main:after {
+	position: absolute;
+	top: 50%;
+	left: 13px;
+	display: block;
+	border: 5px solid transparent;
+	border-left: 7px solid;
+	content: '';
+	transform: translateY(-50%);
+}
+
+.ui-btn.ui-btn-link.ui-btn-icon-start:after,
+.ui-btn.ui-btn-secondary.ui-btn-icon-start:after,
+.ui-btn.ui-btn-light.ui-btn-icon-start:after,
+.ui-btn.ui-btn-success.ui-btn-icon-start:after,
+.ui-btn.ui-btn-light-border.ui-btn-icon-start:after,
+.ui-btn-double.ui-btn-link.ui-btn-icon-start .ui-btn-main:after,
+.ui-btn-double.ui-btn-secondary.ui-btn-icon-start .ui-btn-main:after,
+.ui-btn-double.ui-btn-light.ui-btn-icon-start .ui-btn-main:after,
+.ui-btn-double.ui-btn-success.ui-btn-icon-start .ui-btn-main:after,
+.ui-btn-double.ui-btn-light-border.ui-btn-icon-start .ui-btn-main:after {
+	border-left-color: #535c69;
+}
+
+.ui-btn.ui-btn-icon-start:after,
+.ui-btn.ui-btn-danger.ui-btn-icon-start:after,
+.ui-btn.ui-btn-primary.ui-btn-icon-start:after,
+.ui-btn.ui-btn-default.ui-btn-icon-start:after,
+.ui-btn-double.ui-btn-icon-start .ui-btn-main:after,
+.ui-btn-double.ui-btn-danger.ui-btn-icon-start .ui-btn-main:after,
+.ui-btn-double.ui-btn-primary.ui-btn-icon-start .ui-btn-main:after,
+.ui-btn-double.ui-btn-default.ui-btn-icon-start .ui-btn-main:after {
+	border-left-color: #fff;
+}
+
+/*endregion*/
+
+/*region ui-btn-icon-add*/
+.ui-btn.ui-btn-icon-add,
+.ui-btn-double.ui-btn-icon-add .ui-btn-main {
+	padding-left: 29px;
+}
+
+.ui-btn.ui-btn-icon-add:after,
+.ui-btn-double.ui-btn-icon-add .ui-btn-main:after {
+	position: absolute;
+	top: 50%;
+	left: 13px;
+	display: block;
+	box-sizing: border-box;
+	width: 11px;
+	height: 11px;
+	background: no-repeat center;
+	content: '';
+	transform: translateY(-50%);
+}
+
+.ui-btn.ui-btn-link.ui-btn-icon-add:after,
+.ui-btn.ui-btn-secondary.ui-btn-icon-add:after,
+.ui-btn.ui-btn-light.ui-btn-icon-add:after,
+.ui-btn.ui-btn-success.ui-btn-icon-add:after,
+.ui-btn.ui-btn-light-border.ui-btn-icon-add:after,
+.ui-btn-double.ui-btn-link.ui-btn-icon-add .ui-btn-main:after,
+.ui-btn-double.ui-btn-secondary.ui-btn-icon-add .ui-btn-main:after,
+.ui-btn-double.ui-btn-light.ui-btn-icon-add .ui-btn-main:after,
+.ui-btn-double.ui-btn-success.ui-btn-icon-add .ui-btn-main:after,
+.ui-btn-double.ui-btn-light-border.ui-btn-icon-add .ui-btn-main:after {
+	background-image: url(data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2211px%22%20height%3D%2211px%22%20viewBox%3D%220%200%2011%2011%22%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20xmlns%3Axlink%3D%22http%3A//www.w3.org/1999/xlink%22%3E%0A%20%20%20%20%20%3Crect%20fill%3D%22%23535c69%22%20x%3D%220%22%20y%3D%224%22%20width%3D%2211%22%20height%3D%223%22%20/%3E%0A%20%20%20%20%20%3Crect%20fill%3D%22%23535c69%22%20x%3D%224%22%20y%3D%220%22%20width%3D%223%22%20%20height%3D%2211%22/%3E%0A%3C/svg%3E);
+}
+
+.ui-btn.ui-btn-icon-add:after,
+.ui-btn.ui-btn-danger.ui-btn-icon-add:after,
+.ui-btn.ui-btn-primary.ui-btn-icon-add:after,
+.ui-btn.ui-btn-default.ui-btn-icon-add:after,
+.ui-btn-double.ui-btn-icon-add .ui-btn-main:after,
+.ui-btn-double.ui-btn-danger.ui-btn-icon-add .ui-btn-main:after,
+.ui-btn-double.ui-btn-primary.ui-btn-icon-add .ui-btn-main:after,
+.ui-btn-double.ui-btn-default.ui-btn-icon-add .ui-btn-main:after {
+	background-image: url(data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2211px%22%20height%3D%2211px%22%20viewBox%3D%220%200%2011%2011%22%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20xmlns%3Axlink%3D%22http%3A//www.w3.org/1999/xlink%22%3E%0A%20%20%20%20%20%3Crect%20fill%3D%22%23fff%22%20x%3D%220%22%20y%3D%224%22%20width%3D%2211%22%20height%3D%223%22%20/%3E%0A%20%20%20%20%20%3Crect%20fill%3D%22%23fff%22%20x%3D%224%22%20y%3D%220%22%20width%3D%223%22%20%20height%3D%2211%22/%3E%0A%3C/svg%3E);
+}
+
+/*endregion*/
+
+/*region ui-btn-icon-setting*/
+.ui-btn.ui-btn-icon-setting,
+.ui-btn-double.ui-btn-icon-setting .ui-btn-main {
+	padding-left: 29px;
+}
+
+.ui-btn.ui-btn-icon-setting:after,
+.ui-btn-double.ui-btn-icon-setting .ui-btn-main:after {
+	position: absolute;
+	top: 50%;
+	left: 9px;
+	display: block;
+	box-sizing: border-box;
+	margin-top: -8px;
+	width: 16px;
+	height: 16px;
+	background: no-repeat center;
+	content: '';
+}
+
+.ui-btn.ui-btn-icon-setting:hover:after,
+.ui-btn-double.ui-btn-icon-setting .ui-btn-main:hover:after {
+	animation-name: rotate;
+	animation-duration: .7s;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite
+}
+
+.ui-btn.ui-btn-icon-setting:empty:hover:after {
+	animation-name: rotateEmpty;
+}
+
+@keyframes rotate {
+	0% { transform: rotate(0) }
+	100% { transform: rotate(90deg) }
+}
+
+@keyframes rotateEmpty {
+	0% { transform: translate3d(-50%, -50%, 0) rotate(0) }
+	100% { transform: translate3d(-50%, -50%, 0) rotate(90deg) }
+}
+
+.ui-btn.ui-btn-link.ui-btn-icon-setting:after,
+.ui-btn.ui-btn-secondary.ui-btn-icon-setting:after,
+.ui-btn.ui-btn-light.ui-btn-icon-setting:after,
+.ui-btn.ui-btn-success.ui-btn-icon-setting:after,
+.ui-btn.ui-btn-light-border.ui-btn-icon-setting:after,
+.ui-btn-double.ui-btn-link.ui-btn-icon-setting .ui-btn-main:after,
+.ui-btn-double.ui-btn-secondary.ui-btn-icon-setting .ui-btn-main:after,
+.ui-btn-double.ui-btn-light.ui-btn-icon-setting .ui-btn-main:after,
+.ui-btn-double.ui-btn-success.ui-btn-icon-setting .ui-btn-main:after,
+.ui-btn-double.ui-btn-light-border.ui-btn-icon-setting .ui-btn-main:after {
+	background-image: url(data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20xmlns%3Axlink%3D%22http%3A//www.w3.org/1999/xlink%22%3E%0A%20%20%20%20%3Cg%20transform%3D%22translate%28-12%2C%20-11%29%22%20fill%3D%22%23535c69%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M22.9549333%2C19.6581413%20C22.7131867%2C20.7945707%2021.8195067%2C21.6882747%2020.68312%2C21.9299507%20C18.5165333%2C22.39074%2016.6344267%2C20.508024%2017.0952933%2C18.3418347%20C17.31324%2C17.317524%2018.34252%2C16.2881373%2019.3668%2C16.0701413%20C21.5329733%2C15.6090733%2023.4158133%2C17.4913707%2022.9549333%2C19.6581413%20M27.4145333%2C17.8349653%20L25.8296133%2C17.57054%20L25.8296133%2C17.57054%20C25.7170133%2C17.1101933%2025.554%2C16.6696867%2025.3424133%2C16.2579133%20C25.33352%2C16.2405893%2025.3355867%2C16.219748%2025.3478133%2C16.2045907%20L26.3423333%2C14.9714347%20C26.5581333%2C14.7055427%2026.5483333%2C14.322992%2026.3208267%2C14.0663907%20L25.6904667%2C13.35694%20C25.4619733%2C13.1005947%2025.0830667%2C13.0463867%2024.79404%2C13.228988%20L23.4386133%2C14.08106%20L23.4386133%2C14.08106%20C22.8510133%2C13.67052%2022.18652%2C13.365788%2021.4700133%2C13.1862373%20C21.4510133%2C13.181464%2021.4366%2C13.165956%2021.43336%2C13.1466053%20L21.1735067%2C11.584968%20C21.1178533%2C11.2475667%2020.82588%2C11%2020.4831467%2C11%20L19.5332133%2C11%20C19.1911733%2C11%2018.8982%2C11.2475667%2018.8437867%2C11.584968%20L18.5824933%2C13.147188%20C18.5792533%2C13.1664907%2018.5648667%2C13.181952%2018.5458933%2C13.1867027%20C17.96604%2C13.3320253%2017.4214%2C13.5613827%2016.92248%2C13.861248%20C16.9056667%2C13.8713547%2016.8845467%2C13.8706093%2016.8685733%2C13.8592%20L15.6058133%2C12.957996%20C15.3280133%2C12.7595147%2014.9464267%2C12.7905533%2014.7039867%2C13.0324853%20L14.0328933%2C13.7040747%20C13.79096%2C13.9465187%2013.75992%2C14.3281147%2013.9589333%2C14.6059293%20L14.8622533%2C15.8712173%20C14.87364%2C15.887168%2014.8744267%2C15.9082867%2014.8643467%2C15.9250987%20C14.5674%2C16.420164%2014.3404267%2C16.9615653%2014.1952533%2C17.536148%20C14.1904533%2C17.5551253%2014.175%2C17.5694693%2014.15572%2C17.5726827%20L12.5849333%2C17.8349893%20C12.2480533%2C17.8906173%2012%2C18.1826347%2012%2C18.525392%20L12%2C19.474608%20C12%2C19.8173413%2012.2480533%2C20.1093827%2012.5849333%2C20.1650107%20L14.1556667%2C20.4272947%20C14.1749733%2C20.4305307%2014.1904533%2C20.4448987%2014.1952267%2C20.4638987%20C14.31332%2C20.933%2014.4815333%2C21.3817267%2014.7026667%2C21.7994387%20C14.71188%2C21.816856%2014.7099333%2C21.8380213%2014.6975467%2C21.8533667%20L13.7079333%2C23.0790467%20C13.49288%2C23.344684%2013.5019067%2C23.7274907%2013.7294267%2C23.9838587%20L14.3592933%2C24.693332%20C14.5878%2C24.950144%2014.96692%2C25.0033733%2015.2559733%2C24.8212373%20L16.6037467%2C23.974568%20C16.6202667%2C23.9641827%2016.64132%2C23.9646027%2016.65748%2C23.9755467%20C17.23272%2C24.3642907%2017.88164%2C24.6505573%2018.5771867%2C24.8212373%20L18.5771867%2C24.8212373%20L18.8438133%2C26.4149853%20C18.8982267%2C26.7524093%2019.1911733%2C27%2019.5332133%2C27%20L20.4831467%2C27%20C20.8258933%2C27%2021.1178533%2C26.7524333%2021.1735067%2C26.4150093%20L21.4338%2C24.853068%20C21.43704%2C24.8337413%2021.4514533%2C24.8182573%2021.4704533%2C24.8135067%20C22.0428133%2C24.6701867%2022.5803733%2C24.44488%2023.0745867%2C24.1503013%20C23.0914%2C24.140288%2023.11244%2C24.14108%2023.1283467%2C24.1524427%20L24.44492%2C25.0927653%20C24.72224%2C25.2919693%2025.1040933%2C25.26072%2025.34628%2C25.01802%20L26.0176667%2C24.3466413%20C26.2593067%2C24.1049413%2026.2920267%2C23.7235547%2026.09136%2C23.445228%20L25.15412%2C22.1311347%20C25.1427333%2C22.115184%2025.14196%2C22.094088%2025.15204%2C22.0772987%20C25.4498667%2C21.5805587%2025.6780533%2C21.0381093%2025.8224267%2C20.4609413%20C25.8271733%2C20.4419413%2025.8426533%2C20.427528%2025.86196%2C20.4242907%20L27.4150667%2C20.1649653%20C27.7529467%2C20.1093133%2028%2C19.8172947%2028%2C19.4745613%20L28%2C18.5253453%20C27.9994933%2C18.1826347%2027.75244%2C17.8906173%2027.4145333%2C17.8349653%22/%3E%0A%20%20%20%20%3C/g%3E%0A%3C/svg%3E);
+}
+
+.ui-btn.ui-btn-icon-setting:after,
+.ui-btn.ui-btn-danger.ui-btn-icon-setting:after,
+.ui-btn.ui-btn-primary.ui-btn-icon-setting:after,
+.ui-btn.ui-btn-default.ui-btn-icon-setting:after,
+.ui-btn-double.ui-btn-icon-setting .ui-btn-main:after,
+.ui-btn-double.ui-btn-danger.ui-btn-icon-setting .ui-btn-main:after,
+.ui-btn-double.ui-btn-primary.ui-btn-icon-setting .ui-btn-main:after,
+.ui-btn-double.ui-btn-default.ui-btn-icon-setting .ui-btn-main:after {
+	background-image: url(data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20xmlns%3Axlink%3D%22http%3A//www.w3.org/1999/xlink%22%3E%0A%20%20%20%20%3Cg%20transform%3D%22translate%28-12%2C%20-11%29%22%20fill%3D%22%23fff%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M22.9549333%2C19.6581413%20C22.7131867%2C20.7945707%2021.8195067%2C21.6882747%2020.68312%2C21.9299507%20C18.5165333%2C22.39074%2016.6344267%2C20.508024%2017.0952933%2C18.3418347%20C17.31324%2C17.317524%2018.34252%2C16.2881373%2019.3668%2C16.0701413%20C21.5329733%2C15.6090733%2023.4158133%2C17.4913707%2022.9549333%2C19.6581413%20M27.4145333%2C17.8349653%20L25.8296133%2C17.57054%20L25.8296133%2C17.57054%20C25.7170133%2C17.1101933%2025.554%2C16.6696867%2025.3424133%2C16.2579133%20C25.33352%2C16.2405893%2025.3355867%2C16.219748%2025.3478133%2C16.2045907%20L26.3423333%2C14.9714347%20C26.5581333%2C14.7055427%2026.5483333%2C14.322992%2026.3208267%2C14.0663907%20L25.6904667%2C13.35694%20C25.4619733%2C13.1005947%2025.0830667%2C13.0463867%2024.79404%2C13.228988%20L23.4386133%2C14.08106%20L23.4386133%2C14.08106%20C22.8510133%2C13.67052%2022.18652%2C13.365788%2021.4700133%2C13.1862373%20C21.4510133%2C13.181464%2021.4366%2C13.165956%2021.43336%2C13.1466053%20L21.1735067%2C11.584968%20C21.1178533%2C11.2475667%2020.82588%2C11%2020.4831467%2C11%20L19.5332133%2C11%20C19.1911733%2C11%2018.8982%2C11.2475667%2018.8437867%2C11.584968%20L18.5824933%2C13.147188%20C18.5792533%2C13.1664907%2018.5648667%2C13.181952%2018.5458933%2C13.1867027%20C17.96604%2C13.3320253%2017.4214%2C13.5613827%2016.92248%2C13.861248%20C16.9056667%2C13.8713547%2016.8845467%2C13.8706093%2016.8685733%2C13.8592%20L15.6058133%2C12.957996%20C15.3280133%2C12.7595147%2014.9464267%2C12.7905533%2014.7039867%2C13.0324853%20L14.0328933%2C13.7040747%20C13.79096%2C13.9465187%2013.75992%2C14.3281147%2013.9589333%2C14.6059293%20L14.8622533%2C15.8712173%20C14.87364%2C15.887168%2014.8744267%2C15.9082867%2014.8643467%2C15.9250987%20C14.5674%2C16.420164%2014.3404267%2C16.9615653%2014.1952533%2C17.536148%20C14.1904533%2C17.5551253%2014.175%2C17.5694693%2014.15572%2C17.5726827%20L12.5849333%2C17.8349893%20C12.2480533%2C17.8906173%2012%2C18.1826347%2012%2C18.525392%20L12%2C19.474608%20C12%2C19.8173413%2012.2480533%2C20.1093827%2012.5849333%2C20.1650107%20L14.1556667%2C20.4272947%20C14.1749733%2C20.4305307%2014.1904533%2C20.4448987%2014.1952267%2C20.4638987%20C14.31332%2C20.933%2014.4815333%2C21.3817267%2014.7026667%2C21.7994387%20C14.71188%2C21.816856%2014.7099333%2C21.8380213%2014.6975467%2C21.8533667%20L13.7079333%2C23.0790467%20C13.49288%2C23.344684%2013.5019067%2C23.7274907%2013.7294267%2C23.9838587%20L14.3592933%2C24.693332%20C14.5878%2C24.950144%2014.96692%2C25.0033733%2015.2559733%2C24.8212373%20L16.6037467%2C23.974568%20C16.6202667%2C23.9641827%2016.64132%2C23.9646027%2016.65748%2C23.9755467%20C17.23272%2C24.3642907%2017.88164%2C24.6505573%2018.5771867%2C24.8212373%20L18.5771867%2C24.8212373%20L18.8438133%2C26.4149853%20C18.8982267%2C26.7524093%2019.1911733%2C27%2019.5332133%2C27%20L20.4831467%2C27%20C20.8258933%2C27%2021.1178533%2C26.7524333%2021.1735067%2C26.4150093%20L21.4338%2C24.853068%20C21.43704%2C24.8337413%2021.4514533%2C24.8182573%2021.4704533%2C24.8135067%20C22.0428133%2C24.6701867%2022.5803733%2C24.44488%2023.0745867%2C24.1503013%20C23.0914%2C24.140288%2023.11244%2C24.14108%2023.1283467%2C24.1524427%20L24.44492%2C25.0927653%20C24.72224%2C25.2919693%2025.1040933%2C25.26072%2025.34628%2C25.01802%20L26.0176667%2C24.3466413%20C26.2593067%2C24.1049413%2026.2920267%2C23.7235547%2026.09136%2C23.445228%20L25.15412%2C22.1311347%20C25.1427333%2C22.115184%2025.14196%2C22.094088%2025.15204%2C22.0772987%20C25.4498667%2C21.5805587%2025.6780533%2C21.0381093%2025.8224267%2C20.4609413%20C25.8271733%2C20.4419413%2025.8426533%2C20.427528%2025.86196%2C20.4242907%20L27.4150667%2C20.1649653%20C27.7529467%2C20.1093133%2028%2C19.8172947%2028%2C19.4745613%20L28%2C18.5253453%20C27.9994933%2C18.1826347%2027.75244%2C17.8906173%2027.4145333%2C17.8349653%22/%3E%0A%20%20%20%20%3C/g%3E%0A%3C/svg%3E);
+}
+
+/*endregion*/
+
+/*region ui-btn-icon-task*/
+.ui-btn.ui-btn-icon-task,
+.ui-btn-double.ui-btn-icon-task .ui-btn-main {
+	padding-left: 29px;
+}
+
+.ui-btn.ui-btn-icon-task:after,
+.ui-btn-double.ui-btn-icon-task .ui-btn-main:after {
+	position: absolute;
+	top: 50%;
+	left: 9px;
+	display: block;
+	box-sizing: border-box;
+	margin-top: -8px;
+	width: 16px;
+	height: 16px;
+	background: no-repeat center;
+	content: '';
+}
+
+.ui-btn.ui-btn-icon-task:empty:hover:after {
+	background-size: 100% 100%;
+	animation-name: rubberBandEmpty;
+	animation-duration: .7s;
+	animation-fill-mode: both;
+}
+
+.ui-btn.ui-btn-icon-task:hover:after,
+.ui-btn-double.ui-btn-icon-task .ui-btn-main:hover:after {
+	background-size: 100% 100%;
+	animation-name: rubberBand;
+	animation-duration: .7s;
+	animation-fill-mode: both;
+}
+
+@keyframes rubberBandEmpty {
+	0% { transform: translate3d(-50%, -50%, 0) scaleX(1) }
+	30% { transform: translate3d(-50%, -50%, 0) scale3d(1.25, .75, 1) }
+	40% { transform: translate3d(-50%, -50%, 0) scale3d(.75, 1.5, 1) }
+	50% { transform: translate3d(-50%, -50%, 0) scale3d(1.15, .85, 1) }
+	65% { transform: translate3d(-50%, -50%, 0) scale3d(.95, 1.05, 1) }
+	75% { transform: translate3d(-50%, -50%, 0) scale3d(1.05, .95, 1) }
+	100% { transform: translate3d(-50%, -50%, 0) scaleX(1) }
+}
+
+@keyframes rubberBand {
+	0% { transform: scaleX(1) }
+	30% { transform: scale3d(1.25, .75, 1) }
+	40% { transform: scale3d(.75, 1.5, 1) }
+	50% { transform: scale3d(1.15, .85, 1) }
+	65% { transform: scale3d(.95, 1.05, 1) }
+	75% { transform: scale3d(1.05, .95, 1) }
+	100% { transform: scaleX(1) }
+}
+
+.ui-btn.ui-btn-link.ui-btn-icon-task:after,
+.ui-btn.ui-btn-secondary.ui-btn-icon-task:after,
+.ui-btn.ui-btn-light.ui-btn-icon-task:after,
+.ui-btn.ui-btn-success.ui-btn-icon-task:after,
+.ui-btn.ui-btn-light-border.ui-btn-icon-task:after,
+.ui-btn-double.ui-btn-link.ui-btn-icon-task .ui-btn-main:after,
+.ui-btn-double.ui-btn-secondary.ui-btn-icon-task .ui-btn-main:after,
+.ui-btn-double.ui-btn-light.ui-btn-icon-task .ui-btn-main:after,
+.ui-btn-double.ui-btn-success.ui-btn-icon-task .ui-btn-main:after,
+.ui-btn-double.ui-btn-light-border.ui-btn-icon-task .ui-btn-main:after {
+	background-image: url(data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2212px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2012%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20xmlns%3Axlink%3D%22http%3A//www.w3.org/1999/xlink%22%3E%0A%20%20%20%20%3Cg%20transform%3D%22translate%28-12.000000%2C%20-8.000000%29%22%20fill%3D%22%23535C69%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cpolygon%20points%3D%2217%208%2024%208%2018%2014%2023%2014%2014%2024%2017%2016%2012%2016%22/%3E%0A%20%20%20%20%3C/g%3E%0A%3C/svg%3E);
+}
+
+.ui-btn.ui-btn-icon-task:after,
+.ui-btn.ui-btn-danger.ui-btn-icon-task:after,
+.ui-btn.ui-btn-primary.ui-btn-icon-task:after,
+.ui-btn.ui-btn-default.ui-btn-icon-task:after,
+.ui-btn-double.ui-btn-icon-task .ui-btn-main:after,
+.ui-btn-double.ui-btn-danger.ui-btn-icon-task .ui-btn-main:after,
+.ui-btn-double.ui-btn-primary.ui-btn-icon-task .ui-btn-main:after,
+.ui-btn-double.ui-btn-default.ui-btn-icon-task .ui-btn-main:after {
+	background-image: url(data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2212px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2012%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20xmlns%3Axlink%3D%22http%3A//www.w3.org/1999/xlink%22%3E%0A%20%20%20%20%3Cg%20transform%3D%22translate%28-12%2C%20-8%29%22%20fill%3D%22%23fff%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cpolygon%20points%3D%2217%208%2024%208%2018%2014%2023%2014%2014%2024%2017%2016%2012%2016%22/%3E%0A%20%20%20%20%3C/g%3E%0A%3C/svg%3E);
+}
+
+/*endregion*/
+
+/*region ui-btn-icon-info*/
+.ui-btn.ui-btn-icon-info,
+.ui-btn-double.ui-btn-icon-info .ui-btn-main {
+	padding-left: 29px;
+}
+
+.ui-btn.ui-btn-icon-info:after,
+.ui-btn-double.ui-btn-icon-info .ui-btn-main:after {
+	position: absolute;
+	top: 50%;
+	left: 9px;
+	display: block;
+	box-sizing: border-box;
+	margin-top: -8px;
+	width: 16px;
+	height: 16px;
+	background: no-repeat center;
+	content: '';
+}
+
+.ui-btn.ui-btn-link.ui-btn-icon-info:after,
+.ui-btn.ui-btn-secondary.ui-btn-icon-info:after,
+.ui-btn.ui-btn-light.ui-btn-icon-info:after,
+.ui-btn.ui-btn-success.ui-btn-icon-info:after,
+.ui-btn.ui-btn-light-border.ui-btn-icon-info:after,
+.ui-btn-double.ui-btn-link.ui-btn-icon-info .ui-btn-main:after,
+.ui-btn-double.ui-btn-secondary.ui-btn-icon-info .ui-btn-main:after,
+.ui-btn-double.ui-btn-light.ui-btn-icon-info .ui-btn-main:after,
+.ui-btn-double.ui-btn-success.ui-btn-icon-info .ui-btn-main:after,
+.ui-btn-double.ui-btn-light-border.ui-btn-icon-info .ui-btn-main:after {
+	background-image: url(data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20xmlns%3Axlink%3D%22http%3A//www.w3.org/1999/xlink%22%3E%0A%20%20%20%20%3Cg%20fill%3D%22%23535C69%22%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%227%22%20stroke%3D%22%23535C69%22%20stroke-width%3D%222%22%20fill%3D%22none%22/%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%227%22%20y%3D%224%22%20width%3D%222%22%20height%3D%225%22%20rx%3D%221%22/%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%227%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22/%3E%0A%20%20%20%20%3C/g%3E%0A%3C/svg%3E);
+}
+
+.ui-btn.ui-btn-icon-info:after,
+.ui-btn.ui-btn-danger.ui-btn-icon-info:after,
+.ui-btn.ui-btn-primary.ui-btn-icon-info:after,
+.ui-btn.ui-btn-default.ui-btn-icon-info:after,
+.ui-btn-double.ui-btn-icon-info .ui-btn-main:after,
+.ui-btn-double.ui-btn-danger.ui-btn-icon-info .ui-btn-main:after,
+.ui-btn-double.ui-btn-primary.ui-btn-icon-info .ui-btn-main:after,
+.ui-btn-double.ui-btn-default.ui-btn-icon-info .ui-btn-main:after {
+	background-image: url(data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2216px%22%20height%3D%2216px%22%20viewBox%3D%220%200%2016%2016%22%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20xmlns%3Axlink%3D%22http%3A//www.w3.org/1999/xlink%22%3E%0A%20%20%20%20%3Cg%20fill%3D%22%23fff%22%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%227%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222%22%20fill%3D%22none%22/%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%227%22%20y%3D%224%22%20width%3D%222%22%20height%3D%225%22%20rx%3D%221%22/%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%227%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22/%3E%0A%20%20%20%20%3C/g%3E%0A%3C/svg%3E);
+}
+
+/*endregion*/
+
+/*region ui-btn-icon-search*/
+.ui-btn.ui-btn-icon-search,
+.ui-btn-double.ui-btn-icon-search .ui-btn-main {
+	padding-left: 29px;
+}
+
+.ui-btn.ui-btn-icon-search:after,
+.ui-btn-double.ui-btn-icon-search .ui-btn-main:after {
+	position: absolute;
+	top: 50%;
+	left: 9px;
+	display: block;
+	box-sizing: border-box;
+	margin-top: -8.5px;
+	width: 17px;
+	height: 17px;
+	background: no-repeat center;
+	content: '';
+}
+
+.ui-btn.ui-btn-link.ui-btn-icon-search:after,
+.ui-btn.ui-btn-secondary.ui-btn-icon-search:after,
+.ui-btn.ui-btn-light.ui-btn-icon-search:after,
+.ui-btn.ui-btn-success.ui-btn-icon-search:after,
+.ui-btn.ui-btn-light-border.ui-btn-icon-search:after,
+.ui-btn-double.ui-btn-link.ui-btn-icon-search .ui-btn-main:after,
+.ui-btn-double.ui-btn-secondary.ui-btn-icon-search .ui-btn-main:after,
+.ui-btn-double.ui-btn-light.ui-btn-icon-search .ui-btn-main:after,
+.ui-btn-double.ui-btn-success.ui-btn-icon-search .ui-btn-main:after,
+.ui-btn-double.ui-btn-light-border.ui-btn-icon-search .ui-btn-main:after {
+	background-image: url(data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2217px%22%20height%3D%2217px%22%20viewBox%3D%220%200%2017%2017%22%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20xmlns%3Axlink%3D%22http%3A//www.w3.org/1999/xlink%22%3E%0A%20%20%20%20%3Cg%20transform%3D%22translate%28-8%2C%20-8%29%22%20fill%3D%22%23535C69%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M20.896054%2C18.7747337%20L23.8474034%2C21.7260831%20C24.2413242%2C22.1200039%2024.247652%2C22.752348%2023.8542912%2C23.1457088%20L23.1457088%2C23.8542912%20C22.755592%2C24.244408%2022.1200735%2C24.2413938%2021.7260831%2C23.8474034%20L18.7747337%2C20.896054%20C17.6855772%2C21.5947944%2016.390109%2C22%2015%2C22%20C11.1340068%2C22%208%2C18.8659932%208%2C15%20C8%2C11.1340068%2011.1340068%2C8%2015%2C8%20C18.8659932%2C8%2022%2C11.1340068%2022%2C15%20C22%2C16.390109%2021.5947944%2C17.6855772%2020.896054%2C18.7747337%20Z%20M15%2C20%20C17.7614237%2C20%2020%2C17.7614237%2020%2C15%20C20%2C12.2385763%2017.7614237%2C10%2015%2C10%20C12.2385763%2C10%2010%2C12.2385763%2010%2C15%20C10%2C17.7614237%2012.2385763%2C20%2015%2C20%20Z%22/%3E%0A%20%20%20%20%3C/g%3E%0A%3C/svg%3E);
+}
+
+.ui-btn.ui-btn-icon-search:after,
+.ui-btn.ui-btn-danger.ui-btn-icon-search:after,
+.ui-btn.ui-btn-primary.ui-btn-icon-search:after,
+.ui-btn.ui-btn-default.ui-btn-icon-search:after,
+.ui-btn-double.ui-btn-icon-search .ui-btn-main:after,
+.ui-btn-double.ui-btn-danger.ui-btn-icon-search .ui-btn-main:after,
+.ui-btn-double.ui-btn-primary.ui-btn-icon-search .ui-btn-main:after,
+.ui-btn-double.ui-btn-default.ui-btn-icon-search .ui-btn-main:after {
+	background-image: url(data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2217px%22%20height%3D%2217px%22%20viewBox%3D%220%200%2017%2017%22%20version%3D%221.1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20xmlns%3Axlink%3D%22http%3A//www.w3.org/1999/xlink%22%3E%0A%20%20%20%20%3Cg%20transform%3D%22translate%28-8%2C%20-8%29%22%20fill%3D%22%23fff%22%20fill-rule%3D%22evenodd%22%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M20.896054%2C18.7747337%20L23.8474034%2C21.7260831%20C24.2413242%2C22.1200039%2024.247652%2C22.752348%2023.8542912%2C23.1457088%20L23.1457088%2C23.8542912%20C22.755592%2C24.244408%2022.1200735%2C24.2413938%2021.7260831%2C23.8474034%20L18.7747337%2C20.896054%20C17.6855772%2C21.5947944%2016.390109%2C22%2015%2C22%20C11.1340068%2C22%208%2C18.8659932%208%2C15%20C8%2C11.1340068%2011.1340068%2C8%2015%2C8%20C18.8659932%2C8%2022%2C11.1340068%2022%2C15%20C22%2C16.390109%2021.5947944%2C17.6855772%2020.896054%2C18.7747337%20Z%20M15%2C20%20C17.7614237%2C20%2020%2C17.7614237%2020%2C15%20C20%2C12.2385763%2017.7614237%2C10%2015%2C10%20C12.2385763%2C10%2010%2C12.2385763%2010%2C15%20C10%2C17.7614237%2012.2385763%2C20%2015%2C20%20Z%22/%3E%0A%20%20%20%20%3C/g%3E%0A%3C/svg%3E);
+}
+
+/*endregion*/
+
+.ui-btn.ui-btn-icon-add:empty,
+.ui-btn.ui-btn-icon-task:empty,
+.ui-btn.ui-btn-icon-info:empty,
+.ui-btn.ui-btn-icon-stop:empty,
+.ui-btn.ui-btn-icon-arrow:empty,
+.ui-btn.ui-btn-icon-pause:empty,
+.ui-btn.ui-btn-icon-start:empty,
+.ui-btn.ui-btn-icon-search:empty,
+.ui-btn.ui-btn-icon-setting:empty,
+.ui-btn-double.ui-btn-icon-add .ui-btn-main:empty,
+.ui-btn-double.ui-btn-icon-task .ui-btn-main:empty,
+.ui-btn-double.ui-btn-icon-info .ui-btn-main:empty,
+.ui-btn-double.ui-btn-icon-stop .ui-btn-main:empty,
+.ui-btn-double.ui-btn-icon-arrow .ui-btn-main:empty,
+.ui-btn-double.ui-btn-icon-pause .ui-btn-main:empty,
+.ui-btn-double.ui-btn-icon-start .ui-btn-main:empty,
+.ui-btn-double.ui-btn-icon-search .ui-btn-main:empty,
+.ui-btn-double.ui-btn-icon-setting .ui-btn-main:empty {
+	padding: 0;
+	width: 39px;
+	height: 39px;
+}
+
+.ui-btn.ui-btn-icon-add:empty:after,
+.ui-btn.ui-btn-icon-task:empty:after,
+.ui-btn.ui-btn-icon-info:empty:after,
+.ui-btn.ui-btn-icon-stop:empty:after,
+.ui-btn.ui-btn-icon-arrow:empty:after,
+.ui-btn.ui-btn-icon-pause:empty:after,
+.ui-btn.ui-btn-icon-start:empty:after,
+.ui-btn.ui-btn-icon-search:empty:after,
+.ui-btn.ui-btn-icon-setting:empty:after,
+.ui-btn-double.ui-btn-icon-add .ui-btn-main:empty:after,
+.ui-btn-double.ui-btn-icon-task .ui-btn-main:empty:after,
+.ui-btn-double.ui-btn-icon-info .ui-btn-main:empty:after,
+.ui-btn-double.ui-btn-icon-stop .ui-btn-main:empty:after,
+.ui-btn-double.ui-btn-icon-arrow .ui-btn-main:empty:after,
+.ui-btn-double.ui-btn-icon-pause .ui-btn-main:empty:after,
+.ui-btn-double.ui-btn-icon-start .ui-btn-main:empty:after,
+.ui-btn-double.ui-btn-icon-search .ui-btn-main:empty:after,
+.ui-btn-double.ui-btn-icon-setting .ui-btn-main:empty:after {
+	top: 50%;
+	left: 50%;
+	margin: 0;
+	transform: translate3d(-50%, -50%, 0);
+}
+
+.ui-btn.ui-btn-icon-arrow:empty:after,
+.ui-btn-double.ui-btn-icon-arrow .ui-btn-main:empty:after {
+	margin-top: -2.5px;
+	transform: translate3d(-50%, -50%, 0) rotate(-45deg);
+}
+
+/*endregion*/
+
+.ui-btn.ui-btn-lg.ui-btn-icon-add:empty,
+.ui-btn.ui-btn-lg.ui-btn-icon-task:empty,
+.ui-btn.ui-btn-lg.ui-btn-icon-info:empty,
+.ui-btn.ui-btn-lg.ui-btn-icon-stop:empty,
+.ui-btn.ui-btn-lg.ui-btn-icon-arrow:empty,
+.ui-btn.ui-btn-lg.ui-btn-icon-pause:empty,
+.ui-btn.ui-btn-lg.ui-btn-icon-start:empty,
+.ui-btn.ui-btn-lg.ui-btn-icon-search:empty,
+.ui-btn.ui-btn-lg.ui-btn-icon-setting:empty,
+.ui-btn-double.ui-btn-lg.ui-btn-icon-add .ui-btn-main:empty,
+.ui-btn-double.ui-btn-lg.ui-btn-icon-task .ui-btn-main:empty,
+.ui-btn-double.ui-btn-lg.ui-btn-icon-info .ui-btn-main:empty,
+.ui-btn-double.ui-btn-lg.ui-btn-icon-stop .ui-btn-main:empty,
+.ui-btn-double.ui-btn-lg.ui-btn-icon-arrow .ui-btn-main:empty,
+.ui-btn-double.ui-btn-lg.ui-btn-icon-pause .ui-btn-main:empty,
+.ui-btn-double.ui-btn-lg.ui-btn-icon-start .ui-btn-main:empty,
+.ui-btn-double.ui-btn-lg.ui-btn-icon-search .ui-btn-main:empty,
+.ui-btn-double.ui-btn-lg.ui-btn-icon-setting .ui-btn-main:empty {
+	width: 47px;
+	height: 47px;
+}
+
+.ui-btn.ui-btn-md.ui-btn-icon-add:empty,
+.ui-btn.ui-btn-md.ui-btn-icon-task:empty,
+.ui-btn.ui-btn-md.ui-btn-icon-info:empty,
+.ui-btn.ui-btn-md.ui-btn-icon-stop:empty,
+.ui-btn.ui-btn-md.ui-btn-icon-arrow:empty,
+.ui-btn.ui-btn-md.ui-btn-icon-pause:empty,
+.ui-btn.ui-btn-md.ui-btn-icon-start:empty,
+.ui-btn.ui-btn-md.ui-btn-icon-search:empty,
+.ui-btn.ui-btn-md.ui-btn-icon-setting:empty,
+.ui-btn-double.ui-btn-md.ui-btn-icon-add .ui-btn-main:empty,
+.ui-btn-double.ui-btn-md.ui-btn-icon-task .ui-btn-main:empty,
+.ui-btn-double.ui-btn-md.ui-btn-icon-info .ui-btn-main:empty,
+.ui-btn-double.ui-btn-md.ui-btn-icon-stop .ui-btn-main:empty,
+.ui-btn-double.ui-btn-md.ui-btn-icon-arrow .ui-btn-main:empty,
+.ui-btn-double.ui-btn-md.ui-btn-icon-pause .ui-btn-main:empty,
+.ui-btn-double.ui-btn-md.ui-btn-icon-start .ui-btn-main:empty,
+.ui-btn-double.ui-btn-md.ui-btn-icon-search .ui-btn-main:empty,
+.ui-btn-double.ui-btn-md.ui-btn-icon-setting .ui-btn-main:empty {
+	width: 39px;
+	height: 39px;
+}
+
+.ui-btn.ui-btn-sm.ui-btn-icon-add:empty,
+.ui-btn.ui-btn-sm.ui-btn-icon-task:empty,
+.ui-btn.ui-btn-sm.ui-btn-icon-info:empty,
+.ui-btn.ui-btn-sm.ui-btn-icon-stop:empty,
+.ui-btn.ui-btn-sm.ui-btn-icon-arrow:empty,
+.ui-btn.ui-btn-sm.ui-btn-icon-pause:empty,
+.ui-btn.ui-btn-sm.ui-btn-icon-start:empty,
+.ui-btn.ui-btn-sm.ui-btn-icon-search:empty,
+.ui-btn.ui-btn-sm.ui-btn-icon-setting:empty,
+.ui-btn-double.ui-btn-sm.ui-btn-icon-add .ui-btn-main:empty,
+.ui-btn-double.ui-btn-sm.ui-btn-icon-task .ui-btn-main:empty,
+.ui-btn-double.ui-btn-sm.ui-btn-icon-info .ui-btn-main:empty,
+.ui-btn-double.ui-btn-sm.ui-btn-icon-stop .ui-btn-main:empty,
+.ui-btn-double.ui-btn-sm.ui-btn-icon-arrow .ui-btn-main:empty,
+.ui-btn-double.ui-btn-sm.ui-btn-icon-pause .ui-btn-main:empty,
+.ui-btn-double.ui-btn-sm.ui-btn-icon-start .ui-btn-main:empty,
+.ui-btn-double.ui-btn-sm.ui-btn-icon-search .ui-btn-main:empty,
+.ui-btn-double.ui-btn-sm.ui-btn-icon-setting .ui-btn-main:empty {
+	width: 31px;
+	height: 31px;
+}
+
+.ui-btn.ui-btn-sm.ui-btn-icon-add:empty,
+.ui-btn.ui-btn-sm.ui-btn-icon-task:empty,
+.ui-btn.ui-btn-sm.ui-btn-icon-info:empty,
+.ui-btn.ui-btn-sm.ui-btn-icon-stop:empty,
+.ui-btn.ui-btn-sm.ui-btn-icon-arrow:empty,
+.ui-btn.ui-btn-sm.ui-btn-icon-pause:empty,
+.ui-btn.ui-btn-sm.ui-btn-icon-start:empty,
+.ui-btn.ui-btn-sm.ui-btn-icon-search:empty,
+.ui-btn.ui-btn-sm.ui-btn-icon-setting:empty,
+.ui-btn-double.ui-btn-sm.ui-btn-icon-add .ui-btn-main:empty,
+.ui-btn-double.ui-btn-sm.ui-btn-icon-task .ui-btn-main:empty,
+.ui-btn-double.ui-btn-sm.ui-btn-icon-info .ui-btn-main:empty,
+.ui-btn-double.ui-btn-sm.ui-btn-icon-stop .ui-btn-main:empty,
+.ui-btn-double.ui-btn-sm.ui-btn-icon-arrow .ui-btn-main:empty,
+.ui-btn-double.ui-btn-sm.ui-btn-icon-pause .ui-btn-main:empty,
+.ui-btn-double.ui-btn-sm.ui-btn-icon-start .ui-btn-main:empty,
+.ui-btn-double.ui-btn-sm.ui-btn-icon-search .ui-btn-main:empty,
+.ui-btn-double.ui-btn-sm.ui-btn-icon-setting .ui-btn-main:empty {
+	width: 26px;
+	height: 26px;
+}

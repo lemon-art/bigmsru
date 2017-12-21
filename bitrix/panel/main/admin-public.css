@@ -387,6 +387,15 @@
 #bx-admin-prefix .adm-input-file-new {/*margin: 0 0 14px 0!important;*/}
 #bx-admin-prefix .adm-input-cont-bordered {border-bottom: 2px solid #edefef; padding: 0 0 14px 0; margin: 0 0 14px 0!important;}
 #bx-admin-prefix .adm-input-file-not-found{color: #2D3E4A !important;display: inline-block;vertical-align:top;margin-top: 7px;}
+#bx-admin-prefix .adm-input-fake-inp {
+	width: 0!important;
+	height: 0!important;
+	line-height: 0!important;
+	position: absolute!important;
+	color: #000!important;
+	top: 2px!important;
+	opacity: 0!important;
+}
 
 #bx-admin-prefix .adm-btn-load {
 	-webkit-border-radius: 4px;
@@ -657,7 +666,7 @@
 .bx-ie8 #bx-admin-prefix .adm-designed-checkbox-label {display: none;}
 
 .adm-workarea .adm-input,
-.adm-workarea input[type="text"],
+.adm-workarea input[type="text"]:not(.main-ui-filter-search-filter),
 .adm-workarea input[type="password"],
 .adm-workarea input[type="email"] {
 	background:#fff;
@@ -674,7 +683,7 @@
 }
 
 .adm-workarea .adm-input,
-.adm-workarea input[type="text"],
+.adm-workarea input[type="text"]:not(.main-ui-filter-search-filter),
 .adm-workarea input[type="password"],
 .adm-workarea input[type="email"] {font-size:13px; height:25px; padding:0 5px; margin: 0; }
 
@@ -873,8 +882,8 @@
 }
 
 .adm-workarea option {
-	background: #fff; 
-	vertical-align:middle; 
+	background: #fff;
+	vertical-align:middle;
 	padding:3px 5px 3px 3px;
 }
 
@@ -1060,12 +1069,12 @@
 #bx-admin-prefix .bx-core-popup-menu-item-opener:hover .bx-core-popup-menu-item-text,
 #bx-admin-prefix .bx-core-popup-menu-item-opened .bx-core-popup-menu-item-text
 {
-	background: url("images/popup_menu_sprite_2.png") no-repeat right -270px;
+	background: url("images/popup_menu_sprite_2.png?1") no-repeat right -270px;
 }
 
 #bx-admin-prefix .bx-core-popup-menu-item-checked .bx-core-popup-menu-item-text
 {
-	background: url("images/popup_menu_sprite_2.png") no-repeat left -600px;
+	background: url("images/popup_menu_sprite_2.png?1") no-repeat left -600px;
 }
 
 #bx-admin-prefix .adm-menu-edit{background-position: 6px -630px;}
@@ -1090,6 +1099,7 @@
 #bx-admin-prefix .adm-menu-add-desc {background-position:6px -1230px}
 #bx-admin-prefix .adm-menu-setting {background-position:6px -1260px}
 #bx-admin-prefix .adm-menu-excel {background-position:6px -1290px}
+#bx-admin-prefix .adm-menu-marketplace {background-position:6px -1505px}
 
 
 #bx-admin-prefix .bx-core-popup-menu-separator {
@@ -2070,3 +2080,50 @@
 .adm-list-control { float: left; }
 .adm-list-label { display: block; overflow: hidden; padding: 0 0 0 4px; margin: 0; }
 .adm-list-radio .adm-list-label { padding-top: 2px;}
+
+/* ========================================== For new grid and filter ============================================ */
+.adm-toolbar-panel-container {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+	-ms-flex-wrap: wrap;
+	flex-wrap: wrap;
+	-webkit-box-pack: justify;
+	-ms-flex-pack: justify;
+	justify-content: space-between;
+	overflow: hidden;
+	margin: 18px 0;
+}
+
+.adm-toolbar-panel-flexible-space {
+	-webkit-box-flex: 1;
+	-ms-flex: 1 0 auto;
+	flex: 1 0 auto;
+	margin: 0 19px 0 0;
+}
+
+.adm-toolbar-panel-container .main-ui-filter-search {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	margin: auto 19px auto 0;
+	width: 100%;
+	max-width: 813px;
+	min-width: 300px;
+}
+
+.adm-toolbar-panel-container .webform-small-button-separate-wrap a:hover {
+	text-decoration: none;
+}
+
+.adm-toolbar-panel-button:last-child {
+	margin-right: 0 !important;
+}
+
+.main-grid-cell-content a {
+	color: #1c53a2;
+	text-decoration: none;
+}

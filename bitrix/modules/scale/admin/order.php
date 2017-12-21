@@ -150,6 +150,8 @@ while($order = $data->Fetch())
 
 $adminList->CheckListMode();
 
+\CUserCounter::Increment($USER->GetID(),'SCALE_ORDER_VISITS', SITE_ID, false);
+
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
 
 $adminList->DisplayList();

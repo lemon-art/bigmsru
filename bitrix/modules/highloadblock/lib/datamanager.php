@@ -441,18 +441,42 @@ abstract class DataManager extends Entity\DataManager
 		return array($data, $multiValues);
 	}
 
+	/**
+	 * Modify value before save.
+	 * @param mixed $value Value for converting.
+	 * @param array $userfield Field array.
+	 * @return boolean|null
+	 */
 	protected function convertSingleValueBeforeSave($value, $userfield)
 	{
-		if(is_callable(array($userfield["USER_TYPE"]["CLASS_NAME"], "onbeforesave")))
+		if (!isset($userfield['USER_TYPE']) || !is_array($userfield['USER_TYPE']))
+		{
+			$userfield['USER_TYPE'] = array();
+		}
+
+		if (
+			isset($userfield['USER_TYPE']['CLASS_NAME']) &&
+			is_callable(array($userfield['USER_TYPE']['CLASS_NAME'], 'onbeforesave'))
+		)
 		{
 			$value = call_user_func_array(
-				array($userfield["USER_TYPE"]["CLASS_NAME"], "onbeforesave"), array($userfield, $value)
+				array($userfield['USER_TYPE']['CLASS_NAME'], 'onbeforesave'), array($userfield, $value)
 			);
 		}
 
-		if(static::isNotNull($value))
+		if (static::isNotNull($value))
 		{
 			return $value;
+		}
+		elseif (
+				isset($userfield['USER_TYPE']['BASE_TYPE']) &&
+				(
+					$userfield['USER_TYPE']['BASE_TYPE'] == 'int' ||
+					$userfield['USER_TYPE']['BASE_TYPE'] == 'double'
+				)
+		)
+		{
+			return null;
 		}
 		else
 		{

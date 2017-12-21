@@ -229,6 +229,10 @@ Class forum extends CModule
 		RegisterModuleDependences('forum', 'onAfterTopicAdd', 'forum', '\Bitrix\Forum\Internals\ConversionHandlers', 'onTopicAdd');
 		RegisterModuleDependences('forum', 'onAfterMessageAdd', 'forum', '\Bitrix\Forum\Internals\ConversionHandlers', 'onMessageAdd');
 
+		$eventManager = \Bitrix\Main\EventManager::getInstance();
+		$eventManager->registerEventHandler('socialnetwork', 'onLogIndexGetContent', 'forum', '\Bitrix\Forum\Integration\Socialnetwork\Log', 'onIndexGetContent');
+		$eventManager->registerEventHandler('socialnetwork', 'onLogCommentIndexGetContent', 'forum', '\Bitrix\Forum\Integration\Socialnetwork\LogComment', 'onIndexGetContent');
+
 		if ($GLOBALS["DB"]->TableExists("b_forum_pm_folder") || $GLOBALS["DB"]->TableExists("B_FORUM_PM_FOLDER"))
 		{
 			$db_res = $GLOBALS["DB"]->Query("SELECT ID FROM b_forum_pm_folder WHERE USER_ID IS NULL OR USER_ID <= 0");
@@ -355,6 +359,10 @@ Class forum extends CModule
 		UnRegisterModuleDependences('forum', 'onAfterMessageAdd', 'forum', '\Bitrix\Forum\Internals\ConversionHandlers', 'onMessageAdd');
 
 		UnRegisterModuleDependences("main", "OnAfterUserUpdate", "forum", "CForumUser", "OnAfterUserUpdate");
+
+		$eventManager = \Bitrix\Main\EventManager::getInstance();
+		$eventManager->unregisterEventHandler('socialnetwork', 'onLogIndexGetContent', 'forum', '\Bitrix\Forum\Integration\Socialnetwork\Log', 'onIndexGetContent');
+		$eventManager->unregisterEventHandler('socialnetwork', 'onLogCommentIndexGetContent', 'forum', '\Bitrix\Forum\Integration\Socialnetwork\LogComment', 'onIndexGetContent');
 
 		CAgent::RemoveAgent("CForumTopic::CleanUp();","forum");
 		CAgent::RemoveAgent("CForumStat::CleanUp();","forum");

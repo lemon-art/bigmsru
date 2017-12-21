@@ -561,6 +561,42 @@ class CAllCurrencyLang
 		return false;
 	}
 
+	public static function getParsedCurrencyFormat($currency)
+	{
+		$arCurFormat = (isset(self::$arCurrencyFormat[$currency])
+			? self::$arCurrencyFormat[$currency]
+			: self::GetFormatDescription($currency)
+		);
+
+		$result = preg_split('/(?<!&)(#)/', $arCurFormat['FORMAT_STRING'], -1, PREG_SPLIT_DELIM_CAPTURE);
+		if (!is_array($result))
+			return null;
+		$resultCount = count($result);
+		if ($resultCount > 1)
+		{
+			$needSlice = false;
+			$offset = 0;
+			$count = $resultCount;
+			if ($result[0] == '')
+			{
+				$needSlice = true;
+				$offset = 1;
+				$count--;
+			}
+			if ($result[$resultCount-1] == '')
+			{
+				$needSlice = true;
+				$count--;
+			}
+			if ($needSlice)
+				$result = array_slice($result, $offset, $count);
+			unset($count, $offset, $needSlice);
+		}
+		unset($resultCount);
+
+		return $result;
+	}
+
 	protected static function clearFields($value)
 	{
 		return ($value !== null);

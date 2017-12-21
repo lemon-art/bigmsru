@@ -19,4 +19,9 @@ $MESS["IBLIST_CHPRICE_TABLE_MINUS_COUNT_LABEL"] = "subtract from price";
 $MESS["IBLIST_CHPRICE_EXAMPLE_LABEL"] = "Example";
 $MESS["IBLIST_CHPRICE_EXAMPLE_VALUE"] = "Round #VALUE_BEFORE# to";
 $MESS["IBLIST_CHPRICE_TABLE_UNIT_MULTYPLE"] = "multiply by";
+$MESS["IBLIST_CHPRICE_PRICE_TYPE_EMPTY"] = "not selected";
+$MESS["IBLIST_CHPRICE_ERR_BASE_PRICE_SELECTED"] = "Attention! You are about to change the prices of the base price type. All dependent prices will be recalculated. Continue?";
+$MESS["IBLIST_CHPRICE_ERR_EQUAL_PRICE_TYPES"] = "The source price type is the same as the type of the price to be changed";
+$MESS["IBLIST_CHPRICE_ERR_DESTINATION_PRICE_EMPTY"] = "No price type to update was selected";
+$MESS["IBLIST_CHPRICE_ERR_SOURCE_PRICE_EMPTY"] = "No source price type was selected";
 ?>

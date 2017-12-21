@@ -366,12 +366,11 @@ class CSaleDelivery2PaySystem
 	public static function Delete($arFilter)
 	{
 		$con = \Bitrix\Main\Application::getConnection();
-		$sqlHelper = $con->getSqlHelper();
 
 		$delParams = "";
 
-		if(isset($arFilter["PAYSYSTEM_ID"]) && strlen($arFilter["PAYSYSTEM_ID"]) > 0)
-				$delParams .= "PAYSYSTEM_ID=".$sqlHelper->forSql($arFilter["PAYSYSTEM_ID"]);
+		if(isset($arFilter["PAYSYSTEM_ID"]) && intval($arFilter["PAYSYSTEM_ID"]) > 0)
+				$delParams .= "PAYSYSTEM_ID=".intval($arFilter["PAYSYSTEM_ID"]);
 
 		$code = "";
 
@@ -389,7 +388,7 @@ class CSaleDelivery2PaySystem
 			$deliveryId = \CSaleDelivery::getIdByCode($code);
 
 		if(intval($deliveryId) > 0)
-			$delParams .= "DELIVERY_ID=".$sqlHelper->forSql($deliveryId);
+			$delParams .= "DELIVERY_ID=".intval($deliveryId);
 
 		if(strlen($delParams) > 0)
 			$con->queryExecute("DELETE FROM ".DeliveryPaySystemTable::getTableName()." WHERE ".$delParams);

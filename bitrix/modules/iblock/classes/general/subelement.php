@@ -1,4 +1,6 @@
 <?
+use Bitrix\Main;
+
 IncludeModuleLangFile($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/interface/admin_lib.php");
 IncludeModuleLangFile(__FILE__);
 
@@ -297,7 +299,7 @@ class CAdminSubList extends CAdminList
 			foreach ($aCols as $i => $col)
 				if (isset($this->aHeaders[$col]))
 					$this->aHeaders[$col]["__sort"] = $i;
-			uasort($this->aHeaders, create_function('$a, $b', 'if($a["__sort"] == $b["__sort"]) return 0; return ($a["__sort"] < $b["__sort"])? -1 : 1;'));
+			Main\Type\Collection::sortByColumn($this->aHeaders, array('__sort' => SORT_ASC), '', null, true);
 		}
 
 		foreach($this->aHeaders as $id=>$arHeader)

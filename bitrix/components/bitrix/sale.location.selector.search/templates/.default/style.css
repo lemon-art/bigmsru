@@ -20,23 +20,9 @@
 	width: 22px;
 }
 
-.bx-sls .bx-ui-sls-fake,
-.bx-sls .bx-ui-sls-route {
-	background: transparent !important;
-	border: none !important;
-	-webkit-box-shadow: none !important;
-	box-shadow: none !important;
-
-	color: #000;
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size: 14px;
-	height: 33px;
-	width: 100%;
-	outline: none;
-	padding: 0;
-}
 .bx-sls .bx-ui-sls-container {
 	overflow: hidden;
+	min-height:25px;
 }
 
 .bx-sls .bx-ui-sls-pane {
@@ -199,19 +185,33 @@
 	position: relative;
 }
 
-.bx-sls .bx-ui-sls-route{
+.bx-sls .bx-ui-sls-fake,
+.bx-sls .bx-ui-sls-route {
 	position: absolute !important;
 	top: 0;
 	left: 0;
-	color: #aba8ac !important;
-	background-color: transparent !important;
-	border-color: transparent !important;
+
+	color: #000 !important;
+
 	opacity: 1 !important;
+	background: transparent !important;
+	border: none !important;
 	box-shadow: none !important;
 
-	padding-right: 22px;
+	padding:0 22px 0 0 !important;
 	background-position: right 1px;
 	background-repeat: no-repeat;
+
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	height: 33px;
+	width: 100%;
+	outline: none;
+	z-index:10;
+}
+.bx-sls .bx-ui-sls-route{
+	color: #aba8ac !important;
+	z-index:5;
 }
 
 .bx-sls .bx-ui-sls-pane{

@@ -29,8 +29,7 @@
 		this.BLOCK_TAGS = ["H1", "H2", "H3", "H4", "H5", "H6", "P", "BLOCKQUOTE", "DIV", "SECTION", "PRE"];
 		this.NESTED_BLOCK_TAGS = ["BLOCKQUOTE", "DIV"];
 		this.TABLE_TAGS = ["TD", "TR", "TH", "TABLE", "TBODY", "CAPTION", "COL", "COLGROUP", "TFOOT", "THEAD"];
-		this.BBCODE_TAGS = ['U', 'TABLE', 'TR', 'TD', 'TH', 'IMG', 'A', 'CENTER', 'LEFT', 'RIGHT', 'JUSTIFY'];
-		//this.BBCODE_TAGS = ['P', 'U', 'DIV', 'TABLE', 'TR', 'TD', 'TH', 'IMG', 'A', 'CENTER', 'LEFT', 'RIGHT', 'JUSTIFY'];
+		this.BBCODE_TAGS = ['P', 'U', 'TABLE', 'TR', 'TD', 'TH', 'IMG', 'A', 'CENTER', 'LEFT', 'RIGHT', 'JUSTIFY'];
 
 		this.HTML_ENTITIES = ['&iexcl;','&cent;','&pound;','&curren;','&yen;','&brvbar;','&sect;','&uml;','&copy;','&ordf;','&laquo;','&not;','&reg;','&macr;','&deg;','&plusmn;','&sup2;','&sup3;','&acute;','&micro;','&para;','&middot;','&cedil;','&sup1;','&ordm;','&raquo;','&frac14;','&frac12;','&frac34;','&iquest;','&Agrave;','&Aacute;','&Acirc;','&Atilde;','&Auml;','&Aring;','&AElig;','&Ccedil;','&Egrave;','&Eacute;','&Ecirc;','&Euml;','&Igrave;','&Iacute;','&Icirc;','&Iuml;','&ETH;','&Ntilde;','&Ograve;','&Oacute;','&Ocirc;','&Otilde;','&Ouml;','&times;','&Oslash;','&Ugrave;','&Uacute;','&Ucirc;','&Uuml;','&Yacute;','&THORN;','&szlig;','&agrave;','&aacute;','&acirc;','&atilde;','&auml;','&aring;','&aelig;','&ccedil;','&egrave;','&eacute;','&ecirc;','&euml;','&igrave;','&iacute;','&icirc;','&iuml;','&eth;','&ntilde;','&ograve;','&oacute;','&ocirc;','&otilde;','&ouml;','&divide;','&oslash;','&ugrave;','&uacute;','&ucirc;','&uuml;','&yacute;','&thorn;','&yuml;','&OElig;','&oelig;','&Scaron;','&scaron;','&Yuml;','&circ;','&tilde;','&ndash;','&mdash;','&lsquo;','&rsquo;','&sbquo;','&ldquo;','&rdquo;','&bdquo;','&dagger;','&Dagger;','&permil;','&lsaquo;','&rsaquo;','&euro;','&Alpha;','&Beta;','&Gamma;','&Delta;','&Epsilon;','&Zeta;','&Eta;','&Theta;','&Iota;','&Kappa;','&Lambda;','&Mu;','&Nu;','&Xi;','&Omicron;','&Pi;','&Rho;','&Sigma;','&Tau;','&Upsilon;','&Phi;','&Chi;','&Psi;','&Omega;','&alpha;','&beta;','&gamma;','&delta;','&epsilon;','&zeta;','&eta;','&theta;','&iota;','&kappa;','&lambda;','&mu;','&nu;','&xi;','&omicron;','&pi;','&rho;','&sigmaf;','&sigma;','&tau;','&upsilon;','&phi;','&chi;','&psi;','&omega;','&bull;','&hellip;','&prime;','&Prime;','&oline;','&frasl;','&trade;','&larr;','&uarr;','&rarr;','&darr;','&harr;','&part;','&sum;','&minus;','&radic;','&infin;','&int;','&asymp;','&ne;','&equiv;','&le;','&ge;','&loz;','&spades;','&clubs;','&hearts;'];
 
@@ -94,7 +93,9 @@
 
 			this.On("OnEditorInitedBefore", [this]);
 
-			this.BuildSceleton();
+			if (!this.BuildSceleton())
+				return;
+
 			this.HTMLStyler = HTMLStyler;
 
 			// Textarea
@@ -390,28 +391,36 @@
 
 		BuildSceleton: function()
 		{
+			var result = false;
 			// Main container contain all editor parts
 			this.dom.cont = BX('bx-html-editor-' + this.id);
-			this.dom.toolbarCont = BX('bx-html-editor-tlbr-cnt-' + this.id);
-			this.dom.toolbar = BX('bx-html-editor-tlbr-' + this.id);
-			this.dom.areaCont = BX('bx-html-editor-area-cnt-' + this.id);
+			if (this.dom.cont && BX.isNodeInDom(this.dom.cont))
+			{
+				this.dom.toolbarCont = BX('bx-html-editor-tlbr-cnt-' + this.id);
+				this.dom.toolbar = BX('bx-html-editor-tlbr-' + this.id);
+				this.dom.areaCont = BX('bx-html-editor-area-cnt-' + this.id);
 
-			// Container for content editable iframe
-			this.dom.iframeCont = BX('bx-html-editor-iframe-cnt-' + this.id);
-			this.dom.textareaCont = BX('bx-html-editor-ta-cnt-' + this.id);
+				// Container for content editable iframe
+				this.dom.iframeCont = BX('bx-html-editor-iframe-cnt-' + this.id);
+				this.dom.textareaCont = BX('bx-html-editor-ta-cnt-' + this.id);
 
-			this.dom.resizerOverlay = BX('bx-html-editor-res-over-' + this.id);
-			this.dom.splitResizer = BX('bx-html-editor-split-resizer-' + this.id);
-			this.dom.splitResizer.className = this.config.splitVertical ? "bxhtmled-split-resizer-ver" : "bxhtmled-split-resizer-hor";
-			BX.bind(this.dom.splitResizer, 'mousedown', BX.proxy(this.StartSplitResize, this));
+				this.dom.resizerOverlay = BX('bx-html-editor-res-over-' + this.id);
+				this.dom.splitResizer = BX('bx-html-editor-split-resizer-' + this.id);
+				this.dom.splitResizer.style.display = 'none';
+				this.dom.splitResizer.className = this.config.splitVertical ? "bxhtmled-split-resizer-ver" : "bxhtmled-split-resizer-hor";
+				BX.bind(this.dom.splitResizer, 'mousedown', BX.proxy(this.StartSplitResize, this));
 
-			// Taskbars
-			this.dom.taskbarCont = BX('bx-html-editor-tskbr-cnt-' + this.id);
+				// Taskbars
+				this.dom.taskbarCont = BX('bx-html-editor-tskbr-cnt-' + this.id);
 
-			// Node navigation at the bottom
-			this.dom.navCont = BX('bx-html-editor-nav-cnt-' + this.id);
+				// Node navigation at the bottom
+				this.dom.navCont = BX('bx-html-editor-nav-cnt-' + this.id);
 
-			this.dom.fileDialogsWrap = BX('bx-html-editor-file-dialogs-' + this.id)
+				this.dom.fileDialogsWrap = BX('bx-html-editor-file-dialogs-' + this.id)
+
+				result = true;
+			}
+			return result;
 		},
 
 		ResizeSceleton: function(width, height, params)
@@ -815,20 +824,39 @@
 //				dom.simulatePlaceholder(this.parent, this, placeholderText);
 //			}
 
-			// Mantis: 72063
-			if (this.config.view == 'split')
+			if (this.config.view != 'wysiwyg')
 			{
-				var i, changeViewBut = false, controls = this.toolbar.GetControlsMap();
-				for (i = 0; i < controls.length; i++)
+				var i, changeViewBut = false, switchCodeButton = false, controls = this.toolbar.GetControlsMap();
+
+				// Mantis: 72063
+				if (this.config.view == 'split')
 				{
-					if (controls[i] && controls[i].id == 'ChangeView')
+					for (i = 0; i < controls.length; i++)
 					{
-						changeViewBut = true;
-						break;
+						if (controls[i] && controls[i].id == 'ChangeView')
+						{
+							changeViewBut = true;
+							break;
+						}
 					}
+					if (!changeViewBut)
+						this.config.view = 'wysiwyg';
 				}
-				if (!changeViewBut)
-					this.config.view = 'wysiwyg';
+
+				// Mantis: 80663
+				if (this.config.view != 'wysiwyg')
+				{
+					for (i = 0; i < controls.length; i++)
+					{
+						if (controls[i] && (controls[i].id == 'BbCode' || controls[i].id == 'ChangeView'))
+						{
+							switchCodeButton = true;
+							break;
+						}
+					}
+					if (!switchCodeButton)
+						this.config.view = 'wysiwyg';
+				}
 			}
 
 			this.SetView(this.config.view, false);
@@ -1183,6 +1211,7 @@
 			if (content !== undefined)
 			{
 				this.SetContent(content, true);
+				this.CheckBodyHeight();
 			}
 		},
 
@@ -1436,6 +1465,18 @@
 				node.parentNode.insertBefore(newNode, node);
 				node.parentNode.removeChild(node);
 				return newNode;
+			};
+
+			this.util.spaceUrlEncode = function(str)
+			{
+				str = str.replace(/ /g,'%20');
+				return str;
+			};
+
+			this.util.spaceUrlDecode = function(str)
+			{
+				str = str.replace(/%20/g,' ');
+				return str;
 			};
 
 			// Fast way to check whether an element with a specific tag name is in the given document
@@ -1815,7 +1856,6 @@
 			bParseBxNodes = !!bParseBxNodes;
 			this.content = content;
 			this.On("OnParse", [bParseBxNodes]);
-			content = this.content;
 
 			if (bParseBxNodes)
 			{
@@ -2139,6 +2179,11 @@
 			return this.templateId;
 		},
 
+		GetSiteId: function()
+		{
+			return this.config.siteId;
+		},
+
 		GetComponentFilter: function()
 		{
 			return this.componentFilter;
@@ -2390,8 +2435,11 @@
 
 		Destroy: function()
 		{
-			this.sandbox.Destroy();
-			BX.remove(this.dom.cont);
+			if (this.sandbox)
+				this.sandbox.Destroy();
+
+			if (this.Check())
+				BX.remove(this.dom.cont);
 		},
 
 		Check: function()
@@ -2564,7 +2612,9 @@
 			{
 				this.Focus();
 
-				if (this.selection.lastCheckedRange && this.selection.lastCheckedRange.range && !range)
+				if (this.selection.lastCheckedRange &&
+					this.selection.lastCheckedRange.range &&
+					!range)
 				{
 					try
 					{
@@ -2578,17 +2628,23 @@
 					range = this.selection.GetRange();
 				}
 
-				if (!range.collapsed && range.startContainer == range.endContainer && range.startContainer.nodeName !== 'BODY')
-				{
-					var surNode = this.util.CheckSurrogateNode(range.startContainer);
-					if (surNode)
-					{
-						this.selection.SetAfter(surNode);
-					}
-				}
+				if (!range && this.selection.lastRange)
+					range = this.selection.lastRange;
 
-				this.selection.InsertHTML(html, range);
-				this.selection.ScrollIntoView();
+				if (range)
+				{
+					if (!range.collapsed && range.startContainer == range.endContainer && range.startContainer.nodeName !== 'BODY')
+					{
+						var surNode = this.util.CheckSurrogateNode(range.startContainer);
+						if (surNode)
+						{
+							this.selection.SetAfter(surNode);
+						}
+					}
+
+					this.selection.InsertHTML(html, range);
+					this.selection.ScrollIntoView();
+				}
 			}
 		},
 
@@ -3083,9 +3139,12 @@
 				headHtml = "",
 				i;
 
-			if (this.editor.config.bodyClass)
+			if (this.editor.config.bodyClass || this.editor.IsExpanded())
 			{
-				bodyParams += ' class="' + this.editor.config.bodyClass + '"';
+				var bodyClass = this.editor.config.bodyClass || '';
+				if (this.editor.IsExpanded())
+					bodyClass += ' fullscreen';
+				bodyParams += ' class="' + BX.util.trim(bodyClass) + '"';
 			}
 			if (this.editor.config.bodyId)
 			{
@@ -3577,8 +3636,8 @@
 						top += node.offsetTop || 0;
 						node = node.offsetParent;
 					} while (node);
+					tempNode.parentNode.removeChild(tempNode);
 				}
-				tempNode.parentNode.removeChild(tempNode);
 
 				var
 					scrollPos = BX.GetWindowScrollPos(doc),
@@ -3701,7 +3760,14 @@
 
 				selection = this.GetSelection();
 			}
-			return selection && selection.rangeCount && selection.getRangeAt(0);
+
+			var range = selection && selection.rangeCount && selection.getRangeAt(0);
+			if (range.commonAncestorContainer && range.commonAncestorContainer.nodeName == '#document')
+			{
+				range.selectNodeContents(this.editor.GetIframeDoc().body);
+			}
+
+			return range;
 		},
 
 		GetSelection: function(doc)
@@ -4333,13 +4399,25 @@
 				var parentRange = range.cloneRange();
 				parentRange.selectNode(styledParent);
 
-				if (parentRange.isPointInRange(range.endContainer, range.endOffset) && this.editor.util.IsSplitPoint(range.endContainer, range.endOffset) && range.endContainer.nodeName !== 'BODY')
+
+				BX.isParentForNode(styledParent, range.endContainer)
+				if (
+					range.endContainer.nodeName !== 'BODY' &&
+					parentRange.isPointInRange(range.endContainer, range.endOffset) &&
+					this.editor.util.IsSplitPoint(range.endContainer, range.endOffset) &&
+					BX.isParentForNode(styledParent, range.endContainer)
+				)
 				{
 					this.editor.util.SplitNodeAt(styledParent, range.endContainer, range.endOffset);
 					range.setEndAfter(styledParent);
 				}
 
-				if (parentRange.isPointInRange(range.startContainer, range.startOffset) && this.editor.util.IsSplitPoint(range.startContainer, range.startOffset) && range.startContainer.nodeName !== 'BODY')
+				if (
+					range.startContainer.nodeName !== 'BODY' &&
+					parentRange.isPointInRange(range.startContainer, range.startOffset) &&
+					this.editor.util.IsSplitPoint(range.startContainer, range.startOffset) &&
+					BX.isParentForNode(styledParent, range.startContainer)
+					)
 				{
 					styledParent = this.editor.util.SplitNodeAt(styledParent, range.startContainer, range.startOffset);
 				}
@@ -4372,16 +4450,14 @@
 		ApplyToRange: function(range)
 		{
 			var textNodes = range.getNodes([3]);
+
 			if (!textNodes.length)
 			{
 				try {
 					var node = this.CreateContainer();
 					range.surroundContents(node);
-
 					range = this.NormalizeNewNode(node, range);
 					this.SelectNode(range, node);
-
-
 					return range;
 				} catch(e) {}
 			}
@@ -4980,6 +5056,10 @@
 			"summary": {},
 			"footer": {},
 
+			"video": {},
+			"source": {},
+			"audio": {},
+
 			// tags to remove
 			"title": {remove: 1},
 			"area": {remove: 1},
@@ -4996,17 +5076,14 @@
 			"meta": {remove: 1},
 			"isindex": {remove: 1},
 			"base": {remove: 1},
-			"video": {remove: 1},
 			"canvas": {remove: 1},
 			"applet": {remove: 1},
 			"spacer": {remove: 1},
-			"source": {remove: 1},
 			"frame": {remove: 1},
 			"style": {remove: 1},
 			"device": {remove: 1},
 			"xml": {remove: 1},
 			"nextid": {remove: 1},
-			"audio": {remove: 1},
 			"link": {remove: 1},
 			"script": {remove: 1},
 			"comment": {remove: 1},

@@ -22,41 +22,110 @@
 	BX.dataBase = function (params)
 	{
 		this.tableList = [];
-		if(typeof window.openDatabase != 'undefined')
+		this.jsonFields = {};
+		
+		if(typeof window.SQLitePlugin != 'undefined' && typeof window.SQLitePlugin.openDatabase == 'function')
+		{
+			this.dbObject = window.SQLitePlugin.openDatabase(params.name, params.version, params.displayName, params.capacity);
+			this.dbBandle = 'SQLitePlugin';
+		}
+		else if(typeof window.openDatabase != 'undefined')
+		{
+			this.dbBandle = 'openDatabase';
 			this.dbObject = window.openDatabase(params.name, params.version, params.displayName, params.capacity);
+		}
+		else 
+		{
+			this.dbBandle = 'undefined';
+			this.dbObject = null;
+		}
 	};
 
 	BX.dataBase.create = function(params)
 	{
-		return ((typeof window.openDatabase != 'undefined')
-				? new BX.dataBase(params)
-				: null
-		);
+		if (
+			typeof window.openDatabase != 'undefined'
+			|| typeof window.SQLitePlugin != 'undefined' && typeof window.SQLitePlugin.openDatabase == 'function'
+		)
+		{
+			return new BX.dataBase(params);
+		}
+		else 
+		{
+			return null;
+		}
 	};
 
-	BX.dataBase.prototype.isTableExists = function (tableName, callback)
+	BX.dataBase.prototype.setJsonFields = function (tableName, fields)
 	{
-		var that = this;
-		var tableListCallback = function ()
+		if (typeof fields == 'string')
 		{
-			var length = that.tableList.length;
-			for (var i = 0; i < length; i++)
+			if (fields == '')
 			{
-				if (that.tableList[i].toUpperCase() == tableName.toUpperCase())
+				fields = [];
+			}
+			else 
+			{
+				fields = [fields];
+			}
+		}
+		
+		if (tableName && BX.type.isArray(fields))
+		{
+			tableName = tableName.toString().toUpperCase();
+			
+			this.jsonFields[tableName] = [];
+			if (fields.length > 0)
+			{
+				for (var i = 0; i < fields.length; i++)
 				{
-					callback(true);
-					return;
+					this.jsonFields[tableName].push(
+						fields[i].toString().toUpperCase()
+					);
 				}
 			}
-
-			callback(false);
+			else 
+			{
+				delete this.jsonFields[tableName];
+			}
+		}
+		
+		return true;
+	}
+	
+	BX.dataBase.prototype.isTableExists = function (tableName, callback)
+	{
+		tableName = tableName.toUpperCase();
+		var promise = new BX.Promise();
+		if (typeof callback != 'function')
+		{
+			callback = function(){};
+		}
+		
+		var tableListCallback = function (tableList)
+		{
+			if (tableList.indexOf(tableName) > -1)
+			{
+				callback(true, tableName);
+				promise.fulfill(tableName);
+			}
+			else 
+			{
+				callback(false, tableName);
+				promise.reject(tableName);
+			}
 		};
 
 		if (this.tableList.length <= 0)
-			this.getTableList(tableListCallback);
+		{
+			this.getTableList().then(tableListCallback);
+		}
 		else
-			tableListCallback();
+		{
+			tableListCallback(this.tableList);
+		}
 
+		return promise;
 	};
 
 	/**
@@ -66,25 +135,32 @@
 	 */
 	BX.dataBase.prototype.getTableList = function (callback)
 	{
-		var that = this;
+		var promise = new BX.Promise();
+		if (typeof callback != 'function')
+		{
+			callback = function(){};
+		}
+		
 		var callbackFunc = callback;
-		this.query(
+		this.query({
+			query: "SELECT tbl_name from sqlite_master WHERE type = 'table'",
+			values: []
+		}).then(function (success) {
+			this.tableList = [];
+			if (success.result.count > 0)
 			{
-				query: "SELECT tbl_name from sqlite_master WHERE type = 'table'",
-				values: []
-			},
-			function (res)
-			{
-				if (res.count > 0)
+				for (var i = 0; i < success.result.items.length; i++)
 				{
-					for (var i = 0; i < res.items.length; i++)
-						that.tableList[that.tableList.length] = res.items[i].tbl_name;
+					this.tableList[this.tableList.length] = success.result.items[i].tbl_name.toString().toUpperCase();
 				}
-
-				if (callbackFunc != null && typeof (callbackFunc) == "function")
-					callbackFunc(that.tableList)
 			}
-		);
+			callbackFunc(this.tableList);
+			promise.fulfill(this.tableList);
+		}.bind(this)).catch(function (error){
+			promise.reject(error);
+		});
+		
+		return promise;
 	};
 
 	/**
@@ -93,18 +169,34 @@
 	 */
 	BX.dataBase.prototype.createTable = function (params)
 	{
-		params.action = "create";
-		if (params.success)
+		var promise = new BX.Promise();
+		
+		params = params || {};
+		if (typeof params.success != 'function')
 		{
-			var userSuccessCallback = params.success;
-			params.success = BX.proxy(function (result)
-			{
-				userSuccessCallback(result);
-				this.getTableList();
-			}, this);
+			params.success = function(result, transaction){};
 		}
-		var str = this.getQuery(params);
-		this.query(str, params.success, params.fail);
+		if (typeof params.fail != 'function')
+		{
+			params.fail = function(result, transaction, query){};
+		}
+		
+		params.action = 'create';
+		
+		this.query(
+			this.getQuery(params)
+		).then(function (success) {
+			this.getTableList();
+			success.result.tableName = params.tableName;
+			params.success(success.result, success.transaction);
+			promise.fulfill(success);
+		}.bind(this)).catch(function (error){
+			params.fail(error.result, error.transaction, error.query, params);
+			error.queryParams = params;
+			promise.reject(error);
+		});
+		
+		return promise;
 	};
 
 	/**
@@ -113,18 +205,34 @@
 	 */
 	BX.dataBase.prototype.dropTable = function (params)
 	{
-		params.action = "drop";
-		if(params.success)
+		var promise = new BX.Promise();
+		
+		params = params || {};
+		if (typeof params.success != 'function')
 		{
-			var userSuccessCallback = params.success;
-			params.success = BX.proxy(function(result)
-			{
-				userSuccessCallback(result);
-				this.getTableList();
-			}, this);
+			params.success = function(result, transaction){};
 		}
-		var str = this.getQuery(params);
-		this.query(str, params.success, params.fail);
+		if (typeof params.fail != 'function')
+		{
+			params.fail = function(result, transaction, query){};
+		}
+		
+		params.action = "drop";
+		
+		this.query(
+			this.getQuery(params)
+		).then(function (success) {
+			this.getTableList();
+			success.result.tableName = params.tableName;
+			params.success(success.result, success.transaction);
+			promise.fulfill(success);
+		}.bind(this)).catch(function (error){
+			params.fail(error.result, error.transaction, error.query, params);
+			error.queryParams = params;
+			promise.reject(error);
+		});
+		
+		return promise;
 	};
 
 	/**
@@ -133,12 +241,33 @@
 	 */
 	BX.dataBase.prototype.addRow = function (params)
 	{
+		var promise = new BX.Promise();
+		
+		params = params || {};
+		if (typeof params.success != 'function')
+		{
+			params.success = function(result, transaction){};
+		}
+		if (typeof params.fail != 'function')
+		{
+			params.fail = function(result, transaction, query){};
+		}
+		
 		params.action = "insert";
+		
 		this.query(
-			this.getQuery(params),
-			params.success,
-			params.fail
-		);
+			this.getQuery(params)
+		).then(function (success) {
+			params.success(success.result, success.transaction);
+			success.result.tableName = params.tableName;
+			promise.fulfill(success);
+		}).catch(function (error){
+			params.fail(error.result, error.transaction, error.query, params);
+			error.queryParams = params;
+			promise.reject(error);
+		});
+		
+		return promise;
 	};
 
 	/**
@@ -147,12 +276,51 @@
 	 */
 	BX.dataBase.prototype.getRows = function (params)
 	{
+		var promise = new BX.Promise();
+		
+		params = params || {};
+		if (typeof params.success != 'function')
+		{
+			params.success = function(result, transaction){};
+		}
+		if (typeof params.fail != 'function')
+		{
+			params.fail = function(result, transaction, query){};
+		}
+		
 		params.action = "select";
+		
 		this.query(
-			this.getQuery(params),
-			params.success,
-			params.fail
-		);
+			this.getQuery(params)
+		).then(function (success) {
+			var tableName = params.tableName.toString().toUpperCase();
+			if (
+				this.jsonFields[tableName] 
+				&& this.jsonFields[tableName].length 
+				&& success.result.items.length
+			)
+			{
+				for (var i = 0; i < success.result.items.length; i++)
+				{
+					for (var j = 0; j < this.jsonFields[tableName].length; j++)
+					{
+						if (success.result.items[i][this.jsonFields[tableName][j]])
+						{
+							success.result.items[i][this.jsonFields[tableName][j]] = JSON.parse(success.result.items[i][this.jsonFields[tableName][j]]);
+						}
+					}
+				}
+			}
+			params.success(success.result, success.transaction);
+			success.result.tableName = params.tableName;
+			promise.fulfill(success);
+		}.bind(this)).catch(function (error){
+			params.fail(error.result, error.transaction, error.query, params);
+			error.queryParams = params;
+			promise.reject(error);
+		});
+		
+		return promise;
 	};
 
 	/**
@@ -161,9 +329,33 @@
 	 */
 	BX.dataBase.prototype.updateRows = function (params)
 	{
+		var promise = new BX.Promise();
+		
+		params = params || {};
+		if (typeof params.success != 'function')
+		{
+			params.success = function(result, transaction){};
+		}
+		if (typeof params.fail != 'function')
+		{
+			params.fail = function(result, transaction, query){};
+		}
+		
 		params.action = "update";
-		var queryData = this.getQuery(params);
-		this.query(queryData, params.success, params.fail);
+		
+		this.query(
+			this.getQuery(params)
+		).then(function (success) {
+			params.success(success.result, success.transaction);
+			success.result.tableName = params.tableName;
+			promise.fulfill(success);
+		}).catch(function (error){
+			params.fail(error.result, error.transaction, error.query, params);
+			error.queryParams = params;
+			promise.reject(error);
+		});
+		
+		return promise;
 	};
 
 	/**
@@ -194,46 +386,46 @@
 
 		switch (params.action)
 		{
-			case "delete":
-			{
-				strQuery = "DELETE FROM " + tableName.toUpperCase() + " " + this.getFilter(where);
-				values = this.getValues([where]);
-				break;
-			}
-
-			case "update":
-			{
-				strQuery = "UPDATE " + tableName.toUpperCase() + " " + this.getFieldPair(set, "SET ") + " " + this.getFilter(where);
-				values = this.getValues([set, where]);
-				break;
-			}
-
 			case "create":
 			{
 				var fieldsString = "";
 				if (typeof(select) == "object")
 				{
 					var field = "";
+					var type = "";
 					for (var j = 0; j < select.length; j++)
 					{
 						field = "";
+						type = "";
 						if (typeof(select[j]) == "object")
 						{
 							if (select[j].name)
 							{
-
 								field = select[j].name;
-								if (select[j].unique && select[j].unique == true)
-									field += " unique";
 							}
-
+							if (field && select[j].type)
+							{
+								if (
+									select[j].type.toLowerCase() == 'integer'
+									|| select[j].type.toLowerCase() == 'real'
+									|| select[j].type.toLowerCase() == 'text'
+								)
+								{
+									field += " "+select[j].type;
+								}
+							}
+							if (field && select[j].unique && select[j].unique == true)
+							{
+								field += " unique";
+							}
 						}
 						else if (typeof(select[j]) == "string" && select[j].length > 0)
+						{
 							field = select[j];
+						}
 
 						if (field.length > 0)
 						{
-
 							if (fieldsString.length > 0)
 								fieldsString += "," + field.toUpperCase();
 							else
@@ -243,6 +435,7 @@
 				}
 
 				strQuery = "CREATE TABLE IF NOT EXISTS " + tableName.toUpperCase() + " (" + fieldsString + ") ";
+				
 				break;
 			}
 
@@ -259,23 +452,62 @@
 			}
 			case "insert":
 			{
-				values = this.getValues([insert]);
-				strQuery = "INSERT INTO " + tableName.toUpperCase() + " (" + this.getKeyString(insert) + ") VALUES(%values%)";
-				var valueTemplate = "";
-				for (var i = 0; i < values.length; i++)
+				var groups = 0;
+				var groupSize = 0;
+				var keyString = "";
+				if (BX.type.isArray(insert))
 				{
-					if (valueTemplate.length > 0)
-						valueTemplate += ",?";
-					else
-						valueTemplate = "?"
+					values = this.getValues(insert, 'insert');
+					for (var i in insert[0])
+					{
+						groupSize++
+					}
+					groups = insert.length;
+					keyString = this.getKeyString(insert[0])
+				}
+				else 
+				{
+					values = this.getValues([insert], 'insert');
+					groups = 1;
+					groupSize = values.length;
+					keyString = this.getKeyString(insert)
+				}
+				
+				strQuery = "INSERT INTO " + tableName.toUpperCase() + " (" + keyString + ") VALUES %values%";
+				
+				var placeholder = [];
+				var placeholderGroup = [];
+				for (var i = 0; i < groups; i++)
+				{
+					placeholder = [];
+					for (var j = 0; j < groupSize; j++)
+					{
+						placeholder.push('?');
+					}
+					placeholderGroup.push(placeholder.join(','));
 				}
 
-				strQuery = strQuery.replace("%values%", valueTemplate);
-
+				strQuery = strQuery.replace("%values%", "("+placeholderGroup.join("), (")+")");
+				
 				break;
 			}
-		}
+				
+			case "delete":
+			{
+				strQuery = "DELETE FROM " + tableName.toUpperCase() + " " + this.getFilter(where);
+				values = this.getValues([where]);
+				break;
+			}
 
+			case "update":
+			{
+				strQuery = "UPDATE " + tableName.toUpperCase() + " " + this.getFieldPair(set, "SET ") + " " + this.getFilter(where);
+				values = this.getValues([set], 'update').concat(
+					this.getValues([where])
+				);
+				break;
+			}	
+		}
 		return {
 			query: strQuery,
 			values: values
@@ -323,18 +555,24 @@
 				var pair = "";
 				var count = 1;
 				if (typeof(fields[key]) == "object")
+				{
 					count = fields[key].length;
+				}
+				
 				for (var j = 0; j < count; j++)
 				{
 					pair = ((j > 0) ? pair + " OR " : "(") + (key.toUpperCase() + "=" + "?");
 					if ((j + 1) == count)
 						pair += ")"
-				}
-				;
+				};
 
 				pairsRow += pair;
 				i++;
 			}
+		}
+		else if (typeof fields == "string")
+		{
+			pairsRow = fields;
 		}
 		return pairsRow == "" ? "" : "WHERE " + pairsRow;
 	};
@@ -350,15 +588,18 @@
 		var result = "";
 		if (!defaultResult)
 			defaultResult = "";
-		if (typeof(fields) == "array")
+		
+		if (BX.type.isArray(fields))
 		{
-			for (var i = 0; i < valuesItem.length; i++)
+			for (var i = 0; i < fields.length; i++)
 			{
-
-				if (result.length > 0)
-					result += "," + valuesItem[i].toUpperCase();
-				else
-					result = valuesItem[i].toUpperCase();
+				for (var key in fields[i])
+				{
+					if (result.length > 0)
+						result += "," + key.toUpperCase();
+					else
+						result = key.toUpperCase();
+				}
 			}
 		}
 		else if (typeof(fields) == "object")
@@ -413,36 +654,72 @@
 	 * @param values
 	 * @returns {Array}
 	 */
-	BX.dataBase.prototype.getValues = function (values)
+	BX.dataBase.prototype.getValues = function (values, type)
 	{
+		type = type || 'undefined';
+		
 		var resultValues = [];
 		for (var j = 0; j < values.length; j++)
 		{
 			var valuesItem = values[j];
 
-			if (typeof(valuesItem) == "object")
-			{
-				for (var keyField in valuesItem)
-				{
-					if (typeof(valuesItem[keyField]) != "object")
-						resultValues[resultValues.length] = valuesItem[keyField];
-					else
-						for (var i = 0; i < valuesItem[keyField].length; i++)
-						{
-							resultValues[resultValues.length] = valuesItem[keyField][i];
-						}
-				}
-			}
-			else if (typeof(valuesItem) == "array")
+			if (BX.type.isArray(valuesItem))
 			{
 				for (var i = 0; i < valuesItem.length; i++)
 				{
-					if (typeof(valuesItem[i]) != "object")
-						resultValues[resultValues.length] = valuesItem[i];
+					if ((type == 'insert' || type == 'update') && typeof(valuesItem[i]) == "object")
+					{
+						resultValues.push(JSON.stringify(valuesItem[i]));
+					}
+					else if (typeof(valuesItem[i]) == "object")
+					{
+						for (var keyField in valuesItem[i])
+						{
+							if (typeof(valuesItem[i][keyField]) == "object")
+							{
+								resultValues.push(JSON.stringify(valuesItem[i][keyField]));
+							}
+							else
+							{
+								resultValues.push(valuesItem[i][keyField]);
+							}
+						}
+					}
+					else 
+					{
+						resultValues.push(valuesItem[i]);
+					}
+				}
+			}
+			else if (typeof(valuesItem) == "object")
+			{
+				for (var i in valuesItem)
+				{
+					if ((type == 'insert' || type == 'update') && typeof(valuesItem[i]) == "object")
+					{
+						resultValues.push(JSON.stringify(valuesItem[i]));
+					}
+					else if (typeof(valuesItem[i]) == "object")
+					{
+						for (var keyField in valuesItem[i])
+						{
+							if (typeof(valuesItem[i][keyField]) == "object")
+							{
+								resultValues.push(JSON.stringify(valuesItem[i][keyField]));
+							}
+							else
+							{
+								resultValues.push(valuesItem[i][keyField]);
+							}
+						}
+					}
+					else 
+					{
+						resultValues.push(valuesItem[i]);
+					}
 				}
 			}
 		}
-
 
 		return resultValues;
 	};
@@ -456,15 +733,23 @@
 	 */
 	BX.dataBase.prototype.query = function (query, success, fail)
 	{
+		var promise = new BX.Promise();
+		if (typeof success != 'function')
+		{
+			success = function(result, transaction){};
+		}
+		if (typeof fail != 'function')
+		{
+			fail = function(result, transaction, query){};
+		}
+		
 		if (!this.dbObject)
 		{
-			return;
+			fail(null, null, null);
+			promise.reject(null, null, null);
+			return promise;
 		}
-
-		if(typeof success =='undefined' || typeof success != 'function')
-			success = function(){};
-		if (typeof fail == 'undefined' || typeof fail != 'function')
-			fail = function(){};
+		
 		this.dbObject.transaction(
 			function (tx)
 			{
@@ -473,7 +758,6 @@
 					query.values,
 					function (tx, results)
 					{
-
 						var result = {
 							originalResult: results
 						};
@@ -499,17 +783,18 @@
 							}
 						}
 
-						if (success != null)
-							success(result, tx);
+						success(result, tx);
+						promise.fulfill({result: result, transaction: tx});
 					},
 					function (tx, res)
 					{
-						if (fail != null)
-							fail(res, tx);
+						fail(res, tx, query);
+						promise.reject({result: res, transaction: tx, query: query});
 					}
 				);
 			}
 		);
+		return promise;
 	};
 
 	/**

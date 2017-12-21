@@ -453,7 +453,7 @@ $MESS["MAIN_CRON_NO_START"] = "cron_events.php is not configured to run on cron;
 $MESS["MAIN_AGENTS_HITS"] = "The system agents are run on hits. Migrate the agents to cron.";
 $MESS["SC_GR_EXTENDED"] = "Advanced features";
 $MESS["SC_GR_MYSQL"] = "Database test";
-$MESS["SC_GR_FIX"] = "Fix database errors";
+$MESS["SC_GR_FIX"] = "Fix errors";
 $MESS["SC_WARN"] = "not configured";
 $MESS["SC_PORTAL_WORK"] = "Intranet operability";
 $MESS["SC_PORTAL_WORK_DESC"] = "Intranet operability check";
@@ -554,4 +554,11 @@ $MESS["MAIN_CATDOC_WARN"] = "Bad catdoc version: #VERSION#<br>
 Details: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=679877<br>
 Install an earlier catdoc version or a newer version with fixes. ";
 $MESS["MAIN_SC_MBSTRING_SETTIGNS_DIFFER"] = "mbstring preferences in <i>/bitrix/.settings.php</i> (utf_mode) and <i>/bitrix/php_interface/dbconn.php</i> (BX_UTF) are different.";
+$MESS["SC_ERR_NO_SETTINGS"] = "Configuration file /bitrix/.settings.php was not found";
+$MESS["SC_FIX_MBSTRING"] = "Repair configuration";
+$MESS["SC_FIX_MBSTRING_CONFIRM"] = "Attention!
+
+This will change the configuration files. If the operation fails, your site will be recoverable only from the web hosting control panel.
+
+Continue?";
 ?>

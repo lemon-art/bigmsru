@@ -22,6 +22,12 @@ $arPSCorrespondence = array(
 				"VALUE" => "",
 				"TYPE" => ""
 			),
+		"AUTO_PAY" => array(
+				"NAME" => GetMessage("AN_AUTO_PAY_NAME"),
+				"DESCR" => GetMessage("AN_AUTO_PAY_DESCR"),
+				"VALUE" => "N",
+				"TYPE" => ""
+			),
 		"TEST_TRANSACTION" => array(
 				"NAME" => GetMessage("AN_TEST_TRANSACTION_NAME"),
 				"DESCR" => GetMessage("AN_TEST_TRANSACTION_DESCR"),

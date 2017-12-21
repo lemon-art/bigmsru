@@ -6,7 +6,7 @@ $cartId = $arParams['cartId'];
 
 require(realpath(dirname(__FILE__)).'/top_template.php');
 
-if ($arParams["SHOW_PRODUCTS"] == "Y" && $arResult['NUM_PRODUCTS'] > 0)
+if ($arParams["SHOW_PRODUCTS"] == "Y" && ($arResult['NUM_PRODUCTS'] > 0 || !empty($arResult['CATEGORIES']['DELAY'])))
 {
 ?>
 	<div data-role="basket-item-list" class="bx-basket-item-list">

@@ -21,14 +21,14 @@
 	BX.render = function(item)
 	{
 		var element = null;
-		var tag, className, attrs, props, html, children;
 
 		if (isBlock(item) || isTag(item))
 		{
-			tag = 'tag' in item ? item.tag : 'div';
-			className = item.block;
-			attrs = 'attrs' in item ? item.attrs : {};
-			props = {};
+			var tag = 'tag' in item ? item.tag : 'div';
+			var className = item.block;
+			var attrs = 'attrs' in item ? item.attrs : {};
+			var events = 'events' in item ? item.events : {};
+			var props = {};
 
 			if ('props' in item && BX.type.isPlainObject(item.props))
 			{
@@ -40,6 +40,10 @@
 				item.mix.push(className);
 				props.className = item.mix.join(' ');
 			}
+			else if ('mix' in item && BX.type.isNotEmptyString(item.mix))
+			{
+				props.className = [className, item.mix].join(' ');
+			}
 			else
 			{
 				props.className = className;
@@ -47,6 +51,9 @@
 
 			if ('content' in item)
 			{
+				var children = [];
+				var text = '';
+
 				if (isBlock(item.content) || isTag(item.content))
 				{
 					if (item.content.block in BX.Main.ui.block)
@@ -59,17 +66,31 @@
 
 				if (isString(item.content))
 				{
-					html = item.content;
+					text = BX.util.htmlspecialchars(item.content);
 				}
 
 				if (BX.type.isArray(item.content))
 				{
 					children = BX.decl(item.content);
 				}
+
+				if (BX.type.isDomNode(item.content))
+				{
+					children = [item.content];
+				}
 			}
+
+			element = BX.create(tag, {props: props, attrs: attrs, events: events, children: children, html: text});
+		}
+		else if (isString(item))
+		{
+			element = BX.util.htmlspecialchars(item);
+		}
+		else if (BX.type.isDomNode(item))
+		{
+			element = item;
 		}
 
-		element = BX.create(tag, {props: props, attrs: attrs, children: children, html: html});
 		return element;
 	};
 

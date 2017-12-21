@@ -5,6 +5,7 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admi
 use \Bitrix\Sender\MailingChainTable;
 use \Bitrix\Sender\PostingTable;
 use \Bitrix\Sender\PostingRecipientTable;
+use \Bitrix\Main\Localization\Loc;
 
 if(!\Bitrix\Main\Loader::includeModule("sender"))
 	ShowError(\Bitrix\Main\Localization\Loc::getMessage("MAIN_MODULE_NOT_INSTALLED"));
@@ -468,7 +469,61 @@ if($step=='chain')
 				if(array_key_exists("NEW_FILE", $_POST) && is_array($_POST["NEW_FILE"]))
 				{
 					foreach($_POST["NEW_FILE"] as $index=>$value)
-						$arFiles[$index] = CFile::MakeFileArray($value);
+					{
+						if (is_string($value) && preg_match("/^https?:\\/\\//", $value))
+						{
+							$arFiles[$index] = CFile::MakeFileArray($value);
+						}
+						else
+						{
+							if(is_array($value))
+							{
+								$filePath = $value['tmp_name'];
+							}
+							else
+							{
+								$filePath = $value;
+							}
+
+							$isCheckedSuccess = false;
+							$io = CBXVirtualIo::GetInstance();
+							$docRoot = \Bitrix\Main\Application::getDocumentRoot();
+							if(strpos($filePath, CTempFile::GetAbsoluteRoot()) === 0)
+							{
+								$absPath = $filePath;
+							}
+							elseif(strpos($io->CombinePath($docRoot, $filePath), CTempFile::GetAbsoluteRoot()) === 0)
+							{
+								$absPath = $io->CombinePath($docRoot, $filePath);
+							}
+							else
+							{
+								$absPath = $io->CombinePath(CTempFile::GetAbsoluteRoot(), $filePath);
+							}
+
+							if ($io->ValidatePathString($absPath) && $io->FileExists($absPath))
+							{
+								$docRoot = $io->CombinePath($docRoot, '/');
+								$relPath = str_replace($docRoot, '', $absPath);
+								$perm = $APPLICATION->GetFileAccessPermission($relPath);
+								if ($perm >= "W")
+								{
+									$isCheckedSuccess = true;
+								}
+							}
+
+							if($isCheckedSuccess)
+							{
+								$arFiles[$index] = CFile::MakeFileArray($io->GetPhysicalName($absPath));
+								if(is_array($value))
+								{
+									$arFiles[$index]['name'] = $value['name'];
+								}
+							}
+
+						}
+
+					}
 				}
 
 				foreach($arFiles as $file)
@@ -661,7 +716,8 @@ if($step=='chain_send_type')
 	}
 	else
 	{
-
+		$statistics = \Bitrix\Sender\Stat\Statistics::create()->filter('mailingId', $MAILING_ID);
+		$recommendedSendTime = $statistics->getRecommendedSendTime();
 	}
 }
 
@@ -1445,6 +1501,7 @@ if(!empty($message))
 		<?
 		function ShowGroupControl($controlName, $controlValues, $controlSelectedValues)
 		{
+			$controlName = htmlspecialcharsbx($controlName);
 			?>
 			<td>
 				<select multiple style="width:350px; height:300px;" id="<?=$controlName?>_EXISTS" ondblclick="GroupManager(true, '<?=$controlName?>');">
@@ -1957,6 +2014,23 @@ if(!empty($message))
 											<td>
 												<?echo CalendarDate("AUTO_SEND_TIME", $str_AUTO_SEND_TIME, "post_form", "20")?>
 											</td>
+										</tr>
+										<?if ($recommendedSendTime):?>
+											<tr>
+												<td>&nbsp;</td>
+												<td>
+													<?=Loc::getMessage(
+														'sender_chain_edit_recommended_sent_time',
+														array(
+															'%send_time%' => '<b>' . htmlspecialcharsbx($recommendedSendTime['DAY_HOUR_DISPLAY']) . '</b>',
+															'%delivery_time%' => htmlspecialcharsbx($recommendedSendTime['DELIVERY_TIME']),
+														)
+													)?>
+													<br>
+													<?=Loc::getMessage('sender_chain_edit_recommended_sent_time_hint')?>
+												</td>
+											</tr>
+										<?endif;?>
 									</table>
 								</div>
 							</div>

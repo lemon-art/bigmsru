@@ -143,6 +143,8 @@ class Xss
 					"/(<{$_M}x{$_M}m{$_M})(l)/is",
 					"/(<{$_M}b{$_M}a{$_M})(s{$_M}e)/is",
 					"/(<{$_M}s{$_M}v{$_M})(g)/is",
+					"/(<{$_M}i{$_M}s{$_M}i{$_M})(n{$_M}d{$_M}e{$_M}x)/is",
+					"/(<{$_M}m{$_M}a)({$_M}t{$_M}h)/is",
 					"/(<!--'start_frame)(_cache_)/is",
 					"/(<!--'end_frame)(_cache_)/is"
 				),
@@ -154,7 +156,7 @@ class Xss
 					"/{$_Al}(s{$_M}t{$_M})(y{$_M}l{$_M}e{$_WS_OPT}\=)
 						(?!\\s*
 							(?P<quot>\"|&quot;|')
-							(\\s*[a-z-]+\\s*:\\s*(([0-9a-z\\s%,.#!\-'\"\\/]+|&quot;)*|rgb\\s*\\([0-9,\\s]+\\))\\s*(?:!important)?;?)*
+							(\\s*[a-z-]+\\s*:\\s*(([0-9a-z\\s%,.#!\-'\"\\/]|&quot;)*|rgb\\s*\\([0-9,\\s]+\\))\\s*(?:!important)?;?)*
 							\\s*
 							(?P=quot)
 						)
@@ -163,7 +165,9 @@ class Xss
 						)
 					/xis",
 					"/{$_Al}(f{$_M}o{$_M}r{$_M})(m{$_M}a{$_M}c{$_M}t{$_M}i{$_M}o{$_M}n{$_WS_OPT}=)/is",
-					"/{$_Al}(o{$_M}n{$_M}(?:[a-z]{$_M})*?)(([a-z]{$_M}){3}{$_WS_OPT}=)/is"
+					"/{$_Al}(o{$_M}n{$_M}(?:[a-z]{$_M})*?)(([a-z]{$_M}){3}{$_WS_OPT}=)/is",
+					"/{$_Al}(s{$_M}e{$_M}e{$_M})(k{$_M}S{$_M}e{$_M}g{$_M}m{$_M}e{$_M}n{$_M}t{$_M}T{$_M}i{$_M}m{$_M}e{$_WS_OPT}=)/is",
+					"/{$_Al}(F{$_M}S{$_M}C{$_M})(o{$_M}m{$_M}m{$_M}a{$_M}n{$_M}d{$_WS_OPT}=)/is",
 				),
 				'replace' => $replacePattern
 			),

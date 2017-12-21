@@ -1116,7 +1116,7 @@ function ShowReportList()
 	}
 	$arReports = array();
 	$dbReport = CCheckListResult::GetList(Array(),$arFilter);
-	while ($arReport = $dbReport->Fetch())
+	while ($arReport = $dbReport->GetNext())
 		$arReports[]=$arReport;?>
 
 	<form id="bx_project_form" style="display:none;" action="" method="POST" enctype="multipart/form-data">

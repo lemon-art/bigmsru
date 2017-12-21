@@ -16,6 +16,8 @@ class ShipmentItemStoreCollection
 
 	private static $errors = array();
 
+	private static $eventClassName = null;
+
 	/**
 	 * @return ShipmentItem
 	 */
@@ -25,13 +27,25 @@ class ShipmentItemStoreCollection
 	}
 
 	/**
+	 * @param $itemData
+	 * @return ShipmentItem
+	 */
+	protected static function createShipmentItemStoreCollectionObject(array $itemData = array())
+	{
+		$registry = Registry::getInstance(Registry::REGISTRY_TYPE_ORDER);
+		$shipmentItemStoreCollectionClassName = $registry->getShipmentItemStoreCollectionClassName();
+
+		return new $shipmentItemStoreCollectionClassName();
+	}
+
+	/**
 	 * @param ShipmentItem $shipmentItem
 	 * @return ShipmentItemCollection
 	 */
 	public static function load(ShipmentItem $shipmentItem)
 	{
 		/** @var ShipmentItemStoreCollection $shipmentItemStoreCollection */
-		$shipmentItemStoreCollection = new static();
+		$shipmentItemStoreCollection = static::createShipmentItemStoreCollectionObject();
 		$shipmentItemStoreCollection->shipmentItem = $shipmentItem;
 
 		if ($shipmentItem->getId() > 0)
@@ -291,7 +305,15 @@ class ShipmentItemStoreCollection
 		$oldBarcodeList = array();
 
 		$itemsFromDb = array();
-		if ($this->getShipmentItem() && $this->getShipmentItem()->getId() > 0)
+
+		$shipmentItem = $this->getShipmentItem();
+
+		$originalValues = $shipmentItem->getFields()
+									   ->getOriginalValues();
+
+		$shipmentItemIsNew = (array_key_exists('ID', $originalValues) && $originalValues['ID'] === null);
+
+		if ($this->getShipmentItem() && $this->getShipmentItem()->getId() > 0 && !$shipmentItemIsNew)
 		{
 			$itemsFromDbList = Internals\ShipmentItemStoreTable::getList(
 				array(
@@ -314,12 +336,15 @@ class ShipmentItemStoreCollection
 				unset($itemsFromDb[$shipmentItemStore->getId()]);
 		}
 
-		$itemEventName = ShipmentItemStore::getEntityEventName();
+		if (self::$eventClassName === null)
+		{
+			self::$eventClassName = ShipmentItemStore::getEntityEventName();
+		}
 
 		foreach ($itemsFromDb as $k => $v)
 		{
 			/** @var Main\Event $event */
-			$event = new Main\Event('sale', "OnBefore".$itemEventName."Deleted", array(
+			$event = new Main\Event('sale', "OnBefore".self::$eventClassName."Deleted", array(
 					'VALUES' => $v,
 			));
 			$event->send();
@@ -327,7 +352,7 @@ class ShipmentItemStoreCollection
 			Internals\ShipmentItemStoreTable::delete($k);
 
 			/** @var Main\Event $event */
-			$event = new Main\Event('sale', "On".$itemEventName."Deleted", array(
+			$event = new Main\Event('sale', "On".self::$eventClassName."Deleted", array(
 					'VALUES' => $v,
 			));
 			$event->send();
@@ -550,6 +575,45 @@ class ShipmentItemStoreCollection
 		}
 
 		return $shipmentItemStoreCollectionClone;
+	}
+
+
+	/**
+	 * @param $value
+	 *
+	 * @return string
+	 */
+	public function getErrorEntity($value)
+	{
+		$className = null;
+		/** @var ShipmentItemStore $shipmentItemStore */
+		foreach ($this->collection as $shipmentItemStore)
+		{
+			if ($className = $shipmentItemStore->getErrorEntity($value))
+			{
+				break;
+			}
+		}
+		return $className;
+	}
+
+	/**
+	 * @param $value
+	 *
+	 * @return string
+	 */
+	public function canAutoFixError($value)
+	{
+		$autoFix = false;
+		/** @var ShipmentItemStore $shipmentItemStore */
+		foreach ($this->collection as $shipmentItemStore)
+		{
+			if ($autoFix = $shipmentItemStore->canAutoFixError($value))
+			{
+				break;
+			}
+		}
+		return $autoFix;
 	}
 
 } 

@@ -17,6 +17,7 @@ $arComponentParameters = Array(
 		),
 	),
 	"PARAMETERS" => Array(
+		"USER_CONSENT" => array(),
 		"PATH_TO_BLOG" => Array(
 			"NAME" => GetMessage("BU_PATH_TO_BLOG"),
 			"TYPE" => "STRING",

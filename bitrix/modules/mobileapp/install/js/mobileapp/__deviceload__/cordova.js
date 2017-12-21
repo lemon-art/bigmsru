@@ -18,9 +18,14 @@
  specific language governing permissions and limitations
  under the License.
  */
+
 ;
 (function ()
 {
+	if(typeof window.Cordova != "undefined" || navigator.userAgent.search("AppleWebKit")>0)
+	{
+		return;
+	}
 	var CORDOVA_JS_BUILD_LABEL = '3.6.3';
 // file: src/scripts/require.js
 

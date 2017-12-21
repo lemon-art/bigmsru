@@ -1830,6 +1830,7 @@ a.adm-nav-page:hover,
 .adm-list-table-row.adm-table-row-active:hover .adm-list-table-cell, .adm-list-table-row.adm-list-row-active:hover .adm-list-table-cell {background-color:#d7dcc2;}
 
 .adm-list-table-cell a {color:#1c53a2; text-decoration:none;}
+.adm-list-table-cell a:hover { text-decoration: underline; }
 .adm-list-table-cell a:visited {color: #895c96;}
 /*.adm-list-table-row:hover .adm-list-table-cell a,
 .adm-list-table-row.adm-list-row-active .adm-list-table-cell a {color:#fff;}*/
@@ -2675,6 +2676,92 @@ span.adm-detail-tab.adm-detail-tab-active:after {
 	background:url("images/bx-admin-tabs-border.png") repeat-x 0 -43px !important;
 }
 
+.adm-detail-tab-close{
+	width: 20px;
+	height: 20px;
+	line-height: 15px;
+	position: relative;
+	display: inline-block;
+	margin-right: -9px;
+	bottom: 0;
+	cursor: pointer;
+	margin-left: 3px;
+	vertical-align: middle;
+}
+.adm-detail-tab-close:after,
+.adm-detail-tab-close:before{
+	content: "";
+	position: absolute;
+	height:2px;
+	width:10px;
+	background-color: #99a1aa;
+	top: 50%;
+	left:50%;
+	-webkit-transition: background-color 250ms ease;
+	   -moz-transition: background-color 250ms ease;
+		-ms-transition: background-color 250ms ease;
+		 -o-transition: background-color 250ms ease;
+			transition: background-color 250ms ease;
+}
+.adm-detail-tab-close:hover:after,
+.adm-detail-tab-close:hover:before{ background-color: #646c7b;}
+.adm-detail-tab-close:before{
+	-webkit-transform: translateX(-50%) translateY(-50%) rotate(-45deg);
+	   -moz-transform: translateX(-50%) translateY(-50%) rotate(-45deg);
+		-ms-transform: translateX(-50%) translateY(-50%) rotate(-45deg);
+		 -o-transform: translateX(-50%) translateY(-50%) rotate(-45deg);
+			transform: translateX(-50%) translateY(-50%) rotate(-45deg);
+}
+.adm-detail-tab-close:after{
+	-webkit-transform: translateX(-50%) translateY(-50%) rotate(45deg);
+	   -moz-transform: translateX(-50%) translateY(-50%) rotate(45deg);
+		-ms-transform: translateX(-50%) translateY(-50%) rotate(45deg);
+		 -o-transform: translateX(-50%) translateY(-50%) rotate(45deg);
+			transform: translateX(-50%) translateY(-50%) rotate(45deg);
+}
+
+.adm-detail-tab-plus{
+	width: 12px;
+	height: 20px;
+	line-height: 15px;
+	position: relative;
+	display: inline-block;
+	cursor: pointer;
+	vertical-align: middle;
+}
+#tab_cont_tab_plus:hover .adm-detail-tab-plus{opacity: 1;}
+.adm-detail-tab-plus:after,
+.adm-detail-tab-plus:before{
+	content: "";
+	position: absolute;
+	height:2px;
+	width:10px;
+	background-color: #99a1aa;
+	top: 50%;
+	left:50%;
+	-webkit-transition: background-color 250ms ease;
+	   -moz-transition: background-color 250ms ease;
+		-ms-transition: background-color 250ms ease;
+		 -o-transition: background-color 250ms ease;
+			transition: background-color 250ms ease;
+}
+#tab_cont_tab_plus:hover .adm-detail-tab-plus:after,
+#tab_cont_tab_plus:hover .adm-detail-tab-plus:before{ background-color: #646c7b;}
+.adm-detail-tab-plus:before{
+	-webkit-transform: translateX(-50%) translateY(-50%) rotate(0deg);
+	   -moz-transform: translateX(-50%) translateY(-50%) rotate(0deg);
+		-ms-transform: translateX(-50%) translateY(-50%) rotate(0deg);
+		 -o-transform: translateX(-50%) translateY(-50%) rotate(0deg);
+			transform: translateX(-50%) translateY(-50%) rotate(0deg);
+}
+.adm-detail-tab-plus:after{
+	-webkit-transform: translateX(-50%) translateY(-50%) rotate(90deg);
+	   -moz-transform: translateX(-50%) translateY(-50%) rotate(90deg);
+		-ms-transform: translateX(-50%) translateY(-50%) rotate(90deg);
+		 -o-transform: translateX(-50%) translateY(-50%) rotate(90deg);
+			transform: translateX(-50%) translateY(-50%) rotate(90deg);
+}
+
 .adm-detail-settings {
 	background:url("images/bx-admin-sprite-small-2.png") no-repeat 2px -855px;
 	display:block;
@@ -3243,7 +3330,7 @@ it's made to prevent appearing of artefacts from old admin button icons.
 /*======================================================MENU ICONS=========================================*/
 
 .adm-submenu-item-link-icon {
-	background:url("images/icons-sprite-12.png") no-repeat center -1512px;
+	background:url("images/icons-sprite-14.png?1") no-repeat center -1512px;
 }
 .fav_menu_icon {background-position:center -1540px;}
 .iblock_menu_icon_iblocks {background-position:center -56px;}
@@ -3284,6 +3371,7 @@ it's made to prevent appearing of artefacts from old admin button icons.
 .iblock_menu_icon_settings {background-position: center -168px;}
 .sale_menu_icon {background-position: center -1344px;}
 .sale_menu_icon_buyers_affiliate {background-position: center -1288px;}
+.sale_menu_icon_marketplace {background-position: center -2492px;}
 .update_marketplace {background-position: center -1400px;}
 .update_marketplace_modules {background-position: center -1456px;}
 .statistic_icon_online {background-position: center -1093px;}
@@ -3333,6 +3421,8 @@ it's made to prevent appearing of artefacts from old admin button icons.
 .conversion_pulse_menu_icon {background-position: center -2305px; }
 .conversion_model_menu_icon {background-position: center -2335px; }
 .security_menu_ddos_icon {background-position: center -2398px;}
+.crm-cashbox-icon {background-position: center -2430px;}
+.promo_https_menu_icon {background-position: center -2461px;}
 
 /*======================================================END MENU ICONS=========================================*/
 
@@ -4002,3 +4092,60 @@ it's made to prevent appearing of artefacts from old admin button icons.
 }
 
 /*====================================================ADMIN TAB CONTROL DRAGGABLE============================*/
+
+/* DIV TABLE CONSTRUCTOR */
+.adm-table-content-wrap {
+	font: 14px "Helvetica Neue", Arial, Helvetica, sans-serif;
+	color: #535C69;
+}
+.adm-table-content-title-main {
+	margin: 0 0 20px;
+}
+.adm-table-content-title {
+	margin: 0 0 10px 0;
+}
+.adm-table-content-text-bold {
+	font-weight: 700;
+}
+.adm-table-content-container {
+	display: table;
+	margin: 0 0 20px 0;
+}
+.adm-table-content-cell {
+	display: table-cell;
+	padding: 0 35px 0 0;
+}
+.adm-table-content-cell:last-child {
+	padding: 0;
+}
+.adm-table-content-cell-item {
+	margin: 0 0 7px 0;
+}
+.adm-table-content-cell-icon {
+	position: relative;
+	margin: 0 0 7px 20px;
+}
+.adm-table-content-cell-icon:before {
+	content: '';
+	position: absolute;
+	top: 3px;
+	left: -20px;
+	display: block;
+	width: 10px;
+	height: 10px;
+	border-radius: 100%;
+	background: #DADADA;
+}
+.adm-table-link {
+	line-height: 22px;
+	border-bottom: 1px solid #1E68BC;
+	color: #1E68BC;
+	text-decoration: none;
+	-webkit-transition: border-bottom .3s;
+	transition: border-bottom .3s;
+}
+.adm-table-link:hover {
+	border-bottom: 1px solid transparent;
+	text-decoration: none;
+}
+/* END OF DIV TABLE CONSTRUCTOR */

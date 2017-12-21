@@ -659,7 +659,7 @@ class CCatalogAdminToolsAll
 		{
 			$productList = Catalog\ProductTable::getProductTypes(true);
 			$extResult = array();
-			foreach ($result as &$type)
+			foreach ($result as $type)
 				$extResult[$type] = $productList[$type];
 			unset($type);
 			$result = $extResult;
@@ -777,7 +777,9 @@ class CCatalogAdminProductSetEdit
 						'ITEM_ID' => '',
 						'QUANTITY' => '',
 						'DISCOUNT_PERCENT' => '',
-						'SORT' => 100
+						'SORT' => 100,
+						'NEW_ITEM' => true,
+						'EMPTY_ITEM' => true
 					);
 				}
 				break;
@@ -787,7 +789,9 @@ class CCatalogAdminProductSetEdit
 					$arResult['n'.$i] = array(
 						'ITEM_ID' => '',
 						'QUANTITY' => '',
-						'SORT' => 100
+						'SORT' => 100,
+						'NEW_ITEM' => true,
+						'EMPTY_ITEM' => true
 					);
 				}
 				break;
@@ -980,8 +984,9 @@ class CCatalogAdminProductSetEdit
 
 		foreach ($arSets as $key => $arOneSet)
 		{
+			$blockName = self::$strMainPrefix.'_'.$arOneSet['ITEM_ID'];
 			$strNamePrefix = self::$strMainPrefix.'['.$key.']';
-			$strIDPrefix = self::$strMainPrefix.'_'.$key;
+			$strIDPrefix = $blockName.'_'.$key;
 			?><table id="<? echo $strIDPrefix; ?>_TBL" class="internal" style="margin: 0 auto;">
 			<tr class="heading">
 			<td class="align-left"><? echo Loc::getMessage('BT_CAT_SET_ITEM_NAME'); ?></td>
@@ -1001,6 +1006,27 @@ class CCatalogAdminProductSetEdit
 				: Loc::getMessage('BT_CAT_SET_ITEM_DEL_FROM_GROUP')); ?></td><?
 			}
 			?></tr><?
+			Main\Type\Collection::sortByColumn(
+				$arOneSet['ITEMS'],
+				array(
+					'NEW_ITEM' => SORT_ASC,
+					'EMPTY_ITEM' => SORT_ASC,
+					'SORT' => array(SORT_NUMERIC, SORT_ASC),
+					'ITEM_ID' => array(SORT_NUMERIC, SORT_ASC)
+				),
+				array(
+					'NEW_ITEM' => function($value)
+					{
+						return !is_null($value);
+					},
+					'EMPTY_ITEM' => function($value)
+					{
+						return !is_null($value);
+					}
+				),
+				null,
+				true
+			);
 			foreach ($arOneSet['ITEMS'] as $keyItem => $arOneItem)
 			{
 				$arItemParams = array(
@@ -1029,17 +1055,21 @@ class CCatalogAdminProductSetEdit
 			$arJSParams = array(
 				'PREFIX' => $strIDPrefix.'_ITEMS_',
 				'PREFIX_NAME' => $strNamePrefix.'[ITEMS]',
-				'TABLE_PROP_ID' =>  $strIDPrefix.'_TBL',
-				'PROP_COUNT_ID' =>  $strIDPrefix.'_ITEMS_CNT',
+				'TABLE_PROP_ID' => $strIDPrefix.'_TBL',
+				'PROP_COUNT_ID' => $strIDPrefix.'_ITEMS_CNT',
 				'BTN_ID' => $strIDPrefix.'_ITEMS_ADD',
 				'CELLS' => $arCellInfo['CELLS'],
 				'CELL_PARAMS' => $arCellInfo['CELL_PARAMS']
 			)
 			?>
 <script type="text/javascript">
-var ob<? echo self::$strMainPrefix; ?> = new JCCatTblEditExt(<? echo CUtil::PhpToJSObject($arJSParams); ?>);
+if (!window.ob<?=$blockName; ?>)
+{
+	window.ob<?=$blockName; ?> = new JCCatTblEditExt(<? echo CUtil::PhpToJSObject($arJSParams); ?>);
+}
 </script>
 			<?
+			unset($blockName);
 			break;
 		}
 	}
@@ -1055,7 +1085,7 @@ var ob<? echo self::$strMainPrefix; ?> = new JCCatTblEditExt(<? echo CUtil::PhpT
 		<td class="align-left">
 			<input name="<? echo $strNamePrefix; ?>[ITEM_ID]" id="<? echo $strIDPrefix; ?>_ITEM_ID" value="<? echo htmlspecialcharsbx($arRow['ITEM_ID']); ?>" size="5" type="text">
 			<input type="button" value="..." id="<? echo $strIDPrefix; ?>_BTN" data-row-id="<? echo $strIDPrefix; ?>">
-			&nbsp;<span id="<? echo $strIDPrefix; ?>_ITEM_ID_link"><? echo htmlspecialcharsex($arRow['ITEM_NAME']); ?></span>
+			&nbsp;<span id="<? echo $strIDPrefix; ?>_ITEM_ID_link"><? echo htmlspecialcharsEx($arRow['ITEM_NAME']); ?></span>
 		</td>
 		<td class="align-right">
 			<input type="text" size="5" name="<? echo $strNamePrefix; ?>[QUANTITY]" id="<? echo $strIDPrefix; ?>_QUANTITY" value="<? echo htmlspecialcharsbx($arRow['QUANTITY']) ?>">
@@ -1202,6 +1232,8 @@ var ob<? echo self::$strMainPrefix; ?> = new JCCatTblEditExt(<? echo CUtil::PhpT
 							'DISCOUNT_PERCENT' => ('' == $arOneItem['DISCOUNT_PERCENT'] ? false : $arOneItem['DISCOUNT_PERCENT']),
 							'SORT' => $arOneItem['SORT']
 						);
+						if ((int)$keyItem <= 0)
+							self::$arSrcValues[self::$strMainPrefix][$key]['ITEMS'][$keyItem]['NEW_ITEM'] = true;
 						unset($itemId);
 						$arSaveSet['ITEMS'][] = $arSaveItem;
 					}
@@ -1224,6 +1256,9 @@ var ob<? echo self::$strMainPrefix; ?> = new JCCatTblEditExt(<? echo CUtil::PhpT
 						);
 						if ($arSaveItem['QUANTITY'] == '')
 							$arSaveItem['QUANTITY'] = 1;
+						if ((int)$keyItem <= 0)
+							self::$arSrcValues[self::$strMainPrefix][$key]['ITEMS'][$keyItem]['NEW_ITEM'] = true;
+						unset($itemId);
 						$arSaveSet['ITEMS'][] = $arSaveItem;
 					}
 					unset($keyItem, $arOneItem);

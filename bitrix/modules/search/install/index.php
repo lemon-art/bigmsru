@@ -197,7 +197,9 @@ Class search extends CModule
 
 		if(array_key_exists("public_dir", $arParams) && strlen($arParams["public_dir"]))
 		{
-			$rsSite = CSite::GetList(($by="sort"),($order="asc"));
+			$by = "sort";
+			$order = "asc";
+			$rsSite = CSite::GetList($by, $order);
 			while ($site = $rsSite->Fetch())
 			{
 				$source = $_SERVER['DOCUMENT_ROOT']."/bitrix/modules/search/install/public/";
@@ -253,7 +255,7 @@ Class search extends CModule
 	function DoInstall()
 	{
 		global $DOCUMENT_ROOT, $APPLICATION, $step;
-		$step = IntVal($step);
+		$step = intval($step);
 		if($step < 2)
 		{
 			$APPLICATION->IncludeAdminFile(GetMessage("SEARCH_INSTALL_TITLE"), $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/search/install/step1.php");
@@ -279,7 +281,7 @@ Class search extends CModule
 	function DoUninstall()
 	{
 		global $DOCUMENT_ROOT, $APPLICATION, $step;
-		$step = IntVal($step);
+		$step = intval($step);
 		if($step < 2)
 		{
 			$APPLICATION->IncludeAdminFile(GetMessage("SEARCH_UNINSTALL_TITLE"), $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/search/install/unstep1.php");
@@ -296,7 +298,7 @@ Class search extends CModule
 		}
 	}
 
-	function OnGetTableList()
+	public static function OnGetTableList()
 	{
 		return array(
 			"MODULE" => new search,
@@ -319,7 +321,7 @@ Class search extends CModule
 		);
 	}
 
-	function OnGetTableSchema()
+	public static function OnGetTableSchema()
 	{
 		return array(
 			"search" => array(
@@ -330,7 +332,6 @@ Class search extends CModule
 						"b_search_content_param" => "SEARCH_CONTENT_ID",
 						"b_search_content_right" => "SEARCH_CONTENT_ID",
 						"b_search_content_site" => "SEARCH_CONTENT_ID",
-						"b_search_content_stem" => "SEARCH_CONTENT_ID",
 						"b_search_content_title" => "SEARCH_CONTENT_ID",
 						"b_search_tags" => "SEARCH_CONTENT_ID",
 					)

@@ -24,4 +24,6 @@ $MESS["CSTORE_SORT"] = "Сорт.";
 $MESS["SHIPPING_CENTER"] = "Для отгрузки";
 $MESS["ISSUING_CENTER"] = "Пункт выдачи";
 $MESS["STORE_SITE_ID"] = "Сайт";
+$MESS["STORE_CODE"] = "Символьный код";
+$MESS["STORE_XML_ID"] = "Внешний код";
 ?>

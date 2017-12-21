@@ -36,6 +36,9 @@ abstract class CAllUser extends CDBResult
 	protected $justAuthorized = false;
 	protected static $userGroupCache = array();
 
+	const STATUS_ONLINE = 'online';
+	const STATUS_OFFLINE = 'offline';
+
 	abstract public function Add($arFields);
 
 	public function GetParam($name)
@@ -503,16 +506,9 @@ abstract class CAllUser extends CDBResult
 		return "CUser::CleanUpHitAuthAgent();";
 	}
 
-	/**
-	 * Performs the user authorization:
-	 *    fills session parameters;
-	 *    remembers auth;
-	 *    spreads auth through sites
-	 */
-	public function Authorize($id, $bSave = false, $bUpdate = true, $applicationId = null)
+	protected function UpdateSessionData($id, $applicationId = null)
 	{
-		/** @global CMain $APPLICATION */
-		global $DB, $APPLICATION;
+		global $DB;
 
 		unset($_SESSION["SESS_OPERATIONS"]);
 		unset($_SESSION["MODULE_PERMISSIONS"]);
@@ -522,11 +518,10 @@ abstract class CAllUser extends CDBResult
 			"SELECT U.* ".
 			"FROM b_user U  ".
 			"WHERE U.ID='".intval($id)."' ";
-		$result = $DB->Query($strSql, false, "FILE: ".__FILE__."<br> LINE: ".__LINE__);
+		$result = $DB->Query($strSql);
+
 		if($arUser = $result->Fetch())
 		{
-			$this->justAuthorized = true;
-
 			$_SESSION["SESS_AUTH"]["AUTHORIZED"] = "Y";
 			$_SESSION["SESS_AUTH"]["USER_ID"] = $arUser["ID"];
 			$_SESSION["SESS_AUTH"]["LOGIN"] = $arUser["LOGIN"];
@@ -541,10 +536,10 @@ abstract class CAllUser extends CDBResult
 			$_SESSION["SESS_AUTH"]["PERSONAL_PHOTO"] = $arUser["PERSONAL_PHOTO"];
 			$_SESSION["SESS_AUTH"]["PERSONAL_GENDER"] = $arUser["PERSONAL_GENDER"];
 			$_SESSION["SESS_AUTH"]["ADMIN"] = false;
-			$_SESSION["SESS_AUTH"]["CONTROLLER_ADMIN"] = false;
 			$_SESSION["SESS_AUTH"]["POLICY"] = CUser::GetGroupPolicy($arUser["ID"]);
 			$_SESSION["SESS_AUTH"]["AUTO_TIME_ZONE"] = trim($arUser["AUTO_TIME_ZONE"]);
 			$_SESSION["SESS_AUTH"]["TIME_ZONE"] = $arUser["TIME_ZONE"];
+			$_SESSION["SESS_AUTH"]["TIME_ZONE_OFFSET"] = $arUser["TIME_ZONE_OFFSET"];
 			$_SESSION["SESS_AUTH"]["APPLICATION_ID"] = $applicationId;
 			$_SESSION["SESS_AUTH"]["BX_USER_ID"] = $arUser["BX_USER_ID"];
 
@@ -559,6 +554,33 @@ abstract class CAllUser extends CDBResult
 					break;
 				}
 			}
+			return $arUser;
+		}
+		return false;
+	}
+
+	/**
+	 * Performs the user authorization:
+	 *    fills session parameters;
+	 *    remembers auth;
+	 *    spreads auth through sites.
+	 * @param int $id An user ID.
+	 * @param bool $bSave Save authorization in cookies.
+	 * @param bool $bUpdate Update last login information in DB.
+	 * @param string|null $applicationId An application password ID.
+	 * @return bool
+	 */
+	public function Authorize($id, $bSave = false, $bUpdate = true, $applicationId = null)
+	{
+		/** @global CMain $APPLICATION */
+		global $DB, $APPLICATION;
+
+		$arUser = $this->UpdateSessionData($id, $applicationId);
+		if($arUser !== false)
+		{
+			self::$CURRENT_USER = false;
+			$this->justAuthorized = true;
+			$this->SetControllerAdmin(false);
 
 			//sometimes we don't need to update db (REST)
 			if($bUpdate)
@@ -568,7 +590,9 @@ abstract class CAllUser extends CDBResult
 				{
 					if(!CTimeZone::IsAutoTimeZone(trim($arUser["AUTO_TIME_ZONE"])) || CTimeZone::GetCookieValue() !== null)
 					{
-						$tz = ', TIME_ZONE_OFFSET = '.CTimeZone::GetOffset();
+						$offset = CTimeZone::GetOffset();
+						$tz = ', TIME_ZONE_OFFSET = '.$offset;
+						$_SESSION["SESS_AUTH"]["TIME_ZONE_OFFSET"] = $offset;
 					}
 				}
 
@@ -655,12 +679,12 @@ abstract class CAllUser extends CDBResult
 				ExecuteModuleEventEx($arEvent, array($arParams));
 
 			foreach (GetModuleEvents("main", "OnUserLogin", true) as $arEvent)
-				ExecuteModuleEventEx($arEvent, array($_SESSION["SESS_AUTH"]["USER_ID"]));
+				ExecuteModuleEventEx($arEvent, array($_SESSION["SESS_AUTH"]["USER_ID"], $arParams));
 
 			if(COption::GetOptionString("main", "event_log_login_success", "N") === "Y")
 				CEventLog::Log("SECURITY", "USER_AUTHORIZE", "main", $arUser["ID"], $applicationId);
 
-			CHTMLPagesCache::OnUserLogin();
+			Main\Composite\Engine::onUserLogin();
 
 			return true;
 		}
@@ -1516,8 +1540,19 @@ abstract class CAllUser extends CDBResult
 		}
 
 		//authorize succesfully registered user
+		$isAuthorize = false;
 		if($ID !== false && $arFields["ACTIVE"] === "Y")
-			$this->Authorize($ID);
+			$isAuthorize = $this->Authorize($ID);
+
+		$agreementId = intval(COption::getOptionString("main", "new_user_agreement", ""));
+		if ($agreementId && $isAuthorize)
+		{
+			$agreementObject = new \Bitrix\Main\UserConsent\Agreement($agreementId);
+			if ($agreementObject->isExist() && $agreementObject->isActive() && $_REQUEST["USER_AGREEMENT"] == "Y")
+			{
+				\Bitrix\Main\UserConsent\Consent::addByContext($agreementId, "main/reg", "register");
+			}
+		}
 
 		$arFields["RESULT_MESSAGE"] = $result_message;
 		foreach (GetModuleEvents("main", "OnAfterUserRegister", true) as $arEvent)
@@ -1745,6 +1780,7 @@ abstract class CAllUser extends CDBResult
 				$DB->Query("DELETE FROM b_user_stored_auth WHERE ID=".intval($_SESSION["SESS_AUTH"]["STORED_AUTH_ID"]));
 
 			$this->justAuthorized = false;
+			$this->admin = null;
 
 			$_SESSION["SESS_AUTH"] = array();
 			unset($_SESSION["SESS_AUTH"]);
@@ -1762,7 +1798,7 @@ abstract class CAllUser extends CDBResult
 			$APPLICATION->set_cookie("UIDH", "", 0, '/', false, false, $multi, false, true);
 			$APPLICATION->set_cookie("UIDL", "", 0, '/', false, false, $multi, false, true);
 
-			CHTMLPagesCache::OnUserLogout();
+			Main\Composite\Engine::onUserLogout();
 		}
 
 		$arParams["SUCCESS"] = $bOk;
@@ -1775,25 +1811,14 @@ abstract class CAllUser extends CDBResult
 
 	public static function GetUserGroup($ID)
 	{
-		global $DB;
-
 		$ID = (int)$ID;
 		if (!isset(self::$userGroupCache[$ID]))
 		{
-			$strSql =
-				"SELECT UG.GROUP_ID ".
-				"FROM b_user_group UG ".
-				"WHERE UG.USER_ID = ".$ID." ".
-				"	AND ((UG.DATE_ACTIVE_FROM IS NULL) OR (UG.DATE_ACTIVE_FROM <= ".$DB->CurrentTimeFunction().")) ".
-				"	AND ((UG.DATE_ACTIVE_TO IS NULL) OR (UG.DATE_ACTIVE_TO >= ".$DB->CurrentTimeFunction().")) ";
-
-			$res = $DB->Query($strSql, false, "FILE: ".__FILE__."<br> LINE: ".__LINE__);
 			$arr = array();
+			$res = static::GetUserGroupEx($ID);
 			while ($r = $res->Fetch())
 				$arr[] = $r["GROUP_ID"];
 
-			if (!in_array(2, $arr))
-				$arr[] = 2;
 			self::$userGroupCache[$ID] = $arr;
 		}
 
@@ -1810,8 +1835,9 @@ abstract class CAllUser extends CDBResult
 				".$DB->DateToCharFunction("UG.DATE_ACTIVE_TO", "FULL")." as DATE_ACTIVE_TO
 			FROM b_user_group UG INNER JOIN b_group G ON G.ID=UG.GROUP_ID
 			WHERE UG.USER_ID = ".intval($ID)."
-			and ((UG.DATE_ACTIVE_FROM IS NULL) OR (UG.DATE_ACTIVE_FROM <= ".$DB->CurrentTimeFunction()."))
-			and ((UG.DATE_ACTIVE_TO IS NULL) OR (UG.DATE_ACTIVE_TO >= ".$DB->CurrentTimeFunction()."))
+				and ((UG.DATE_ACTIVE_FROM IS NULL) OR (UG.DATE_ACTIVE_FROM <= ".$DB->CurrentTimeFunction()."))
+				and ((UG.DATE_ACTIVE_TO IS NULL) OR (UG.DATE_ACTIVE_TO >= ".$DB->CurrentTimeFunction()."))
+				and G.ACTIVE = 'Y'
 			UNION SELECT 2, 'everyone', NULL, NULL ".(strtoupper($DB->type) == "ORACLE"? " FROM dual " : "");
 
 		$res = $DB->Query($strSql, false, "FILE: ".__FILE__."<br> LINE: ".__LINE__);
@@ -1978,6 +2004,16 @@ abstract class CAllUser extends CDBResult
 				}
 			}
 		}
+		else
+		{
+			if(is_set($arFields, "EMAIL"))
+			{
+				if($arFields["EMAIL"] <> '' && !check_email($arFields["EMAIL"], true))
+				{
+					$this->LAST_ERROR .= GetMessage("WRONG_EMAIL")."<br>";
+				}
+			}
+		}
 
 		if(is_set($arFields, "PERSONAL_PHOTO") && $arFields["PERSONAL_PHOTO"]["name"] == '' && $arFields["PERSONAL_PHOTO"]["del"] == '')
 			unset($arFields["PERSONAL_PHOTO"]);
@@ -2104,13 +2140,13 @@ abstract class CAllUser extends CDBResult
 	public function Update($ID, $arFields)
 	{
 		/** @global CUserTypeManager $USER_FIELD_MANAGER */
-		global $DB, $USER_FIELD_MANAGER, $CACHE_MANAGER;
+		global $DB, $USER_FIELD_MANAGER, $CACHE_MANAGER, $USER;
 
 		$ID = intval($ID);
 
 		if(!$this->CheckFields($arFields, $ID))
 		{
-			$Result = false;
+			$result = false;
 			$arFields["RESULT_MESSAGE"] = &$this->LAST_ERROR;
 		}
 		else
@@ -2123,6 +2159,14 @@ abstract class CAllUser extends CDBResult
 			if(is_set($arFields, "PERSONAL_GENDER") && ($arFields["PERSONAL_GENDER"]!="M" && $arFields["PERSONAL_GENDER"]!="F"))
 				$arFields["PERSONAL_GENDER"] = "";
 
+			//we need old values for some actions
+			$arUser = null;
+			if((isset($arFields["ACTIVE"]) && $arFields["ACTIVE"] == "N") || isset($arFields["PASSWORD"]))
+			{
+				$rUser = CUser::GetByID($ID);
+				$arUser = $rUser->Fetch();
+			}
+
 			if(is_set($arFields, "PASSWORD"))
 			{
 				$original_pass = $arFields["PASSWORD"];
@@ -2133,15 +2177,13 @@ abstract class CAllUser extends CDBResult
 					",.<>/?;:[]{}\\|~!@#\$%^&*()-_+=",
 				));
 				$arFields["PASSWORD"] = $salt.md5($salt.$arFields["PASSWORD"]);
-				$rUser = CUser::GetByID($ID);
-				if($arUser = $rUser->Fetch())
+				if($arUser)
 				{
 					if($arUser["PASSWORD"] != $arFields["PASSWORD"])
 						$DB->Query("DELETE FROM b_user_stored_auth WHERE USER_ID=".$ID);
 				}
 				if(COption::GetOptionString("main", "event_log_password_change", "N") === "Y")
 					CEventLog::Log("SECURITY", "USER_PASSWORD_CHANGED", "main", $ID);
-				//$arFields["STORED_HASH"] = CUser::GetPasswordHash($arFields["PASSWORD"]);
 			}
 			unset($arFields["STORED_HASH"]);
 
@@ -2226,11 +2268,52 @@ abstract class CAllUser extends CDBResult
 				CUser::UpdateDigest($arUser["ID"], $original_pass);
 			}
 
-			$Result = true;
+			if($arUser)
+			{
+				$authAction = false;
+				if(isset($arFields["ACTIVE"]) && $arUser["ACTIVE"] == "Y" && $arFields["ACTIVE"] == "N")
+				{
+					$authAction = true;
+				}
+
+				$internalUser = true;
+				if(isset($arFields["EXTERNAL_AUTH_ID"]))
+				{
+					if($arFields["EXTERNAL_AUTH_ID"] <> '')
+					{
+						$internalUser = false;
+					}
+				}
+				elseif($arUser["EXTERNAL_AUTH_ID"] <> '')
+				{
+					$internalUser = false;
+				}
+
+				if($internalUser == true && isset($arFields["PASSWORD"]) && $arUser["PASSWORD"] <> $arFields["PASSWORD"])
+				{
+					$authAction = true;
+					if(is_object($USER) && $USER->GetID() == $ID)
+					{
+						//changed password by himself
+						$USER->SetParam("SELF_CHANGED_PASSWORD", true);
+					}
+				}
+
+				if($authAction)
+				{
+					Main\UserAuthActionTable::add(array(
+						'USER_ID' => $ID,
+						'PRIORITY' => Main\UserAuthActionTable::PRIORITY_HIGH,
+						'ACTION' => Main\UserAuthActionTable::ACTION_LOGOUT,
+						'ACTION_DATE' => new Main\Type\DateTime(),
+					));
+				}
+			}
+
+			$result = true;
 			$arFields["CHECKWORD"] = $checkword;
 
 			//update session information and cache for current user
-			global $USER;
 			if(is_object($USER) && $USER->GetID() == $ID)
 			{
 				static $arSessFields = array(
@@ -2249,37 +2332,42 @@ abstract class CAllUser extends CDBResult
 		}
 
 		$arFields["ID"] = $ID;
-		$arFields["RESULT"] = &$Result;
+		$arFields["RESULT"] = &$result;
 
 		foreach (GetModuleEvents("main", "OnAfterUserUpdate", true) as $arEvent)
 			ExecuteModuleEventEx($arEvent, array(&$arFields));
 
-		if(defined("BX_COMP_MANAGED_CACHE"))
+		if($arFields["RESULT"] == true)
 		{
-			$CACHE_MANAGER->ClearByTag("USER_CARD_".intval($ID / TAGGED_user_card_size));
-			$CACHE_MANAGER->ClearByTag("USER_CARD");
+			\Bitrix\Main\UserTable::indexRecord($ID);
 
-			static $arNameFields = array("NAME", "LAST_NAME", "SECOND_NAME", "LOGIN", "EMAIL", "PERSONAL_GENDER", "PERSONAL_PHOTO", "WORK_POSITION", "PERSONAL_PROFESSION", "PERSONAL_BIRTHDAY", "TITLE", "EXTERNAL_AUTH_ID");
-			$bClear = false;
-			foreach($arNameFields as $val)
+			if(defined("BX_COMP_MANAGED_CACHE"))
 			{
-				if(isset($arFields[$val]))
+				$CACHE_MANAGER->ClearByTag("USER_CARD_".intval($ID / TAGGED_user_card_size));
+				$CACHE_MANAGER->ClearByTag("USER_CARD");
+
+				static $arNameFields = array("NAME", "LAST_NAME", "SECOND_NAME", "LOGIN", "EMAIL", "PERSONAL_GENDER", "PERSONAL_PHOTO", "WORK_POSITION", "PERSONAL_PROFESSION", "PERSONAL_WWW", "PERSONAL_BIRTHDAY", "TITLE", "EXTERNAL_AUTH_ID", "UF_DEPARTMENT");
+				$bClear = false;
+				foreach($arNameFields as $val)
 				{
-					$bClear = true;
-					break;
+					if(isset($arFields[$val]))
+					{
+						$bClear = true;
+						break;
+					}
+				}
+				if ($bClear)
+				{
+					$CACHE_MANAGER->ClearByTag("USER_NAME_".$ID);
+					$CACHE_MANAGER->ClearByTag("USER_NAME");
 				}
 			}
-			if ($bClear)
-			{
-				$CACHE_MANAGER->ClearByTag("USER_NAME_".$ID);
-				$CACHE_MANAGER->ClearByTag("USER_NAME");
-			}
 		}
-
-		return $Result;
+		
+		return $result;
 	}
 
-	public static function SetUserGroup($USER_ID, $arGroups)
+	public static function SetUserGroup($USER_ID, $arGroups, $newUser = false)
 	{
 		global $DB;
 
@@ -2290,22 +2378,18 @@ abstract class CAllUser extends CDBResult
 			return false;
 		}
 
-		$log = (COption::GetOptionString("main", "event_log_user_groups", "N") === "Y");
-		if($log)
-		{
-			//remember previous groups of the user
-			$aPrevGroups = array();
-			$res = CUser::GetUserGroupList($USER_ID);
-			while($res_arr = $res->Fetch())
-				if($res_arr["GROUP_ID"] <> 2)
-					$aPrevGroups[] = $res_arr["GROUP_ID"];
-		}
+		//remember previous groups of the user
+		$aPrevGroups = array();
+		$res = CUser::GetUserGroupList($USER_ID);
+		while($res_arr = $res->Fetch())
+			if($res_arr["GROUP_ID"] <> 2)
+				$aPrevGroups[$res_arr["GROUP_ID"]] = $res_arr;
 
 		$DB->Query("DELETE FROM b_user_group WHERE USER_ID=".$USER_ID, false, "FILE: ".__FILE__."<br> LINE: ".__LINE__);
 
+		$inserted = array();
 		if(is_array($arGroups))
 		{
-			$arTmp = array();
 			foreach($arGroups as $group)
 			{
 				if(!is_array($group))
@@ -2314,7 +2398,7 @@ abstract class CAllUser extends CDBResult
 				}
 
 				$group_id = intval($group["GROUP_ID"]);
-				if($group_id > 0 && $group_id <> 2 && !isset($arTmp[$group_id]))
+				if($group_id > 0 && $group_id <> 2 && !isset($inserted[$group_id]))
 				{
 					$arInsert = $DB->PrepareInsert("b_user_group", $group);
 					$strSql = "
@@ -2326,45 +2410,114 @@ abstract class CAllUser extends CDBResult
 						)
 					";
 					$DB->Query($strSql, false, "FILE: ".__FILE__."<br> LINE: ".__LINE__);
-					$arTmp[$group_id] = true;
+					$inserted[$group_id] = $group;
 				}
 			}
-			$arGroups = array_keys($arTmp);
-		}
-		else
-		{
-			$arGroups = array();
 		}
 		self::clearUserGroupCache($USER_ID);
 
 		foreach (GetModuleEvents("main", "OnAfterSetUserGroup", true) as $arEvent)
 		{
-			ExecuteModuleEventEx($arEvent, array("USER_ID"=>$USER_ID, "GROUPS"=>$arGroups));
+			ExecuteModuleEventEx($arEvent, array("USER_ID"=>$USER_ID, "GROUPS"=>$inserted));
 		}
 
-		if($log)
+		if($aPrevGroups <> $inserted)
 		{
-			//compare previous groups of the user with new
-			/** @noinspection PhpUndefinedVariableInspection */
-			$aDiff = array_diff($aPrevGroups, $arGroups);
-			if(empty($aDiff))
-				$aDiff = array_diff($arGroups, $aPrevGroups);
-			if(!empty($aDiff))
+			if($newUser == false)
 			{
-				sort($aPrevGroups);
-				sort($arGroups);
+				$authActionCommon = false;
+				$now = new Main\Type\DateTime();
+				foreach($inserted as $group)
+				{
+					foreach(array("DATE_ACTIVE_FROM", "DATE_ACTIVE_TO") as $field)
+					{
+						if($group[$field] <> '')
+						{
+							$date = Main\Type\DateTime::createFromUserTime($group[$field]);
+							if($date > $now)
+							{
+								//group membership is in the future, we need separate records for each group
+								Main\UserAuthActionTable::add(array(
+									'USER_ID' => $USER_ID,
+									'PRIORITY' => Main\UserAuthActionTable::PRIORITY_LOW,
+									'ACTION' => Main\UserAuthActionTable::ACTION_UPDATE,
+									'ACTION_DATE' => $date,
+								));
+							}
+							else
+							{
+								$authActionCommon = true;
+							}
+						}
+						else
+						{
+							$authActionCommon = true;
+						}
+					}
+				}
+
+				if($authActionCommon == true)
+				{
+					//one action for all groups without dates in the future
+					Main\UserAuthActionTable::add(array(
+						'USER_ID' => $USER_ID,
+						'PRIORITY' => Main\UserAuthActionTable::PRIORITY_LOW,
+						'ACTION' => Main\UserAuthActionTable::ACTION_UPDATE,
+						'ACTION_DATE' => new Main\Type\DateTime(),
+					));
+				}
+			}
+
+			if(COption::GetOptionString("main", "event_log_user_groups", "N") === "Y")
+			{
 				$UserName = '';
 				$rsUser = CUser::GetByID($USER_ID);
 				if($arUser = $rsUser->GetNext())
 					$UserName = ($arUser["NAME"] != "" || $arUser["LAST_NAME"] != "") ? trim($arUser["NAME"]." ".$arUser["LAST_NAME"]) : $arUser["LOGIN"];
 				$res_log = array(
-					"groups" => "(".implode(", ", $aPrevGroups).") => (".implode(", ", $arGroups).")",
+					"groups" => serialize($aPrevGroups)." => ".serialize($inserted),
 					"user" => $UserName
 				);
 				CEventLog::Log("SECURITY", "USER_GROUP_CHANGED", "main", $USER_ID, serialize($res_log));
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Appends groups to the list of existing user's groups.
+	 *
+	 * @param int $user_id
+	 * @param array|int $groups A single number, or an array of numbers, or an array of arrays("GROUP_ID"=>$val, "DATE_ACTIVE_FROM"=>$val, "DATE_ACTIVE_TO"=>$val)
+	 */
+	public static function AppendUserGroup($user_id, $groups)
+	{
+		$arGroups = array();
+		$res = CUser::GetUserGroupList($user_id);
+		while($res_arr = $res->Fetch())
+		{
+			$arGroups[] = array(
+				"GROUP_ID" => $res_arr["GROUP_ID"],
+				"DATE_ACTIVE_FROM" => $res_arr["DATE_ACTIVE_FROM"],
+				"DATE_ACTIVE_TO" => $res_arr["DATE_ACTIVE_TO"],
+			);
+		}
+
+		if(!is_array($groups))
+		{
+			$groups = array($groups);
+		}
+
+		foreach($groups as $group)
+		{
+			if(!is_array($group))
+			{
+				$group = array("GROUP_ID" => $group);
+			}
+			$arGroups[] = $group;
+		}
+
+		CUser::SetUserGroup($user_id, $arGroups);
 	}
 
 	public static function GetCount()
@@ -2454,6 +2607,9 @@ abstract class CAllUser extends CDBResult
 			CEventLog::Log("SECURITY", "USER_DELETE", "main", $arUser["LOGIN"], serialize($res_log));
 		}
 
+		if(!$DB->Query("DELETE FROM b_user WHERE ID=".$ID." AND ID<>1"))
+			return false;
+
 		if(defined("BX_COMP_MANAGED_CACHE"))
 		{
 			$CACHE_MANAGER->ClearByTag("USER_CARD_".intval($ID / TAGGED_user_card_size));
@@ -2463,17 +2619,21 @@ abstract class CAllUser extends CDBResult
 		}
 		self::clearUserGroupCache($ID);
 
-		$res = $DB->Query("DELETE FROM b_user WHERE ID=".$ID." AND ID<>1");
+		Main\UserAuthActionTable::add(array(
+			'USER_ID' => $ID,
+			'PRIORITY' => Main\UserAuthActionTable::PRIORITY_HIGH,
+			'ACTION' => Main\UserAuthActionTable::ACTION_LOGOUT,
+			'ACTION_DATE' => new Main\Type\DateTime(),
+		));
 
-		if($res)
+		\Bitrix\Main\UserTable::deleteIndexRecord($ID);
+
+		foreach(GetModuleEvents("main", "OnAfterUserDelete", true) as $arEvent)
 		{
-			foreach(GetModuleEvents("main", "OnAfterUserDelete", true) as $arEvent)
-			{
-				ExecuteModuleEventEx($arEvent, array($ID));
-			}
+			ExecuteModuleEventEx($arEvent, array($ID));
 		}
 
-		return $res;
+		return true;
 	}
 
 	public static function GetExternalAuthList()
@@ -2888,9 +3048,37 @@ abstract class CAllUser extends CDBResult
 			return 0;
 	}
 
-	public static function SetLastActivityDate($ID)
+	public static function SetLastActivityDate($userId = null, $cache = false)
 	{
-		self::SetLastActivityDateByArray(array($ID));
+		global $USER;
+		
+		if (is_null($userId))
+		{
+			$userId = $USER->GetId();
+		}
+
+		$userId = intval($userId);
+		if ($userId <= 0)
+		{
+			return false;
+		}
+		
+		if ($cache && $userId == $USER->GetId())
+		{
+			if (
+				isset($_SESSION['SESS_AUTH']['SET_LAST_ACTIVITY']) 
+				&& intval($_SESSION['SESS_AUTH']['SET_LAST_ACTIVITY'])+60 > time()
+			)
+			{
+				return false;
+			}
+
+			$_SESSION['SESS_AUTH']['SET_LAST_ACTIVITY'] = time();
+		}
+		
+		self::SetLastActivityDateByArray(array($userId));
+		
+		return true;
 	}
 
 	public static function SetLastActivityDateByArray($arUsers)
@@ -2928,7 +3116,206 @@ abstract class CAllUser extends CDBResult
 
 		return true;
 	}
+	
+	public static function GetSecondsForLimitOnline()
+	{
+		return \Bitrix\Main\UserTable::getSecondsForLimitOnline();
+	}
 
+	public static function GetExternalUserTypes()
+	{
+		return Main\UserTable::getExternalUserTypes();
+	}
+	
+	public static function GetOnlineStatus($userId, $lastseen, $now = false)
+	{
+		$userId = intval($userId);
+		
+		if ($lastseen instanceof \Bitrix\Main\Type\DateTime)
+		{
+			$lastseen = $lastseen->getTimestamp();
+		}
+		else if (is_int($lastseen))
+		{
+			$lastseen = intval($lastseen);
+		}
+		else
+		{
+			$lastseen = 0;
+		}
+		
+		if ($now === false)
+		{
+			$now = time();
+		}
+		else if ($now instanceof \Bitrix\Main\Type\DateTime)
+		{
+			$now = $now->getTimestamp();
+		}
+		else
+		{
+			$now = intval($now);
+		}
+		
+		$result = Array(
+			'IS_ONLINE' => false,
+			'STATUS' => self::STATUS_OFFLINE,
+			'STATUS_TEXT' =>  GetMessage('USER_STATUS_OFFLINE'),
+			'LAST_SEEN' => $lastseen,
+			'LAST_SEEN_TEXT' => "",
+			'NOW' => $now,
+		);
+		
+		if ($lastseen === false)
+		{
+			return $result;
+		}
+		
+		$result['IS_ONLINE'] = $now - $lastseen <= self::GetSecondsForLimitOnline();
+		$result['STATUS'] = $result['IS_ONLINE']? self::STATUS_ONLINE: self::STATUS_OFFLINE; 
+		$result['STATUS_TEXT'] = GetMessage('USER_STATUS_'.strtoupper($result['STATUS']));
+		
+		if ($lastseen && $now - $lastseen > 300)
+		{
+			$result['LAST_SEEN_TEXT'] = self::FormatLastActivityDate($lastseen, $now);
+		}
+		
+		if ($userId > 0)
+		{
+			if ($result['IS_ONLINE'])
+			{
+				foreach(GetModuleEvents("main", "OnUserOnlineStatusGetCustomOnlineStatus", true) as $arEvent)
+				{
+					$customStatus = ExecuteModuleEventEx($arEvent, array($userId, $lastseen, $now, self::STATUS_ONLINE));
+					if (is_array($customStatus))
+					{
+						if (!empty($customStatus['STATUS']) && !empty($customStatus['STATUS_TEXT']))
+						{
+							$result['STATUS'] = strtolower($customStatus['STATUS']);
+							$result['STATUS_TEXT'] = $customStatus['STATUS_TEXT'];
+						}
+						if (isset($customStatus['LAST_SEEN']) && intval($customStatus['LAST_SEEN']) > 0)
+						{
+							$result['LAST_SEEN'] = intval($customStatus['LAST_SEEN']);
+						}
+						if (isset($customStatus['LAST_SEEN_TEXT']))
+						{
+							$result['LAST_SEEN_TEXT'] = $customStatus['LAST_SEEN_TEXT'];
+						}
+					}
+				}
+			}
+			else
+			{
+				foreach(GetModuleEvents("main", "OnUserOnlineStatusGetCustomOfflineStatus", true) as $arEvent)
+				{
+					$customStatus = ExecuteModuleEventEx($arEvent, array($userId, $lastseen, $now, self::STATUS_OFFLINE));
+					if (is_array($customStatus))
+					{
+						if (!empty($customStatus['STATUS']) && !empty($customStatus['STATUS_TEXT']))
+						{
+							$result['STATUS'] = strtolower($customStatus['STATUS']);
+							$result['STATUS_TEXT'] = $customStatus['STATUS_TEXT'];
+						}
+						if (isset($customStatus['LAST_SEEN']) && intval($customStatus['LAST_SEEN']) > 0)
+						{
+							$result['LAST_SEEN'] = intval($customStatus['LAST_SEEN']);
+						}
+						if (isset($customStatus['LAST_SEEN_TEXT']))
+						{
+							$result['LAST_SEEN_TEXT'] = $customStatus['LAST_SEEN_TEXT'];
+						}
+					}
+				}
+			}
+		}
+		
+		return $result;
+	}
+	
+	/**
+	 * @param int|bool|\Bitrix\Main\Type\DateTime $timestamp
+	 * @param int|bool|\Bitrix\Main\Type\DateTime $now
+	 * 
+	 * @return string
+	 */
+	public static function FormatLastActivityDate($timestamp, $now = false)
+	{
+		global $DB;
+		
+		if ($timestamp instanceof \Bitrix\Main\Type\DateTime)
+		{
+			$timestamp = $timestamp->getTimestamp();
+		}
+		else if (is_int($timestamp))
+		{
+			$timestamp = intval($timestamp);
+		}
+		else
+		{
+			return "";
+		}
+		
+		if ($now === false)
+		{
+			$now = time();
+		}
+		else if ($now instanceof \Bitrix\Main\Type\DateTime)
+		{
+			$now = $now->getTimestamp();
+		}
+		else
+		{
+			$now = intval($now);
+		}
+		
+		$ampm = IsAmPmMode(true);
+		$timeFormat = ($ampm === AM_PM_LOWER? "g:i a" : ($ampm === AM_PM_UPPER? "g:i A" : "H:i"));
+		
+		$formattedDate = FormatDate(array(
+			"tomorrow" => "#01#{$timeFormat}",
+			"now" => "#02#",
+			"todayFuture" => "#03#{$timeFormat}",
+			"yesterday" => "#04#{$timeFormat}",
+			"-" => preg_replace('/:s$/', '', $DB->DateFormatToPHP(CSite::GetDateFormat("FULL"))),
+			"s60" => "sago",
+			"i60" => "iago",
+			"H5" => "Hago",
+			"H24" => "#03#{$timeFormat}",
+			"d31" => "dago",
+			"m12>1" => "mago",
+			"m12>0" => "dago",
+			"" => "#05#",
+		), $timestamp, $now);
+		
+		if (preg_match('/^#(\d+)#(.*)/', $formattedDate, $match))
+		{
+			switch($match[1])
+			{
+				case "01":
+					$formattedDate = str_replace("#TIME#", $match[2], GetMessage('USER_LAST_SEEN_TOMORROW'));
+				break;
+				case "02":
+					$formattedDate = GetMessage('USER_LAST_SEEN_NOW');
+				break;
+				case "03":
+					$formattedDate = str_replace("#TIME#", $match[2], GetMessage('USER_LAST_SEEN_TODAY'));
+				break;
+				case "04":
+					$formattedDate = str_replace("#TIME#", $match[2], GetMessage('USER_LAST_SEEN_YESTERDAY'));
+				break;
+				case "05":
+					$formattedDate = GetMessage('USER_LAST_SEEN_MORE_YEAR');
+				break;
+				default:
+					$formattedDate = $match[2];
+				break;	
+			}
+		}
+		
+		return $formattedDate;
+	}
+	
 	public static function SearchUserByName($arName, $email = "", $bLoginMode = false)
 	{
 		global $DB;
@@ -3219,6 +3606,86 @@ abstract class CAllUser extends CDBResult
 			if (isset(self::$userGroupCache[$ID]))
 				unset(self::$userGroupCache[$ID]);
 		}
+	}
+
+	public function CheckAuthActions()
+	{
+		if(!$this->IsAuthorized())
+		{
+			return;
+		}
+
+		$user_id = $this->GetID();
+
+		//calculate a session lifetime
+		$policy = $this->GetSecurityPolicy();
+		$phpSessTimeout = ini_get("session.gc_maxlifetime");
+		if($policy["SESSION_TIMEOUT"] > 0)
+		{
+			$interval = min($policy["SESSION_TIMEOUT"]*60, $phpSessTimeout);
+		}
+		else
+		{
+			$interval = $phpSessTimeout;
+		}
+		$now = new Main\Type\DateTime();
+		$date = new Main\Type\DateTime();
+		$date->add("-T".$interval."S");
+
+		$actions = Main\UserAuthActionTable::getList(array(
+			"filter" => array("=USER_ID" => $user_id),
+			"order" => array("USER_ID" => "ASC", "PRIORITY" => "ASC", "ID" => "DESC"),
+			"cache" => array("ttl" => 3600),
+		));
+
+		$wasAction = false;
+		while($action = $actions->fetch())
+		{
+			$wasAction = true;
+
+			/** @var Main\Type\DateTime() $actionDate */
+			$actionDate = $action["ACTION_DATE"];
+
+			if($actionDate >= $date && $actionDate <= $now)
+			{
+				switch($action["ACTION"])
+				{
+					case Main\UserAuthActionTable::ACTION_LOGOUT:
+						if($this->GetParam("SELF_CHANGED_PASSWORD") == true)
+						{
+							//user's changed password by himself, skip logout
+							$this->SetParam("SELF_CHANGED_PASSWORD", false);
+							break;
+						}
+						$this->Logout();
+						break;
+
+					case Main\UserAuthActionTable::ACTION_UPDATE:
+						$this->UpdateSessionData($user_id, $this->GetParam("APPLICATION_ID"));
+						break;
+				}
+
+				//we need to process only the first action by proirity
+				break;
+			}
+		}
+
+		if($wasAction)
+		{
+			//clear expired records for the user
+			Main\UserAuthActionTable::deleteByFilter(array(
+				"=USER_ID" => $user_id,
+				"<=ACTION_DATE" => $now,
+			));
+		}
+	}
+
+	public static function AuthActionsCleanUpAgent()
+	{
+		$date = new Main\Type\DateTime();
+		$date->add("-1D");
+		Main\UserAuthActionTable::deleteByFilter(array("<ACTION_DATE" => $date));
+		return 'CUser::AuthActionsCleanUpAgent();';
 	}
 }
 
@@ -4026,13 +4493,14 @@ class CAllTask
 		}
 	}
 
-	public static function GetList($arOrder = array('MODULE_ID'=>'asc','LETTER'=>'asc'),$arFilter=array())
+	public static function GetList($arOrder = array('MODULE_ID'=>'asc','LETTER'=>'asc'), $arFilter = array())
 	{
 		global $DB, $CACHE_MANAGER;;
 
 		if(CACHED_b_task !== false)
 		{
-			$cacheId = "b_task".md5(serialize($arOrder).".".serialize($arFilter));
+			$context = Main\Context::getCurrent();
+			$cacheId = "b_task".md5(serialize($arOrder).".".serialize($arFilter).".".$context->getLanguage());
 			if($CACHE_MANAGER->Read(CACHED_b_task, $cacheId, "b_task"))
 			{
 				$arResult = $CACHE_MANAGER->Get($cacheId);

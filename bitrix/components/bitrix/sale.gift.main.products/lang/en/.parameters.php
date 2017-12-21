@@ -116,4 +116,7 @@ $MESS["CP_BCS_DISABLE_INIT_JS_IN_COMPONENT"] = "Don't use auxiliary JavaScript l
 $MESS["DISABLE_INIT_JS_IN_COMPONENT_TIP"] = "If checked, the component will not include the \"popup\" library. If the component template is based on the \"e-Store\" version 12.5 template, using this option will reduce functionality.";
 $MESS["SALE_OFFER_ID"] = "Display products eligible for gift with this SKU ID";
 $MESS["SALE_ELEMENT_ID"] = "Display products eligible for gift with this element ID";
+$MESS["CP_SGMP_SHOW_SLIDER"] = "Show product slider";
+$MESS["CP_SGMP_SLIDER_INTERVAL"] = "Slider update timeout, ms";
+$MESS["CP_SGMP_SLIDER_PROGRESS"] = "Show progress bar";
 ?>

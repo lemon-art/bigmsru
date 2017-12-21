@@ -27,6 +27,16 @@ class CAllSaleOrderUserProps
 	}
 	*/
 
+	/**
+	 * @param $userId
+	 * @param $profileId
+	 * @param $profileName
+	 * @param $personTypeId
+	 * @param $orderProps
+	 * @param $arErrors
+	 *
+	 * @return bool|int
+	 */
 	static function DoSaveUserProfile($userId, $profileId, $profileName, $personTypeId, $orderProps, &$arErrors)
 	{
 		$profileId = intval($profileId);
@@ -101,7 +111,7 @@ class CAllSaleOrderUserProps
 			array("PERSON_TYPE_ID" => $personTypeId, "ACTIVE" => "Y", "USER_PROPS" => "Y"),
 			false,
 			false,
-			array("ID", "TYPE", "NAME", "CODE", "UTIL")
+			array("ID", "TYPE", "NAME", "CODE", "UTIL", "MULTIPLE")
 		);
 		while ($arOrderProperty = $dbOrderProperties->Fetch())
 		{
@@ -123,6 +133,11 @@ class CAllSaleOrderUserProps
 					$fileList[] = $fileDat['ID'];
 				}
 				$curVal = serialize($fileList);
+			}
+
+			if ($arOrderProperty["MULTIPLE"] === "Y" & is_array($curVal))
+			{
+				$curVal = serialize($curVal);
 			}
 
 			if (strlen($curVal) > 0)
@@ -169,6 +184,8 @@ class CAllSaleOrderUserProps
 
 			CSaleOrderUserPropsValue::Delete($id);
 		}
+
+		return $profileId;
 	}
 
 	public static function DoLoadProfiles($userId, $personTypeId = null)

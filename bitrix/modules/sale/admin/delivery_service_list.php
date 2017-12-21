@@ -17,6 +17,12 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/prolog.php");
 $sTableID = "tbl_sale_delivery_list";
 $oSort = new CAdminSorting($sTableID, "ID", "asc");
 $lAdmin = new CAdminList($sTableID, $oSort);
+$adminNotes = array();
+
+if(!isset($by))
+	$by = 'ID';
+if(!isset($order))
+	$order = 'ASC';
 
 $groupId = isset($filter_group) && (isset($set_filter) ||  $set_filter == 'Y') ? $filter_group : -1;
 
@@ -71,12 +77,15 @@ if (($arID = $lAdmin->GroupAction()) && $saleModulePermissions >= "W")
 	if ($_REQUEST['action_target']=='selected')
 	{
 		$arID = Array();
-		$dbResultList = \Bitrix\Sale\Delivery\Services\Table::GetList( array(
-			'order' => array($by => $order),
+		$params = array(
 			'filter' => $filter,
 			'select' => array("ID")
-			)
 		);
+
+		if(strlen($by) > 0 && strlen($order) > 0)
+			$params['order'] = array($by => $order);
+
+		$dbResultList = \Bitrix\Sale\Delivery\Services\Table::getList($params);
 
 		while ($arResult = $dbResultList->fetch())
 			$arID[] = $arResult['ID'];
@@ -142,9 +151,24 @@ $db = \Bitrix\Main\SiteTable::getList(
 while($site = $db->fetch())
 	$sitesList[$site['LID']] = $site['NAME'];
 
+$vatList = array(
+	0 => Loc::getMessage('SALE_SDL_NO_VAT')
+);
+
+if(\Bitrix\Main\Loader::includeModule('catalog'))
+{
+	$dbRes = \Bitrix\Catalog\VatTable::getList(array(
+		'filter' => array('ACTIVE' => 'Y'),
+		'order' => array('SORT' => 'ASC')
+	));
+
+	while($vat = $dbRes->fetch())
+		$vatList[$vat['ID']] = $vat['NAME'];
+}
+
 $glParams = array(
-	'order' => array($by => $order),
-	'filter' => $filter
+	'filter' => $filter,
+	'order' => array($by => $order)
 );
 
 $lAdmin->AddHeaders(array(
@@ -157,7 +181,8 @@ $lAdmin->AddHeaders(array(
 	array("id"=>"ACTIVE", "content"=>Loc::getMessage("SALE_SDL_ACTIVE"),  "sort"=>"ACTIVE", "default"=>true),
 	array("id"=>"ALLOW_EDIT_SHIPMENT", "content"=>Loc::getMessage("SALE_SDL_ALLOW_EDIT_SHIPMENT"),  "sort"=>"ALLOW_EDIT_SHIPMENT", "default"=>false),
 	array("id"=>"CLASS_NAME", "content"=>Loc::getMessage("SALE_SDL_CLASS_NAME"),  "sort"=>"CLASS_NAME", "default"=>false),
-	array("id"=>"SITES", "content"=>Loc::getMessage("SALE_SDL_SITES"), "default"=>false)
+	array("id"=>"SITES", "content"=>Loc::getMessage("SALE_SDL_SITES"), "default"=>false),
+	array("id"=>"VAT_ID", "content"=>Loc::getMessage("SALE_SDL_VAT_ID"), "default"=>false)
 ));
 
 $arVisibleColumns = $lAdmin->GetVisibleHeaderColumns();
@@ -236,6 +261,8 @@ while ($service = $dbResultList->NavNext(true, "f_"))
 			$sites .= $sitesList[$siteId]." (".$siteId.")<br>";
 
 	$row->AddField("SITES", strlen($sites) > 0 ? $sites : Loc::getMessage('SALE_SDL_ALL'));
+	$row->AddField("VAT_ID", isset($vatList[$f_VAT_ID]) ? $vatList[$f_VAT_ID] : $vatList[0]);
+
 	$groupNameHtml = "";
 
 	if($f_PARENT_ID > 0)
@@ -327,12 +354,48 @@ if ($saleModulePermissions == "W")
 			if($class::isProfile())
 				continue;
 
-			$menu[] = array(
-				"TEXT" => $class::getClassTitle(),
-				"LINK" => "sale_delivery_service_edit.php?lang=".LANG."&PARENT_ID=".(intval($filter["=PARENT_ID"]) > 0 ? $filter["=PARENT_ID"] : 0).
-					"&CLASS_NAME=".urlencode($class)."&back_url=".$backUrl
-			);
+			$supportedServices = $class::getSupportedServicesList();
+
+			if(is_array($supportedServices) && !empty($supportedServices))
+			{
+				if(!empty($supportedServices['ERRORS']) && is_array($supportedServices['ERRORS']))
+					foreach($supportedServices['ERRORS'] as $error)
+						$lAdmin->AddGroupError($error);
+
+				unset($supportedServices['ERRORS']);
+
+				if(!empty($supportedServices['NOTES']) && is_array($supportedServices['NOTES']))
+					foreach($supportedServices['NOTES'] as $note)
+						$adminNotes[] = $note;
+
+				unset($supportedServices['NOTES']);
+
+				if(is_array($supportedServices))
+				{
+					foreach($supportedServices as $srvType => $srvParams)
+					{
+						if(!empty($srvParams["NAME"]))
+						{
+							$menu[] = array(
+								"TEXT" => $srvParams["NAME"],
+								"LINK" => "sale_delivery_service_edit.php?lang=".LANG."&PARENT_ID=".(intval($filter["=PARENT_ID"]) > 0 ? $filter["=PARENT_ID"] : 0).
+									"&CLASS_NAME=".urlencode($class)."&SERVICE_TYPE=".$srvType."&back_url=".$backUrl
+							);
+						}
+					}
+				}
+			}
+			else
+			{
+				$menu[] = array(
+					"TEXT" => $class::getClassTitle(),
+					"LINK" => "sale_delivery_service_edit.php?lang=".LANG."&PARENT_ID=".(intval($filter["=PARENT_ID"]) > 0 ? $filter["=PARENT_ID"] : 0).
+						"&CLASS_NAME=".urlencode($class)."&back_url=".$backUrl
+				);
+			}
 		}
+
+		sortByColumn($menu, array("TEXT" => SORT_ASC));
 
 		$aContext[] = array(
 			"TEXT" => Loc::getMessage("SALE_SDL_ADD_NEW"),
@@ -350,6 +413,18 @@ if ($saleModulePermissions == "W")
 			),
 			"TITLE" => Loc::getMessage("SALE_SDL_MANAGE_GROUP_ALT")
 		);
+
+		/** @global CUser $USER */
+		global $USER;
+		if($USER->CanDoOperation("install_updates"))
+		{
+			$aContext[] = array(
+				"TEXT" => GetMessage("SALE_SDL_MARKETPLACE_ADD_NEW"),
+				"TITLE" => GetMessage("SALE_SDL_MARKETPLACE_ADD_NEW_ALT"),
+				"LINK" => "update_system_market.php?category=36&lang=".LANG,
+				"ICON" => "btn"
+			);
+		}
 	}
 
 	$lAdmin->AddAdminContextMenu($aContext);
@@ -430,7 +505,7 @@ $oFilter->Begin();
 			<select name="filter_site">
 				<option value=""><?=Loc::getMessage('SALE_SDL_ALL')?></option>
 				<?foreach($sitesList as $siteId => $siteName):?>
-					<option value="<?=$siteId?>"<?=($filter_site == $siteId ? ' selected' : '')?>><?=$siteName.' ('.$siteId.')'?></option>
+					<option value="<?=$siteId?>"<?=($filter_site == $siteId ? ' selected' : '')?>><?=htmlspecialcharsbx($siteName).' ('.$siteId.')'?></option>
 				<?endforeach;?>
 			</select>
 		</td>
@@ -447,6 +522,14 @@ $oFilter->End();
 ?>
 </form>
 <?
+
+if(!empty($adminNotes))
+{
+	echo BeginNote();
+	echo implode('<br>', $adminNotes);
+	echo EndNote();
+}
+
 $lAdmin->DisplayList();
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");

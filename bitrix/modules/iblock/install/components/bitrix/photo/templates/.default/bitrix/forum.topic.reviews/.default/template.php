@@ -2,7 +2,8 @@
 /**
  * Bitrix vars
  *
- * @var array $arParams, $arResult
+ * @var array $arParams
+ * @var array $arResult
  * @var CBitrixComponentTemplate $this
  * @var CMain $APPLICATION
  * @var CUser $USER
@@ -10,8 +11,8 @@
 CUtil::InitJSCore(array('ajax', 'fx', 'viewer'));
 // ************************* Input params***************************************************************
 $arParams["SHOW_LINK_TO_FORUM"] = ($arParams["SHOW_LINK_TO_FORUM"] == "N" ? "N" : "Y");
-$arParams["FILES_COUNT"] = intVal(intVal($arParams["FILES_COUNT"]) > 0 ? $arParams["FILES_COUNT"] : 1);
-$arParams["IMAGE_SIZE"] = (intVal($arParams["IMAGE_SIZE"]) > 0 ? $arParams["IMAGE_SIZE"] : 100);
+$arParams["FILES_COUNT"] = intval(intval($arParams["FILES_COUNT"]) > 0 ? $arParams["FILES_COUNT"] : 1);
+$arParams["IMAGE_SIZE"] = (intval($arParams["IMAGE_SIZE"]) > 0 ? $arParams["IMAGE_SIZE"] : 100);
 if (LANGUAGE_ID == 'ru'):
 	$path = str_replace(array("\\", "//"), "/", dirname(__FILE__)."/ru/script.php");
 	include($path);
@@ -86,7 +87,7 @@ foreach ($arResult["MESSAGES"] as $res):
 		?>
 <div>
 		<b><?
-		if (intVal($res["AUTHOR_ID"]) > 0 && !empty($res["AUTHOR_URL"])):
+		if (intval($res["AUTHOR_ID"]) > 0 && !empty($res["AUTHOR_URL"])):
 			?><a href="<?=$res["AUTHOR_URL"]?>"><?=$res["AUTHOR_NAME"]?></a><?
 		else:
 			?><?=$res["AUTHOR_NAME"]?><?

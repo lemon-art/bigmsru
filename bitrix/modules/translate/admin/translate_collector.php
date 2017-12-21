@@ -1,6 +1,7 @@
 <?
 /** @global CMain $APPLICATION */
-use Bitrix\Main\Loader;
+use Bitrix\Main,
+	Bitrix\Main\Loader;
 
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/translate/prolog.php");
@@ -110,6 +111,8 @@ function __ReWalkDirs($pathFrom, $pathTo, $language_id, $bConvert = false, $strE
 	}
 }
 
+$bConvert = false;
+
 $language_id = $_REQUEST["language_id"];
 $lang_date = $_REQUEST["lang_date"];
 $encoding = $_REQUEST["encoding"];
@@ -123,6 +126,13 @@ if ($_SERVER["REQUEST_METHOD"]=="POST" && $_REQUEST["start_collect"]=="Y" && che
 {
 	if (strlen($language_id)!=2)
 		$strErrorMessage .= GetMessage('TR_ERROR_SELECT_LANGUAGE').'<br>';
+
+	$language = Main\Localization\LanguageTable::getList(array(
+		'select' => array('LID', 'CHARSET' => 'CULTURE.CHARSET'),
+		'filter' => array('=LID' => $language_id)
+	))->fetch();
+	if (empty($language))
+		$strErrorMessage .= GetMessage('TR_ERROR_LANGUAGE_ID');
 
 	$lang_date = preg_replace("/[\D]+/", "", $lang_date);
 
@@ -166,6 +176,8 @@ if ($_SERVER["REQUEST_METHOD"]=="POST" && $_REQUEST["start_collect"]=="Y" && che
 			{
 				$strEncodingIn = 'utf-8';
 				$strEncodingOut = $_REQUEST["encoding"];
+				if (strtolower($language['CHARSET']) != 'utf-8')
+					$strErrorMessage .= GetMessage('TR_ERROR_LANGUAGE_CHARSET_NON_UTF');
 			}
 			else
 			{
@@ -175,7 +187,10 @@ if ($_SERVER["REQUEST_METHOD"]=="POST" && $_REQUEST["start_collect"]=="Y" && che
 					$bConvert = false;
 			}
 		}
+	}
 
+	if ($strErrorMessage == '')
+	{
 		__ReWalkDirs($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules", $targetLanguagePath, $language_id, $bConvert, $strEncodingIn, $strEncodingOut);
 
 		if ($fp1 = fopen($targetLanguagePath."/main/lang/".$language_id."/supd_lang_date.dat", "wb"))
@@ -231,8 +246,26 @@ else if ($_SERVER["REQUEST_METHOD"]=="POST" && $_REQUEST["start_download"]=="Y" 
 		$_FILES['tarfile']['error'] == 0))
 		$strErrorMessage .= GetMessage('TR_ERROR_TARFILE').'<br>';
 
+	if ($strErrorMessage == '')
+	{
+		$tmpFileName = strtolower($_FILES['tarfile']['name']);
+		if (
+			substr($tmpFileName, -7) !== '.tar.gz'
+			&& substr($tmpFileName, -4) !== '.tar'
+		)
+			$strErrorMessage .= GetMessage('TR_ERROR_TARFILE_EXTENTION').'<br>';
+		unset($tmpFileName);
+	}
+
 	if (strlen($language_id)!=2)
 		$strErrorMessage .= GetMessage('TR_ERROR_SELECT_LANGUAGE').'<br>';
+
+	$language = Main\Localization\LanguageTable::getList(array(
+		'select' => array('LID', 'CHARSET' => 'CULTURE.CHARSET'),
+		'filter' => array('=LID' => $language_id)
+	))->fetch();
+	if (empty($language))
+		$strErrorMessage .= GetMessage('TR_ERROR_LANGUAGE_ID');
 
 	$bConvert = isset($_REQUEST['convert_encoding']) && $_REQUEST['convert_encoding'] == 'Y';
 	if ($butf && $bConvert && (!isset($_REQUEST["encoding"]) || !in_array($_REQUEST["encoding"], $arrTransEncoding)))
@@ -338,7 +371,7 @@ $tabControl->BeginNextTab();
 			{
 				if (is_dir($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/lang/".$arLang['LANGUAGE_ID']))
 				{
-					?><option value="<?= $arLang['LANGUAGE_ID'] ?>"<?if ($arLang['LANGUAGE_ID']==$language_id) echo " selected";?>><?= $arLang['LANGUAGE_ID'] ?></option><?
+					?><option value="<?=htmlspecialcharsbx($arLang['LANGUAGE_ID']); ?>"<?if ($arLang['LANGUAGE_ID']==$language_id) echo " selected";?>><?=htmlspecialcharsbx($arLang['LANGUAGE_ID']); ?></option><?
 				}
 			}
 			?>
@@ -370,11 +403,11 @@ $tabControl->BeginNextTab();
 		<?
 		foreach ($arrTransEncoding as $_k => $v)
 		{
-			?><option value="<?= $_k ?>"<?if ($_k==$encoding) echo " selected";?>><?= $v ?></option><?
+			?><option value="<?=htmlspecialcharsbx($_k); ?>"<?if ($_k==$encoding) echo " selected";?>><?= $v ?></option><?
 		}
 		?>
 		</select>
-		<script language="JavaScript">
+		<script type="text/javascript">
 			function EncodeClicked()
 			{
 				document.form1.encoding.disabled = !document.form1.convert_encoding.checked;
@@ -402,53 +435,50 @@ $tabControl->BeginNextTab();
 <input type="hidden" name="start_download" value="Y">
 <input type="hidden" name="tabControl_active_tab" value="download">
 <?=bitrix_sessid_post()?>
-	<tr class="adm-required-field">
-		<td width="10%" nowrap><?=GetMessage("TR_UPLOAD_FILE")?>:</td>
-		<td valign="top" width="90%"><input type="file" name="tarfile"></td>
-	</tr>
-	<tr class="adm-required-field">
-		<td width="40%"><?=GetMessage("TR_SELECT_LANGUAGE")?> <?=GetMessage("TR_SELECT_LANGUAGE_DESCRIPTION")?>:</td>
-		<td width="60%">
-		<select name="language_id">
-			<?
-			$rsLang = CLanguage::GetList($by="sort", $order="desc");
-			while ($arLang = $rsLang->Fetch())
-			{
-				?><option value="<?= $arLang['LANGUAGE_ID'] ?>"<?if ($arLang['LANGUAGE_ID']==$language_id) echo " selected";?>><?= $arLang['LANGUAGE_ID'] ?></option><?
-			}
-			?>
-		</select>
-		</td>
-	</tr>
-
-	<? if (!$butf)
-	{ ?>
-	<tr>
-		<td><?echo GetMessage("TR_CONVERT_FROM_UTF8")?>:</td>
-		<td><input type="checkbox" name="localize_encoding" value="Y" <? echo $bConvert ? 'checked="checked"' : '' ?>></td>
-	</tr>
-	<? }
-	else
-	{ ?>
-	<tr>
-		<td><?echo GetMessage("TR_CONVERT_FROM_NATIONAL")?>:</td>
-		<td><input type="checkbox" name="localize_encoding" value="Y" <? echo $bConvert ? 'checked="checked"' : '' ?>></td>
-	</tr>
-	<tr>
-		<td width="40%"><?echo GetMessage("TR_CONVERT_ENCODING")?>:</td>
-		<td width="60%">
-		<select name="encoding">
+<tr class="adm-required-field">
+	<td width="10%" nowrap><?=GetMessage("TR_UPLOAD_FILE")?>:</td>
+	<td valign="top" width="90%"><input type="file" name="tarfile"></td>
+</tr>
+<tr class="adm-required-field">
+	<td width="40%"><?=GetMessage("TR_SELECT_LANGUAGE")?> <?=GetMessage("TR_SELECT_LANGUAGE_DESCRIPTION")?>:</td>
+	<td width="60%">
+	<select name="language_id">
 		<?
-		foreach ($arrTransEncoding as $_k => $v)
+		$rsLang = CLanguage::GetList($by="sort", $order="desc");
+		while ($arLang = $rsLang->Fetch())
 		{
-			?><option value="<?= $_k ?>"<?if ($_k==$encoding) echo " selected";?>><?= $v ?></option><?
+			?><option value="<?=htmlspecialcharsbx($arLang['LANGUAGE_ID']); ?>"<?if ($arLang['LANGUAGE_ID']==$language_id) echo " selected";?>><?=htmlspecialcharsbx($arLang['LANGUAGE_ID']); ?></option><?
 		}
 		?>
-		</select>
-		</td>
+	</select>
+	</td>
+</tr><?
+if (!$butf)
+{
+	?><tr>
+	<td><?echo GetMessage("TR_CONVERT_FROM_UTF8")?>:</td>
+	<td><input type="checkbox" name="localize_encoding" value="Y" <?=($bConvert ? 'checked="checked"' : ''); ?>></td>
+	</tr><?
+}
+else
+{
+	?><tr>
+	<td><?echo GetMessage("TR_CONVERT_FROM_NATIONAL")?>:</td>
+	<td><input type="checkbox" id="localize_encoding" name="localize_encoding" value="Y" <?=($bConvert ? 'checked="checked"' : ''); ?>></td>
 	</tr>
-	<? } ?>
-<?
+	<tr id="tr_encoding" style="display: <?=($bConvert ? 'table-row' : 'none'); ?>;">
+	<td width="40%"><?echo GetMessage("TR_CONVERT_ENCODING")?>:</td>
+	<td width="60%">
+	<select name="encoding"><?
+	foreach ($arrTransEncoding as $_k => $v)
+	{
+		?><option value="<?=htmlspecialcharsbx($_k); ?>"<?if ($_k==$encoding) echo " selected";?>><?= $v ?></option><?
+	}
+	?></select>
+	</td>
+	</tr><?
+}
+
 $tabControl->EndTab();
 ?>
 </form>
@@ -460,18 +490,35 @@ $tabControl->Buttons();
 $tabControl->End();
 ?>
 <script type="text/javascript">
-BX.bind(BX('tr_submit'), 'click', function ()
+function showConvertCharset()
 {
-	BX('tr_submit').disabled = true;
-	if (BX('tabControl_active_tab').value == 'upload') {
-		BX.showWait(null, "<?=GetMessage('TR_COLLECT_LOADING') ?>");
-		tabControl.DisableTab("download");
-		BX.submit(document.forms['form1']);
-	} else {
-		BX.showWait();
-		tabControl.DisableTab("upload");
-		BX.submit(document.forms['form2']);
-	}
+	var target = this,
+		list = BX('tr_encoding');
+
+	if (!BX.type.isElementNode(list))
+		return;
+	BX.style(list, 'display', (target.checked ? 'table-row' : 'none'));
+}
+BX.ready(function(){
+	var btnConvert = BX('localize_encoding');
+
+	BX.bind(BX('tr_submit'), 'click', function ()
+	{
+		BX('tr_submit').disabled = true;
+		if (BX('tabControl_active_tab').value == 'upload') {
+			BX.showWait(null, "<?=GetMessage('TR_COLLECT_LOADING') ?>");
+			tabControl.DisableTab("download");
+			BX.submit(document.forms['form1']);
+		} else {
+			BX.showWait();
+			tabControl.DisableTab("upload");
+			BX.submit(document.forms['form2']);
+		}
+	});
+
+	if (BX.type.isElementNode(btnConvert))
+		BX.bind(btnConvert, 'click', showConvertCharset);
+	btnConvert = null;
 });
 </script>
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");

@@ -70,7 +70,13 @@ class DiscountEntitiesTable extends Main\Entity\DataManager
 				'required' => true,
 				'validation' => array(__CLASS__, 'validateFieldTable'),
 				'title' => Loc::getMessage('DISCOUNT_ENTITIES_ENTITY_FIELD_TABLE_FIELD'),
-			))
+			)),
+			'DISCOUNT' => new Main\Entity\ReferenceField(
+				'DISCOUNT',
+				'Bitrix\Sale\Internals\Discount',
+				array('=this.DISCOUNT_ID' => 'ref.ID'),
+				array('join_type' => 'LEFT')
+			)
 		);
 	}
 	/**

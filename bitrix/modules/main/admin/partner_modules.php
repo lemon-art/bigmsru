@@ -167,8 +167,8 @@ $linkToBuy = false;
 $linkToBuyUpdate = false;
 if(LANGUAGE_ID == "ru")
 {
-	$linkToBuy = "http://marketplace.1c-bitrix.ru"."/tobasket.php?ID=#CODE#";
-	$linkToBuyUpdate = "http://marketplace.1c-bitrix.ru"."/tobasket.php?ID=#CODE#&lckey=".md5("BITRIX".CUpdateClientPartner::GetLicenseKey()."LICENCE");
+	$linkToBuy = "https://marketplace.1c-bitrix.ru"."/tobasket.php?ID=#CODE#";
+	$linkToBuyUpdate = "https://marketplace.1c-bitrix.ru"."/tobasket.php?ID=#CODE#&lckey=".md5("BITRIX".CUpdateClientPartner::GetLicenseKey()."LICENCE");
 }
 
 $bHaveNew = false;
@@ -319,7 +319,7 @@ while($info = $rsData->Fetch())
 {
 	$row =& $lAdmin->AddRow($info["MODULE_ID"], $info);
 
-	$name = "<b><a href=\"http://marketplace.1c-bitrix.ru/".htmlspecialcharsbx($info["MODULE_ID"])."\" target=\"_blank\">".htmlspecialcharsbx($info["MODULE_NAME"])."</a></b> (".htmlspecialcharsbx($info["MODULE_ID"]).")";
+	$name = "<b><a href=\"https://marketplace.1c-bitrix.ru/".htmlspecialcharsbx($info["MODULE_ID"])."\" target=\"_blank\">".htmlspecialcharsbx($info["MODULE_NAME"])."</a></b> (".htmlspecialcharsbx($info["MODULE_ID"]).")";
 	if($info["DEMO"] == "Y")
 		$name .= " <span style=\"color:red;\">".GetMessage("MOD_DEMO")."</span>";
 	$name .= "<br />".htmlspecialcharsbx($info["MODULE_DESCRIPTION"]);

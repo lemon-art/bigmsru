@@ -136,7 +136,7 @@ if ($this->StartResultCache(false, ($arParams['CACHE_GROUPS'] === 'N' ? false: $
 
 			$arParams["ELEMENT_ID"] = CIBlockFindTools::GetElementID(
 				$arParams["ELEMENT_ID"],
-				$arParams["ELEMENT_CODE"],
+				$arParams[~"ELEMENT_CODE"],
 				false,
 				false,
 				$findFilter

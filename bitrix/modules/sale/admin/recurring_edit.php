@@ -365,7 +365,7 @@ $tabControl->BeginNextTab();
 						store_id = params.store_id || '0';
 
 					var popup = new BX.CDialog({
-						content_url: '/bitrix/admin/cat_product_search_dialog.php?lang='+lang+'&LID='+site_id+'&caller=' + caller + '&func_name='+callback+'&subscribe=Y&STORE_FROM_ID='+store_id,
+						content_url: '/bitrix/tools/sale/product_search_dialog.php?lang='+lang+'&LID='+site_id+'&caller=' + caller + '&func_name='+callback+'&subscribe=Y&STORE_FROM_ID='+store_id,
 						height: Math.max(500, window.innerHeight-400),
 						width: Math.max(800, window.innerWidth-400),
 						draggable: true,

@@ -11,7 +11,7 @@ if (isset($_POST['SITE_ID']) && is_string($_POST['SITE_ID']) && preg_match('/^[A
 }
 
 define('STOP_STATISTICS', true);
-//define("NOT_CHECK_PERMISSIONS", true);
+define('NOT_CHECK_PERMISSIONS', true);
 define('PUBLIC_AJAX_MODE', true);
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_before.php';

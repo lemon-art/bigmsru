@@ -8,7 +8,7 @@ $arTypes = CIBlockParameters::GetIBlockTypes();
 $arIBlocks=Array();
 $db_iblock = CIBlock::GetList(Array("SORT"=>"ASC"), Array("SITE_ID"=>$_REQUEST["site"], "TYPE" => ($arCurrentValues["IBLOCK_TYPE"]!="-"?$arCurrentValues["IBLOCK_TYPE"]:"")));
 while($arRes = $db_iblock->Fetch())
-	$arIBlocks[$arRes["ID"]] = $arRes["NAME"];
+	$arIBlocks[$arRes["ID"]] = "[".$arRes["ID"]."] ".$arRes["NAME"];
 
 $arDATE_FIELD = Array(
 	"DATE_ACTIVE_FROM" => "[DATE_ACTIVE_FROM] ".GetMessage("T_IBLOCK_DESC_CAL_DATE_ACTIVE_FROM"),

@@ -153,6 +153,8 @@ class CPHPCacheFiles
 		if(!file_exists($fn))
 			return false;
 
+		$handle = null;
+
 		if(is_array($arAllVars))
 		{
 			$INCLUDE_FROM_CACHE='Y';
@@ -182,20 +184,26 @@ class CPHPCacheFiles
 		$this->read = @filesize($fn);
 		$this->path = $fn;
 
-		if(intval($datecreate) < (time() - $TTL))
-			return false;
-
-		if(is_array($arAllVars))
+		$res = false;
+		if(intval($datecreate) >= (time() - $TTL))
 		{
-			$arAllVars = unserialize($ser_content);
+			if(is_array($arAllVars))
+			{
+				$arAllVars = unserialize($ser_content);
+			}
+			else
+			{
+				$arAllVars = fread($handle, filesize($fn));
+			}
+			$res = true;
 		}
-		else
+
+		if($handle)
 		{
-			$arAllVars = fread($handle, filesize($fn));
 			fclose($handle);
 		}
 
-		return true;
+		return $res;
 	}
 
 	function write($arAllVars, $basedir, $initdir, $filename, $TTL)

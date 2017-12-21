@@ -1,4 +1,11 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+/** @var CBitrixComponentTemplate $this */
+/** @var array $arParams */
+/** @var array $arResult */
+/** @global CDatabase $DB */
+/** @global CUser $USER */
+/** @global CMain $APPLICATION */
+
 $APPLICATION->AddHeadScript("/bitrix/components/bitrix/rating.vote/templates/mobile_like/script_attached.js");
 ?><script>
 	BX.message({
@@ -10,6 +17,9 @@ $APPLICATION->AddHeadScript("/bitrix/components/bitrix/rating.vote/templates/mob
 </script><?
 ?><div class="post-item-informers post-item-inform-likes<?=($arResult['USER_HAS_VOTED'] == 'Y' ? '-active' : '')?>" id="bx-ilike-box-<?=CUtil::JSEscape(htmlspecialcharsbx($arResult['VOTE_ID']))?>"><?
 
+	$like = COption::GetOptionString("main", "rating_text_like_y", GetMessage("RV_T_LIKE"));
+	$like2 = str_replace('#LIKE#', $like, GetMessage("RV_T_LIKE2_PATTERN"));
+
 	if (
 		intval($arResult["TOTAL_VOTES"]) > 1
 		|| (
@@ -18,12 +28,12 @@ $APPLICATION->AddHeadScript("/bitrix/components/bitrix/rating.vote/templates/mob
 		)
 	)
 	{
-		?><div class="post-item-inform-left"><?=GetMessage("RV_T_LIKE2")?></div><?
+		?><div class="post-item-inform-left"><?=htmlspecialcharsEx($like2)?></div><?
 		?><div class="post-item-inform-right"><span class="post-item-inform-right-text"><?=htmlspecialcharsEx($arResult["TOTAL_VOTES"])?></span></div><?
 	}
 	else
 	{
-		?><div class="post-item-inform-left"><?=GetMessage("RV_T_LIKE")?></div><?
+		?><div class="post-item-inform-left"><?=htmlspecialcharsEx($like)?></div><?
 		?><div class="post-item-inform-right" style="display: none;"><span class="post-item-inform-right-text"><?=htmlspecialcharsEx($arResult["TOTAL_VOTES"])?></span></div><?
 	}
 

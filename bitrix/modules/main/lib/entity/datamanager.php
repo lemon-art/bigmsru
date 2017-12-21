@@ -10,6 +10,7 @@ namespace Bitrix\Main\Entity;
 
 use Bitrix\Main;
 use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\Entity\Query\Filter\ConditionTree as Filter;
 
 Loc::loadMessages(__FILE__);
 
@@ -81,6 +82,7 @@ abstract class DataManager
 
 	/**
 	 * Returns entity map definition.
+	 * To get initialized fields @see \Bitrix\Main\Entity\Base::getFields() and \Bitrix\Main\Entity\Base::getField()
 	 */
 	public static function getMap()
 	{
@@ -176,17 +178,20 @@ abstract class DataManager
 	/**
 	 * Executes the query and returns selection by parameters of the query. This function is an alias to the Query object functions
 	 *
-	 * @param array $parameters An array of query parameters, available keys are:
-	 * 		"select" => array of fields in the SELECT part of the query, aliases are possible in the form of "alias"=>"field"
-	 * 		"filter" => array of filters in the WHERE part of the query in the form of "(condition)field"=>"value"
-	 * 		"group" => array of fields in the GROUP BY part of the query
-	 * 		"order" => array of fields in the ORDER BY part of the query in the form of "field"=>"asc|desc"
-	 * 		"limit" => integer indicating maximum number of rows in the selection (like LIMIT n in MySql)
-	 * 		"offset" => integer indicating first row number in the selection (like LIMIT n, 100 in MySql)
-	 *		"runtime" => array of entity fields created dynamically
-	 * 		"cache => array of cache options
-	 * 			"ttl" => integer indicating cache TTL
-	 * 			"cache_joins" => boolean enabling to cache joins, false by default
+	 * @param array $parameters An array of query parameters, available keys are:<br>
+	 * 		"select" => array of fields in the SELECT part of the query, aliases are possible in the form of "alias"=>"field";<br>
+	 * 		"filter" => array of filters in the WHERE/HAVING part of the query in the form of "(condition)field"=>"value";
+	 * 			also could be an instance of Filter;<br>
+	 * 		"group" => array of fields in the GROUP BY part of the query;<br>
+	 * 		"order" => array of fields in the ORDER BY part of the query in the form of "field"=>"asc|desc";<br>
+	 * 		"limit" => integer indicating maximum number of rows in the selection (like LIMIT n in MySql);<br>
+	 * 		"offset" => integer indicating first row number in the selection (like LIMIT n, 100 in MySql);<br>
+	 *		"runtime" => array of entity fields created dynamically;<br>
+	 * 		"cache => array of cache options:<br>
+	 * 			"ttl" => integer indicating cache TTL;<br>
+	 * 			"cache_joins" => boolean enabling to cache joins, false by default.
+	 * @see Query::filter()
+	 *
 	 * @return Main\DB\Result
 	 * @throws \Bitrix\Main\ArgumentException
 	 */
@@ -207,7 +212,7 @@ abstract class DataManager
 					$query->setSelect($value);
 					break;
 				case 'filter':
-					$query->setFilter($value);
+					$value instanceof Filter ? $query->where($value) : $query->setFilter($value);
 					break;
 				case 'group':
 					$query->setGroup($value);
@@ -258,15 +263,31 @@ abstract class DataManager
 	/**
 	 * Performs COUNT query on entity and returns the result.
 	 *
-	 * @param array $filter
+	 * @param array|Filter $filter
+	 * @param array $cache An array of cache options
+	 * 		"ttl" => integer indicating cache TTL
 	 * @return int
 	 */
-	public static function getCount(array $filter = array())
+	public static function getCount($filter = array(), array $cache = array())
 	{
 		$query = static::query();
 
+		// new filter
 		$query->addSelect(new ExpressionField('CNT', 'COUNT(1)'));
-		$query->setFilter($filter);
+
+		if ($filter instanceof Filter)
+		{
+			$query->where($filter);
+		}
+		else
+		{
+			$query->setFilter($filter);
+		}
+
+		if(isset($cache["ttl"]))
+		{
+			$query->setCacheTtl($cache["ttl"]);
+		}
 
 		$result = $query->exec()->fetch();
 
@@ -448,7 +469,15 @@ abstract class DataManager
 	/**
 	 * Adds row to entity table
 	 *
-	 * @param array $data
+	 * @param array $data An array with fields like
+	 * 	array(
+	 * 		"fields" => array(
+	 * 			"FIELD1" => "value1",
+	 * 			"FIELD2" => "value2",
+	 * 		),
+	 * 		"auth_context" => \Bitrix\Main\Authentication\Context object
+	 *	)
+	 *	or just a plain array of fields.
 	 *
 	 * @return AddResult Contains ID of inserted row
 	 *
@@ -458,36 +487,37 @@ abstract class DataManager
 	{
 		global $USER_FIELD_MANAGER, $APPLICATION;
 
+		/** @var Main\Authentication\Context $authContext */
+		$authContext = null;
+		if(is_array($data["fields"]))
+		{
+			$fields = $data["fields"];
+			if(isset($data["auth_context"]))
+			{
+				$authContext = $data["auth_context"];
+			}
+		}
+		else
+		{
+			$fields = $data;
+		}
+
 		$entity = static::getEntity();
 		$result = new AddResult();
 
 		try
 		{
 			//event before adding
-			$event = new Event($entity, self::EVENT_ON_BEFORE_ADD, array("fields" => $data));
+			$event = new Event($entity, self::EVENT_ON_BEFORE_ADD, array("fields" => $fields));
 			$event->send();
 			$event->getErrors($result);
-			$data = $event->mergeFields($data);
+			$fields = $event->mergeFields($fields);
 
 			//event before adding (modern with namespace)
-			$event = new Event($entity, self::EVENT_ON_BEFORE_ADD, array("fields" => $data), true);
+			$event = new Event($entity, self::EVENT_ON_BEFORE_ADD, array("fields" => $fields), true);
 			$event->send();
 			$event->getErrors($result);
-			$data = $event->mergeFields($data);
-
-			// set fields with default values
-			foreach ($entity->getFields() as $field)
-			{
-				if ($field instanceof ScalarField && !array_key_exists($field->getName(), $data))
-				{
-					$defaultValue = $field->getDefaultValue();
-
-					if ($defaultValue !== null)
-					{
-						$data[$field->getName()] = $field->getDefaultValue();
-					}
-				}
-			}
+			$fields = $event->mergeFields($fields);
 
 			// uf values
 			$ufdata = array();
@@ -500,24 +530,46 @@ abstract class DataManager
 
 				foreach ($userfields as $userfield)
 				{
-					if (array_key_exists($userfield['FIELD_NAME'], $data))
+					if (array_key_exists($userfield['FIELD_NAME'], $fields))
 					{
 						// copy value
-						$ufdata[$userfield['FIELD_NAME']] = $data[$userfield['FIELD_NAME']];
+						$ufdata[$userfield['FIELD_NAME']] = $fields[$userfield['FIELD_NAME']];
 
 						// remove original
-						unset($data[$userfield['FIELD_NAME']]);
+						unset($fields[$userfield['FIELD_NAME']]);
+					}
+				}
+			}
+
+			// set fields with default values
+			foreach ($entity->getFields() as $field)
+			{
+				if ($field instanceof ScalarField && !array_key_exists($field->getName(), $fields))
+				{
+					$defaultValue = $field->getDefaultValue($fields + $ufdata);
+
+					if ($defaultValue !== null)
+					{
+						$fields[$field->getName()] = $defaultValue;
 					}
 				}
 			}
 
 			// check data
-			static::checkFields($result, null, $data);
+			static::checkFields($result, null, $fields);
 
 			// check uf data
 			if (!empty($ufdata))
 			{
-				if (!$USER_FIELD_MANAGER->CheckFields($entity->getUfId(), false, $ufdata))
+				//user fields might want USER_ID to check rights
+				$userId = null;
+				if($authContext)
+				{
+					$userId = $authContext->getUserId();
+				}
+				$userId = ($userId? $userId : false);
+
+				if (!$USER_FIELD_MANAGER->CheckFields($entity->getUfId(), false, $ufdata, $userId))
 				{
 					if (is_object($APPLICATION) && $APPLICATION->getException())
 					{
@@ -533,7 +585,7 @@ abstract class DataManager
 			}
 
 			// check if there is still some data
-			if (!count($data + $ufdata))
+			if (!count($fields + $ufdata))
 			{
 				$result->addError(new EntityError("There is no data to add."));
 			}
@@ -545,18 +597,20 @@ abstract class DataManager
 			}
 
 			//event on adding
-			$event = new Event($entity, self::EVENT_ON_ADD, array("fields" => $data + $ufdata));
+			$event = new Event($entity, self::EVENT_ON_ADD, array("fields" => $fields + $ufdata));
 			$event->send();
 
 			//event on adding (modern with namespace)
-			$event = new Event($entity, self::EVENT_ON_ADD, array("fields" => $data + $ufdata), true);
+			$event = new Event($entity, self::EVENT_ON_ADD, array("fields" => $fields + $ufdata), true);
 			$event->send();
 
 			// use save modifiers
-			foreach ($data as $fieldName => $value)
+			$fieldsToDb = $fields;
+
+			foreach ($fieldsToDb as $fieldName => $value)
 			{
 				$field = $entity->getField($fieldName);
-				$data[$fieldName] = $field->modifyValueBeforeSave($value, $data);
+				$fieldsToDb[$fieldName] = $field->modifyValueBeforeSave($value, $fields);
 			}
 
 			// save data
@@ -565,11 +619,8 @@ abstract class DataManager
 			$tableName = $entity->getDBTableName();
 			$identity = $entity->getAutoIncrement();
 
-			$dataReplacedColumn = static::replaceFieldName($data);
+			$dataReplacedColumn = static::replaceFieldName($fieldsToDb);
 			$id = $connection->add($tableName, $dataReplacedColumn, $identity);
-
-			$result->setId($id);
-			$result->setData($data);
 
 			// build stamdard primary
 			$primary = null;
@@ -581,8 +632,12 @@ abstract class DataManager
 			}
 			else
 			{
-				static::normalizePrimary($primary, $data);
+				static::normalizePrimary($primary, $fields);
 			}
+
+			// fill result
+			$result->setPrimary($primary);
+			$result->setData($fields);
 
 			// save uf data
 			if (!empty($ufdata))
@@ -593,11 +648,11 @@ abstract class DataManager
 			$entity->cleanCache();
 
 			//event after adding
-			$event = new Event($entity, self::EVENT_ON_AFTER_ADD, array("id" => $id, "fields" => $data));
+			$event = new Event($entity, self::EVENT_ON_AFTER_ADD, array("id" => $id, "fields" => $fields));
 			$event->send();
 
 			//event after adding (modern with namespace)
-			$event = new Event($entity, self::EVENT_ON_AFTER_ADD, array("id" => $id, "primary" => $primary, "fields" => $data), true);
+			$event = new Event($entity, self::EVENT_ON_AFTER_ADD, array("id" => $id, "primary" => $primary, "fields" => $fields), true);
 			$event->send();
 		}
 		catch (\Exception $e)
@@ -615,7 +670,15 @@ abstract class DataManager
 	 * Updates row in entity table by primary key
 	 *
 	 * @param mixed $primary
-	 * @param array $data
+	 * @param array $data An array with fields like
+	 * 	array(
+	 * 		"fields" => array(
+	 * 			"FIELD1" => "value1",
+	 * 			"FIELD2" => "value2",
+	 * 		),
+	 * 		"auth_context" => \Bitrix\Main\Authentication\Context object
+	 *	)
+	 *	or just a plain array of fields.
 	 *
 	 * @return UpdateResult
 	 *
@@ -625,8 +688,23 @@ abstract class DataManager
 	{
 		global $USER_FIELD_MANAGER, $APPLICATION;
 
+		/** @var Main\Authentication\Context $authContext */
+		$authContext = null;
+		if(is_array($data["fields"]))
+		{
+			$fields = $data["fields"];
+			if(isset($data["auth_context"]))
+			{
+				$authContext = $data["auth_context"];
+			}
+		}
+		else
+		{
+			$fields = $data;
+		}
+
 		// check primary
-		static::normalizePrimary($primary, $data);
+		static::normalizePrimary($primary, $fields);
 		static::validatePrimary($primary);
 
 		$entity = static::getEntity();
@@ -635,16 +713,16 @@ abstract class DataManager
 		try
 		{
 			//event before update
-			$event = new Event($entity, self::EVENT_ON_BEFORE_UPDATE, array("id" => $primary, "fields" => $data));
+			$event = new Event($entity, self::EVENT_ON_BEFORE_UPDATE, array("id" => $primary, "fields" => $fields));
 			$event->send();
 			$event->getErrors($result);
-			$data = $event->mergeFields($data);
+			$fields = $event->mergeFields($fields);
 
 			//event before update (modern with namespace)
-			$event = new Event($entity, self::EVENT_ON_BEFORE_UPDATE, array("id" => $primary, "primary" => $primary, "fields" => $data), true);
+			$event = new Event($entity, self::EVENT_ON_BEFORE_UPDATE, array("id" => $primary, "primary" => $primary, "fields" => $fields), true);
 			$event->send();
 			$event->getErrors($result);
-			$data = $event->mergeFields($data);
+			$fields = $event->mergeFields($fields);
 
 			// uf values
 			$ufdata = array();
@@ -657,24 +735,32 @@ abstract class DataManager
 
 				foreach ($userfields as $userfield)
 				{
-					if (array_key_exists($userfield['FIELD_NAME'], $data))
+					if (array_key_exists($userfield['FIELD_NAME'], $fields))
 					{
 						// copy value
-						$ufdata[$userfield['FIELD_NAME']] = $data[$userfield['FIELD_NAME']];
+						$ufdata[$userfield['FIELD_NAME']] = $fields[$userfield['FIELD_NAME']];
 
 						// remove original
-						unset($data[$userfield['FIELD_NAME']]);
+						unset($fields[$userfield['FIELD_NAME']]);
 					}
 				}
 			}
 
 			// check data
-			static::checkFields($result, $primary, $data);
+			static::checkFields($result, $primary, $fields);
 
 			// check uf data
 			if (!empty($ufdata))
 			{
-				if (!$USER_FIELD_MANAGER->CheckFields($entity->getUfId(), end($primary), $ufdata))
+				//user fields might want USER_ID to check rights
+				$userId = null;
+				if($authContext)
+				{
+					$userId = $authContext->getUserId();
+				}
+				$userId = ($userId? $userId : false);
+
+				if (!$USER_FIELD_MANAGER->CheckFields($entity->getUfId(), end($primary), $ufdata, $userId))
 				{
 					if (is_object($APPLICATION) && $APPLICATION->getException())
 					{
@@ -690,7 +776,7 @@ abstract class DataManager
 			}
 
 			// check if there is still some data
-			if (!count($data + $ufdata))
+			if (!count($fields + $ufdata))
 			{
 				$result->addError(new EntityError("There is no data to update."));
 			}
@@ -702,29 +788,31 @@ abstract class DataManager
 			}
 
 			//event on update
-			$event = new Event($entity, self::EVENT_ON_UPDATE, array("id" => $primary, "fields" => $data + $ufdata));
+			$event = new Event($entity, self::EVENT_ON_UPDATE, array("id" => $primary, "fields" => $fields + $ufdata));
 			$event->send();
 
 			//event on update (modern with namespace)
-			$event = new Event($entity, self::EVENT_ON_UPDATE, array("id" => $primary, "primary" => $primary, "fields" => $data + $ufdata), true);
+			$event = new Event($entity, self::EVENT_ON_UPDATE, array("id" => $primary, "primary" => $primary, "fields" => $fields + $ufdata), true);
 			$event->send();
 
 			// use save modifiers
-			foreach ($data as $fieldName => $value)
+			$fieldsToDb = $fields;
+
+			foreach ($fieldsToDb as $fieldName => $value)
 			{
 				$field = $entity->getField($fieldName);
-				$data[$fieldName] = $field->modifyValueBeforeSave($value, $data);
+				$fieldsToDb[$fieldName] = $field->modifyValueBeforeSave($value, $fields);
 			}
 
 			// save data
-			if (!empty($data))
+			if (!empty($fieldsToDb))
 			{
 				$connection = $entity->getConnection();
 				$helper = $connection->getSqlHelper();
 
 				$tableName = $entity->getDBTableName();
 
-				$dataReplacedColumn = static::replaceFieldName($data);
+				$dataReplacedColumn = static::replaceFieldName($fieldsToDb);
 				$update = $helper->prepareUpdate($tableName, $dataReplacedColumn);
 
 				$replacedPrimary = static::replaceFieldName($primary);
@@ -735,13 +823,13 @@ abstract class DataManager
 				}
 				$where = implode(' AND ', $id);
 
-				$sql = "UPDATE ".$tableName." SET ".$update[0]." WHERE ".$where;
+				$sql = "UPDATE ".$helper->quote($tableName)." SET ".$update[0]." WHERE ".$where;
 				$connection->queryExecute($sql, $update[1]);
 
 				$result->setAffectedRowsCount($connection);
 			}
 
-			$result->setData($data);
+			$result->setData($fields);
 			$result->setPrimary($primary);
 
 			// save uf data
@@ -753,11 +841,11 @@ abstract class DataManager
 			$entity->cleanCache();
 
 			//event after update
-			$event = new Event($entity, self::EVENT_ON_AFTER_UPDATE, array("id" => $primary, "fields" => $data));
+			$event = new Event($entity, self::EVENT_ON_AFTER_UPDATE, array("id" => $primary, "fields" => $fields));
 			$event->send();
 
 			//event after update (modern with namespace)
-			$event = new Event($entity, self::EVENT_ON_AFTER_UPDATE, array("id" => $primary, "primary" => $primary, "fields" => $data), true);
+			$event = new Event($entity, self::EVENT_ON_AFTER_UPDATE, array("id" => $primary, "primary" => $primary, "fields" => $fields), true);
 			$event->send();
 		}
 		catch (\Exception $e)
@@ -831,7 +919,7 @@ abstract class DataManager
 			}
 			$where = implode(' AND ', $id);
 
-			$sql = "DELETE FROM ".$tableName." WHERE ".$where;
+			$sql = "DELETE FROM ".$helper->quote($tableName)." WHERE ".$where;
 			$connection->queryExecute($sql);
 
 			// delete uf data

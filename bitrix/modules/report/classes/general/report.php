@@ -473,6 +473,38 @@ class CReport
 	}
 
 	/**
+	 * Detecting a cyclic dependency in the report column.
+	 *
+	 * @param $select
+	 * @param $elemIndex
+	 *
+	 * @return bool
+	 */
+	public static function checkSelectViewElementCyclicDependency($select, $elemIndex)
+	{
+		static $elems = array();
+
+		if (isset($elems[$elemIndex]))
+		{
+			$result = true;
+		}
+		else
+		{
+			$elems[$elemIndex] = true;
+			$elem = $select[$elemIndex];
+			$result = false;
+
+			if (strlen($elem['prcnt']) > 0 && $elem['prcnt'] !== 'self_column')
+			{
+				$result = self::checkSelectViewElementCyclicDependency($select, $elem['prcnt']);
+			}
+			unset($elems[$elemIndex]);
+		}
+
+		return $result;
+	}
+
+	/**
 	 * @param                     $elem
 	 * @param                     $select
 	 * @param                     $is_init_entity_aggregated

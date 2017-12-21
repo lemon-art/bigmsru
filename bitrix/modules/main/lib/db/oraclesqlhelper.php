@@ -452,87 +452,11 @@ class OracleSqlHelper extends SqlHelper
 	}
 
 	/**
-	 * Converts values to the string according to the column type to use it in a SQL query.
-	 *
-	 * @param mixed $value Value to be converted.
-	 * @param Entity\ScalarField $field Type "source".
-	 *
-	 * @return string Value to write to column.
-	 * @throws \Bitrix\Main\ArgumentTypeException
+	 * @inheritdoc
 	 */
-	public function convertToDb($value, Entity\ScalarField $field)
+	public function convertToDbText($value)
 	{
-		if ($value === null)
-		{
-			return "NULL";
-		}
-
-		if ($value instanceof SqlExpression)
-		{
-			return $value->compile();
-		}
-
-		if ($field instanceof Entity\DatetimeField)
-		{
-			if (empty($value))
-			{
-				$result = "NULL";
-			}
-			elseif ($value instanceof Type\Date)
-			{
-				if ($value instanceof Type\DateTime)
-				{
-					$value = clone($value);
-					$value->setDefaultTimeZone();
-				}
-				$result = $this->getCharToDateFunction($value->format("Y-m-d H:i:s"));
-			}
-			else
-			{
-				throw new Main\ArgumentTypeException('value', '\Bitrix\Main\Type\Date');
-			}
-		}
-		elseif ($field instanceof Entity\TextField)
-		{
-			if (empty($value))
-			{
-				$result = "NULL";
-			}
-			else
-			{
-				$result = "EMPTY_CLOB()";
-			}
-		}
-		elseif ($field instanceof Entity\IntegerField)
-		{
-			$result = "'".intval($value)."'";
-		}
-		elseif ($field instanceof Entity\FloatField)
-		{
-			$value = doubleval($value);
-			if(!is_finite($value))
-			{
-				$value = 0;
-			}
-			if (($scale = $field->getScale()) !== null)
-			{
-				$result = "'".round($value, $scale)."'";
-			}
-			else
-			{
-				$result = "'".$value."'";
-			}
-		}
-		elseif ($field instanceof Entity\StringField)
-		{
-			$result = "'".$this->forSql($value, $field->getSize())."'";
-		}
-		else
-		{
-			$result = "'".$this->forSql($value)."'";
-		}
-
-		return $result;
+		return empty($value) ? "NULL" : "EMPTY_CLOB()";
 	}
 
 	/**

@@ -18,6 +18,7 @@ $arComponentParameters = Array(
 		),
 	),
 	"PARAMETERS" => Array(
+		"USER_CONSENT" => array(),
 		"BLOG_URL" => Array(
 				"NAME" => GetMessage("BPE_BLOG_URL"),
 				"TYPE" => "STRING",

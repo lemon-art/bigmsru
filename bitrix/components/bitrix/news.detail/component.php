@@ -72,6 +72,7 @@ $arParams["SET_LAST_MODIFIED"] = $arParams["SET_LAST_MODIFIED"]==="Y";
 $arParams["SET_BROWSER_TITLE"] = (isset($arParams["SET_BROWSER_TITLE"]) && $arParams["SET_BROWSER_TITLE"] === 'N' ? 'N' : 'Y');
 $arParams["SET_META_KEYWORDS"] = (isset($arParams["SET_META_KEYWORDS"]) && $arParams["SET_META_KEYWORDS"] === 'N' ? 'N' : 'Y');
 $arParams["SET_META_DESCRIPTION"] = (isset($arParams["SET_META_DESCRIPTION"]) && $arParams["SET_META_DESCRIPTION"] === 'N' ? 'N' : 'Y');
+$arParams["STRICT_SECTION_CHECK"] = (isset($arParams["STRICT_SECTION_CHECK"]) && $arParams["STRICT_SECTION_CHECK"] === "Y");
 $arParams["ACTIVE_DATE_FORMAT"] = trim($arParams["ACTIVE_DATE_FORMAT"]);
 if(strlen($arParams["ACTIVE_DATE_FORMAT"])<=0)
 	$arParams["ACTIVE_DATE_FORMAT"] = $DB->DateFormatToPHP(CSite::GetDateFormat("SHORT"));
@@ -165,6 +166,30 @@ if($arParams["SHOW_WORKFLOW"] || $this->startResultCache(false, array(($arParams
 			false,
 			$arFilter
 		);
+
+	if ($arParams["STRICT_SECTION_CHECK"])
+	{
+		if ($arParams["SECTION_ID"] > 0)
+		{
+			$arFilter["SECTION_ID"] = $arParams["SECTION_ID"];
+		}
+		elseif (strlen($arParams["~SECTION_CODE"]) > 0)
+		{
+			$arFilter["SECTION_CODE"] = $arParams["~SECTION_CODE"];
+		}
+		elseif ($this->getParent() && strpos($arParams["DETAIL_URL"], "#SECTION_CODE_PATH#") !== false)
+		{
+			$this->abortResultCache();
+			Iblock\Component\Tools::process404(
+				trim($arParams["MESSAGE_404"]) ?: GetMessage("T_NEWS_DETAIL_NF")
+				,true
+				,$arParams["SET_STATUS_404"] === "Y"
+				,$arParams["SHOW_404"] === "Y"
+				,$arParams["FILE_404"]
+			);
+			return 0;
+		}
+	}
 
 	$WF_SHOW_HISTORY = "N";
 	if ($arParams["SHOW_WORKFLOW"] && Loader::includeModule("workflow"))
@@ -303,7 +328,15 @@ if($arParams["SHOW_WORKFLOW"] || $this->startResultCache(false, array(($arParams
 		$arResult["SECTION_URL"] = "";
 		if($arParams["ADD_SECTIONS_CHAIN"] && $arResult["IBLOCK_SECTION_ID"] > 0)
 		{
-			$rsPath = CIBlockSection::GetNavChain($arResult["IBLOCK_ID"], $arResult["IBLOCK_SECTION_ID"]);
+			$rsPath = CIBlockSection::GetNavChain(
+				$arResult["IBLOCK_ID"],
+				$arResult["IBLOCK_SECTION_ID"],
+				array(
+					"ID", "CODE", "XML_ID", "EXTERNAL_ID", "IBLOCK_ID",
+					"IBLOCK_SECTION_ID", "SORT", "NAME", "ACTIVE",
+					"DEPTH_LEVEL", "SECTION_PAGE_URL"
+				)
+			);
 			$rsPath->SetUrlTemplates("", $arParams["SECTION_URL"]);
 			while($arPath = $rsPath->GetNext())
 			{
@@ -314,7 +347,7 @@ if($arParams["SHOW_WORKFLOW"] || $this->startResultCache(false, array(($arParams
 			}
 		}
 
-		$this->setResultCacheKeys(array(
+		$resultCacheKeys = array(
 			"ID",
 			"IBLOCK_ID",
 			"NAV_CACHED_DATA",
@@ -325,10 +358,82 @@ if($arParams["SHOW_WORKFLOW"] || $this->startResultCache(false, array(($arParams
 			"SECTION_URL",
 			"CANONICAL_PAGE_URL",
 			"SECTION",
-			"PROPERTIES",
 			"IPROPERTY_VALUES",
 			"TIMESTAMP_X",
-		));
+		);
+
+		if (
+			$arParams["SET_TITLE"]
+			|| $arParams["ADD_ELEMENT_CHAIN"]
+			|| $arParams["SET_BROWSER_TITLE"] === 'Y'
+			|| $arParams["SET_META_KEYWORDS"] === 'Y'
+			|| $arParams["SET_META_DESCRIPTION"] === 'Y'
+		)
+		{
+			$arResult["META_TAGS"] = array();
+			$resultCacheKeys[] = "META_TAGS";
+
+			if ($arParams["SET_TITLE"])
+			{
+				$arResult["META_TAGS"]["TITLE"] = (
+					$arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"] != ""
+					? $arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"]
+					: $arResult["NAME"]
+				);
+			}
+
+			if ($arParams["ADD_ELEMENT_CHAIN"])
+			{
+				$arResult["META_TAGS"]["ELEMENT_CHAIN"] = (
+					$arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"] != ""
+					? $arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"]
+					: $arResult["NAME"]
+				);
+			}
+
+			if ($arParams["SET_BROWSER_TITLE"] === 'Y')
+			{
+				$browserTitle = \Bitrix\Main\Type\Collection::firstNotEmpty(
+					$arResult["PROPERTIES"], array($arParams["BROWSER_TITLE"], "VALUE")
+					,$arResult, $arParams["BROWSER_TITLE"]
+					,$arResult["IPROPERTY_VALUES"], "ELEMENT_META_TITLE"
+				);
+				$arResult["META_TAGS"]["BROWSER_TITLE"] = (
+					is_array($browserTitle)
+					? implode(" ", $browserTitle)
+					: $browserTitle
+				);
+				unset($browserTitle);
+			}
+			if ($arParams["SET_META_KEYWORDS"] === 'Y')
+			{
+				$metaKeywords = \Bitrix\Main\Type\Collection::firstNotEmpty(
+					$arResult["PROPERTIES"], array($arParams["META_KEYWORDS"], "VALUE")
+					,$arResult["IPROPERTY_VALUES"], "ELEMENT_META_KEYWORDS"
+				);
+				$arResult["META_TAGS"]["KEYWORDS"] = (
+					is_array($metaKeywords)
+					? implode(" ", $metaKeywords)
+					: $metaKeywords
+				);
+				unset($metaKeywords);
+			}
+			if ($arParams["SET_META_DESCRIPTION"] === 'Y')
+			{
+				$metaDescription = \Bitrix\Main\Type\Collection::firstNotEmpty(
+					$arResult["PROPERTIES"], array($arParams["META_DESCRIPTION"], "VALUE")
+					,$arResult["IPROPERTY_VALUES"], "ELEMENT_META_DESCRIPTION"
+				);
+				$arResult["META_TAGS"]["DESCRIPTION"] = (
+					is_array($metaDescription)
+					? implode(" ", $metaDescription)
+					: $metaDescription
+				);
+				unset($metaDescription);
+			}
+		}
+
+		$this->setResultCacheKeys($resultCacheKeys);
 
 		$this->includeComponentTemplate();
 	}
@@ -402,48 +507,24 @@ if(isset($arResult["ID"]))
 	}
 
 	if($arParams["SET_TITLE"])
-	{
-		if ($arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"] != "")
-			$APPLICATION->SetTitle($arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"], $arTitleOptions);
-		else
-			$APPLICATION->SetTitle($arResult["NAME"], $arTitleOptions);
-	}
+		$APPLICATION->SetTitle($arResult["META_TAGS"]["TITLE"], $arTitleOptions);
 
 	if ($arParams["SET_BROWSER_TITLE"] === 'Y')
 	{
-		$browserTitle = \Bitrix\Main\Type\Collection::firstNotEmpty(
-			$arResult["PROPERTIES"], array($arParams["BROWSER_TITLE"], "VALUE")
-			,$arResult, $arParams["BROWSER_TITLE"]
-			,$arResult["IPROPERTY_VALUES"], "ELEMENT_META_TITLE"
-		);
-		if (is_array($browserTitle))
-			$APPLICATION->SetPageProperty("title", implode(" ", $browserTitle), $arTitleOptions);
-		elseif ($browserTitle != "")
-			$APPLICATION->SetPageProperty("title", $browserTitle, $arTitleOptions);
+		if ($arResult["META_TAGS"]["BROWSER_TITLE"] !== '')
+			$APPLICATION->SetPageProperty("title", $arResult["META_TAGS"]["BROWSER_TITLE"], $arTitleOptions);
 	}
 
 	if ($arParams["SET_META_KEYWORDS"] === 'Y')
 	{
-		$metaKeywords = \Bitrix\Main\Type\Collection::firstNotEmpty(
-			$arResult["PROPERTIES"], array($arParams["META_KEYWORDS"], "VALUE")
-			,$arResult["IPROPERTY_VALUES"], "ELEMENT_META_KEYWORDS"
-		);
-		if (is_array($metaKeywords))
-			$APPLICATION->SetPageProperty("keywords", implode(" ", $metaKeywords), $arTitleOptions);
-		elseif ($metaKeywords != "")
-			$APPLICATION->SetPageProperty("keywords", $metaKeywords, $arTitleOptions);
+		if ($arResult["META_TAGS"]["KEYWORDS"] !== '')
+			$APPLICATION->SetPageProperty("keywords", $arResult["META_TAGS"]["KEYWORDS"], $arTitleOptions);
 	}
 
 	if ($arParams["SET_META_DESCRIPTION"] === 'Y')
 	{
-		$metaDescription = \Bitrix\Main\Type\Collection::firstNotEmpty(
-			$arResult["PROPERTIES"], array($arParams["META_DESCRIPTION"], "VALUE")
-			,$arResult["IPROPERTY_VALUES"], "ELEMENT_META_DESCRIPTION"
-		);
-		if (is_array($metaDescription))
-			$APPLICATION->SetPageProperty("description", implode(" ", $metaDescription), $arTitleOptions);
-		elseif ($metaDescription != "")
-			$APPLICATION->SetPageProperty("description", $metaDescription, $arTitleOptions);
+		if ($arResult["META_TAGS"]["DESCRIPTION"] !== '')
+			$APPLICATION->SetPageProperty("description", $arResult["META_TAGS"]["DESCRIPTION"], $arTitleOptions);
 	}
 
 	if($arParams["INCLUDE_IBLOCK_INTO_CHAIN"] && isset($arResult["IBLOCK"]["NAME"]))
@@ -462,12 +543,7 @@ if(isset($arResult["ID"]))
 		}
 	}
 	if ($arParams["ADD_ELEMENT_CHAIN"])
-	{
-		if ($arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"] != "")
-			$APPLICATION->AddChainItem($arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"]);
-		else
-			$APPLICATION->AddChainItem($arResult["NAME"]);
-	}
+		$APPLICATION->AddChainItem($arResult["META_TAGS"]["ELEMENT_CHAIN"]);
 
 	if ($arParams["SET_LAST_MODIFIED"] && $arResult["TIMESTAMP_X"])
 	{

@@ -2,7 +2,6 @@
 use Bitrix\Main,
 	Bitrix\Main\Localization\LanguageTable;
 
-global $DBType, $MESS, $APPLICATION;
 IncludeModuleLangFile(__FILE__);
 
 define('TRANSLATE_DEFAULT_PATH', '/bitrix/');
@@ -25,13 +24,13 @@ class CTranslateEventHandlers
 	{
 		global $APPLICATION, $USER;
 
-		if(!(IsModuleInstalled('translate') && $APPLICATION->GetGroupRight("translate")>"D"))
-			return ;
+		if ($APPLICATION->GetGroupRight("translate") <= "D")
+			return;
 
 		if (!$USER->IsAuthorized())
-			return ;
+			return;
 
-		$show_button = COption::GetOptionString('translate', 'BUTTON_LANG_FILES', 'N');
+		$show_button = (string)Main\Config\Option::get('translate', 'BUTTON_LANG_FILES');
 
 		if ($show_button == 'Y')
 		{

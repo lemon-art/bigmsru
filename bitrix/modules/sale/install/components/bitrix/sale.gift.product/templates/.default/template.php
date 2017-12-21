@@ -498,7 +498,7 @@ if (!empty($arResult['ITEMS']))
 	else // Wth Sku
 	{
 	?>
-		<div class="bx_catalog_item_controls no_touch">
+		<div class="bx_catalog_item_controls">
 			<?
 			if ('Y' == $arParams['USE_PRODUCT_QUANTITY'])
 			{
@@ -520,11 +520,6 @@ if (!empty($arResult['ITEMS']))
 			<div style="clear: both;"></div>
 		</div>
 
-		<div class="bx_catalog_item_controls touch">
-			<a class="bx_bt_button_type_2 bx_medium" href="<? echo $arItem['DETAIL_PAGE_URL']; ?>"><?
-				echo('' != $arParams['MESS_BTN_DETAIL'] ? $arParams['MESS_BTN_DETAIL'] : GetMessage('CVP_TPL_MESS_BTN_DETAIL'));
-				?></a>
-		</div>
 	<?
 	$boolShowOfferProps =  !!$arItem['OFFERS_PROPS_DISPLAY'];
 	$boolShowProductProps = (isset($arItem['DISPLAY_PROPERTIES']) && !empty($arItem['DISPLAY_PROPERTIES']));

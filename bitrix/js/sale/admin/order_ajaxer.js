@@ -46,6 +46,11 @@ BX.Sale.Admin.OrderAjaxer =
 				{
 					BX.debug("Admin order ajaxer recieved error: " + result.ERROR);
 				}
+				
+				if(result && result.WARNING)
+				{
+					BX.debug("Admin order ajaxer recieved warning: " + result.WARNING);
+				}
 
 				if(refreshFormData)
 					BX.Sale.Admin.OrderAjaxer.refreshOrderData.callback(result);
@@ -76,8 +81,7 @@ BX.Sale.Admin.OrderAjaxer =
 			{
 				if(result.ERROR)
 					BX.Sale.Admin.OrderEditPage.showDialog(result.ERROR);
-
-				if(result.ORDER_DATA)
+				else if(result.ORDER_DATA)
 					BX.Sale.Admin.OrderEditPage.callFieldsUpdaters(result.ORDER_DATA);
 			}
 			else

@@ -199,37 +199,37 @@ class ElementTable extends Main\Entity\DataManager
 			)),
 			'IBLOCK' => new Main\Entity\ReferenceField(
 				'IBLOCK',
-				'Bitrix\Iblock\Iblock',
+				'\Bitrix\Iblock\Iblock',
 				array('=this.IBLOCK_ID' => 'ref.ID'),
 				array('join_type' => 'LEFT')
 			),
 			'WF_PARENT_ELEMENT' => new Main\Entity\ReferenceField(
 				'WF_PARENT_ELEMENT',
-				'Bitrix\Iblock\Element',
+				'\Bitrix\Iblock\Element',
 				array('=this.WF_PARENT_ELEMENT_ID' => 'ref.ID'),
 				array('join_type' => 'LEFT')
 			),
 			'IBLOCK_SECTION' => new Main\Entity\ReferenceField(
 				'IBLOCK_SECTION',
-				'Bitrix\Iblock\Section',
+				'\Bitrix\Iblock\Section',
 				array('=this.IBLOCK_SECTION_ID' => 'ref.ID'),
 				array('join_type' => 'LEFT')
 			),
 			'MODIFIED_BY_USER' => new Main\Entity\ReferenceField(
 				'MODIFIED_BY_USER',
-				'Bitrix\Main\User',
+				'\Bitrix\Main\User',
 				array('=this.MODIFIED_BY' => 'ref.ID'),
 				array('join_type' => 'LEFT')
 			),
 			'CREATED_BY_USER' => new Main\Entity\ReferenceField(
 				'CREATED_BY_USER',
-				'Bitrix\Main\User',
+				'\Bitrix\Main\User',
 				array('=this.CREATED_BY' => 'ref.ID'),
 				array('join_type' => 'LEFT')
 			),
 			'WF_LOCKED_BY_USER' => new Main\Entity\ReferenceField(
 				'WF_LOCKED_BY_USER',
-				'Bitrix\Main\User',
+				'\Bitrix\Main\User',
 				array('=this.WF_LOCKED_BY' => 'ref.ID'),
 				array('join_type' => 'LEFT')
 			),

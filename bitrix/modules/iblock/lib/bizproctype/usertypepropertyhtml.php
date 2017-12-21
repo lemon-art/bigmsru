@@ -2,9 +2,10 @@
 
 namespace Bitrix\Iblock\BizprocType;
 
-use Bitrix\Bizproc\BaseType;
-use Bitrix\Bizproc\FieldType;
-use Bitrix\Main\Localization\Loc;
+use Bitrix\Main,
+	Bitrix\Bizproc\BaseType,
+	Bitrix\Bizproc\FieldType,
+	Bitrix\Main\Localization\Loc;
 
 class UserTypePropertyHtml extends UserTypeProperty
 {
@@ -205,9 +206,9 @@ class UserTypePropertyHtml extends UserTypeProperty
 	 */
 	protected static function wrapCloneableControls(array $controls, $wrapperId)
 	{
-		$wrapperId = (string) $wrapperId;
+		$wrapperId = Main\Text\HtmlFilter::encode((string)$wrapperId);
 		$renderResult = '<table width="100%" border="0" cellpadding="2" cellspacing="2" id="BizprocCloneable_'
-			.htmlspecialcharsbx($wrapperId).'">';
+			.$wrapperId.'">';
 
 		foreach ($controls as $control)
 		{
@@ -216,7 +217,7 @@ class UserTypePropertyHtml extends UserTypeProperty
 		$renderResult .= '</table>';
 		$renderResult .= '<input type="button" value="'.Loc::getMessage('BPDT_BASE_ADD')
 			.'" onclick="BX.Bizproc.cloneTypeControlHtml(\'BizprocCloneable_'
-			.htmlspecialcharsbx($wrapperId).'\', \''.htmlspecialcharsbx($wrapperId).'\')"/><br />';
+			.$wrapperId.'\', \''.$wrapperId.'\')"/><br />';
 
 		return $renderResult;
 	}

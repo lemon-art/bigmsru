@@ -19,11 +19,11 @@ BlogPostAutoSaveIcon = function () {
 	var form = BX(formId);
 	if (!form) return;
 	
-	auto_lnk = BX('post-form-autosave-icon');
-	formHeaders = BX.findChild(form, {'className': /lhe-stat-toolbar-cont/ }, true, true);
+	var auto_lnk = BX('post-form-autosave-icon');
+	var formHeaders = BX.findChild(form, {'className': /lhe-stat-toolbar-cont/ }, true, true);
 	if (formHeaders.length < 1)
 		return false;
-	formHeader = formHeaders[formHeaders.length-1];
+	var formHeader = formHeaders[formHeaders.length-1];
 	formHeader.insertBefore(auto_lnk, formHeader.children[0]);
 }
 
@@ -32,10 +32,10 @@ BlogPostAutoSave = function () {
 	var form = BX(formId);
 	if (!form) return;
 
-	var controlID = "POST_MESSAGE_HTML";
+	var controlID = "POST_MESSAGE";
 	var titleID = 'POST_TITLE';
-	title = BX(titleID);
-	tags = BX(formId).TAGS;
+	var title = BX(titleID);
+	var tags = BX(formId).TAGS;
 	
 	var	iconClass = "blogPostAutoSave";
 	var	actionClass = "blogPostAutoRestore";
@@ -69,7 +69,7 @@ BlogPostAutoSave = function () {
 	BX.addCustomEvent(form, 'onAutoSavePrepare', function (ob, h) {
 		ob.DISABLE_STANDARD_NOTIFY = true;
 		BX.bind(auto_lnk, 'click', BX.proxy(ob.Save, ob));
-		_ob=ob;
+		var _ob=ob;
 		setTimeout(function() { bindLHEEvents(_ob) },1500);
 	});
 
@@ -78,6 +78,7 @@ BlogPostAutoSave = function () {
 		BX.removeClass(auto_lnk,'bx-core-autosave-ready');
 		BX.addClass(auto_lnk,'bx-core-autosave-saving');
 
+		// not oBlogLHE!!
 		if (! window.oBlogLHE) return;
 
 		form_data[controlID+'_type'] = window.oBlogLHE.sEditorMode;
@@ -109,54 +110,12 @@ BlogPostAutoSave = function () {
 	});
 
 	BX.addCustomEvent(form, 'onAutoSaveRestoreFound', function(ob, data) {
-		if (BX.util.trim(data[controlID]).length < 1 && BX.util.trim(data[titleID]).length < 1) return;
-		_ob = ob;
-		
-		formHeaders = BX.findChild(form, {'className': /blog-post-edit/ }, true, true);
-		var w = "100%";
-		if(formHeaders.length > 0)
-			w = formHeaders[0].clientWidth + 'px';
+		var text = (BX.util.trim(data[controlID]) || ''),
+			title = (BX.util.trim(data[titleID]) || '');
+		if (text.length < 1 && title.length < 1) return;
 
-		var id = form.name || Math.random();
-		recoverNotify = BX.create('DIV', {
-			'props': {
-				'className': 'blog-notify-bar',
-				'id' : 'post-form-autosave-not'
-			},
-			'children': [
-				BX.create('DIV', {
-					'props': { 'className': 'blog-notify-close' },
-					'children': [
-						BX.create('A', {
-							'events':{
-								'click': function() {
-									if (!! recoverNotify)
-										BX.remove(recoverNotify);
-									return false;
-								}
-							}
-						})
-					]
-				}),
-				BX.create('DIV', {
-					'props': { 'className': 'blog-notify-text' },
-					'children': [
-						BX.create('SPAN', { 'text': recoverMessage }),
-						BX.create('A', {
-							'attr': {'href': 'javascript:void(0)'},
-							'props': {'className': actionClass},
-							'text': actionText,
-							'events':{
-								'click': function() { _ob.Restore(); return false;}
-							}
-						})
-					]
-				})
-			],
-			'style': {'width':w}
-		});
-		
-		form.insertBefore(recoverNotify, form.children[1]);
+		ob.Restore();
+		// todo: need notify? see in socnetwork
 	});
 
 	BX.addCustomEvent(form, 'onAutoSaveRestore', function(ob, data) {
@@ -187,3 +146,265 @@ function blogShowFile()
 	BX.toggle(BX('blog-upload-file'));
 	BX.onCustomEvent(BX('blog-post-user-fields-UF_BLOG_POST_DOC'), "BFileDLoadFormController");
 }
+
+
+var formParams = {},
+	reinit = function(formID)
+	{
+		if (formParams[formID] && formParams[formID]["editorID"])
+		{
+			if (formParams[formID]["editor"])
+				formParams[formID]["editor"](formParams[formID]['text']);
+			else
+				setTimeout(function(){reinit(formID);}, 50);
+		}
+	};
+
+BX.BlogPostInit = function(formID, params)
+{
+	formParams = {};
+	formParams[formID] = {
+		editorID : params['editorID'],
+		showTitle : (!!params['showTitle']),
+		submitted : false,
+		text : params['text'],
+		autoSave : params['autoSave'],
+		handler : (window.LHEPostForm && window.LHEPostForm.getHandler(params['editorID'])),
+		editor : (window.LHEPostForm && window.LHEPostForm.getEditor(params['editorID'])),
+		restoreAutosave : !!params['restoreAutosave']
+	};
+	var onHandlerInited = function(obj, form) {
+			if (form == formID)
+			{
+				formParams[formID]["handler"] = obj;
+				// BX.addCustomEvent(obj.eventNode, 'OnControlClick', function() {window.SBPETabs.changePostFormTab('message');});
+				var OnAfterShowLHE = function()
+					{
+						var div = [BX('feed-add-post-form-notice-blockblogPostForm'),
+							BX('feed-add-buttons-blockblogPostForm'),
+							BX('feed-add-post-content-message-add-ins')];
+						for (var ii = 0; ii < div.length; ii++)
+						{
+							if (!!div[ii])
+							{
+								BX.adjust(div[ii], { style : { display : "block", height : "auto", opacity : 1 } } );
+							}
+						}
+						// if(formParams[formID]["showTitle"])
+						// 	window['showPanelTitle_' + formID](true, false);
+					},
+					OnAfterHideLHE = function()
+					{
+						var ii,
+							div = [
+								BX('feed-add-post-form-notice-blockblogPostForm'),
+								BX('feed-add-buttons-blockblogPostForm'),
+								BX('feed-add-post-content-message-add-ins')];
+						for (ii = 0; ii < div.length; ii++)
+						{
+							if (!!div[ii])
+							{
+								BX.adjust(div[ii], {style:{display:"block",height:"0px", opacity:0}});
+							}
+						}
+						if(formParams[formID]["showTitle"])
+							window['showPanelTitle_' + formID](false, false);
+					};
+				BX.addCustomEvent(obj.eventNode, 'OnAfterShowLHE', OnAfterShowLHE);
+				BX.addCustomEvent(obj.eventNode, 'OnAfterHideLHE', OnAfterHideLHE);
+				if (obj.eventNode.style.display == 'none')
+					OnAfterHideLHE();
+				else
+					OnAfterShowLHE();
+			}
+		},
+
+		onEditorInited = function(editor)
+		{
+			if (editor.id == formParams[formID]["editorID"])
+			{
+				formParams[formID]["editor"] = editor;
+				if(formParams[formID]["autoSave"] != "N")
+					new BlogPostAutoSave(formParams[formID]["autoSave"], formParams[formID]["restoreAutosave"]);
+
+				var
+					f = window[editor.id + 'Files'],
+					handler = window.LHEPostForm.getHandler(editor.id),
+					intId, id, node, needToReparse = [],
+					controller = null;
+				for (id in handler['controllers'])
+				{
+					if (handler['controllers'].hasOwnProperty(id))
+					{
+						if (handler['controllers'][id]["parser"] && handler['controllers'][id]["parser"]["bxTag"] == "postimage")
+						{
+							controller = handler['controllers'][id];
+							break;
+						}
+					}
+				}
+				var closure = function(a, b) { return function() { a.insertFile(b); } },
+					closure2 = function(a, b, c) { return function() {
+						if (controller)
+						{
+							controller.deleteFile(b, {});
+							BX.remove(BX('wd-doc' + b));
+							BX.ajax({ method: 'GET', url: c});
+						}
+						else
+						{
+							a.deleteFile(b, c, a, {controlID : 'common'});
+						}
+					} };
+
+				for (intId in f)
+				{
+					if (f.hasOwnProperty(intId))
+					{
+						if (controller)
+						{
+							controller.addFile(f[intId]);
+						}
+						else
+						{
+							id = handler.checkFile(intId, "common", f[intId]);
+							needToReparse.push(intId);
+							if (!!id && BX('wd-doc'+intId) && !BX('wd-doc'+intId).hasOwnProperty("bx-bound"))
+							{
+								BX('wd-doc'+intId).setAttribute('bx-bound', 'Y');
+								if ((node = BX.findChild(BX('wd-doc'+intId), {className: 'feed-add-img-wrap'}, true, false)) && node)
+								{
+									BX.bind(node, "click", closure(handler, id));
+									node.style.cursor = "pointer";
+								}
+								if ((node = BX.findChild(BX('wd-doc'+intId), {className: 'feed-add-img-title'}, true, false)) && node)
+								{
+									BX.bind(node, "click", closure(handler, id));
+									node.style.cursor = "pointer";
+								}
+								if ((node = BX.findChild(BX('wd-doc'+intId), {className: 'feed-add-post-del-but'}, true, false)) && node)
+								{
+									BX.bind(node, "click", closure2(handler, intId, f[intId]['del_url']));
+									node.style.cursor = "pointer";
+								}
+							}
+						}
+						if ((node = BX.findChild(BX('wd-doc'+intId), {className: 'feed-add-post-del-but'}, true, false)) && node)
+						{
+							BX.bind(node, "click", closure2(handler, intId, f[intId]['del_url']));
+							node.style.cursor = "pointer";
+						}
+					}
+				}
+
+				if (needToReparse.length > 0)
+				{
+					editor.SaveContent();
+					var content = editor.GetContent();
+					content = content.replace(new RegExp('\\&\\#91\\;IMG ID=(' + needToReparse.join("|") + ')([WIDTHHEIGHT=0-9 ]*)\\&\\#93\\;','gim'), '[IMG ID=$1$2]');
+					editor.SetContent(content);
+					editor.Focus();
+				}
+			}
+		},
+
+		onEditorInitedBefore = function(editor)
+		{
+			// add style for cut-image
+			var cutCss = "\nimg.bxed-cut{background: transparent url('/bitrix/images/blog/editor/cut_image.gif') left top repeat-x; margin: 2px; width: 100%; height: 12px;}\n";
+			if(editor.iframeCssText != undefined && editor.iframeCssText.length > 0)
+				editor.iframeCssText += cutCss;
+			else
+				editor.iframeCssText = cutCss;
+
+			editor.AddButton({
+				id : 'cut',
+				name : BX.message.CutTitle,
+				iconClassName : 'cut',
+				disabledForTextarea : false,
+				src : '/bitrix/images/blog/editor/cut_button.png',
+				toolbarSort : 205,
+				handler : function()
+				{
+					var
+						_this = this,
+						res = false;
+
+					// Iframe
+					if (!_this.editor.bbCode || !_this.editor.synchro.IsFocusedOnTextarea())
+					{
+						var cutImg = '<img id="' + editor.SetBxTag(false, {tag: "cut"}) + '" class="bxed-cut" src="' + editor.EMPTY_IMAGE_SRC + '" title="' + BX.message.CutTitle + '">';
+						res = _this.editor.action.actions.insertHTML.exec("insertHTML", cutImg);
+					}
+					else // bbcode + textarea
+					{
+						res = _this.editor.action.actions.formatBbCode.exec('formatBbCode', {tag: 'CUT', 'singleTag' : true});
+					}
+					return res;
+				}
+			});
+
+			editor.AddParser({
+				name : 'cut',
+				obj : {
+					Parse: function(parserName, content)
+					{
+						content = content.replace(/\[cut\]/gi,
+							function(str, id, name)
+							{
+								var cutImg = '<img id="' + editor.SetBxTag(false, {tag: "cut"}) + '" class="bxed-cut" src="' + editor.EMPTY_IMAGE_SRC + '" title="' + BX.message.CutTitle + '">';
+								return cutImg;
+							});
+						return content;
+					},
+					/**
+					 * @return {string}
+					 */
+					UnParse: function(bxTag, oNode)
+					{
+						if (bxTag.tag == 'cut')
+							return "[CUT]";
+						else
+							return "";
+					}
+
+				}
+			});
+		};
+
+
+	BX.addCustomEvent(window, 'onInitialized', onHandlerInited);
+	if (formParams[formID]["handler"])
+		onHandlerInited(formParams[formID]["handler"], formID);
+	BX.addCustomEvent(window, 'OnEditorInitedBefore', onEditorInitedBefore);
+	if (formParams[formID]["editor"])
+		onEditorInitedBefore(formParams[formID]["editor"]);
+	BX.addCustomEvent(window, 'OnEditorInitedAfter', onEditorInited);
+	if (formParams[formID]["editor"])
+		onEditorInited(formParams[formID]["editor"]);
+
+	BX.ready(function() {
+		if (BX.browser.IsIE() && BX('POST_TITLE'))
+		{
+			var showTitlePlaceholderBlur = function(e)
+			{
+				if (!this.value || this.value == this.getAttribute("placeholder")) {
+					this.value = this.getAttribute("placeholder");
+					BX.removeClass(this, 'feed-add-post-inp-active');
+				}
+			};
+			BX.bind(BX('POST_TITLE'), "blur", showTitlePlaceholderBlur);
+			showTitlePlaceholderBlur.apply(BX('POST_TITLE'));
+			BX('POST_TITLE').__onchange = BX.delegate(
+				function(e) {
+					if ( this.value == this.getAttribute("placeholder") ) { this.value = ''; }
+					if ( this.className.indexOf('feed-add-post-inp-active') < 0 ) { BX.addClass(this, 'feed-add-post-inp-active'); }
+				},
+				BX('POST_TITLE')
+			);
+			BX.bind(BX('POST_TITLE'), "click", BX('POST_TITLE').__onchange);
+			BX.bind(BX('POST_TITLE'), "keydown", BX('POST_TITLE').__onchange);
+			BX.bind(BX('POST_TITLE').form, "submit", function(){if(BX('POST_TITLE').value == BX('POST_TITLE').getAttribute("placeholder")){BX('POST_TITLE').value='';}});
+		}
+	});
+};

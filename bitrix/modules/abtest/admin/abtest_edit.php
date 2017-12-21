@@ -5,10 +5,9 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admi
 IncludeModuleLangFile(__FILE__);
 Bitrix\Main\Loader::includeModule('abtest');
 
-
-if (!$USER->canDoOperation('edit_php'))
+$MOD_RIGHT = $APPLICATION->getGroupRight('abtest');
+if ($MOD_RIGHT < 'W')
 	$APPLICATION->authForm(getMessage('ACCESS_DENIED'));
-
 
 $ID = intval($ID);
 

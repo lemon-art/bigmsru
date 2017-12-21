@@ -159,7 +159,7 @@ if($accessToken != '' && $domain != '' && !$needAuthorize)
 		</script>
 		<div class="bx-gadgets-content-padding-rl bx-gadgets-content-padding-t">
 			<?=GetMessage("GD_PLANNER_URI_PORTAL_INPUT");?>&nbsp;
-			https://&nbsp;<input type="text" id="portal" name="portal" value="<?=$domain?>">
+			https://&nbsp;<input type="text" id="portal" name="portal" value="<?=\Bitrix\Main\Text\HtmlFilter::encode($domain)?>">
 			<input type="button" class="adm-btn" onclick="checkOauth();" value="<?=GetMessage("GD_PLANNER_AUTHORIZE");?>">
 		</div>
 	<?

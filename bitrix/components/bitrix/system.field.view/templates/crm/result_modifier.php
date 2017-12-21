@@ -4,8 +4,6 @@ if (is_array($arResult['VALUE']) && count($arResult['VALUE']) > 0)
 {
 	if(!CModule::IncludeModule("crm"))
 		return;
-
-
 		
 	$arParams['ENTITY_TYPE'] = Array();
 	if ($arParams['arUserField']['SETTINGS']['LEAD'] == 'Y')
@@ -20,24 +18,18 @@ if (is_array($arResult['VALUE']) && count($arResult['VALUE']) > 0)
 	$arParams['PREFIX'] = false;
 	if (count($arParams['ENTITY_TYPE']) > 1)
 		$arParams['PREFIX'] = true;
+	if(!empty($arParams['usePrefix']))
+		$arResult['PREFIX'] = 'Y';
 
 	$arValue = Array();	
 	foreach ($arResult['VALUE'] as $value)
 	{
-		if($arParams['PREFIX'])
+		if (is_numeric($value))
+			$arValue[$arParams['ENTITY_TYPE'][0]][] = $value;
+		else
 		{
 			$ar = explode('_', $value);
 			$arValue[CUserTypeCrm::GetLongEntityType($ar[0])][] = intval($ar[1]);
-		}
-		else
-		{
-			if (is_numeric($value))
-				$arValue[$arParams['ENTITY_TYPE'][0]][] = $value;
-			else
-			{
-				$ar = explode('_', $value);
-				$arValue[CUserTypeCrm::GetLongEntityType($ar[0])][] = intval($ar[1]);
-			}
 		}
 	}
 
@@ -71,6 +63,7 @@ if (is_array($arResult['VALUE']) && count($arResult['VALUE']) > 0)
 				? array('ID', 'HONORIFIC', 'NAME', 'SECOND_NAME', 'LAST_NAME')
 				: array('ID', 'FULL_NAME')
 		);
+
 		while ($arRes = $dbRes->Fetch())
 		{
 			if($hasNameFormatter)

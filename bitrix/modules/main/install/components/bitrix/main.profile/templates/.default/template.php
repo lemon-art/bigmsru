@@ -90,7 +90,7 @@ var cookie_prefix = '<?=$arResult["COOKIE_PREFIX"]?>';
 		<td><input type="text" name="LAST_NAME" maxlength="50" value="<?=$arResult["arUser"]["LAST_NAME"]?>" /></td>
 	</tr>
 	<tr>
-		<td><?=GetMessage('SECOND_NAME')?></font></td>
+		<td><?=GetMessage('SECOND_NAME')?></td>
 		<td><input type="text" name="SECOND_NAME" maxlength="50" value="<?=$arResult["arUser"]["SECOND_NAME"]?>" /></td>
 	</tr>
 	<tr>
@@ -319,11 +319,11 @@ document.getElementById('bx_auth_secure').style.display = 'inline-block';
 			<td><input type="text" name="WORK_PHONE" maxlength="255" value="<?=$arResult["arUser"]["WORK_PHONE"]?>" /></td>
 		</tr>
 		<tr>
-			<td><?=GetMessage('USER_FAX')?></font></td>
+			<td><?=GetMessage('USER_FAX')?></td>
 			<td><input type="text" name="WORK_FAX" maxlength="255" value="<?=$arResult["arUser"]["WORK_FAX"]?>" /></td>
 		</tr>
 		<tr>
-			<td><?=GetMessage('USER_PAGER')?></font></td>
+			<td><?=GetMessage('USER_PAGER')?></td>
 			<td><input type="text" name="WORK_PAGER" maxlength="255" value="<?=$arResult["arUser"]["WORK_PAGER"]?>" /></td>
 		</tr>
 		<tr>

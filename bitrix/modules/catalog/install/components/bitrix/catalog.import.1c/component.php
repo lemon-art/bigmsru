@@ -400,7 +400,8 @@ elseif (($_GET["mode"] == "import") && $ABS_FILE_NAME)
 	}
 	elseif ($NS["STEP"] == 3)
 	{
-		if (CIBlockXMLFile::IndexTemporaryTables())
+		$obXMLFile = new CIBlockXMLFile;
+		if ($obXMLFile->IndexTemporaryTables())
 		{
 			$strMessage = GetMessage("CC_BSC1_INDEX_CREATED");
 			$NS["STEP"] = 4;
@@ -647,6 +648,15 @@ elseif ($_GET["mode"]=="deactivate")
 	{
 		echo "failure\n",GetMessage("CC_BSC1_DEACTIVATION_ERROR");
 	}
+}
+elseif ($_GET["mode"]=="complete")
+{
+	foreach (GetModuleEvents("catalog", "OnCompleteCatalogImport1C", true) as $arEvent)
+	{
+		ExecuteModuleEventEx($arEvent, array($arParams, $ABS_FILE_NAME));
+	}
+
+	echo "success\n",GetMessage("CC_BSC1_IMPORT_COMPLETE");
 }
 else
 {

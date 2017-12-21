@@ -285,7 +285,7 @@ class CSearchLanguage
 		//or parent::GuessLanguage for futher processing
 	}
 
-	function GuessLanguage($text, $lang=false)
+	public static function GuessLanguage($text, $lang=false)
 	{
 		if(strlen($text) <= 0)
 			return false;
@@ -375,7 +375,6 @@ class CSearchLanguage
 			$i++;
 		}
 		uasort($arDetectionFrom, array("CSearchLanguage", "cmp"));
-//echo "<pre>";foreach($arDetectionFrom as $i=>$ar){var_dump($i); print_r(array($ar[0],$ar[1],$ar[3],$ar[4],));}echo "<pre>";
 
 		//Now try the best to detect the language
 		$arDetection = array();
@@ -414,7 +413,7 @@ class CSearchLanguage
 		uasort($arDetection, array("CSearchLanguage", "cmp"));
 		$language_from_to = key($arDetection);
 		list($language_from, $language_to) = explode("=>", $language_from_to);
-//echo "<pre>";foreach($arDetection as $i=>$ar){var_dump($i); print_r(array($ar[0],$ar[1],$ar[3],$ar[4],$ar[5],));}echo "<pre>";
+
 		$alt_text = CSearchLanguage::ConvertKeyboardLayout($text, $language_from, $language_to);
 		if($alt_text === $text)
 			return false;
@@ -423,7 +422,7 @@ class CSearchLanguage
 	}
 
 	//Compare to results of text analysis
-	function cmp($a, $b)
+	static function cmp($a, $b)
 	{
 		if($a[0] && !$b[0]) //On first place we check if model supports bigrams check
 			return -1;
@@ -455,8 +454,6 @@ class CSearchLanguage
 						else
 							$b[3] = 100;
 					}
-//echo "<pre>";print_r($a);echo "<pre>";
-//echo "<pre>";print_r($b);echo "<pre>";
 				}
 
 				if($a[$i] < $b[$i])

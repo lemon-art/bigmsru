@@ -33,6 +33,12 @@ $arComponentParameters = Array(
 			'DEFAULT' => 'N',
 			"PARENT" => "ADDITIONAL_SETTINGS",
 		),
+		'COMPATIBLE_LOCATION_MODE' =>  array(
+			"NAME" => GetMessage("SPPD_COMPATIBLE_LOCATION_MODE"),
+			"TYPE" => "CHECKBOX",
+			"DEFAULT" => "N",
+			"PARENT" => "BASE"
+		),
 		"SET_TITLE" => Array(),
 
 	)

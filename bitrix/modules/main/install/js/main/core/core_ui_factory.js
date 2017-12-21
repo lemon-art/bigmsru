@@ -3,11 +3,16 @@
 
 	BX.namespace('BX.Main.ui');
 
-	BX.Main.ui.factory = function()
+	/**
+	 * Factory of UI custom UI controls
+	 * @returns {BX.Main.ui.Factory|*}
+	 * @constructor
+	 */
+	BX.Main.ui.Factory = function()
 	{
-		if (BX.Main.ui.factory instanceof BX.Main.ui.factory)
+		if (BX.Main.ui.Factory instanceof BX.Main.ui.Factory)
 		{
-			return BX.Main.ui.factory;
+			return BX.Main.ui.Factory;
 		}
 
 		this.data = [];
@@ -15,67 +20,133 @@
 		this.classSelect = 'main-ui-select';
 		this.classMultiSelect = 'main-ui-multi-select';
 		this.classDate = 'main-ui-date';
+		this.maxEventPathDepth = 5;
 		this.init();
 	};
 
-	BX.Main.ui.factory.prototype = {
+	BX.Main.ui.Factory.prototype = {
+		/**
+		 * @private
+		 */
 		init: function()
 		{
-			BX.bind(document, 'click', BX.delegate(this._onClick, this));
-			document.addEventListener('focus', BX.delegate(this._onClick, this), true);
+			BX.bind(document, 'click', BX.delegate(this._onHandleEvent, this));
+			document.addEventListener('focus', BX.delegate(this._onHandleEvent, this), true);
 		},
 
-		_onClick: function(event)
+		/**
+		 * @param event
+		 * @private
+		 */
+		_onHandleEvent: function(event)
 		{
-			var result;
-			var self = this;
-			var maxDepth = 5;
-
-			if (!('path' in event) || !event.path.length)
-			{
-				event.path = [event.target];
-				var i = 0;
-				var x;
-				while ((x = event.path[i++].parentNode) != null) event.path.push(x);
-			}
-
+			this.prepareEvent(event);
 
 			event.path.forEach(function(current, index) {
-				if (index > maxDepth || !BX.type.isDomNode(current))
+				if (!this.validateIteration(current, index))
 				{
 					return false;
 				}
 
-				if (BX.hasClass(current, self.classControl))
+				if (this.isSelect(current) && !this.isControlInitialized(current))
 				{
-					if (BX.hasClass(current, self.classSelect) || BX.hasClass(current, self.classMultiSelect))
-					{
-						result = self.get(current);
-
-						if (!result)
-						{
-							result = {node: current, instance: new BX.Main.ui.select(current)};
-							self.data.push(result);
-							result.instance.inputFocus();
-						}
-					}
-
-					if (BX.hasClass(current, self.classDate))
-					{
-						result = self.get(current);
-
-						if (!result)
-						{
-							result = {node: current, instance: new BX.Main.ui.date(current)};
-							self.data.push(result);
-						}
-
-						return false;
-					}
+					var select = {node: current, instance: new BX.Main.ui.select(current)};
+					this.data.push(select);
+					select.instance._onControlClick(event);
 				}
-			});
+
+				if (this.isDate(current) && !this.isControlInitialized(current))
+				{
+					var date = {node: current, instance: new BX.Main.ui.date(current)};
+					this.data.push(date);
+				}
+			}, this);
 		},
 
+		/**
+		 * @param current
+		 * @param index
+		 * @returns {boolean|*}
+		 * @private
+		 */
+		validateIteration: function(current, index)
+		{
+			return index <= this.maxEventPathDepth && BX.type.isDomNode(current);
+		},
+
+		/**
+		 * Prepares event.path property
+		 * @param event
+		 * @private
+		 */
+		prepareEvent: function(event)
+		{
+			if (!('path' in event) || !event.path.length)
+			{
+				event.path = [event.target];
+
+				var i = 0;
+				var x;
+
+				while ((x = event.path[i++].parentNode) !== null)
+				{
+					event.path.push(x);
+				}
+			}
+		},
+
+		/**
+		 * Checks whether node of select or multiselect control
+		 * @param {HtmlElement} node
+		 * @returns {boolean}
+		 * @public
+		 */
+		isSelect: function(node)
+		{
+			return BX.hasClass(node, this.classSelect) || BX.hasClass(node, this.classMultiSelect);
+		},
+
+		/**
+		 * Checks whether node of control
+		 * @param {HtmlElement} node
+		 * @returns {boolean}
+		 * @public
+		 */
+		isControl: function(node)
+		{
+			return BX.hasClass(node, this.classControl);
+		},
+
+		/**
+		 * Checks whether node of date control
+		 * @param {HtmlElement} node
+		 * @returns {boolean}
+		 * @public
+		 */
+		isDate: function(node)
+		{
+			return BX.hasClass(node, this.classDate);
+		},
+
+		/**
+		 * Checks is any control initialized with the node
+		 * @param node
+		 * @returns {boolean}
+		 * @private
+		 */
+		isControlInitialized: function(node)
+		{
+			return this.data.some(function(current) {
+				return current.node === node;
+			}, this);
+		},
+
+		/**
+		 * Gets control class instance by node
+		 * @param node
+		 * @returns {object}
+		 * @public
+		 */
 		get: function(node)
 		{
 			var filtered = this.data.filter(function(current) {
@@ -86,5 +157,5 @@
 		}
 	};
 
-	BX.Main.ui.factory = new BX.Main.ui.factory();
+	BX.Main.ui.Factory = new BX.Main.ui.Factory();
 })();

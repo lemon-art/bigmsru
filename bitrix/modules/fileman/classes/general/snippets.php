@@ -664,6 +664,7 @@ window.arSnGroups['<?=$template?>']['<?= $key?>'] =
 
 	public static function RenameCategory($params)
 	{
+		global $APPLICATION;
 		$res = false;
 		if (is_array($params) && isset($params['path'], $params['new_name']))
 		{
@@ -677,6 +678,15 @@ window.arSnGroups['<?=$template?>']['<?= $key?>'] =
 			if($io->DirectoryExists($categoryPath) && !$io->DirectoryExists($newCategoryPath))
 			{
 				$res = $io->Rename($categoryPath, $newCategoryPath);
+			}
+
+			$io = CBXVirtualIo::GetInstance();
+			if($io->FileExists($basePath."/.content.php"))
+			{
+				$contentSrc = $APPLICATION->GetFileContent($basePath."/.content.php");
+				$newPath = ltrim($io->ExtractPathFromPath($path).'/'.$params['new_name'], '/');
+				$contentSrc = preg_replace("/\\\$SNIPPETS\\['".$path."\\//", '$SNIPPETS[\''.$newPath.'/', $contentSrc);
+				$APPLICATION->SaveFileContent($basePath."/.content.php", $contentSrc);
 			}
 
 			CSnippets::ClearCache();

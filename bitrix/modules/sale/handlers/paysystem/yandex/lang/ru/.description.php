@@ -14,6 +14,11 @@ $MESS["SALE_HPS_YANDEX_CHANGE_STATUS_PAY"] = "Автоматически опл�
 $MESS["SALE_HPS_YANDEX_PAYMENT_TYPE"] = "Тип платёжной системы";
 $MESS["SALE_HPS_YANDEX_BUYER_ID"] = "Код покупателя";
 
+$MESS["SALE_HPS_YANDEX_RETURN"] = "Возвраты платежей не поддерживаются";
+$MESS["SALE_HPS_YANDEX_RESTRICTION"] = "Ограничение по сумме платежей зависит от способа оплаты, который выберет покупатель";
+$MESS["SALE_HPS_YANDEX_COMMISSION"] = "Без комисси для покупателя";
+$MESS["SALE_HPS_YANDEX_CHECKOUT_REFERRER"] = "<a href=\"https://money.yandex.ru/joinups/?source=bitrix24\" target=\"_blank\">Быстрая регистрация</a>";
+
 $MESS["SALE_HPS_YANDEX_DESCRIPTION"] = "Работа через Центр Приема Платежей <a href=\"https://kassa.yandex.ru\" target=\"_blank\">https://kassa.yandex.ru</a>
 <br/>Используется протокол commonHTTP-3.0
 <br/><br/>
@@ -64,4 +69,5 @@ $MESS["SALE_HPS_YANDEX_DESCRIPTION"] = "Работа через Центр Пр�
 		checkHTTPS();\"
 	/>
 <span id=\"https_check_result\"></span>
+<br/>
 <br/>";

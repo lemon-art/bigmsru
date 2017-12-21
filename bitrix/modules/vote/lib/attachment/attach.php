@@ -248,6 +248,7 @@ class Attach implements \ArrayAccess
 			"CHANNEL_ID" => $this->storage["ID"],
 			"DATE_END" => GetTime((isset($data["DATE_END"]) ? MakeTimeStamp($data["DATE_END"]) : 1924984799), "FULL")
 		));
+		$this->getConnector()->checkFields($data);
 		Vote::checkData($data["ID"], $data);
 		if (strlen($data["TITLE"]) <= 0 && is_array($data["QUESTIONS"]))
 		{
@@ -396,7 +397,7 @@ class Attach implements \ArrayAccess
 		$res = \Bitrix\Vote\Attach::getData($id);
 		if (is_null($res))
 		{
-			throw new ArgumentTypeException("Object", "array");
+			throw new ArgumentNullException("Attach");
 		}
 		list($attach, $vote) = $res;
 

@@ -53,6 +53,7 @@ class Request
 			"streamTimeout" => 30,
 			"redirect" => true,
 			"redirectMax" => 5,
+			"disableSslVerification" => true
 		));
 
 		$http->setHeader("Content-Type", "application/json; charset=utf-8");

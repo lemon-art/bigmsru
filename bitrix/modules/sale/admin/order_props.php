@@ -222,7 +222,7 @@ if ($saleModulePermissions == "W")
 	$arDDMenu = array();
 
 	$arDDMenu[] = array(
-		"TEXT" => "<b>".GetMessage("SOPAN_4NEW_PROMT")."</b>",
+		"TEXT" => GetMessage("SOPAN_4NEW_PROMT"),
 		"ACTION" => false
 	);
 
@@ -326,7 +326,7 @@ $oFilter->Begin();
 	<tr>
 		<td><?echo GetMessage("SALE_F_CODE")?>:</td>
 		<td>
-			<input type="text" name="filter_code" value="<?=htmlspecialcharsEx($filter_code)?>">
+			<input type="text" name="filter_code" value="<?=htmlspecialcharsbx($filter_code)?>">
 		</td>
 	</tr>
 	<tr>

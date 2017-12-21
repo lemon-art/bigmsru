@@ -55,6 +55,14 @@ class CSaleHelper
 		}
 	}
 
+	/**
+	 * @param $fieldId
+	 * @param $arField
+	 * @param $fieldName
+	 * @param $formName
+	 * @return string
+	 * @deprecated
+	 */
 	public static function getAdminHtml($fieldId, $arField, $fieldName, $formName)
 	{
 		$arField["VALUE"] = CSaleDeliveryHelper::getConfValue($arField);
@@ -110,12 +118,12 @@ class CSaleHelper
 				foreach ($arField["VALUES"] as $value => $title)
 				{
 					$resultHtml .= '<input type="radio"
-										id="hc_'.htmlspecialcharsbx($fieldId).'_'.htmlspecialcharsEx($value).'"'.
+										id="hc_'.htmlspecialcharsbx($fieldId).'_'.htmlspecialcharsbx($value).'"'.
 										'name="'.$name.'" '.
-										'value="'.htmlspecialcharsEx($value).'"'.
+										'value="'.htmlspecialcharsbx($value).'"'.
 										($value == $arField["VALUE"] ? " checked=\"checked\"" : "").' />'.
-										'<label for="hc_'.htmlspecialcharsbx($fieldId).'_'.htmlspecialcharsEx($value).'">'.
-										htmlspecialcharsEx($title).'</label><br />';
+										'<label for="hc_'.htmlspecialcharsbx($fieldId).'_'.htmlspecialcharsbx($value).'">'.
+										htmlspecialcharsbx($title).'</label><br />';
 				}
 
 			break;
@@ -141,9 +149,9 @@ class CSaleHelper
 				foreach ($arField["VALUES"] as $value => $title)
 				{
 					$resultHtml .= '<option '.
-										'value="'.htmlspecialcharsEx($value).'"'.
+										'value="'.htmlspecialcharsbx($value).'"'.
 										($value == $arField["VALUE"] ? " selected=\"selected\"" : "").'>'.
-										htmlspecialcharsEx($title).
+										htmlspecialcharsbx($title).
 									'</option>';
 				}
 
@@ -156,9 +164,9 @@ class CSaleHelper
 
 				foreach ($arField["VALUES"] as $value => $title)
 					$resultHtml .= '<option '.
-										'value="'.htmlspecialcharsEx($value).'"'.
+										'value="'.htmlspecialcharsbx($value).'"'.
 										(in_array($value, $arField["VALUE"]) ? " selected=\"selected\"" : "").'>'.
-										htmlspecialcharsEx($title).
+										htmlspecialcharsbx($title).
 									'</option>';
 
 				$resultHtml .= '</select>';

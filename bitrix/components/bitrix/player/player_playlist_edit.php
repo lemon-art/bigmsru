@@ -36,18 +36,18 @@ if($REQUEST_METHOD=="POST" && $_REQUEST['save'] == 'Y')
 		$id = $ids[$i];
 		$arTrack = Array(
 			'title' => getPostVal('title', $id),
-			'author' => getPostVal('author', $id),
+			//'author' => getPostVal('author', $id),
 			'location' => getPostVal('location', $id),
 			'image' => getPostVal('image', $id),
-			'duration' => getPostVal('duration', $id)
+			//'duration' => getPostVal('duration', $id)
 		);
 
 		$xmlsrc .= "\n\t<track>\n";
 		$xmlsrc .= getXMLNode('title', $arTrack['title']);
-		$xmlsrc .= getXMLNode('creator', $arTrack['author']);
+		//$xmlsrc .= getXMLNode('creator', $arTrack['author']);
 		$xmlsrc .= getXMLNode('location', $arTrack['location']);
 		$xmlsrc .= getXMLNode('image', $arTrack['image']);
-		$xmlsrc .= getXMLNode('duration', $arTrack['duration']);
+		//$xmlsrc .= getXMLNode('duration', $arTrack['duration']);
 		$xmlsrc .= "\t</track>";
 
 		$arTracks[] = $arTrack;
@@ -132,14 +132,14 @@ if (!$bCreate && !isset($_REQUEST['save']))
 							if (strtolower($prop->name) == 'title')
 							// TODO: Maybe using xmlspecialcharsback - is bogus
 								$arTrack['title'] = $objXML->xmlspecialcharsback($prop->content);
-							if (strtolower($prop->name) == 'creator')
-								$arTrack['author'] = $objXML->xmlspecialcharsback($prop->content);
+							//if (strtolower($prop->name) == 'creator')
+								//$arTrack['author'] = $objXML->xmlspecialcharsback($prop->content);
 							if (strtolower($prop->name) == 'location')
 								$arTrack['location'] = $objXML->xmlspecialcharsback($prop->content);
 							if (strtolower($prop->name) == 'image')
 								$arTrack['image'] = $objXML->xmlspecialcharsback($prop->content);
-							if (strtolower($prop->name) == 'duration')
-								$arTrack['duration'] = $objXML->xmlspecialcharsback($prop->content);
+							//if (strtolower($prop->name) == 'duration')
+								//$arTrack['duration'] = $objXML->xmlspecialcharsback($prop->content);
 						}
 						$arTracks[] = $arTrack;
 					}
@@ -238,8 +238,8 @@ if(!is_array($arTracks))
 		<tr class="heading">
 			<td><div style="width: 25px">&nbsp;</div></td>
 			<td><div style="width: 160px"><b><?=GetMessage("PLAYLIST_EDIT_TITLE")?></b><div></td>
-			<td><div style="width: 140px"><b><?=GetMessage("PLAYLIST_EDIT_AUTHOR")?></b></div></td>
-			<td><div style="width: 50px"><b><?=GetMessage("PLAYLIST_EDIT_DURATION")?></b></div></td>
+			<!--td><div style="width: 140px"><b><?=GetMessage("PLAYLIST_EDIT_AUTHOR")?></b></div></td-->
+			<!--td><div style="width: 50px"><b><?=GetMessage("PLAYLIST_EDIT_DURATION")?></b></div></td-->
 			<td><div style="width: 150px"><b><?=GetMessage("PLAYLIST_EDIT_LOCATION")?></b></div></td>
 			<td><div style="width: 140px"><b><?=GetMessage("PLAYLIST_EDIT_IMAGE")?></b></div></td>
 			<td><div style="width: 25px">&nbsp;</div></td>
@@ -261,8 +261,8 @@ if(!is_array($arTracks))
 		<span class="rowcontrol drag" title="<?=GetMessage('PLAYLIST_ITEM_DRAG')?>"></span>
 		</td>
 		<?displayInputRow('title', $track['title'], $i, 160)?>
-		<?displayInputRow('author', $track['author'], $i, 140)?>
-		<?displayInputRow('duration', $track['duration'], $i, 50)?>
+		<?//displayInputRow('author', $track['author'], $i, 140)?>
+		<?//displayInputRow('duration', $track['duration'], $i, 50)?>
 		<?displayInputRow('location', $track['location'], $i, 150, 'VIDEO')?>
 		<?displayInputRow('image', $track['image'], $i, 140, 'IMAGE')?>
 		<td><span onclick="itemMoveUp(<?=$i?>)" class="rowcontrol up" title="<?=GetMessage('PLAYLIST_ITEM_UP')?>"></span></td>

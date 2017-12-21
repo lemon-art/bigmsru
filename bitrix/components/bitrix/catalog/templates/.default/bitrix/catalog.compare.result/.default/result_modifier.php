@@ -1,4 +1,5 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+/** @global array $arParams */
 use Bitrix\Main\Type\Collection;
 
 $arParams['TEMPLATE_THEME'] = (string)($arParams['TEMPLATE_THEME']);
@@ -145,4 +146,3 @@ if ($existShow || $existDelete)
 	}
 	Collection::sortByColumn($arResult['ALL_OFFER_PROPERTIES'], array('SORT' => SORT_ASC, 'ID' => SORT_ASC));
 }
-?>

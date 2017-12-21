@@ -28,7 +28,7 @@ if(is_array($arResult["HISTORY"]) && !empty($arResult["HISTORY"]))
 		{
 			$arSection["ROWS"][] = array(
 				"TITLE" => GetMessage("SMOH_DESCRIPTION").":",
-				"VALUE" => $arItemHistory["INFO"]);
+				"VALUE" => htmlspecialcharsbx($arItemHistory["INFO"]));
 		}
 
 		$mad->addSection($arSection);

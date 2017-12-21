@@ -8,7 +8,7 @@ class CSaleUserAccount extends CAllSaleUserAccount
 	{
 		global $DB;
 
-		$ID = IntVal($ID);
+		$ID = (int)$ID;
 		if ($ID <= 0)
 			return false;
 
@@ -40,13 +40,13 @@ class CSaleUserAccount extends CAllSaleUserAccount
 	{
 		global $DB;
 
-		$userID = IntVal($userID);
+		$userID = (int)$userID;
 		if ($userID <= 0)
 			return false;
 
-		$currency = Trim($currency);
+		$currency = trim($currency);
 		$currency = preg_replace("#[\W]+#", "", $currency);
-		if (strlen($currency) <= 0)
+		if ($currency == '')
 			return false;
 
 		if (isset($GLOBALS["SALE_USER_ACCOUNT"]["SALE_USER_ACCOUNT_CACHE_".$userID."_".$currency]) && is_array($GLOBALS["SALE_USER_ACCOUNT"]["SALE_USER_ACCOUNT_CACHE_".$userID."_".$currency]) && is_set($GLOBALS["SALE_USER_ACCOUNT"]["SALE_USER_ACCOUNT_CACHE_".$userID."_".$currency], "ID"))
@@ -78,7 +78,7 @@ class CSaleUserAccount extends CAllSaleUserAccount
 	{
 		global $DB;
 
-		if (count($arSelectFields) <= 0)
+		if (empty($arSelectFields))
 			$arSelectFields = array("ID", "USER_ID", "CURRENT_BUDGET", "CURRENCY", "LOCKED", "NOTES", "TIMESTAMP_X", "DATE_LOCKED");
 
 		// FIELDS -->
@@ -104,7 +104,7 @@ class CSaleUserAccount extends CAllSaleUserAccount
 
 		$arSqls["SELECT"] = str_replace("%%_DISTINCT_%%", "", $arSqls["SELECT"]);
 
-		if (is_array($arGroupBy) && count($arGroupBy)==0)
+		if (empty($arGroupBy) && is_array($arGroupBy))
 		{
 			$strSql =
 				"SELECT ".$arSqls["SELECT"]." ".
@@ -121,7 +121,7 @@ class CSaleUserAccount extends CAllSaleUserAccount
 			if ($arRes = $dbRes->Fetch())
 				return $arRes["CNT"];
 			else
-				return False;
+				return false;
 		}
 
 		$strSql = 
@@ -135,7 +135,7 @@ class CSaleUserAccount extends CAllSaleUserAccount
 		if (strlen($arSqls["ORDERBY"]) > 0)
 			$strSql .= "ORDER BY ".$arSqls["ORDERBY"]." ";
 
-		if (is_array($arNavStartParams) && IntVal($arNavStartParams["nTopCount"])<=0)
+		if (is_array($arNavStartParams) && intval($arNavStartParams["nTopCount"])<=0)
 		{
 			$strSql_tmp =
 				"SELECT COUNT('x') as CNT ".
@@ -169,8 +169,8 @@ class CSaleUserAccount extends CAllSaleUserAccount
 		}
 		else
 		{
-			if (is_array($arNavStartParams) && IntVal($arNavStartParams["nTopCount"])>0)
-				$strSql .= "LIMIT ".IntVal($arNavStartParams["nTopCount"]);
+			if (is_array($arNavStartParams) && intval($arNavStartParams["nTopCount"])>0)
+				$strSql .= "LIMIT ".intval($arNavStartParams["nTopCount"]);
 
 			//echo "!3!=".htmlspecialcharsbx($strSql)."<br>";
 
@@ -179,7 +179,6 @@ class CSaleUserAccount extends CAllSaleUserAccount
 
 		return $dbRes;
 	}
-
 
 	function Add($arFields)
 	{
@@ -201,7 +200,7 @@ class CSaleUserAccount extends CAllSaleUserAccount
 		$dbEvents = GetModuleEvents("sale", "OnBeforeUserAccountAdd");
 		while ($arEvent = $dbEvents->Fetch())
 		{
-			if (ExecuteModuleEventEx($arEvent, Array(&$arFields))===false)
+			if (ExecuteModuleEventEx($arEvent, array(&$arFields))===false)
 			{
 				return false;
 			}
@@ -217,12 +216,10 @@ class CSaleUserAccount extends CAllSaleUserAccount
 			$arInsert[1] .= $value;
 		}
 
-		$strSql =
-			"INSERT INTO b_sale_user_account(".$arInsert[0].") ".
-			"VALUES(".$arInsert[1].")";
+		$strSql = "INSERT INTO b_sale_user_account(".$arInsert[0].") VALUES(".$arInsert[1].")";
 		$DB->Query($strSql, false, "File: ".__FILE__."<br>Line: ".__LINE__);
 
-		$ID = IntVal($DB->LastID());
+		$ID = (int)$DB->LastID();
 		$_SESSION["SALE_BASKET_NUM_PRODUCTS"][SITE_ID] = 0;
 
 		$dbEvents = GetModuleEvents("sale", "OnAfterUserAccountAdd");
@@ -238,9 +235,9 @@ class CSaleUserAccount extends CAllSaleUserAccount
 	{
 		global $DB;
 
-		$ID = IntVal($ID);
+		$ID = (int)$ID;
 		if ($ID <= 0)
-			return False;
+			return false;
 
 		$arFields1 = array();
 		foreach ($arFields as $key => $value)
@@ -258,7 +255,7 @@ class CSaleUserAccount extends CAllSaleUserAccount
 		$dbEvents = GetModuleEvents("sale", "OnBeforeUserAccountUpdate");
 		while ($arEvent = $dbEvents->Fetch())
 		{
-			if (ExecuteModuleEventEx($arEvent, Array($ID, &$arFields))===false)
+			if (ExecuteModuleEventEx($arEvent, array($ID, &$arFields))===false)
 			{
 				return false;
 			}
@@ -283,10 +280,9 @@ class CSaleUserAccount extends CAllSaleUserAccount
 		$dbEvents = GetModuleEvents("sale", "OnAfterUserAccountUpdate");
 		while ($arEvent = $dbEvents->Fetch())
 		{
-			ExecuteModuleEventEx($arEvent, Array($ID, $arFields));
+			ExecuteModuleEventEx($arEvent, array($ID, $arFields));
 		}
 
 		return $ID;
 	}
 }
-?>

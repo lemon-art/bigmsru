@@ -25,7 +25,7 @@ class CForm_old
 	*/
 	function Show($WEB_FORM_VARNAME, $arrVALUES=false, $SHOW_TEMPLATE=false, $PREVIEW="N")
 	{
-		global $DB, $MESS, $APPLICATION, $USER, $_REQUEST, $HTTP_POST_VARS, $HTTP_GET_VARS, $arrFIELDS;
+		global $DB, $MESS, $APPLICATION, $USER, $arrFIELDS;
 		$err_mess = (CAllForm::err_mess())."<br>Function: Show<br>Line: ";
 		if ($arrVALUES===false) $arrVALUES = $_REQUEST;
 

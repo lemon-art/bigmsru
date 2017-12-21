@@ -91,18 +91,18 @@ class PriceTable extends Main\Entity\DataManager
 			)),
 			'CATALOG_GROUP' => new Main\Entity\ReferenceField(
 				'CATALOG_GROUP',
-				'Bitrix\Catalog\Group',
+				'\Bitrix\Catalog\Group',
 				array('=this.CATALOG_GROUP_ID' => 'ref.ID')
 			),
 			'ELEMENT' => new Main\Entity\ReferenceField(
 				'ELEMENT',
-				'Bitrix\Iblock\ElementTable',
+				'\Bitrix\Iblock\Element',
 				array('=this.PRODUCT_ID' => 'ref.ID'),
 				array('join_type' => 'LEFT')
 			),
 			'PRODUCT' => new Main\Entity\ReferenceField(
 				'PRODUCT',
-				'Bitrix\Catalog\ProductTable',
+				'\Bitrix\Catalog\Product',
 				array('=this.PRODUCT_ID' => 'ref.ID'),
 				array('join_type' => 'LEFT')
 			),

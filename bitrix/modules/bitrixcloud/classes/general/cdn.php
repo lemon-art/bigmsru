@@ -295,7 +295,7 @@ class CBitrixCloudCDN
 	 * @return string
 	 *
 	 */
-	private function _preg_quote($str)
+	private static function _preg_quote($str)
 	{
 		return preg_quote($str, "/");
 	}
@@ -305,7 +305,7 @@ class CBitrixCloudCDN
 	 * @return string
 	 *
 	 */
-	private function _filter($match)
+	private static function _filter($match)
 	{
 		$attribute = $match[1];
 		$open_quote = $match[2];

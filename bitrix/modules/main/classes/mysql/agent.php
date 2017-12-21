@@ -127,6 +127,7 @@ class CAgent extends CAllAgent
 
 		$DB->Query("SELECT RELEASE_LOCK('".$uniq."_agent')");
 
+		/** @var callable|false $logFunction */
 		$logFunction = (defined("BX_AGENTS_LOG_FUNCTION") && function_exists(BX_AGENTS_LOG_FUNCTION)? BX_AGENTS_LOG_FUNCTION : false);
 
 		for($i = 0, $n = count($agents_array); $i < $n; $i++)
@@ -153,8 +154,7 @@ class CAgent extends CAllAgent
 
 			CTimeZone::Disable();
 
-			global $USER;
-			unset($USER);
+			$USER = null;
 			try
 			{
 				$eval_result = "";
@@ -170,7 +170,6 @@ class CAgent extends CAllAgent
 
 				continue;
 			}
-			unset($USER);
 
 			CTimeZone::Enable();
 

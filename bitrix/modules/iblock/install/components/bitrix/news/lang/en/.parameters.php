@@ -83,4 +83,6 @@ $MESS["CP_BN_SET_LAST_MODIFIED"] = "Set page last modified date to response head
 $MESS["CP_BN_DISPLAY_AS_RATING"] = "Show in rating";
 $MESS["CP_BN_AVERAGE"] = "Average value";
 $MESS["CP_BN_RATING"] = "Rating value";
+$MESS["CP_BN_DETAIL_STRICT_SECTION_CHECK"] = "Check parent section when showing item details";
+$MESS["CP_BN_STRICT_SECTION_CHECK"] = "Use strict section check";
 ?>

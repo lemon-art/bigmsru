@@ -63,5 +63,16 @@ if($arParams["arUserField"]["USER_TYPE"])
 		}
 		$arResult["VALUE"][$key] = $res;
 	}
-	$this->IncludeComponentTemplate();
+
+	if($this->initComponentTemplate() || $arParams['skip_manager'])
+	{
+		$this->IncludeComponentTemplate();
+	}
+	else
+	{
+		$arParams['skip_manager'] = true;
+
+		global $USER_FIELD_MANAGER;
+		echo $USER_FIELD_MANAGER->GetPublicView($arParams["arUserField"], $arParams);
+	}
 }

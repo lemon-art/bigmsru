@@ -11,6 +11,7 @@ Loc::loadMessages(__FILE__);
 
 class ShipmentItemStore
 	extends Internals\CollectableEntity
+	implements \IEntityMarker
 {
 	/** @var  BasketItem */
 	protected $basketItem;
@@ -18,8 +19,9 @@ class ShipmentItemStore
 	/** @var null|array  */
 	protected $barcodeList = null;
 
-
 	protected static $mapFields = array();
+
+	private static $eventClassName = null;
 
 
 	/**
@@ -51,6 +53,17 @@ class ShipmentItemStore
 
 	}
 
+	/**
+	 * @param $itemData
+	 * @return ShipmentItemStore
+	 */
+	protected static function createShipmentItemStoreObject(array $itemData = array())
+	{
+		$registry = Registry::getInstance(Registry::REGISTRY_TYPE_ORDER);
+		$shipmentItemStoreClassName = $registry->getShipmentItemStoreClassName();
+
+		return new $shipmentItemStoreClassName($itemData);
+	}
 
 	public static function create(ShipmentItemStoreCollection $collection, BasketItem $basketItem)
 	{
@@ -58,7 +71,7 @@ class ShipmentItemStore
 			'BASKET_ID' => $basketItem->getId(),
 		);
 
-		$shipmentItemStore = new static($fields);
+		$shipmentItemStore = static::createShipmentItemStoreObject($fields);
 		$shipmentItemStore->setCollection($collection);
 
 		$shipmentItemStore->basketItem = $basketItem;
@@ -77,13 +90,17 @@ class ShipmentItemStore
 	public function delete()
 	{
 		$result = new Result();
-		$eventName = static::getEntityEventName();
+
+		if (self::$eventClassName === null)
+		{
+			self::$eventClassName = static::getEntityEventName();
+		}
 
 		/** @var array $oldEntityValues */
 		$oldEntityValues = $this->fields->getOriginalValues();
 
 		/** @var Main\Event $event */
-		$event = new Main\Event('sale', "OnBefore".$eventName."EntityDeleted", array(
+		$event = new Main\Event('sale', "OnBefore".self::$eventClassName."EntityDeleted", array(
 				'ENTITY' => $this,
 				'VALUES' => $oldEntityValues,
 		));
@@ -96,7 +113,7 @@ class ShipmentItemStore
 			{
 				if($eventResult->getType() == Main\EventResult::ERROR)
 				{
-					$errorMsg = new ResultError(Loc::getMessage('SALE_EVENT_ON_BEFORE_'.ToUpper($eventName).'_ENTITY_DELETED_ERROR'), 'SALE_EVENT_ON_BEFORE_'.ToUpper($eventName).'_ENTITY_DELETED_ERROR');
+					$errorMsg = new ResultError(Loc::getMessage('SALE_EVENT_ON_BEFORE_'.ToUpper(self::$eventClassName).'_ENTITY_DELETED_ERROR'), 'SALE_EVENT_ON_BEFORE_'.ToUpper(self::$eventClassName).'_ENTITY_DELETED_ERROR');
 					if ($eventResultData = $eventResult->getParameters())
 					{
 						if (isset($eventResultData) && $eventResultData instanceof ResultError)
@@ -126,7 +143,7 @@ class ShipmentItemStore
 		$oldEntityValues = $this->fields->getOriginalValues();
 
 		/** @var Main\Event $event */
-		$event = new Main\Event('sale', "On".$eventName."EntityDeleted", array(
+		$event = new Main\Event('sale', "On".self::$eventClassName."EntityDeleted", array(
 				'ENTITY' => $this,
 				'VALUES' => $oldEntityValues,
 		));
@@ -139,7 +156,7 @@ class ShipmentItemStore
 			{
 				if($eventResult->getType() == Main\EventResult::ERROR)
 				{
-					$errorMsg = new ResultError(Loc::getMessage('SALE_EVENT_ON_'.ToUpper($eventName).'_ENTITY_DELETED_ERROR'), 'SALE_EVENT_ON_'.ToUpper($eventName).'_ENTITY_DELETED_ERROR');
+					$errorMsg = new ResultError(Loc::getMessage('SALE_EVENT_ON_'.ToUpper(self::$eventClassName).'_ENTITY_DELETED_ERROR'), 'SALE_EVENT_ON_'.ToUpper(self::$eventClassName).'_ENTITY_DELETED_ERROR');
 					if ($eventResultData = $eventResult->getParameters())
 					{
 						if (isset($eventResultData) && $eventResultData instanceof ResultError)
@@ -264,7 +281,7 @@ class ShipmentItemStore
 			)
 		);
 		while ($itemData = $itemDataList->fetch())
-			$items[] = new static($itemData);
+			$items[] = static::createShipmentItemStoreObject($itemData);
 
 		return $items;
 	}
@@ -283,7 +300,11 @@ class ShipmentItemStore
 
 		$id = $this->getId();
 		$fields = $this->fields->getValues();
-		$eventName = static::getEntityEventName();
+
+		if (self::$eventClassName === null)
+		{
+			self::$eventClassName = static::getEntityEventName();
+		}
 
 		/** @var ShipmentItemStoreCollection $shipmentItemStoreCollection */
 		if (!$shipmentItemStoreCollection = $this->getCollection())
@@ -330,10 +351,10 @@ class ShipmentItemStore
 		}
 
 
-		if ($this->isChanged() && $eventName)
+		if ($this->isChanged() && self::$eventClassName)
 		{
 			/** @var Main\Entity\Event $event */
-			$event = new Main\Event('sale', 'OnBefore'.$eventName.'EntitySaved', array(
+			$event = new Main\Event('sale', 'OnBefore'.self::$eventClassName.'EntitySaved', array(
 					'ENTITY' => $this,
 					'VALUES' => $this->fields->getOriginalValues()
 			));
@@ -437,10 +458,10 @@ class ShipmentItemStore
 			$result->setId($id);
 		}
 
-		if ($this->isChanged() && $eventName)
+		if ($this->isChanged() && self::$eventClassName)
 		{
 			/** @var Main\Event $event */
-			$event = new Main\Event('sale', 'On'.$eventName.'EntitySaved', array(
+			$event = new Main\Event('sale', 'On'.self::$eventClassName.'EntitySaved', array(
 					'ENTITY' => $this,
 					'VALUES' => $this->fields->getOriginalValues(),
 			));
@@ -601,6 +622,63 @@ class ShipmentItemStore
 		}
 
 		return $shipmentItemStoreClone;
+	}
+
+
+	/**
+	 * @param $value
+	 *
+	 * @return string
+	 */
+	public function getErrorEntity($value)
+	{
+		static $className = null;
+		$errorsList = static::getAutoFixErrorsList();
+		if (is_array($errorsList) && in_array($value, $errorsList))
+		{
+			if ($className === null)
+				$className = static::getClassName();
+		}
+		return $className;
+	}
+
+	/**
+	 * @param $value
+	 *
+	 * @return bool
+	 */
+	public function canAutoFixError($value)
+	{
+		$errorsList = static::getAutoFixErrorsList();
+		return (is_array($errorsList) && in_array($value, $errorsList));
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getAutoFixErrorsList()
+	{
+		return array();
+	}
+
+	/**
+	 * @param $code
+	 *
+	 * @return Result
+	 */
+	public function tryFixError($code)
+	{
+		return new Result();
+	}
+
+	public function canMarked()
+	{
+		return false;
+	}
+
+	public function getMarkField()
+	{
+		return null;
 	}
 
 }

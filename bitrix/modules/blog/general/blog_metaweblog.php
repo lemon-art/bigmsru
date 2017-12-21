@@ -1,6 +1,8 @@
 <?
 IncludeModuleLangFile(__FILE__);
 
+use Bitrix\Main\Text\HtmlFilter;
+
 class CBlogMetaWeblog
 {
 	function Authorize($user, $password)
@@ -50,6 +52,7 @@ class CBlogMetaWeblog
 						$serverName = COption::GetOptionString("main", "server_name", "");
 					if (strlen($serverName) <=0)
 						$serverName = $_SERVER["SERVER_NAME"];
+					$serverName = HtmlFilter::encode($serverName);
 
 					$path2Blog = "http://".$serverName.CComponentEngine::MakePathFromTemplate($arPath["PATH_TO_BLOG"], array("blog" => $arBlog["URL"], "user_id" => $arBlog["OWNER_ID"]));
 				}
@@ -585,6 +588,9 @@ class CBlogMetaWeblog
 		{
 			${$val["#"]["name"][0]["#"]} = CBlogMetaWeblog::DecodeParams($val["#"]["value"][0]["#"]);
 		}
+//		security
+		if(!empty($description))
+			$description = HtmlFilter::encode($description);
 
 		$arCategory = Array();
 		if(is_array($categories["data"][0]["#"]["value"]))
@@ -670,7 +676,7 @@ class CBlogMetaWeblog
 					$arFields=array(
 							"BLOG_ID"			=> $blogId,
 							"AUTHOR_ID"			=> $userId,
-							"TITLE"			=> $title,
+							"TITLE"				=> $title,
 							"DETAIL_TEXT"		=> $description,
 							"DETAIL_TEXT_TYPE"	=> "html",
 							"=DATE_PUBLISH"		=> $DB->GetNowFunction(),
@@ -767,7 +773,11 @@ class CBlogMetaWeblog
 		{
 			${$val["#"]["name"][0]["#"]} = CBlogMetaWeblog::DecodeParams($val["#"]["value"][0]["#"]);
 		}
-
+		
+//		security
+		if(!empty($description))
+			$description = HtmlFilter::encode($description);
+		
 		$arCategory = Array();
 		if(is_array($categories["data"][0]["#"]["value"]))
 		{
@@ -853,7 +863,7 @@ class CBlogMetaWeblog
 
 
 					$arFields=array(
-							"TITLE"			=> $title,
+							"TITLE"				=> $title,
 							"DETAIL_TEXT"		=> $description,
 							"DETAIL_TEXT_TYPE"	=> "html",
 							"PUBLISH_STATUS"	=> (($publish == 1) ? "P" : "D"),

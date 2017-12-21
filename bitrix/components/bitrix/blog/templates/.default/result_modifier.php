@@ -18,6 +18,11 @@ $arParams["THEME"] = (in_array($arParams["THEME"], $arThemes) ? $arParams["THEME
 $arParams["NAV_TEMPLATE"] = trim($arParams["NAV_TEMPLATE"]);
 $arParams["NAV_TEMPLATE"] = (empty($arParams["NAV_TEMPLATE"]) ? "blog" : $arParams["NAV_TEMPLATE"]);
 
+$sTemplateDir = $this->__component->__template->__folder;
+$sTemplateDir = preg_replace("'[\\\\/]+'", "/", $sTemplateDir."/");
+$date = @filemtime($sTemplateDirFull."styles/additional.css");
+$GLOBALS['APPLICATION']->SetAdditionalCSS($sTemplateDir.'styles/additional.css?'.$date);
+
 if($arParams["SHOW_NAVIGATION"] != "N" && (IntVal($arResult["VARIABLES"]["group_id"]) > 0 || strlen($arResult["VARIABLES"]["blog"]) > 0 || IntVal($arResult["VARIABLES"]["user_id"]) > 0))
 {
 	if(strLen($arParams["BLOG_VAR"])<=0)

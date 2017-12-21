@@ -208,17 +208,28 @@ $fileTypeParent = $arFilemanPredifinedFileTypes[CFileMan::GetFileTypeEx($path)][
 		?></td></tr>
 	<?elseif($fileTypeParent=="image"):?>
 		<?
-			$rsSite = CSite::GetByID($LID); //http://jabber.bx/view.php?id=7726
+			$rsSite = CSite::GetByID($site);
 			$arSite = $rsSite->GetNext();
+			$sameSite = true;
 
 			if(isset($arSite['SITE_URL']))
+			{
 				$path = $arSite['SITE_URL'].$path;
+				$sameSite = false;
+			}
 		?>
 
 		<tr class="heading">
 			<td colspan="2"><?= GetMessage('FILEMAN_VIEW_CONT') ?></td>
 		</tr>
-		<tr><td colspan="2"><?echo CFile::ShowImage($path, 600, 600, "border=0", "", true, GetMessage("FILEMAN_FILEVIEW_ENLARGE"))?></td></tr>
+		<tr><td colspan="2">
+				<?if($sameSite):?>
+					<?= CFile::ShowImage($path, 600, 600, "border=0", "", true, GetMessage("FILEMAN_FILEVIEW_ENLARGE"))?>
+				<?else:?>
+					<img src="<?=htmlspecialcharsbx($path)?>" style="max-width: 600px; max-height: 600px;" border="0">
+				<?endif;?>
+			</td>
+		</tr>
 	<?endif?>
 	</tr>
 <?

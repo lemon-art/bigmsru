@@ -8,6 +8,7 @@
 
 namespace Bitrix\Main\Entity;
 use Bitrix\Main\ArgumentException;
+use Bitrix\Main\Entity\Query\Filter\ConditionTree as Filter;
 use Bitrix\Main\SystemException;
 
 /**
@@ -21,6 +22,7 @@ class ReferenceField extends Field
 
 	protected $refEntityName;
 
+	/** @var array|Filter */
 	protected $reference;
 
 	protected $join_type = 'LEFT';
@@ -29,7 +31,7 @@ class ReferenceField extends Field
 	/**
 	 * @param string       $name
 	 * @param string|Base  $refEntity
-	 * @param array        $reference
+	 * @param array|Filter $reference
 	 * @param array        $parameters
 	 *
 	 * @throws ArgumentException

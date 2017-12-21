@@ -12,7 +12,6 @@ class CHTMLEditor
 		$arComponents;
 
 	private
-		$siteId,
 		$content,
 		$id,
 		$name,
@@ -22,8 +21,7 @@ class CHTMLEditor
 		$bAllowPhp,
 		$display,
 		$inputName,
-		$inputId,
-		$cssPath;
+		$inputId;
 
 	const CACHE_TIME = 31536000; // 365 days
 
@@ -85,7 +83,7 @@ class CHTMLEditor
 						{
 							return BXHtmlEditor.editors[id] || false;
 						},
-						OnBeforeUnload: function(e)
+						OnBeforeUnload: function()
 						{
 							for (var id in BXHtmlEditor.editors)
 							{
@@ -245,6 +243,7 @@ class CHTMLEditor
 				$siteId = CSite::GetDefSite();
 			}
 		}
+
 		if (!isset($siteId) && defined(SITE_ID))
 		{
 			$siteId = SITE_ID;
@@ -407,7 +406,8 @@ class CHTMLEditor
 			'pasteSetDecor' => $userSettings['paste_clear_decor'] != 'N',
 			'pasteClearTableDimen' => $userSettings['paste_clear_table_dimen'] != 'N',
 			'linkDialogType' => $userSettings['link_dialog_type'],
-			'lazyLoad' => $arParams["lazyLoad"]
+			'lazyLoad' => $arParams["lazyLoad"],
+			'siteId' => $siteId
 		);
 
 		if (($this->bAllowPhp || $arParams['limitPhpAccess']) && $arParams["showTaskbars"] !== false)
@@ -746,7 +746,7 @@ class CHTMLEditor
 
 	public static function RequestAction($action = '')
 	{
-		global $USER, $APPLICATION;
+		global $USER;
 		$result = array();
 
 		switch($action)
@@ -765,11 +765,9 @@ class CHTMLEditor
 				$componentFilter = isset($_REQUEST['componentFilter']) ? $_REQUEST['componentFilter'] : false;
 				$result = self::GetComponents($siteTemplate, true, $componentFilter);
 				break;
-
 			case "video_oembed":
 				$result = self::GetVideoOembed($_REQUEST['video_source']);
 				break;
-
 			// Snippets actions
 			case "load_snippets_list":
 				if (!$USER->CanDoOperation('fileman_view_file_structure'))
@@ -1033,7 +1031,6 @@ class CHTMLEditor
 									$file["uploadedPath"] = $newPath;
 									return true;
 								}
-								return false;
 							}
 						}
 					)),
@@ -1236,6 +1233,10 @@ class CHTMLEditor
 				}
 			}
 		}
+		elseif($resp == '403 Forbidden')
+		{
+			$output['error'] .=  '[FVID403] '.GetMessage('HTMLED_VIDEO_FORBIDDEN').";\n";
+		}
 		else
 		{
 			$resParams = json_decode($resp, true);
@@ -1264,7 +1265,6 @@ class CHTMLEditor
 				$output['error'] .=  '[FVID404] '.GetMessage('HTMLED_VIDEO_NOT_FOUND').";\n";
 			}
 		}
-
 		return $output;
 	}
 

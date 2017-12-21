@@ -1,11 +1,13 @@
 <?php
+use Bitrix\Catalog;
+
 IncludeModuleLangFile(__FILE__);
 
 class CAllCatalogStore
 {
-	protected function CheckFields($action, &$arFields)
+	protected static function CheckFields($action, &$arFields)
 	{
-		if(is_set($arFields["ADDRESS"]) && strlen($arFields["ADDRESS"]) <= 0)
+		if (array_key_exists("ADDRESS", $arFields) && (string)$arFields["ADDRESS"] == '')
 		{
 			$GLOBALS["APPLICATION"]->ThrowException(GetMessage("CS_EMPTY_ADDRESS"));
 			$arFields["ADDRESS"] = ' ';
@@ -40,14 +42,17 @@ class CAllCatalogStore
 		{
 			$arFields["SITE_ID"] = '';
 		}
+		if (isset($arFields['CODE']) && $arFields['CODE'] === '')
+			$arFields['CODE'] = false;
+
 		return true;
 	}
 
-	static function Update($id, $arFields)
+	public static function Update($id, $arFields)
 	{
 		global $DB;
-		$id = intval($id);
-		if (0 >= $id)
+		$id = (int)$id;
+		if ($id <= 0)
 			return false;
 
 		foreach (GetModuleEvents("catalog", "OnBeforeCatalogStoreUpdate", true) as $arEvent)
@@ -56,7 +61,6 @@ class CAllCatalogStore
 				return false;
 		}
 
-		$bNeedConversion = false;
 		if(array_key_exists('DATE_CREATE',$arFields))
 			unset($arFields['DATE_CREATE']);
 		if(array_key_exists('DATE_MODIFY', $arFields))
@@ -68,24 +72,31 @@ class CAllCatalogStore
 
 		$arFields['~DATE_MODIFY'] = $DB->GetNowFunction();
 
-		$dbStore = CCatalogStore::GetList(array(), array("ID" => $id), false, false, array("ACTIVE"));
-		if($arStore = $dbStore->Fetch())
-		{
-			if($arStore["ACTIVE"] != $arFields["ACTIVE"])
-				$bNeedConversion = true;
-		}
-
-		if($id <= 0 || !self::CheckFields('UPDATE',$arFields))
+		if (!self::CheckFields('UPDATE', $arFields))
 			return false;
+
 		$strUpdate = $DB->PrepareUpdate("b_catalog_store", $arFields);
 
-		if(!empty($strUpdate))
+		$bNeedConversion = false;
+		if (!empty($strUpdate))
 		{
+			if (isset($arFields['ACTIVE']))
+			{
+				$row = Catalog\StoreTable::getList(array(
+					'select' => array('ACTIVE'),
+					'filter' => array('=ID' => $id)
+				))->fetch();
+				if (!empty($row))
+					$bNeedConversion = ($row['ACTIVE'] != $arFields['ACTIVE']);
+				unset($row);
+			}
+
 			$strSql = "update b_catalog_store set ".$strUpdate." where ID = ".$id;
 			if(!$DB->Query($strSql, false, "File: ".__FILE__."<br>Line: ".__LINE__))
 				return false;
 			CCatalogStoreControlUtil::clearStoreName($id);
 		}
+
 		if($bNeedConversion)
 		{
 			self::recalculateStoreBalances($id);
@@ -97,7 +108,7 @@ class CAllCatalogStore
 		return $id;
 	}
 
-	static function Delete($id)
+	public static function Delete($id)
 	{
 		global $DB;
 		$id = intval($id);
@@ -129,7 +140,7 @@ class CAllCatalogStore
 		return false;
 	}
 
-	function recalculateStoreBalances($id)
+	public static function recalculateStoreBalances($id)
 	{
 		global $DB;
 		$arFields = array();

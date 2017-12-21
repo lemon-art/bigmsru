@@ -4,7 +4,7 @@ namespace Bitrix\Sale\Delivery\Restrictions;
 use Bitrix\Main\Application;
 use Bitrix\Sale\Delivery\Restrictions;
 use Bitrix\Main\Localization\Loc;
-use Bitrix\Sale\Internals\CollectableEntity;
+use Bitrix\Sale\Internals\Entity;
 
 Loc::loadMessages(__FILE__);
 
@@ -36,7 +36,7 @@ class ByPublicMode extends Restrictions\Base
 		return $restrictionParams["PUBLIC_SHOW"] == 'Y';
 	}
 
-	protected static function extractParams(CollectableEntity $shipment)
+	protected static function extractParams(Entity $shipment)
 	{
 		return null;
 	}

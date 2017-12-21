@@ -67,7 +67,7 @@ if ($_REQUEST['unique_id'])
 			echo $buff === '' ? 'SUCCESS' : 'Length: '.strlen($buff).' ('.$buff . ')';
 		break;
 		case 'pcre_recursion_test':
-			$a = str_repeat('a',10000);
+			$a = str_repeat('a',4096);
 			if (preg_match('/(a)+/',$a)) // Segmentation fault (core dumped)
 				echo 'SUCCESS';
 			else
@@ -189,7 +189,7 @@ if ($_REQUEST['unique_id'])
 	{
 		if ($_REQUEST['charset'])
 		{
-			define('LANG_CHARSET', $_REQUEST['charset']);
+			define('LANG_CHARSET', preg_replace('#[^a-z0-9\-]#i', '', $_REQUEST['charset']));
 			header('Content-type: text/plain; charset='.LANG_CHARSET);
 		}
 		define('LANGUAGE_ID', preg_match('#[a-z]{2}#',$_REQUEST['lang'],$regs) ? $regs[0] : 'en');
@@ -291,7 +291,7 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/prolog.php");
 define("HELP_FILE", "utilities/site_checker.php");
 //error_reporting(E_ALL &~E_NOTICE);
 
-define("SUPPORT_PAGE", (LANGUAGE_ID == 'ru' ? 'http://www.1c-bitrix.ru/support/' : 'http://www.bitrixsoft.com/support/'));
+define("SUPPORT_PAGE", (LANGUAGE_ID == 'ru' ? 'https://www.1c-bitrix.ru/support/' : 'https://www.bitrixsoft.com/support/'));
 
 if ($USER->CanDoOperation('view_other_settings'))
 {

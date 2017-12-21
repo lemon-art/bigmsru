@@ -22,4 +22,7 @@ $MESS["TP_BND_THEME_WOOD"] = "дерево";
 $MESS["TP_BND_THEME_YELLOW"] = "жовта";
 $MESS["TP_BND_THEME_BLACK"] = "темна";
 $MESS["TP_BND_TEMPLATE_THEME"] = "Колірна тема";
+$MESS["TP_BND_MEDIA_PROPERTY"] = "Властивість для відображення медіа";
+$MESS["TP_BND_SLIDER_PROPERTY"] = "Властивість із зображеннями для слайдера";
+$MESS["TP_BND_SEARCH_PAGE"] = "Шлях до сторінки пошуку";
 ?>

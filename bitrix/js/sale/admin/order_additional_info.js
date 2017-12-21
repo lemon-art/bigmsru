@@ -17,7 +17,7 @@ BX.Sale.Admin.OrderAdditionalInfo =
 			responsibleId = BX('RESPONSIBLE_ID').value;
 
 		if(node)
-			node.href = '/bitrix/admin/user_edit.php?lang='+BX.lang+'&ID='+responsibleId;
+			node.href = '/bitrix/admin/user_edit.php?lang='+BX.Sale.Admin.OrderEditPage.languageId+'&ID='+responsibleId;
 
 		var params = {
 			action : 'changeResponsibleUser',
@@ -69,8 +69,9 @@ BX.Sale.Admin.OrderAdditionalInfo =
 
 	showCommentsDialog: function(orderId, commentNode)
 	{
-		var comments = commentNode.innerHTML,
-			dialog = new BX.CDialog({
+		var comments = commentNode.innerHTML.replace(new RegExp("<br>", "g"), "");
+
+		var	dialog = new BX.CDialog({
 			'content': '<textarea style="width:710px;height:260px;" name="COMMENTS" id="COMMENTS">'+
 				comments+
 			'</textarea>',
@@ -117,7 +118,7 @@ BX.Sale.Admin.OrderAdditionalInfo =
 			callback: function(result)
 			{
 				if(result && typeof result.COMMENTS !== 'undefined' && commentNode)
-					commentNode.innerHTML = result.COMMENTS;
+					commentNode.innerHTML = result.COMMENTS.replace(new RegExp("\n", "g"), "<br>\n");
 			}
 		});
 	}

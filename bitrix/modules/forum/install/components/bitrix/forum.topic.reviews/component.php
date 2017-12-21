@@ -577,16 +577,7 @@ if ($arResult["SHOW_POST_FORM"] == "Y")
 		if ($val <= 0)
 			continue;
 		if (($file = CFile::GetFileArray($val)) && is_array($file))
-		{
-			$arResult["REVIEW_FILES"][$val.""] = array();
-			foreach ($file as $k => $v)
-			{
-				$arResult["REVIEW_FILES"][$val.""][$k] = $v;
-				$arResult["REVIEW_FILES"][$val.""]["~".$k] = $v;
-				if(is_array($v) || preg_match("/[;&<>\"]/", $v))
-					$arResult["REVIEW_FILES"][$val.""][$k] = htmlspecialcharsbx($v);
-			}
-		}
+			$arResult["REVIEW_FILES"][$val] = htmlspecialcharsEx($file);
 	endforeach;
 
 	// Form Info

@@ -1,11 +1,13 @@
-(function(window) {
+;(function(window) {
 
-if (BX.Currency)
+BX.namespace('BX.Currency');
+
+if (BX.Currency.defaultFormat)
 {
 	return;
 }
 
-BX.Currency = {
+BX.mergeEx(BX.Currency, {
 	currencyList: [],
 	defaultFormat: {
 		'FORMAT_STRING': '#',
@@ -113,5 +115,6 @@ BX.Currency = {
 		}
 		return result;
 	}
-};
+});
+
 })(window);

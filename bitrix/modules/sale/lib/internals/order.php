@@ -79,6 +79,13 @@ class OrderTable extends Main\Entity\DataManager
 			new Main\Entity\DatetimeField('DATE_INSERT'),
 
 			new Main\Entity\ExpressionField(
+				'DATE_INSERT_SHORT',
+				$DB->datetimeToDateFunction('%s'),
+				array('DATE_INSERT'),
+				array('data_type' => 'datetime')
+			),
+
+			new Main\Entity\ExpressionField(
 				'DATE_INSERT_FORMAT',
 				static::replaceDateTime(),
 				array('DATE_INSERT'),
@@ -278,6 +285,8 @@ class OrderTable extends Main\Entity\DataManager
 
 			new Main\Entity\StringField('COMMENTS'),
 
+			new Main\Entity\IntegerField('COMPANY_ID'),
+
 			new Main\Entity\IntegerField('CREATED_BY'),
 
 			new Main\Entity\ReferenceField(
@@ -303,6 +312,14 @@ class OrderTable extends Main\Entity\DataManager
 			new Main\Entity\DateField('DATE_PAY_BEFORE'),
 
 			new Main\Entity\DateField('DATE_BILL'),
+
+			new Main\Entity\BooleanField(
+				'IS_RECURRING',
+				array(
+					'values' => array('N', 'Y'),
+					'default_value' => 'N'
+				)
+			),
 
 			new Main\Entity\IntegerField('RECURRING_ID'),
 
@@ -463,6 +480,14 @@ class OrderTable extends Main\Entity\DataManager
 
 
 			new Main\Entity\StringField('BX_USER_ID'),
+
+			new Main\Entity\BooleanField(
+				'RUNNING',
+				array(
+					'values' => array('N', 'Y'),
+					'default_value' => 'N'
+				)
+			),
 
 			new Main\Entity\ReferenceField(
 				'ORDER_COUPONS',

@@ -190,15 +190,15 @@ if ($arParams["PERMISSION"] >= "U" || $arParams["SHOW_TAGS"] == "Y" || !empty($a
 		"UPLOAD_URL" => $arResult["URL_TEMPLATES"]["upload"],
 		"DETAIL_EDIT_URL" => $arResult["URL_TEMPLATES"]["detail_edit"],
 
-		"ALBUM_PHOTO_THUMBS_SIZE"	=>	$arParams["ALBUM_PHOTO_THUMBS_SIZE"],
-		"ALBUM_PHOTO_SIZE"	=>	$arParams["ALBUM_PHOTO_SIZE"],
+		"ALBUM_PHOTO_THUMBS_SIZE" => $arParams["ALBUM_PHOTO_THUMBS_SIZE"],
+		"ALBUM_PHOTO_SIZE" => $arParams["ALBUM_PHOTO_SIZE"],
+		"SECTION_LIST_THUMBNAIL_SIZE" => $arParams["SECTION_LIST_THUMBNAIL_SIZE"],
 		"SET_STATUS_404" => $arParams["SET_STATUS_404"],
 
 		"SET_TITLE"	=>	"N",
 		"SHOW_RATING" => $arParams["USE_RATING"],
 		"SHOW_SHOWS" => $arParams["SHOW_SHOWS"],
 		"SHOW_COMMENTS" => $arParams["USE_COMMENTS"],
-		"SHOW_TAGS" => $arParams["SHOW_TAGS"],
 		"SHOW_DATE" => $arParams["SHOW_DATE"],
 		"SHOW_DESRIPTION" => $arParams["SHOW_DESRIPTION"],
 
@@ -233,7 +233,7 @@ if ($arParams["PERMISSION"] >= "U" || $arParams["SHOW_TAGS"] == "Y" || !empty($a
 	),
 	$component,
 	array("HIDE_ICONS" => "Y")
-);
+)
 ?>
 <script>
 function __photo_check_right_height()

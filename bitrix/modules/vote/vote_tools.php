@@ -224,7 +224,9 @@ function GetVoteList($GROUP_SID = "", $params = array(), $site_id = SITE_ID)
 	$params = (is_array($params) ? $params : array());
 	if (array_key_exists("order", $params))
 		$strSqlOrder = $params["order"];
-	$arFilter["SITE"] = (array_key_exists("SITE_ID", $params)  ? $params["SITE_ID"] : $site_id);
+	$arFilter["SITE"] = (array_key_exists("SITE_ID", $params)  ? $params["SITE_ID"] : (
+		array_key_exists("siteId", $params)  ? $params["siteId"] : $site_id
+	));
 
 	if (is_array($GROUP_SID) && !empty($GROUP_SID))
 	{

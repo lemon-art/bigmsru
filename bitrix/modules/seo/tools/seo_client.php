@@ -8,6 +8,15 @@ define("NOT_CHECK_PERMISSIONS", true);
 
 require_once($_SERVER['DOCUMENT_ROOT']."/bitrix/modules/main/include/prolog_before.php");
 
+if(isset($_REQUEST["action"]) && $_REQUEST["action"] == 'web_hook')
+{
+	if (CModule::IncludeModule("seo") && CModule::IncludeModule("socialservices"))
+	{
+		\Bitrix\Seo\WebHook\Service::listen();
+		exit;
+	}
+}
+
 if(CModule::IncludeModule("socialservices") && CSocServAuthManager::CheckUniqueKey())
 {
 	if(isset($_REQUEST["authresult"]))

@@ -9,7 +9,6 @@ if (!empty($arRes))
 $arComponentParameters = array(
 	"PARAMETERS" => array(
 		"SET_TITLE" => array(),
-		"AJAX_MODE" => array(),
 		"USER_PROPERTY"=>array(
 			"PARENT" => "ADDITIONAL_SETTINGS",
 			"NAME" => GetMessage("USER_PROPERTY"),

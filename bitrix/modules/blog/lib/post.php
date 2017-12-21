@@ -20,6 +20,11 @@ class PostTable extends Entity\DataManager
 		return 'b_blog_post';
 	}
 
+	public static function getUfId()
+	{
+		return 'BLOG_POST';
+	}
+
 	public static function getMap()
 	{
 		$fieldsMap = array(

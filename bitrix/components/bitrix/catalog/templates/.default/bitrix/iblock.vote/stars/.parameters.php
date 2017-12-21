@@ -12,4 +12,3 @@ $arTemplateParameters = array(
 		"DEFAULT" => "rating",
 	)
 );
-?>

@@ -20,4 +20,6 @@ $MESS["BLOG_C_VIEW1"] = "More comments";
 $MESS["BPC_MES_CREATE_TASK"] = "Create task";
 $MESS["MPL_ERROR_OCCURRED"] = "That's an error.";
 $MESS["MPL_CLOSE"] = "Close";
+$MESS["MPL_LINK_COPIED"] = "Link copied";
+$MESS["B_B_MS_LINK2"] = "Copy link";
 ?>

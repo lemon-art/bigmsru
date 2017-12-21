@@ -48,7 +48,7 @@ $uploadedFile = <<<HTML
 HTML;
 $thumb = preg_replace("/[\n\t]+/", "", $thumb);
 $uploadedFile =  preg_replace("/[\n\t]+/", "", $uploadedFile);
-
+?><input type="hidden" name="<?=htmlspecialcharsbx($arResult['controlName'])?>" value="" /><?
 ?><div id="diskuf-placeholder-<?=$arResult['UID']?>"><?
 foreach ($arResult['FILES'] as $file)
 {

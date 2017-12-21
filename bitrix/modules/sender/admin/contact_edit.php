@@ -243,6 +243,7 @@ elseif($rubric->LAST_ERROR!="")
 <?
 function ShowGroupControl($controlName, $controlValues, $controlSelectedValues)
 {
+	$controlName = htmlspecialcharsbx($controlName);
 	?>
 	<td>
 		<select multiple style="width:350px; height:300px;" id="<?=$controlName?>_EXISTS" ondblclick="GroupManager(true, '<?=$controlName?>');">
@@ -372,7 +373,7 @@ $tabControl->BeginNextTab();
 $tabControl->Buttons(
 	array(
 		"disabled"=>($POST_RIGHT<"W"),
-		"back_url"=>"sender_template_admin.php?lang=".LANG,
+		"back_url"=>"sender_contact_admin.php?lang=".LANG,
 
 	)
 );

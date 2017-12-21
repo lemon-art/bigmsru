@@ -175,14 +175,14 @@
 					return;
 				BX.removeClass(node, "mobile-grid-field-file-wait");
 				var file = result["file"];
-				item.file = { id : file["id"], name : file["name"] };
+				item.file = { id : file["attachId"], name : file["name"] };
 				var n = BX.findChildByClassName(node, 'mobile-grid-field-file-name', true);
 				if (n)
 					n.innerHTML = file["name"];
 //				n = BX.findChildByClassName(node, 'mobile-grid-field-file-size', true);
 //				if (n)
 //					n.innerHTML = file["size"];
-				var inp = BX.create('INPUT', {attrs : {type : "hidden", name : this.controlName, value : file["id"]}});
+				var inp = BX.create('INPUT', {attrs : {type : "hidden", name : this.controlName, value : file["attachId"]}});
 				node.appendChild(inp);
 				BX.onCustomEvent(this, "onChange", [this, inp]);
 				this.bindFile(item)

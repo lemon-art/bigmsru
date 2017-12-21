@@ -17,6 +17,7 @@ var classDescription = function(params)
 	if (!!params.filter && BX.type.isArray(params.filter))
 		this.filterFields = params.filter;
 	this.useFilter = this.filterFields.length > 0;
+	this.emptyOrders = null;
 
 	classDescription.superclass.constructor.apply(this, arguments);
 };
@@ -51,6 +52,10 @@ classDescription.prototype.init = function()
 				}
 			}
 		}
+		this.getFilterCounter();
+
+		if (BX.type.isNotEmptyString(this.visual.emptyOrdersId))
+			this.emptyOrders = BX(this.visual.emptyOrdersId);
 	}
 };
 
@@ -108,6 +113,8 @@ classDescription.prototype.getFilterCounterResult = function(result)
 		if (isNaN(this.currentState.allCounter))
 			this.currentState.allCounter = 0;
 		this.buttons.start.disabled = (this.currentState.allCounter <= 0);
+		if (BX.type.isElementNode(this.emptyOrders))
+			BX.style(this.emptyOrders, 'display', (this.currentState.allCounter <= 0 ? 'block' : 'none'));
 	}
 };
 

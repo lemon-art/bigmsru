@@ -84,22 +84,22 @@ class GroupTable extends Main\Entity\DataManager
 			)),
 			'CREATED_BY_USER' => new Main\Entity\ReferenceField(
 				'CREATED_BY_USER',
-				'Bitrix\Main\User',
+				'\Bitrix\Main\User',
 				array('=this.CREATED_BY' => 'ref.ID')
 			),
 			'MODIFIED_BY_USER' => new Main\Entity\ReferenceField(
 				'MODIFIED_BY_USER',
-				'Bitrix\Main\User',
+				'\Bitrix\Main\User',
 				array('=this.MODIFIED_BY' => 'ref.ID')
 			),
 			'LANG' => new Main\Entity\ReferenceField(
 				'LANG',
-				'Bitrix\Catalog\GroupLang',
+				'\Bitrix\Catalog\GroupLang',
 				array('=this.ID' => 'ref.CATALOG_GROUP_ID')
 			),
 			'CURRENT_LANG' => new Main\Entity\ReferenceField(
 				'CURRENT_LANG',
-				'Bitrix\Catalog\GroupLang',
+				'\Bitrix\Catalog\GroupLang',
 				array(
 					'=this.ID' => 'ref.CATALOG_GROUP_ID',
 					'=ref.LANG' => new Main\DB\SqlExpression('?', LANGUAGE_ID)

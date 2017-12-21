@@ -57,7 +57,7 @@ $MESS["rubric_sat"] = "Sa";
 $MESS["rubric_sun"] = "Su";
 $MESS["rub_dom"] = "Days (e.g. 1,10-20,25)";
 $MESS["rub_dow"] = "Days of week:";
-$MESS["rub_tod"] = "Time (e.g. 9:00,18:00):";
+$MESS["rub_tod"] = "Time (e.g. 9:00):";
 $MESS["sender_chain_edit_btn_send"] = "Send";
 $MESS["sender_chain_edit_btn_send_desc"] = "Send message";
 $MESS["sender_chain_edit_btn_send2"] = "Send to remaining recipients";
@@ -83,4 +83,7 @@ $MESS["sender_chain_edit_action_copy_title"] = "Copy newsletter message";
 $MESS["sender_chain_edit_field_title"] = "Newsletter message title";
 $MESS["sender_chain_edit_field_title_desc"] = "This title is visible only to you.";
 $MESS["sender_chain_edit_copied"] = "Newsletter message has been copied. Now viewing the copy.";
+$MESS["sender_chain_edit_recommended_sent_time"] = "Recommended send time: %send_time% accounting for %delivery_time% hours required to send and deliver messages.";
+$MESS["sender_chain_edit_recommended_sent_time_hint"] = "Time calculated using delivery and view statistics of the previous messages.";
+$MESS["sender_chain_edit_status_deactivated"] = "Newsletter is inactive. Activate it to send newsletter messages.";
 ?>

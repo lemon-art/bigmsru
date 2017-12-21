@@ -190,6 +190,8 @@ if ($_POST["type"] == "desktop")
 elseif ($_POST["type"] == "gadget")
 {
 	$gdid = $_POST['gid'];
+	$gdid = preg_replace("/[^a-z0-9@_]/i", "", $gdid);
+
 	$p = strpos($gdid, "@");
 	if($p !== false)
 	{
@@ -272,7 +274,7 @@ elseif ($_POST["type"] == "gadget")
 				<input type="hidden" name="type" value="gadget">
 				<input type="hidden" name="desktop_page" value="<?=$desktop_page?>">
 				<input type="hidden" name="save_gadget" value="Y">
-				<input type="hidden" name="gid" value="<?=$gdid?>">
+				<input type="hidden" name="gid" value="<?=htmlspecialcharsbx($gdid)?>">
 				<table class="edit-table" width="100%"><tbody>
 				<?
 				foreach($arGadgetParams as $param_id => $arGadgetParam)

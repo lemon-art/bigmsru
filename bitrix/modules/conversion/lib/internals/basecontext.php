@@ -26,8 +26,11 @@ class BaseContext
 	 * @throws ArgumentTypeException
 	 * @throws SystemException
 	 */
-	public function addCounter(Date $day, $name, $value)
+	public function addCounter($day, $name, $value = null)
 	{
+		if (!($day instanceof Date))
+			throw new ArgumentTypeException('day', '\Bitrix\Main\Type\Date');
+
 		if (! is_string($name))
 			throw new ArgumentTypeException('name', 'string');
 

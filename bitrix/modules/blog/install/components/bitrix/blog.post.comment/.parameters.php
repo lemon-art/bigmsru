@@ -10,6 +10,7 @@ $arComponentParameters = Array(
 		),
 	),
 	"PARAMETERS" => Array(
+		"USER_CONSENT" => array(),
 		"ID" => Array(
 				"NAME" => GetMessage("BPC_ID"),
 				"TYPE" => "STRING",

@@ -1,7 +1,8 @@
 <?
 IncludeModuleLangFile(__FILE__);
 
-define("PULL_REVISION", 14);
+define("PULL_REVISION", 16);
+define("PULL_MOBILE_REVISION", 1);
 
 global $APPLICATION, $DBType;
 
@@ -25,6 +26,8 @@ CModule::AddAutoloadClasses(
 		"CGooglePush" => "classes/general/pushservices/google_push.php",
 		"CGooglePushInteractive" => "classes/general/pushservices/google_push.php",
 
+		"\\Bitrix\\Pull\\PushTable" => "lib/model/push.php",
+		"\\Bitrix\\Pull\\ChannelTable" => "lib/model/channel.php",
 	)
 );
 

@@ -2,6 +2,7 @@
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/img.php");
 
+use Bitrix\Main\Text\HtmlFilter;
 /********************** Check user access rights ***********************/
 
 if (!$USER->CanDoOperation('seo_tools'))
@@ -39,7 +40,7 @@ IncludeModuleLangFile(__FILE__);
 //Check permissions
 if (!$io->FileExists($absoluteFilePath))
 {
-	CAdminMessage::ShowMessage(GetMessage('SEO_TOOLS_ERROR_FILE_NOT_FOUND')." (".htmlspecialcharsbx($path).")");
+	CAdminMessage::ShowMessage(GetMessage('SEO_TOOLS_ERROR_FILE_NOT_FOUND')." (".HtmlFilter::encode($path).")");
 	die();
 }
 elseif (!$USER->CanDoFileOperation('fm_edit_existent_file',array($_REQUEST['site'], $path)))
@@ -71,14 +72,24 @@ if (isset($_REQUEST["site"]) && strlen($_REQUEST["site"]) > 0)
 	$obSite = CSite::GetByID($_REQUEST["site"]);
 	if ($arSite = $obSite->Fetch())
 	{
-		$site = $_REQUEST["site"];
-
-		$server_name = $arSite['SERVER_NAME'];
-		if (strlen($server_name) <= 0)
-			$server_name = COption::GetOptionString('main', 'server_name', '');
+		$site = HtmlFilter::encode($_REQUEST["site"]);
+		$serverName = HtmlFilter::encode($arSite['SERVER_NAME']);
 	}
 }
+//find server name in other places
+if (strlen($serverName) <= 0)
+	$serverName = COption::GetOptionString('main', 'server_name', '');
+if (strlen($serverName) <= 0)
+	$serverName = $_SERVER['SERVER_NAME'];
 
+$serverName = str_replace(array("https://", "http://"), '', $serverName);
+$protocol = \CMain::IsHTTPS() ? "https://" : "http://";
+
+$serverPort = intval($_SERVER['SERVER_PORT']);
+$serverHost = $_SERVER['HTTP_HOST'];
+if(strlen($serverPort)>0 && strlen($serverHost)>0)
+	if(strpos($serverHost, $serverPort) !== false || ($serverPort!=80 && $serverPort!=443))
+		$serverName .= ":".$serverPort;
 
 //lang
 if (!isset($_REQUEST["lang"]) || strlen($_REQUEST["lang"]) <= 0)
@@ -146,12 +157,12 @@ if (isset($_REQUEST['loadtab']))
 </table>
 <?
 			else:
-
+				$url = $protocol.$serverName.$back_url;
 				$arFilter = array(
 					'SEARCHER_ID' => implode('|', array_keys($arSearchers)),
 					'DATE1' => ConvertTimeStamp(strtotime('-3 month'), false, $site_id),
 					'DATE2' => ConvertTimeStamp(time(), false, $site_id),
-					'URL' => 'http://'.$server_name.$back_url,
+					'URL' => $url,
 					'URL_EXACT_MATCH' => 'Y',
 					'SITE_ID' => $site,
 				);
@@ -179,7 +190,7 @@ if (isset($_REQUEST['loadtab']))
 						if ($count > 0):
 ?>
 	<tr>
-		<td width="50%" align="right"><?echo htmlspecialcharsbx($arSearchers[$key]['NAME'])?>:&nbsp;&nbsp;</td>
+		<td width="50%" align="right"><?echo HtmlFilter::encode($arSearchers[$key]['NAME'])?>:&nbsp;&nbsp;</td>
 		<td width="50%"><?echo $count;?></td>
 	</tr>
 <?
@@ -261,9 +272,10 @@ if (isset($_REQUEST['loadtab']))
 </table>
 <?
 			else:
+				$url = $protocol.$serverName.$back_url;
 				$arFilter = array(
 					'SEARCHER_ID' => implode('|', array_keys($arSearchers)),
-					'TO' => 'http://'.$server_name.$back_url,
+					'TO' => $url,
 					'TO_EXACT_MATCH' => 'Y',
 					'GROUP' => 'P'
 				);
@@ -303,53 +315,46 @@ if (isset($_REQUEST['loadtab']))
 				{
 					$cnt = count($arWords);
 ?>
-<table width="100%">
-	<tr>
-		<td colspan="2" align="center"><table class="phrases-table">
-<?
-					$color = null;
-					foreach ($arWords as $word => $arData)
-					{
-						$arData['ID'] = rand(0, 65535);
-						$percent = number_format($arData['PERCENT'], 2);
-?>
-		<tr>
-			<td align="left" width="30%"><a href="javascript:void(0)" onclick="BXToggle('bx_phrase_ex_<? echo $arData['ID']?>'); return false;" title="<?echo GetMessage('SEO_PAGE_REFERERS_SEO_PAGE_PHRASES_ALT')?>"><?echo htmlspecialcharsbx($word)?></td>
-			<td width="70%">
-				<div style="height: 15px; border: solid 1px #<?echo $color = GetNextRGB($color, $cnt)?> !important; width: 100%; position: relative; cursor: pointer; text-align: left !important;" onclick="BXToggle('bx_phrase_ex_<? echo $arData['ID']?>'); return false;">
-					<div style="float: left; height: 15px; width: <?echo $percent?>%; background-color: #<?echo $color; ?>; white-space: nowrap; position: absolute;">
-						<?echo intval($arData['TOTAL'])?> (<?echo $percent?>%)
+					<table width="100%" class="referers-table bx-seo-words-table internal" id="bx_seo_words_table">
+						<thead>
+							<tr class="heading">
+								<td width="30%" style="text-align:left !important;"><?=GetMessage('SEO_PAGE_REFERERS_PHRASE');?></td>
+								<td width="70%" style="text-align:left !important;"><?=GetMessage('SEO_PAGE_REFERERS_SEARCHERS_COUNT');?></td>
+							</tr>
+						</thead>
+						<tbody>
+						<?
+						$color = null;
+						foreach ($arWords as $word => $arData)
+						{
+							$arData['ID'] = rand(0, 65535);
+							$percent = number_format($arData['PERCENT'], 2);
+							?>
+							<tr>
+								<td style="text-align:left !important;"><?=HtmlFilter::encode($word)?></td>
+								<td style="text-align:left !important;">
+									<div style="height: 15px; border: solid 1px #<?echo $color = GetNextRGB($color, $cnt)?> !important; width: 100%; position: relative; text-align: left !important;" class="bx-seo-words-table-link-element">
+										<div style="float: left; height: 15px; width: <?echo $percent?>%; background-color: #<?echo $color; ?>; white-space: nowrap; position: absolute;">
+											<?echo intval($arData['TOTAL'])?> (<?echo $percent?>%)
+										</div>
+										<?echo intval($arData['TOTAL'])?> (<?echo $percent?>%)
+									</div>
+									<? foreach ($arData['SEARCHERS'] as $searcher_id => $arSearcherData): ?>
+										<div style="text-align: left !important;" class="bx-seo-words-table-link-element">
+											<? echo HtmlFilter::encode($arSearcherData['SEARCHER_NAME']);?> &mdash;
+											<?echo intval($arSearcherData['COUNT']);?>
+										</div>
+									<?endforeach;?>
+								</td>
+							</tr>
+							<?
+						}
+						?>
+						</tbody>
+					</table>
+					<div>
+						<a href="/bitrix/admin/phrase_list.php?lang=<?echo LANGUAGE_ID?>"><?echo GetMessage('SEO_PAGE_GOTO_CP')?></a>
 					</div>
-					<?echo intval($arData['TOTAL'])?> (<?echo $percent?>%)
-				</div>
-			</td>
-		</tr>
-		<tr id="bx_phrase_ex_<? echo $arData['ID']?>" style="display: none;">
-			<td colspan="2" align="center"><table>
-				<tr class="bx-th">
-					<td style="text-align: left !important;"><?echo GetMessage('SEO_PAGE_PHRASES_SEARCHER')?></td>
-					<td><?echo GetMessage('SEO_PAGE_PHRASES_HITS')?></td>
-				</tr>
-<?
-						foreach ($arData['SEARCHERS'] as $searcher_id => $arSearcherData):
-?>
-				<tr>
-					<td style="text-align: left !important;"><? echo htmlspecialcharsbx($arSearcherData['SEARCHER_NAME']);?></td>
-					<td align="center"><?echo intval($arSearcherData['COUNT']);?></td>
-				</tr>
-<?
-						endforeach;
-?>
-			</table></td>
-		</tr>
-<?
-					}
-?>
-		</table></td>
-	</tr><tr>
-		<td colspan="2" align="right"><a href="/bitrix/admin/phrase_list.php?lang=<?echo LANGUAGE_ID?>"><?echo GetMessage('SEO_PAGE_GOTO_CP')?></a></td>
-	</tr>
-</table>
 <?
 				}
 				else
@@ -376,11 +381,13 @@ if (isset($_REQUEST['loadtab']))
 
 		/******************* referers tab *********************/
 		case 'referers':
+			$url = $protocol.$serverName.$back_url;
 			$arFilter = array(
-				'TO' => 'http://'.$server_name.$back_url,
+				'TO' => $url,
 				'TO_EXACT_MATCH' => 'Y',
 				'GROUP' => 'S'
 			);
+			
 
 			$dbRes = CReferer::GetList($by = 's_quantity', $order = 'desc', $arFilter, $is_filtered, $total, $group_by, $max);
 			$dbRes->NavStart(20, false, 0);
@@ -424,59 +431,52 @@ if (isset($_REQUEST['loadtab']))
 				}
 			}
 
-			if ($total > 0)
-			{
-				$cnt = count($arReferers);
-?><table width="100%">
-	<tr>
-		<td colspan="2" align="center"><table class="referers-table">
+			if ($total > 0):?>
+			
+			<table width="100%" class="referers-table bx-seo-words-table internal" id="bx_seo_words_table">
+				<thead>
+					<tr class="heading">
+						<td width="30%" style="text-align:left !important;"><?=GetMessage('SEO_PAGE_REFERERS_SITE');?></td>
+						<td width="70%" style="text-align:left !important; text-transform: capitalize;"><?=GetMessage('SEO_PAGE_REFERERS_COUNT');?></td>
+					</tr>
+				</thead>
+				<tbody>
+				<?
+					$cnt = count($arReferers);
+					$color = null;
+					foreach ($arReferers as $domain => $arData)
+					{
+						$percent = number_format($arData['PERCENT'], 2);
+						$domainEnc = \Bitrix\Main\Text\Converter::getHtmlConverter()->encode($domain);
+						?>
+						<tr>
+							<td style="text-align:left !important;"><?=$domainEnc?></td>
+							<td style="text-align:left !important;">
+								<div style="height: 15px; border: solid 1px #<?echo $color = GetNextRGB($color, $cnt)?> !important; width: 100%; position: relative; text-align: left !important;" class="bx-seo-words-table-link-element">
+									<div style="float: left; height: 15px; width: <?echo $percent?>%; background-color: #<?echo $color; ?>; white-space: nowrap; position: absolute;">
+										<?echo intval($arData['TOTAL'])?> (<?echo $percent?>%)
+									</div>
+									<?echo intval($arData['TOTAL'])?> (<?echo $percent?>%)
+								</div>
+								<? foreach ($arData['URL_FROM'] as $url => $count): ?>
+									<div style="text-align: left !important;" class="bx-seo-words-table-link-element">
+										<a href="<?echo HtmlFilter::encode($url)?>"><? echo HtmlFilter::encode(TruncateText($url, 100));?></a> &mdash;
+										<?echo intval($count);?>
+									</div>
+								<? endforeach;?>
+							</td>
+						</tr>
+						<?
+					}
+				?>
+				</tbody>
+			</table>
+			<div>
+				<a href="/bitrix/admin/referer_list.php?lang=<?echo LANGUAGE_ID?>"><?echo GetMessage('SEO_PAGE_GOTO_CP')?></a>
+			</div>
 <?
-				$color = null;
-				foreach ($arReferers as $domain => $arData)
-				{
-					$percent = number_format($arData['PERCENT'], 2);
-					$domainEnc = \Bitrix\Main\Text\Converter::getHtmlConverter()->encode($domain);
-?>
-		<tr>
-			<td width="30%" align="left"><a href="javascript:void(0)" onclick="BXToggle('bx_referer_ex_<?echo CUtil::JSEscape($domainEnc)?>'); return false;" title="<?echo GetMessage('SEO_PAGE_REFERERS_SEO_PAGE_REFERERS_ALT')?>"><?echo $domainEnc;?></td>
-			<td width="70%">
-				<div style="height: 15px; border: solid 1px #<?echo $color = GetNextRGB($color, $cnt)?> !important; width: 100%; position: relative; cursor: pointer; text-align: left !important;" onclick="BXToggle('bx_referer_ex_<?echo CUtil::JSEscape($domainEnc)?>'); return false;">
-					<div style="float: left; height: 15px; width: <?echo $percent?>%; background-color: #<?echo $color; ?>; white-space: nowrap; position: absolute;">
-						<?echo intval($arData['TOTAL'])?> (<?echo $percent?>%)
-					</div>
-					<?echo intval($arData['TOTAL'])?> (<?echo $percent?>%)
-				</div>
-			</td>
-		</tr>
-		<tr id="bx_referer_ex_<?echo CUtil::JSEscape($domainEnc)?>" style="display: none;">
-			<td colspan="2" align="center"><table>
-				<tr class="bx-th">
-					<td width="90%" style="text-align: left !important;"><?echo GetMessage('SEO_PAGE_REFERERS_LINK')?></td>
-					<td width="10%"><?echo GetMessage('SEO_PAGE_REFERERS_COUNT')?></td>
-				</tr>
-<?
-					foreach ($arData['URL_FROM'] as $url => $count):
-?>
-				<tr>
-					<td style="text-align: left !important;"><a href="<?echo htmlspecialcharsbx($url)?>"><? echo htmlspecialcharsbx(TruncateText($url, 100));?></td>
-					<td align="center"><?echo intval($count);?></td>
-				</tr>
-<?
-					endforeach;
-?>
-			</table></td>
-		</tr>
-<?
-				}
-?>
-	</table></td>
-</tr><tr>
-	<td colspan="2" align="right"><a href="/bitrix/admin/referer_list.php?lang=<?echo LANGUAGE_ID?>"><?echo GetMessage('SEO_PAGE_GOTO_CP')?></a></td>
-</tr></table>
-<?
-			}
-			else
-			{
+//			have not references
+			else:
 ?>
 	<table width="100%"><tr>
 		<td colspan="2" align="center">
@@ -486,7 +486,7 @@ if (isset($_REQUEST['loadtab']))
 		</td>
 	</tr></table>
 <?
-			}
+			endif;
 
 		break;
 	}
@@ -504,59 +504,60 @@ $fileContent = $APPLICATION->GetFileContent($absoluteFilePath);
 
 /************************** GET/POST processing ***************************************/
 $strWarning = '';
+$success = true;
 
 if (!check_bitrix_sessid())
 {
 	CUtil::JSPostUnescape();
 	$strWarning = GetMessage("MAIN_SESSION_EXPIRED");
 }
-elseif (!$bReadOnly && $_SERVER["REQUEST_METHOD"] == "POST" && isset($_REQUEST["save"]))
+elseif ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_REQUEST["save"]))
 {
-	//Title
-	if (isset($_POST["pageTitle"]) && strlen($_POST["pageTitle"]) > 0)
+	if(!$bReadOnly)
 	{
-		$fileContent = SetPrologTitle($fileContent, $_POST["pageTitle"]);
-	}
-
-	//Title
-	$prop_code = COption::GetOptionString('seo', 'property_window_title', 'title');
-	if (isset($_POST["property_".$prop_code]))
-	{
-		$fileContent = SetPrologProperty($fileContent, $prop_code, $_POST["property_".$prop_code]);
-	}
-
-	//Properties
-	if (isset($_POST["PROPERTY"]) && is_array($_POST["PROPERTY"]))
-	{
-		foreach ($_POST["PROPERTY"] as $arProperty)
+		//Title
+		if (isset($_POST["pageTitle"]) && strlen($_POST["pageTitle"]) > 0)
 		{
-			$arProperty["CODE"] = (isset($arProperty["CODE"]) ? trim($arProperty["CODE"]) : "");
-			$arProperty["VALUE"] = (isset($arProperty["VALUE"]) ? trim($arProperty["VALUE"]) : "");
-
-			if (preg_match("/[a-zA-Z_-~]+/i", $arProperty["CODE"]))
+			$fileContent = SetPrologTitle($fileContent, $_POST["pageTitle"]);
+		}
+		
+		//Title
+		$prop_code = COption::GetOptionString('seo', 'property_window_title', 'title');
+		if (isset($_POST["property_" . $prop_code]))
+		{
+			$fileContent = SetPrologProperty($fileContent, $prop_code, $_POST["property_" . $prop_code]);
+		}
+		
+		//Properties
+		if (isset($_POST["PROPERTY"]) && is_array($_POST["PROPERTY"]))
+		{
+			foreach ($_POST["PROPERTY"] as $arProperty)
 			{
-				$fileContent = SetPrologProperty($fileContent, $arProperty["CODE"], $arProperty["VALUE"]);
+				$arProperty["CODE"] = (isset($arProperty["CODE"]) ? trim($arProperty["CODE"]) : "");
+				$arProperty["VALUE"] = (isset($arProperty["VALUE"]) ? trim($arProperty["VALUE"]) : "");
+				
+				if (preg_match("/[a-zA-Z_-~]+/i", $arProperty["CODE"]))
+				{
+					$fileContent = SetPrologProperty($fileContent, $arProperty["CODE"], $arProperty["VALUE"]);
+				}
 			}
 		}
+		
+		$success = $APPLICATION->SaveFileContent($absoluteFilePath, $fileContent);
+		
+		if ($success === false && ($exception = $APPLICATION->GetException()))
+			$strWarning = $exception->msg;
 	}
-
-	$success = $APPLICATION->SaveFileContent($absoluteFilePath, $fileContent);
-
-	if ($success === false && ($exception = $APPLICATION->GetException()))
-		$strWarning = $exception->msg;
-	else
+	if (isset($_POST['internal_keywords']) && $success !== false)
 	{
-		if (isset($_POST['internal_keywords']))
-		{
-			CSeoKeywords::Update(array(
-				'URL' => $back_url,
-				'SITE_ID' => $site,
-				'KEYWORDS' => $_POST['internal_keywords'],
-			));
-		}
-
-		LocalRedirect("/".ltrim($original_backurl, "/"));
+		CSeoKeywords::Update(array(
+			'URL' => $back_url,
+			'SITE_ID' => $site,
+			'KEYWORDS' => $_POST['internal_keywords'],
+		));
 	}
+	
+	LocalRedirect("/" . ltrim($original_backurl, "/"));
 	die();
 }
 
@@ -608,7 +609,7 @@ $counters = COption::GetOptionString('seo', 'counters', SEO_COUNTERS_DEFAULT);
 
 //HTML output
 $aTabs = array(
-	array("DIV" => "seo_edit1", "TAB" => GetMessage('SEO_TOOLS_TAB_PAGE'), "ICON" => "main_settings", "TITLE" => GetMessage('SEO_TOOLS_TAB_PAGE_TITLE').' '.htmlspecialcharsbx($back_url, ENT_QUOTES)),
+	array("DIV" => "seo_edit1", "TAB" => GetMessage('SEO_TOOLS_TAB_PAGE'), "ICON" => "main_settings", "TITLE" => GetMessage('SEO_TOOLS_TAB_PAGE_TITLE').' '.HtmlFilter::encode($back_url, ENT_QUOTES)),
 	array("DIV" => "seo_edit2", "TAB" => GetMessage('SEO_TOOLS_INTERNAL_KEYWORDS'), "ICON" => "main_settings", "TITLE" => GetMessage('SEO_TOOLS_INTERNAL_KEYWORDS_TITLE')),
 	array("DIV" => "seo_edit3", "TAB" => GetMessage('SEO_TOOLS_TAB_EDIT'), "ICON" => "main_settings", "TITLE" => GetMessage('SEO_TOOLS_TAB_EDIT_TITLE')),
 	array("DIV" => "seo_edit4", "TAB" => GetMessage('SEO_TOOLS_TAB_INDEX'), "ICON" => "main_settings", "TITLE" => GetMessage('SEO_TOOLS_TAB_INDEX_TITLE'), 'ONSELECT' => ($bStatsIncluded && $bStatsRights ? 'window.BXLoadTab(\'indexing\')' : '')),
@@ -622,7 +623,7 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_aft
 ?>
 <form name="seo_form" method="POST" action="/bitrix/admin/public_seo_tools.php" enctype="multipart/form-data">
 <input type="hidden" name="lang" value="<?=LANGUAGE_ID?>" />
-<input type="hidden" name="site" value="<?=htmlspecialcharsEx($site)?>" />
+<input type="hidden" name="site" value="<?=$site?>" />
 <input type="hidden" name="path" value="<?echo htmlspecialcharsEx($path)?>" />
 <input type="hidden" name="back_url" value="<?echo htmlspecialcharsEx($original_backurl)?>" />
 <?=bitrix_sessid_post()?>
@@ -642,10 +643,10 @@ table.legend td {padding:3px 10px 3px 0px;}
 
 table.phrases-table, table.referers-table {width: 85%;}
 table.phrases-table tr.bx-th td, table.referers-table tr.bx-th td {text-align: center; font-weight: bold !important;}
-div#bx_admin_form table.phrases-table tr td, div#bx_admin_form table.referers-table tr td {height: 18px; padding: 3px 3px 0px 0px !important;}
 table.phrases-table td div, table.referers-table td div {color: black !important; white-space: nowrap;}
-table.phrases-table td div div, table.referers-table td div div {color: white !important; white-space: nowrap; overflow: hidden;}
+table.phrases-table td div div, table.referers-table td div div {color: white !important; white-space: nowrap; overflow: hidden; text-shadow: unset;}
 table.phrases-table td table, table.referers-table  td table {width: 90%;}
+.bx-seo-words-table-link-element{margin-bottom:6px;}
 
 div#bx_page_extended_data div {height: 140px; width: 99%; overflow: auto; margin-right: 5px; border: solid 1px #E0E4F1;}
 #bx_page_errors ol li {margin: 5px 0px;}
@@ -653,7 +654,7 @@ div#bx_page_extended_data div {height: 140px; width: 99%; overflow: auto; margin
 </style>
 <?
 if (strlen($counters) > 0):
-	$counters = str_replace(array('#DOMAIN#'), array($server_name), $counters);
+	$counters = str_replace(array('#DOMAIN#'), array($serverName), $counters);
 
 foreach(GetModuleEvents("seo", "OnSeoCountersGetList", true) as $arEvent)
 {
@@ -787,105 +788,118 @@ endif;
 /*************************************/
 $tabControl->BeginNextTab();
 ?>
-<tr>
-	<td><?echo GetMessage('SEO_PAGE_BASE_TITLE')?> (&lt;H1&gt;): <?echo SeoShowHelp('base_title')?></td>
-	<td><input type="text" name="pageTitle" value="<?=htmlspecialcharsEx($pageTitle)?>"  size="50" /></td>
-</tr>
-<?
-if ($titleFinal != $pageTitle):
-?>
-<tr>
-	<td valign="top"><?echo GetMessage('SEO_PAGE_CURRENT_TITLE')?>: <?echo SeoShowHelp('current_title')?></td>
-	<td valign="top">
-<script>
-window.jsPopup_subdialog = new JCPopup({'suffix':'subdialog', 'zIndex':parseInt(jsPopup.zIndex)+20});
-</script>
-<?
-if ($titleChangerLink)
-{
-	$titleChangerLink = preg_replace(
-		"/jsPopup.ShowDialog\('(.*?)',([^\)]*)\)/is",
-		"jsPopup_subdialog.ShowDialog('\\1&subdialog=Y&suffix=subdialog',\\2)",
-		$titleChangerLink
-	);
-
-	$titleChangerLink = preg_replace(
-		"/BX.CAdminDialog[\s]*\([\s]*\{(.*?)'content_url'[\s]*:[\s]*'(.*?)'/is",
-		"BX.CAdminDialog({\\1'content_url':'\\2&subdialog=Y'",
-		$titleChangerLink
-	);
-}
-?>
-		<b><?echo htmlspecialcharsEx($titleFinal)?></b>&nbsp;<?if ($titleChangerName != ''):?>(<?echo htmlspecialcharsbx($titleChangerName)?>)&nbsp;<?endif;?><?if ($titleChangerLink):?><br /><a href="<?echo htmlspecialcharsbx($titleChangerLink, ENT_QUOTES);?>"><?echo GetMessage('SEO_PAGE_CURRENT_TITLE_EDIT')?></a><?endif;?>
-</tr>
-<?
-endif;
-
-if ($prop_code = COption::GetOptionString('seo', 'property_window_title', 'title')):
-	$value = $arGlobalProperties[$prop_code] ? $arGlobalProperties[$prop_code] : $arDirProperties[$prop_code];
-	if (strlen($value) <= 0)
-		$value = $APPLICATION->GetDirProperty($prop_code, array($site, $path));
-?>
-<tr>
-	<td><?echo $arFilemanProperties[$prop_code] ? $arFilemanProperties[$prop_code] : GetMessage('SEO_PAGE_PROPERTY_WINDOW_TITLE')?> (&lt;TITLE&gt;): <?echo SeoShowHelp('property_window_title')?></td>
-	<td><input type="text" name="property_<?echo htmlspecialcharsEx($prop_code)?>" value="<?=htmlspecialcharsEx($value)?>" size="50" /></td>
-</tr>
-<?
-	if ($value != $titleWinFinal):
-	?>
-<tr>
-	<td valign="top"><?echo $arFilemanProperties[$prop_code] ? $arFilemanProperties[$prop_code] : GetMessage('SEO_PAGE_PROPERTY_WINDOW_TITLE')?> (<?echo GetMessage('SEO_PAGE_WINDOW_TITLE_CURRENT')?>): <?echo SeoShowHelp('current_window_title')?></td>
-	<td valign="top">
+<?if ($bReadOnly):?>
+	<tr>
+		<td>
+			<?echo
+			BeginNote(),GetMessage('SEO_PAGE_ERROR_FOLDER_ACCESS', array(
+				'#F'=> HtmlFilter::encode($path))
+			), EndNote()
+			?>
+		</td>
+	</tr>
+<?else:?>
+	
+	<tr>
+		<td><?echo GetMessage('SEO_PAGE_BASE_TITLE')?> (&lt;H1&gt;): <?echo SeoShowHelp('base_title')?></td>
+		<td><input type="text" name="pageTitle" value="<?=htmlspecialcharsEx($pageTitle)?>"  size="50" /></td>
+	</tr>
 	<?
-		if ($titleWinChangerLink)
-		{
-			$titleWinChangerLink = preg_replace(
-				"/jsPopup.ShowDialog\('(.*?)',([^\)]*)\)/is",
-				"jsPopup_subdialog.ShowDialog('\\1&subdialog=Y&suffix=subdialog',\\2)",
-				$titleWinChangerLink
-			);
-
-			$titleWinChangerLink = preg_replace(
-				"/BX.CAdminDialog[\s]*\([\s]*\{(.*?)'content_url'[\s]*:[\s]*'(.*?)'/is",
-				"BX.CAdminDialog({\\1'content_url':'\\2&subdialog=Y'",
-				$titleWinChangerLink
-			);
-		}
+	if ($titleFinal != $pageTitle):
 	?>
-		<b><?echo htmlspecialcharsEx($titleWinFinal)?></b>&nbsp;<?if ($titleWinChangerName != ''):?>(<?echo htmlspecialcharsbx($titleWinChangerName)?>)&nbsp;<?endif;?><?if ($titleWinChangerLink):?><br /><a href="<?echo htmlspecialcharsbx($titleWinChangerLink, ENT_QUOTES)?>"><?echo GetMessage('SEO_PAGE_CURRENT_TITLE_EDIT')?></a><?endif;?>
+	<tr>
+		<td valign="top"><?echo GetMessage('SEO_PAGE_CURRENT_TITLE')?>: <?echo SeoShowHelp('current_title')?></td>
+		<td valign="top">
+	<script>
+	window.jsPopup_subdialog = new JCPopup({'suffix':'subdialog', 'zIndex':parseInt(jsPopup.zIndex)+20});
+	</script>
+	<?
+	if ($titleChangerLink)
+	{
+		$titleChangerLink = preg_replace(
+			"/jsPopup.ShowDialog\('(.*?)',([^\)]*)\)/is",
+			"jsPopup_subdialog.ShowDialog('\\1&subdialog=Y&suffix=subdialog',\\2)",
+			$titleChangerLink
+		);
+	
+		$titleChangerLink = preg_replace(
+			"/BX.CAdminDialog[\s]*\([\s]*\{(.*?)'content_url'[\s]*:[\s]*'(.*?)'/is",
+			"BX.CAdminDialog({\\1'content_url':'\\2&subdialog=Y'",
+			$titleChangerLink
+		);
+	}
+	?>
+			<b><?echo htmlspecialcharsEx($titleFinal)?></b>&nbsp;<?if ($titleChangerName != ''):?>(<?echo HtmlFilter::encode($titleChangerName)?>)&nbsp;<?endif;?><?if ($titleChangerLink):?><br /><a href="<?echo HtmlFilter::encode($titleChangerLink, ENT_QUOTES);?>"><?echo GetMessage('SEO_PAGE_CURRENT_TITLE_EDIT')?></a><?endif;?>
 	</tr>
 	<?
 	endif;
-endif;
-
-$arEditProperties = array();
-if ($prop_code = COption::GetOptionString('seo', 'property_keywords', 'keywords')) $arEditProperties['keywords'] = htmlspecialcharsbx($prop_code);
-if ($prop_code = COption::GetOptionString('seo', 'property_description', 'description')) $arEditProperties['description'] = htmlspecialcharsbx($prop_code);
-
-foreach ($arEditProperties as $key => $prop_code):
-	$value = $arGlobalProperties[$prop_code];
-?>
-<tr>
-	<td><?echo $arFilemanProperties[$prop_code]?>: <?echo SeoShowHelp('property_'.$key)?></td>
-	<td><input type="hidden" name="PROPERTY[<?=$prop_code?>][CODE]" value="<?=htmlspecialcharsEx($prop_code)?>" />
-	<?
-	if (strlen($value) <= 0):
-		$value = $APPLICATION->GetDirProperty($prop_code, array($site, $path));
+	
+	if ($prop_code = COption::GetOptionString('seo', 'property_window_title', 'title')):
+		$value = $arGlobalProperties[$prop_code] ? $arGlobalProperties[$prop_code] : $arDirProperties[$prop_code];
+		if (strlen($value) <= 0)
+			$value = $APPLICATION->GetDirProperty($prop_code, array($site, $path));
 	?>
-		<div id="bx_view_property_<?=$prop_code?>" style="overflow:hidden;padding:2px 12px 2px 2px; border:1px solid #F8F9FC; width:90%; cursor:text; box-sizing:border-box; -moz-box-sizing:border-box;background-color:transparent; background-position:right; background-repeat:no-repeat; height: 22px;" onclick="BXEditProperty('<?=$prop_code?>')" onmouseover="this.style.borderColor = '#434B50 #ADC0CF #ADC0CF #434B50';" onmouseout="this.style.borderColor = '#F8F9FC'" class="edit-field"><?=htmlspecialcharsEx($value)?></div>
-
-		<div id="bx_edit_property_<?=$prop_code?>" style="display:none;"></div>
+	<tr>
+		<td><?echo $arFilemanProperties[$prop_code] ? $arFilemanProperties[$prop_code] : GetMessage('SEO_PAGE_PROPERTY_WINDOW_TITLE')?> (&lt;TITLE&gt;): <?echo SeoShowHelp('property_window_title')?></td>
+		<td><input type="text" name="property_<?echo htmlspecialcharsEx($prop_code)?>" value="<?=htmlspecialcharsEx($value)?>" size="50" /></td>
+	</tr>
 	<?
-	else:
-	?>
-		<input type="text" name="PROPERTY[<?=$prop_code?>][VALUE]" value="<?=htmlspecialcharsEx($value)?>" size="50" /></td>
-	<?
+		if ($value != $titleWinFinal):
+		?>
+	<tr>
+		<td valign="top"><?echo $arFilemanProperties[$prop_code] ? $arFilemanProperties[$prop_code] : GetMessage('SEO_PAGE_PROPERTY_WINDOW_TITLE')?> (<?echo GetMessage('SEO_PAGE_WINDOW_TITLE_CURRENT')?>): <?echo SeoShowHelp('current_window_title')?></td>
+		<td valign="top">
+		<?
+			if ($titleWinChangerLink)
+			{
+				$titleWinChangerLink = preg_replace(
+					"/jsPopup.ShowDialog\('(.*?)',([^\)]*)\)/is",
+					"jsPopup_subdialog.ShowDialog('\\1&subdialog=Y&suffix=subdialog',\\2)",
+					$titleWinChangerLink
+				);
+	
+				$titleWinChangerLink = preg_replace(
+					"/BX.CAdminDialog[\s]*\([\s]*\{(.*?)'content_url'[\s]*:[\s]*'(.*?)'/is",
+					"BX.CAdminDialog({\\1'content_url':'\\2&subdialog=Y'",
+					$titleWinChangerLink
+				);
+			}
+		?>
+			<b><?echo htmlspecialcharsEx($titleWinFinal)?></b>&nbsp;<?if ($titleWinChangerName != ''):?>(<?echo HtmlFilter::encode($titleWinChangerName)?>)&nbsp;<?endif;?><?if ($titleWinChangerLink):?><br /><a href="<?echo HtmlFilter::encode($titleWinChangerLink, ENT_QUOTES)?>"><?echo GetMessage('SEO_PAGE_CURRENT_TITLE_EDIT')?></a><?endif;?>
+		</tr>
+		<?
+		endif;
 	endif;
+	
+	$arEditProperties = array();
+	if ($prop_code = COption::GetOptionString('seo', 'property_keywords', 'keywords')) $arEditProperties['keywords'] = HtmlFilter::encode($prop_code);
+	if ($prop_code = COption::GetOptionString('seo', 'property_description', 'description')) $arEditProperties['description'] = HtmlFilter::encode($prop_code);
+	
+	foreach ($arEditProperties as $key => $prop_code):
+		$value = $arGlobalProperties[$prop_code];
 	?>
-</tr>
-<?
-endforeach;
-?>
+	<tr>
+		<td><?echo $arFilemanProperties[$prop_code]?>: <?echo SeoShowHelp('property_'.$key)?></td>
+		<td><input type="hidden" name="PROPERTY[<?=$prop_code?>][CODE]" value="<?=htmlspecialcharsEx($prop_code)?>" />
+		<?
+		if (strlen($value) <= 0):
+			$value = $APPLICATION->GetDirProperty($prop_code, array($site, $path));
+		?>
+			<div id="bx_view_property_<?=$prop_code?>" style="overflow:hidden;padding:2px 12px 2px 2px; border:1px solid #F8F9FC; width:90%; cursor:text; box-sizing:border-box; -moz-box-sizing:border-box;background-color:transparent; background-position:right; background-repeat:no-repeat; height: 22px;" onclick="BXEditProperty('<?=$prop_code?>')" onmouseover="this.style.borderColor = '#434B50 #ADC0CF #ADC0CF #434B50';" onmouseout="this.style.borderColor = '#F8F9FC'" class="edit-field"><?=htmlspecialcharsEx($value)?></div>
+	
+			<div id="bx_edit_property_<?=$prop_code?>" style="display:none;"></div>
+		<?
+		else:
+		?>
+			<input type="text" name="PROPERTY[<?=$prop_code?>][VALUE]" value="<?=htmlspecialcharsEx($value)?>" size="50" /></td>
+		<?
+		endif;
+		?>
+	</tr>
+	<?
+	endforeach;
+	?>
+<?endif;?>
 <?
 /********************************/
 /* searchers indexing stats tab */
@@ -1007,7 +1021,6 @@ window.BXUpdateKeywordsStats = function(data)
 	}
 }
 <?
-if (!$bReadOnly):
 ?>
 window.BXCallUpdateKeywordsStats = function(keywords)
 {
@@ -1021,7 +1034,6 @@ window.BXCallUpdateKeywordsStats = function(keywords)
 	});
 }
 <?
-endif;
 ?>
 window.arTabsLoaded = {};
 window.BXLoadTab = function(tab)

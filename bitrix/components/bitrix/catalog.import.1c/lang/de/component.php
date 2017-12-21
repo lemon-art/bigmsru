@@ -59,4 +59,5 @@ $MESS["CC_BSC1_DEACTIVATION_ERROR"] = "Deaktivierung der Elemente ist fehlgeschl
 $MESS["CC_BCT1_TABLE_EXIST_ERROR"] = "Temporäre Tabelle existiert nicht.";
 $MESS["CC_BSC1_ERROR_DATABASE_SERVER_TIME"] = "Der Unterschied zwischen Zeit auf dem Datenbankserver und Webserverzeit beträgt mehr als 10 Minuten. Es kann sein, dass die Zeitzonen nicht korrekt eingestellt sind. Konfigurieren Sie bitte Zeitzonen und versuchen Sie erneut.";
 $MESS["CC_BCI1_DISABLE_CHANGE_PRICE_NAME"] = "Den Namen des Preistyps nicht ändern, wenn externe ID (XML_ID) benutzt wird";
+$MESS["CC_BSC1_IMPORT_COMPLETE"] = "Import abgeschlossen";
 ?>

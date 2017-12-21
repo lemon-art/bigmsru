@@ -632,7 +632,7 @@ class CAllSaleAffiliate
 			$coountArProd = count($arProductSections);
 			for ($i = 0; $i < $coountArProd; $i++)
 			{
-				if (array_key_exists($arOrder["BASKET_MODULE"].$arProductSections[$i], $arPlanSections))
+				if (!empty($arPlanSections[$arOrder["BASKET_MODULE"].$arProductSections[$i]]))
 				{
 					$realRate = $arPlanSections[$arOrder["BASKET_MODULE"].$arProductSections[$i]]["RATE"];
 					$realRateType = $arPlanSections[$arOrder["BASKET_MODULE"].$arProductSections[$i]]["RATE_TYPE"];
@@ -651,19 +651,11 @@ class CAllSaleAffiliate
 					if (!array_key_exists($arOrder["CURRENCY"]."-".$affiliateCurrency, $GLOBALS["SALE_CONVERT_CURRENCY_CACHE"]))
 						$GLOBALS["SALE_CONVERT_CURRENCY_CACHE"][$arOrder["CURRENCY"]."-".$affiliateCurrency] = CCurrencyRates::GetConvertFactor($arOrder["CURRENCY"], $affiliateCurrency);
 
-					if ($fOrderId != $arOrder["ID"])
-					{
-						$affiliateSum += \Bitrix\Sale\PriceMaths::roundPrecision((($arOrder["PRICE"] - $arOrder["PRICE_DELIVERY"]) * $GLOBALS["SALE_CONVERT_CURRENCY_CACHE"][$arOrder["CURRENCY"]."-".$affiliateCurrency] * $realRate) / 100);
-						$fOrderId = $arOrder["ID"];
-					}
+					$affiliateSum += \Bitrix\Sale\PriceMaths::roundPrecision((($arOrder["BASKET_PRICE"] * $arOrder["BASKET_QUANTITY"]) * $GLOBALS["SALE_CONVERT_CURRENCY_CACHE"][$arOrder["CURRENCY"]."-".$affiliateCurrency] * $realRate) / 100);
 				}
 				else
 				{
-					if ($fOrderId != $arOrder["ID"])
-					{
-						$affiliateSum += \Bitrix\Sale\PriceMaths::roundPrecision((($arOrder["PRICE"] - $arOrder["PRICE_DELIVERY"]) * $realRate) / 100);
-						$fOrderId = $arOrder["ID"];
-					}
+					$affiliateSum += \Bitrix\Sale\PriceMaths::roundPrecision((($arOrder["BASKET_PRICE"] * $arOrder["BASKET_QUANTITY"]) * $realRate) / 100);
 				}
 			}
 			else

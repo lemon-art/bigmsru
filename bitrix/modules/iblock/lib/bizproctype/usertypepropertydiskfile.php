@@ -225,4 +225,19 @@ class UserTypePropertyDiskFile extends UserTypeProperty
 			call_user_func_array($property['DeleteAttachedFiles'], array($iblockId, $values));
 		}
 	}
+
+	public static function toSingleValue(FieldType $fieldType, $value)
+	{
+		if (is_array($value) && isset($value['VALUE']))
+		{
+			$value = $value['VALUE'];
+		}
+		if (is_array($value) && isset($value[0]))
+		{
+			$value = $value[0];
+		}
+
+		return $value;
+	}
+
 }

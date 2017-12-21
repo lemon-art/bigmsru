@@ -35,6 +35,7 @@ class CSearchSphinx extends CSearchFullText
 	);
 	private $errorText = "";
 	private $errorNumber = 0;
+	private $recodeToUtf = false;
 	public $tags = "";
 	public $query = "";
 	public $SITE_ID = "";
@@ -54,7 +55,7 @@ class CSearchSphinx extends CSearchFullText
 			return false;
 		}
 
-		if (!function_exists("mysql_connect"))
+		if (!$this->canConnect())
 		{
 			if ($ignoreErrors)
 				$APPLICATION->ThrowException(GetMessage("SEARCH_SPHINX_CONN_EXT_IS_MISSING"));
@@ -63,22 +64,23 @@ class CSearchSphinx extends CSearchFullText
 			return false;
 		}
 
-		$this->db = @mysql_connect($connectionIndex);
+		$error = "";
+		$this->db = $this->internalConnect($connectionIndex, $error);
 		if (!$this->db)
 		{
 			if ($ignoreErrors)
-				$APPLICATION->ThrowException(GetMessage("SEARCH_SPHINX_CONN_ERROR", array("#ERRSTR#" => mysql_error())));
+				$APPLICATION->ThrowException(GetMessage("SEARCH_SPHINX_CONN_ERROR", array("#ERRSTR#" => $error)));
 			else
-				throw new \Bitrix\Main\Db\ConnectionException('Sphinx connect error', GetMessage("SEARCH_SPHINX_CONN_ERROR", array("#ERRSTR#" => mysql_error())));
+				throw new \Bitrix\Main\Db\ConnectionException('Sphinx connect error', GetMessage("SEARCH_SPHINX_CONN_ERROR", array("#ERRSTR#" => $error)));
 			return false;
 		}
 
 		if ($ignoreErrors)
 		{
-			$result = mysql_query("SHOW TABLES", $this->db);
+			$result = $this->query("SHOW TABLES");
 			if (!$result)
 			{
-				$APPLICATION->ThrowException(GetMessage("SEARCH_SPHINX_CONN_ERROR", array("#ERRSTR#" => mysql_error($this->db))));
+				$APPLICATION->ThrowException(GetMessage("SEARCH_SPHINX_CONN_ERROR", array("#ERRSTR#" => $this->getError())));
 				return false;
 			}
 
@@ -89,7 +91,7 @@ class CSearchSphinx extends CSearchFullText
 			}
 
 			$indexType = "";
-			while($res = mysql_fetch_array($result, MYSQL_ASSOC))
+			while($res = $this->fetch($result))
 			{
 				if ($indexName === $res["Index"])
 					$indexType = $res["Type"];
@@ -108,14 +110,14 @@ class CSearchSphinx extends CSearchFullText
 			}
 
 			$indexColumns = array();
-			$result = mysql_query("DESCRIBE `".$indexName."`", $this->db);
+			$result = $this->query("DESCRIBE `".$indexName."`");
 			if (!$result)
 			{
-				$APPLICATION->ThrowException(GetMessage("SEARCH_SPHINX_DESCR_ERROR", array("#ERRSTR#" => mysql_error($this->db))));
+				$APPLICATION->ThrowException(GetMessage("SEARCH_SPHINX_DESCR_ERROR", array("#ERRSTR#" => $this->getError())));
 				return false;
 			}
 
-			while($res = mysql_fetch_array($result, MYSQL_ASSOC))
+			while($res = $this->fetch($result))
 			{
 				$indexColumns[$res["Field"]] = $res["Type"];
 			}
@@ -135,20 +137,67 @@ class CSearchSphinx extends CSearchFullText
 				return false;
 			}
 		}
+
 		$this->indexName = $indexName;
 		$this->connectionIndex = $connectionIndex;
+
+		//2.2.1 version test (they added HAVING support and moved to UTF8)
+		if (
+			!defined("BX_UTF")
+			&& $this->query("select id from ".$this->indexName." where id=1 group by id having count(*) = 1")
+		)
+		{
+			$this->recodeToUtf = true;
+		}
+
 		return true;
 	}
 
 	public function truncate()
 	{
-		mysql_query("truncate rtindex ".$this->indexName);
+		$this->query("truncate rtindex ".$this->indexName);
 		$this->connect($this->connectionIndex, $this->indexName);
 	}
 
 	public function deleteById($ID)
 	{
-		mysql_query("delete from ".$this->indexName." where id = ".intval($ID));
+		$this->query("delete from ".$this->indexName." where id = ".intval($ID));
+	}
+
+	public function recodeTo($text)
+	{
+		if ($this->recodeToUtf)
+		{
+			$error = "";
+			$result = \Bitrix\Main\Text\Encoding::convertEncoding($text, SITE_CHARSET, "UTF-8", $error);
+			if (!$result && !empty($error))
+				#$this->ThrowException($error, "ERR_CHAR_BX_CONVERT");
+				return $text;
+
+			return $result;
+		}
+		else
+		{
+			return $text;
+		}
+	}
+
+	public function recodeFrom($text)
+	{
+		if ($this->recodeToUtf)
+		{
+			$error = "";
+			$result = \Bitrix\Main\Text\Encoding::convertEncoding($text, "UTF-8", SITE_CHARSET, $error);
+			if (!$result && !empty($error))
+				#$this->ThrowException($error, "ERR_CHAR_BX_CONVERT");
+				return $text;
+
+			return $result;
+		}
+		else
+		{
+			return $text;
+		}
 	}
 
 	public function replace($ID, $arFields)
@@ -185,8 +234,6 @@ class CSearchSphinx extends CSearchFullText
 		$sql = "
 			REPLACE INTO ".$this->indexName." (
 				id
-				,title
-				,body
 				,module_id
 				,module
 				,item_id
@@ -203,10 +250,10 @@ class CSearchSphinx extends CSearchFullText
 				,right
 				,site
 				,param
+				,title
+				,body
 			) VALUES (
 				$ID
-				,'".$this->Escape($arFields["TITLE"])."'
-				,'".$this->Escape($BODY)."'
 				,".sprintf("%u", crc32($arFields["MODULE_ID"]))."
 				,'".$this->Escape($arFields["MODULE_ID"])."'
 				,".sprintf("%u", crc32($arFields["ITEM_ID"]))."
@@ -223,13 +270,19 @@ class CSearchSphinx extends CSearchFullText
 				,(".$this->rights($arFields["PERMISSIONS"]).")
 				,(".$this->sites($arFields["SITE_ID"]).")
 				,(".$this->params($arFields["PARAMS"]).")
+				,'".$this->recodeTo($this->Escape($arFields["TITLE"]))."'
+				,'".$this->recodeTo($this->Escape($BODY))."'
 			)
 		";
-		$result = mysql_query($sql, $this->db);
+		$result = $this->query($sql);
 		if ($result)
+		{
 			$this->tagsRegister($arFields["SITE_ID"], $arFields["TAGS"]);
+		}
 		else
-			throw new \Bitrix\Main\Db\SqlQueryException('Sphinx select error', mysql_error($this->db), $sql);
+		{
+			throw new \Bitrix\Main\Db\SqlQueryException('Sphinx select error', $this->getError(), $sql);
+		}
 	}
 
 	public function update($ID, $arFields)
@@ -339,11 +392,11 @@ class CSearchSphinx extends CSearchFullText
 			foreach ($arUpdate as $columnName => $sqlValue)
 				$arUpdate[$columnName] = $columnName."=".$sqlValue;
 
-			mysql_query("
+			$this->query("
 				UPDATE ".$this->indexName." SET
 				".implode(", ", $arUpdate)."
 				WHERE id = $ID
-				", $this->db
+				"
 			);
 		}
 		elseif ($bReplace)
@@ -512,17 +565,25 @@ class CSearchSphinx extends CSearchFullText
 		$this->errorNumber = 0;
 
 		$this->tags = trim($arParams["TAGS"]);
-		if (is_array($aParamsEx) && !empty($aParamsEx))
-		{
-			$aParamsEx["LOGIC"] = "OR";
-			$arParams[] = $aParamsEx;
-		}
 
 		$limit = 0;
 		if (is_array($aParamsEx) && isset($aParamsEx["LIMIT"]))
 		{
 			$limit = intval($aParamsEx["LIMIT"]);
 			unset($aParamsEx["LIMIT"]);
+		}
+
+		$offset = 0;
+		if (is_array($aParamsEx) && isset($aParamsEx["OFFSET"]))
+		{
+			$offset = intval($aParamsEx["OFFSET"]);
+			unset($aParamsEx["OFFSET"]);
+		}
+
+		if (is_array($aParamsEx) && !empty($aParamsEx))
+		{
+			$aParamsEx["LOGIC"] = "OR";
+			$arParams[] = $aParamsEx;
 		}
 
 		$this->SITE_ID = $arParams["SITE_ID"];
@@ -537,7 +598,7 @@ class CSearchSphinx extends CSearchFullText
 		$strQuery = trim($arParams["QUERY"]);
 		if ($strQuery != "")
 		{
-			$arWhere[] = "MATCH('".$this->Escape($strQuery)."')";
+			$arWhere[] = "MATCH('".$this->recodeTo($this->Escape($strQuery))."')";
 			$this->query = $strQuery;
 		}
 
@@ -577,18 +638,18 @@ class CSearchSphinx extends CSearchFullText
 				$DB = CDatabase::GetModuleConnection('search');
 				$startTime = microtime(true);
 
-				$r =  mysql_query($sql, $this->db);
+				$r =  $this->query($sql);
 
 				if($DB->ShowSqlStat)
 					$DB->addDebugQuery($sql, microtime(true)-$startTime);
 
 				if (!$r)
 				{
-					throw new \Bitrix\Main\Db\SqlQueryException('Sphinx select error', mysql_error($this->db), $sql);
+					throw new \Bitrix\Main\Db\SqlQueryException('Sphinx select error', $this->getError(), $sql);
 				}
 				else
 				{
-					while($res = mysql_fetch_array($r, MYSQL_ASSOC))
+					while($res = $this->fetch($r))
 						$result[] = $res;
 				}
 			}
@@ -596,8 +657,13 @@ class CSearchSphinx extends CSearchFullText
 			{
 				$sql = "
 					select id
+					,item
+					,param1
+					,param2
 					,module_id
 					,param2_id
+					,date_change
+					,custom_rank
 					,weight() as rank
 					".($cond1 != ""? ",$cond1 as cond1": "")."
 					,if(date_to, date_to, ".$ts.") date_to_nvl
@@ -605,26 +671,26 @@ class CSearchSphinx extends CSearchFullText
 					from ".$this->indexName."
 					where ".implode("\nand\t", $arWhere)."
 					".$this->__PrepareSort($aSort)."
-					limit 0, ".$limit."
-					option max_matches = ".$limit."
+					limit ".$offset.", ".$limit."
+					option max_matches = ".($offset + $limit)."
 				";
 
 				$DB = CDatabase::GetModuleConnection('search');
 				$startTime = microtime(true);
 
-				$r =  mysql_query($sql, $this->db);
+				$r =  $this->query($sql);
 
 				if($DB->ShowSqlStat)
 					$DB->addDebugQuery($sql, microtime(true)-$startTime);
 
 				if (!$r)
 				{
-					throw new \Bitrix\Main\Db\SqlQueryException('Sphinx select error', mysql_error($this->db), $sql);
+					throw new \Bitrix\Main\Db\SqlQueryException('Sphinx select error', $this->getError(), $sql);
 				}
 				else
 				{
 					$forum = sprintf("%u", crc32("forum"));
-					while($res = mysql_fetch_array($r, MYSQL_ASSOC))
+					while($res = $this->fetch($r))
 					{
 						if($res["module_id"] == $forum)
 						{
@@ -690,7 +756,7 @@ class CSearchSphinx extends CSearchFullText
 			$arWhere[] = "right in (".$rights.")";
 
 		$arWhere[] = "site = ".sprintf("%u", crc32(SITE_ID));
-		$arWhere[] = "match('".$match."')";
+		$arWhere[] = "match('".$this->recodeTo($match)."')";
 
 		$sql = "
 			select id
@@ -701,6 +767,7 @@ class CSearchSphinx extends CSearchFullText
 			from ".$this->indexName."
 			where ".implode("\nand\t", $arWhere)."
 			".($cond1 != ""? " and cond1 = ".intval(!$bNotFilter): "")."
+			".$this->__PrepareSort($order)."
 			limit 0, ".$nTopCount."
 			option max_matches = ".$nTopCount."
 		";
@@ -708,19 +775,19 @@ class CSearchSphinx extends CSearchFullText
 		$DB = CDatabase::GetModuleConnection('search');
 		$startTime = microtime(true);
 
-		$r =  mysql_query($sql, $this->db);
+		$r =  $this->query($sql);
 
 		if($DB->ShowSqlStat)
 			$DB->addDebugQuery($sql, microtime(true)-$startTime);
 
 		if (!$r)
 		{
-			throw new \Bitrix\Main\Db\SqlQueryException('Sphinx select error', mysql_error($this->db), $sql);
+			throw new \Bitrix\Main\Db\SqlQueryException('Sphinx select error', $this->getError(), $sql);
 		}
 		else
 		{
 			$result = array();
-			while($res = mysql_fetch_array($r, MYSQL_ASSOC))
+			while($res = $this->fetch($r))
 			{
 				$result[] = $res["id"];
 			}
@@ -907,7 +974,7 @@ class CSearchSphinx extends CSearchFullText
 				}
 				else
 				{
-					AddMessage2Log("field: $field; val: ".$val);
+					AddMessage2Log("field: $field; val: ".print_r($val, 1));
 				}
 				break;
 			}
@@ -1011,6 +1078,8 @@ class CSearchSphinx extends CSearchFullText
 			"-",
 			"|",
 			"<",
+			"\x0",
+			"=",
 		);
 		static $replace = array(
 			"\\\\",
@@ -1026,6 +1095,8 @@ class CSearchSphinx extends CSearchFullText
 			"\\\\-",
 			"\\\\|",
 			"\\\\<",
+			" ",
+			" ",
 		);
 
 		$str = str_replace($search, $replace, $str);
@@ -1043,17 +1114,113 @@ class CSearchSphinx extends CSearchFullText
 			"\\",
 			"'",
 			"\"",
+			"\x0",
 		);
 		static $replace = array(
 			"\\\\",
 			"\\'",
 			"\\\\\"",
+			" ",
 		);
 		return str_replace($search, $replace, $str);
 	}
+
+	protected function canConnect()
+	{
+		return function_exists("mysql_connect") || function_exists("mysqli_connect");
+	}
+	
+	protected function internalConnect($connectionIndex, &$error)
+	{
+		$error = "";
+		if (function_exists("mysql_connect"))
+		{
+			$result = @mysql_connect($connectionIndex);
+			if (!$result)
+				$error = mysql_error();
+		}
+		elseif (function_exists("mysqli_connect"))
+		{
+			$result = mysqli_init();
+
+			if (strpos($connectionIndex, ":") !== false)
+			{
+				list($host, $port) = explode(":", $connectionIndex, 2);
+			}
+			else
+			{
+				$host = $connectionIndex;
+				$port = '';
+			}
+
+			if (!$result->real_connect($host, '', '', '', $port))
+			{
+				$error = mysqli_connect_error();
+				$result = false;
+			}
+		}
+		else
+		{
+			$result = false;
+			$error = 'No MySql connection function has been found.';
+		}
+
+		return $result;
+	}
+	
+	public function query($query)
+	{
+		if (is_resource($this->db))
+		{
+			$result = mysql_query($query, $this->db);
+		}
+		elseif (is_object($this->db))
+		{
+			$result = $this->db->query($query);
+		}
+		else
+		{
+			$result = false;
+		}
+		return $result;
+	}
+	
+	public function fetch($queryResult)
+	{
+		if (is_resource($this->db))
+		{
+			$result = mysql_fetch_array($queryResult, MYSQL_ASSOC);
+		}
+		elseif (is_object($this->db))
+		{
+			$result = mysqli_fetch_assoc($queryResult);
+		}
+		else
+		{
+			$result = false;
+		}
+		return $result;
+	}
+
+	public function getError()
+	{
+		if (is_resource($this->db))
+		{
+			$result = "[".mysql_errno($this->db)."] ".mysql_error($this->db);
+		}
+		elseif (is_object($this->db))
+		{
+			$result = "[".$this->db->errno."] ".$this->db->error;
+		}
+		else
+		{
+			$result = '';
+		}
+		return $result;
+	}
 }
 
-class CSearchSphinxFormatter
+class CSearchSphinxFormatter extends CSearchFormatter
 {
 	/** @var CSearchSphinx */
 	private $sphinx = null;
@@ -1143,19 +1310,20 @@ class CSearchSphinxFormatter
 	public function buildExcerpts($str)
 	{
 		$sql = "CALL SNIPPETS(
-			'".$this->sphinx->Escape2($str)."'
+			'".$this->sphinx->Escape2($this->sphinx->recodeTo($str))."'
 			,'".$this->sphinx->Escape($this->sphinx->indexName)."'
-			,'".$this->sphinx->Escape($this->sphinx->query.$this->sphinx->tags)."'
+			,'".$this->sphinx->Escape($this->sphinx->recodeTo($this->sphinx->query." ".$this->sphinx->tags))."'
 			,500 as limit
+			,1 as query_mode
 		)";
-		$result = mysql_query($sql, $this->sphinx->db);
+		$result = $this->sphinx->query($sql);
 
 		if ($result)
 		{
-			$res = mysql_fetch_array($result, MYSQL_ASSOC);
+			$res = $this->sphinx->fetch($result);
 			if ($res)
 			{
-				return $res["snippet"];
+				return $this->sphinx->recodeFrom($res["snippet"]);
 			}
 			else
 			{
@@ -1164,7 +1332,7 @@ class CSearchSphinxFormatter
 		}
 		else
 		{
-			throw new \Bitrix\Main\Db\SqlQueryException('Sphinx select error', mysql_error($this->sphinx->db), $sql);
+			throw new \Bitrix\Main\Db\SqlQueryException('Sphinx select error', $this->sphinx->getError(), $sql);
 		}
 	}
 }

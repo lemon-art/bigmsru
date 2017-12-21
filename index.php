@@ -76,6 +76,74 @@ $APPLICATION->SetTitle("\"Большой мастер\" - Интернет-ма�
 	false
 );?>
 
+<style>
+.wrap_blocks{
+	display: inline-flex;
+    width: 100%;
+	padding: 20px 0px 0px 0px;
+	text-align:center;
+}
+.r_a, .l_a{
+	position: relative;
+}
+.l_span
+{
+    position: absolute;
+    left: 0;
+    top: -178px;
+    display: block;
+    font-size: 30px;
+    color: #0043ff;
+    font-family: 'Museo700', sans-serif, Arial;
+    width: 50%;
+	background: #ffffffa6;
+}
+.r_span
+{
+    position: absolute;
+    left: 0;
+    top: -178px;
+    display: block;
+    font-size: 30px;
+    color: #0043ff;
+    font-family: 'Museo700', sans-serif, Arial;
+    width: 39%;
+	background: #ffffffa6;
+}
+.r_img, .l_img{
+	width: 481px;
+	height:300px;
+}
+.r_block{
+    width: 50%;
+}
+.l_block{
+	width: 50%;
+}
+.banner_text
+{
+    margin: 6px;
+}
+</style>
+
+
+<div class="wrap_blocks">
+	<?$APPLICATION->IncludeComponent(
+		"bitrix:main.include",
+		"",
+		Array(
+			"AREA_FILE_SHOW" => "file",
+			"AREA_FILE_SUFFIX" => "inc",
+			"COMPOSITE_FRAME_MODE" => "A",
+			"COMPOSITE_FRAME_TYPE" => "AUTO",
+			"EDIT_TEMPLATE" => "",
+			"PATH" => "/include/banner_info.php"
+		)
+	);?>
+</div>
+
+
+
 </section>
 
 	<?
@@ -382,9 +450,8 @@ $APPLICATION->SetTitle("\"Большой мастер\" - Интернет-ма�
 			false
 		);?>
 		
-		
-		
-	
+
+
 						<?$APPLICATION->IncludeComponent(
 			"bitrix:catalog.section", 
 			"carusel_main", 
@@ -683,9 +750,24 @@ $APPLICATION->SetTitle("\"Большой мастер\" - Интернет-ма�
 				</ul>
 			</div>
 		</section> 
-		
-		
+
+
+
 		<section class="advantages">
+			<div class="text_main">
+			<?$APPLICATION->IncludeComponent(
+				"bitrix:main.include",
+				"",
+				Array(
+					"AREA_FILE_SHOW" => "file",
+					"AREA_FILE_SUFFIX" => "inc",
+					"COMPOSITE_FRAME_MODE" => "A",
+					"COMPOSITE_FRAME_TYPE" => "AUTO",
+					"EDIT_TEMPLATE" => "",
+					"PATH" => "/include/main_imfo.php"
+				)
+			);?>
+			</div>
                 <h2 class="content-h2">Наши преимущества</h2>
                 <ul class="advantages__list">
                   <li class="advantages__item">

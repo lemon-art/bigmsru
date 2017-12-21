@@ -16,9 +16,14 @@ else if ($_REQUEST["action"] == "error")
 	$errorCatcher = new \Bitrix\Main\UI\Uploader\ErrorCatcher();
 	$errorCatcher->log($_REQUEST["path"], $_REQUEST["data"]);
 }
+else if ($_SERVER["REQUEST_METHOD"] == "GET")
+{
+	$uploader = new \Bitrix\Main\UI\Uploader\Uploader($_GET);
+	$uploader->checkPost(false);
+}
 else
 {
-	$receiver = new \Bitrix\Main\UI\FileInputReceiver;
-	$receiver->setSignature($_POST["signature"])->exec();
+	$receiver = new \Bitrix\Main\UI\FileInputReceiver($_POST, $_POST["signature"]);
+	$receiver->exec();
 }
 

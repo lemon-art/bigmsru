@@ -3,7 +3,7 @@
 		return false;
 	var BX = window.BX, E = {},
 	FormToArray = function(form, data) {
-		data = (!!data ? data : {});
+		data = (data || {});
 		var i, ii,
 			_data = [],
 			n = form.elements.length,
@@ -195,7 +195,7 @@
 					style : { display : "none" },
 					html : [
 						'<div class="bxu-edit-top"> \
-							<span class="bxu-edit-name" id="', this.id, 'title">', params["title"], '</span> \
+							<span class="bxu-edit-name" id="', this.id, 'title">', BX.util.htmlspecialchars(params["title"]), '</span> \
 							<span class="bxu-edit-cls" id="', this.id, 'close"></span> \
 						</div> \
 						<div class="bxu-edit-img-wrap">\
@@ -230,7 +230,7 @@
 								</span> \
 							</div> \
 							<div class="bxu-edit-inp-wrap"> \
-								<form onsubmit="return false;" id="', this.id , 'params">', (!!params["template"] ? params["template"] : ''), '</form> \
+								<form onsubmit="return false;" id="', this.id , 'params">', (params["template"] || ''), '</form> \
 							</div> \
 						</div>'].join("")
 				});
@@ -289,7 +289,7 @@
 			var func2 = BX.delegate(function(){
 				if (canvas != null)
 					this.copyCanvas(canvas);
-				BX(this.id + 'params').innerHTML = (!!params["template"] ? params["template"] : '');
+				BX(this.id + 'params').innerHTML = (params["template"] || '');
 				if (!!params["template"])
 				{
 					BX.defer_proxy(function(){
@@ -307,7 +307,7 @@
 						}
 					}, this)();
 				}
-				BX(this.id + 'title').innerHTML = (!!params["title"] ? params["title"] : '');
+				BX(this.id + 'title').innerHTML = BX.util.htmlspecialchars(params["title"] || '');
 				BX.removeCustomEvent(this.popup, "onAfterPopupShow", func2);
 			}, this);
 			BX.addCustomEvent(this.popup, "onAfterPopupShow", func2);
@@ -403,7 +403,7 @@
 		{
 			this.orig = canvas;
 
-			params = (!!params ? params : {});
+			params = (params || {});
 			params.width = (params.width > 0 ? params.width : 0);
 			params.height = (params.height > 0 ? params.height : 0);
 

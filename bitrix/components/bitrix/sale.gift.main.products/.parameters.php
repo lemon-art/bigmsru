@@ -537,6 +537,35 @@ $arComponentParameters = array(
 	),
 );
 
+$arTemplateParameters['SHOW_SLIDER'] = array(
+	'PARENT' => 'VISUAL',
+	'NAME' => GetMessage('CP_SGMP_SHOW_SLIDER'),
+	'TYPE' => 'CHECKBOX',
+	'MULTIPLE' => 'N',
+	'REFRESH' => 'Y',
+	'DEFAULT' => 'N'
+);
+
+if (isset($arCurrentValues['SHOW_SLIDER']) && $arCurrentValues['SHOW_SLIDER'] === 'Y')
+{
+	$arTemplateParameters['SLIDER_INTERVAL'] = array(
+		'PARENT' => 'VISUAL',
+		'NAME' => GetMessage('CP_SGMP_SLIDER_INTERVAL'),
+		'TYPE' => 'TEXT',
+		'MULTIPLE' => 'N',
+		'REFRESH' => 'N',
+		'DEFAULT' => '5000'
+	);
+	$arTemplateParameters['SLIDER_PROGRESS'] = array(
+		'PARENT' => 'VISUAL',
+		'NAME' => GetMessage('CP_SGMP_SLIDER_PROGRESS'),
+		'TYPE' => 'CHECKBOX',
+		'MULTIPLE' => 'N',
+		'REFRESH' => 'N',
+		'DEFAULT' => 'N'
+	);
+}
+
 CIBlockParameters::AddPagerSettings(
 	$arComponentParameters,
 	GetMessage("T_IBLOCK_DESC_PAGER_CATALOG"), //$pager_title

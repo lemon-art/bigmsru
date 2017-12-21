@@ -109,7 +109,7 @@ create table if not exists b_form_menu (
 	ID int(18) not null auto_increment,
 	FORM_ID int(18) not null default '0',
 	LID char(2) not null,
-	MENU varchar(50) not null,
+	MENU varchar(50) null,
 	primary key (ID),
 	index IX_FORM_ID (FORM_ID)
 );

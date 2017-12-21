@@ -506,3 +506,132 @@ p.adm-composite-status-desc {
 .clb {
 	clear: both;
 }
+
+
+.adm-composite-diff-body {
+	background: #fff;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+.adm-composite-diff-header {
+	position: fixed;
+	left: 0;
+	right: 0;
+	height: 25px;
+	line-height: 25px;
+	background: #ccc;
+	font-weight: bold;
+	z-index: 2;
+}
+
+.adm-composite-left-header {
+	position: absolute;
+	left: 10px;
+	top: 0;
+	color: #911100;
+}
+
+.adm-composite-right-header {
+	position: absolute;
+	left: 50%;
+	top: 0;
+	color: #08361b;
+}
+
+.adm-composite-diff {
+	display: flex;
+	position: absolute;
+	top: 25px;
+	left: 0;
+	bottom: 0;
+	right: 0;
+}
+
+.adm-composite-diff-gutter {
+	margin: 0 10px;
+	padding: 10px 0;
+	background: #ccc;
+	color: #911100;
+	white-space: nowrap;
+}
+
+.adm-composite-line-numbers {
+	display: inline-block;
+	width: 50%;
+	vertical-align: top;
+
+}
+
+.adm-composite-line-number {
+	height: 18px;
+	padding: 0 5px;
+	font: 14px/normal "Consolas", "source-code-pro", monospace;
+	background: #ccc;
+}
+
+.adm-composite-left-numbers .adm-composite-line-number {
+	border-left: 1px solid #aaa;
+}
+
+.adm-composite-right-numbers .adm-composite-line-number {
+	border-right: 1px solid #aaa;
+}
+
+.adm-composite-left-numbers {
+	text-align: left;
+}
+
+.adm-composite-right-numbers {
+	text-align: right;
+}
+
+.adm-composite-diff-file {
+	width: 50%;
+	margin: 10px;
+	overflow: scroll;
+	vertical-align: top;
+	flex: 1;
+}
+
+.adm-composite-diff-line {
+	white-space: pre;
+	height: 18px;
+	font: 14px/normal "Consolas", "source-code-pro", monospace;
+}
+
+.adm-composite-diff-line-content {
+	display: inline;
+}
+
+.adm-composite-diff-line:empty {
+	line-height: inherit;
+	height: 18px;
+}
+
+.adm-composite-inserted-line,
+.adm-composite-inserted-line .adm-composite-diff-line-content {
+	background: #15eb66;
+	color: #08361b;
+}
+
+.adm-composite-deleted-line,
+.adm-composite-deleted-line .adm-composite-diff-line-content {
+	background: #ccc;
+	color: red;
+}
+
+.adm-composite-diff-notice {
+	position: absolute;
+	left: 50%;
+	top: 25px;
+	padding: 5px 10px;
+	transform: translateX(-50%);
+	background: #fff073;
+}
+
+.adm-composite-source-link {
+	font-size: 14px;
+	color: #00387b;
+}

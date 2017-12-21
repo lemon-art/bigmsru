@@ -414,7 +414,8 @@
 				getData: this.editor.GetReqData('load_components_list',
 					{
 						site_template: this.editor.GetTemplateId(),
-						componentFilter: this.editor.GetComponentFilter()
+						componentFilter: this.editor.GetComponentFilter(),
+						site: this.editor.GetSiteId()
 					}
 				),
 				handler: function(res)

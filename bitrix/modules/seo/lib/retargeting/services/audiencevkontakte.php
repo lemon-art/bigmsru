@@ -73,7 +73,7 @@ class AudienceVkontakte extends Audience
 	{
 		//https://vk.com/dev/ads.importTargetContacts
 		$response = $this->getRequest()->send(array(
-			'method' => 'GET',
+			'method' => 'POST',
 			'endpoint' => 'ads.importTargetContacts',
 			'fields' => array(
 				'account_id' => $this->accountId,
@@ -94,7 +94,7 @@ class AudienceVkontakte extends Audience
 	public function getList()
 	{
 		return $this->getRequest()->send(array(
-			'method' => 'GET',
+			'method' => 'POST',
 			'endpoint' => 'ads.getTargetGroups',
 			'fields' => array(
 				'account_id' => $this->accountId,

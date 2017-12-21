@@ -145,8 +145,7 @@ var bx_app_pass_mess = {
 			<div class="bx-otp-popup-lottery-container">
 
 			<p><?echo GetMessage("main_app_pass_create_pass_text")?> </p>
-			<div class="bx-otp-popup-lottery">
-				<div class="bx-otp-popup-lottery-animate" id="bx_app_pass_lottery"></div>
+			<div class="bx-otp-popup-lottery bx-otp-popup-lottery-black" id="bx_app_pass_lottery">
 				<span id="bx_app_pass_password"></span>
 			</div>
 		</div>

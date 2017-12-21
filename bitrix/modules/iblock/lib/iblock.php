@@ -47,24 +47,32 @@ Loc::loadMessages(__FILE__);
  */
 class IblockTable extends Entity\DataManager
 {
-	const SELECT = 'L';
-	const DROPDOWNS = 'D';
-	const PATH = 'P';
-	const SEPARATE = 'S';
-	const COMBINED = 'C';
-	const SIMPLE = 'S';
-	const EXTENDED = 'E';
-	const INVALID = 'I';
+	const PROPERTY_STORAGE_COMMON = 1;
+	const PROPERTY_STORAGE_SEPARATE = 2;
 
-	/**
-	 * Returns path to the file which contains definition of the class.
-	 *
-	 * @return string
-	 */
-	public static function getFilePath()
-	{
-		return __FILE__;
-	}
+	const RIGHTS_SIMPLE = 'S';
+	const RIGHTS_EXTENDED = 'E';
+
+	const PROPERTY_INDEX_DISABLE = 'N';
+	const PROPERTY_INDEX_ENABLE = 'Y';
+	const PROPERTY_INDEX_INVALID = 'I';
+
+	const LIST_MODE_SEPARATE = 'S';
+	const LIST_MODE_COMBINED = 'C';
+
+	const SECTION_CHOOSER_SELECT = 'L';
+	const SECTION_CHOOSER_DROPDOWNS = 'D';
+	const SECTION_CHOOSER_PATH = 'P';
+
+	/* deprecated constants */
+	const SELECT = self::SECTION_CHOOSER_SELECT;
+	const DROPDOWNS = self::SECTION_CHOOSER_DROPDOWNS;
+	const PATH = self::SECTION_CHOOSER_PATH;
+	const SIMPLE = self::RIGHTS_SIMPLE;
+	const EXTENDED = self::RIGHTS_EXTENDED;
+	const SEPARATE = self::LIST_MODE_SEPARATE;
+	const COMBINED = self::LIST_MODE_COMBINED;
+	const INVALID = self::PROPERTY_INDEX_INVALID;
 
 	/**
 	 * Returns DB table name for entity
@@ -185,17 +193,24 @@ class IblockTable extends Entity\DataManager
 			),
 			'SECTION_CHOOSER' => array(
 				'data_type' => 'enum',
-				'values' => array(self::SELECT, self::DROPDOWNS, self::PATH),
+				'values' => array(
+					self::SECTION_CHOOSER_SELECT,
+					self::SECTION_CHOOSER_DROPDOWNS,
+					self::SECTION_CHOOSER_PATH
+				),
+				'default_value' => self::SECTION_CHOOSER_SELECT,
 				'title' => Loc::getMessage('IBLOCK_ENTITY_SECTION_CHOOSER_FIELD'),
 			),
 			'LIST_MODE' => array(
 				'data_type' => 'enum',
-				'values' => array(self::SEPARATE, self::COMBINED),
+				'values' => array(self::LIST_MODE_COMBINED, self::LIST_MODE_SEPARATE),
+				'default_value' => self::LIST_MODE_COMBINED,
 				'title' => Loc::getMessage('IBLOCK_ENTITY_LIST_MODE_FIELD'),
 			),
 			'RIGHTS_MODE' => array(
 				'data_type' => 'enum',
-				'values' => array(self::SIMPLE, self::EXTENDED),
+				'values' => array(self::RIGHTS_SIMPLE, self::RIGHTS_EXTENDED),
+				'default_value' => self::RIGHTS_SIMPLE,
 				'title' => Loc::getMessage('IBLOCK_ENTITY_RIGHTS_MODE_FIELD'),
 			),
 			'SECTION_PROPERTY' => array(
@@ -205,12 +220,14 @@ class IblockTable extends Entity\DataManager
 			),
 			'PROPERTY_INDEX' => array(
 				'data_type' => 'enum',
-				'values' => array('N', 'Y', self::INVALID),
+				'values' => array(self::PROPERTY_INDEX_DISABLE, self::PROPERTY_INDEX_ENABLE, self::PROPERTY_INDEX_INVALID),
+				'default' => self::PROPERTY_INDEX_DISABLE,
 				'title' => Loc::getMessage('IBLOCK_ENTITY_SECTION_PROPERTY_FIELD'),
 			),
 			'VERSION' => array(
 				'data_type' => 'enum',
-				'values' => array(1, 2),
+				'values' => array(self::PROPERTY_STORAGE_COMMON, self::PROPERTY_STORAGE_SEPARATE),
+				'default_value' => self::PROPERTY_STORAGE_COMMON,
 				'title' => Loc::getMessage('IBLOCK_ENTITY_VERSION_FIELD'),
 			),
 			'LAST_CONV_ELEMENT' => array(

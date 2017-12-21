@@ -7,6 +7,7 @@ use Bitrix\Main\IO\Directory;
 use Bitrix\Main\Result;
 use Bitrix\Main\SystemException;
 use Bitrix\Main\Localization\Loc;
+use Bitrix\Sale\TradingPlatform\Logger;
 use Bitrix\Sale\TradingPlatform\Sftp;
 use Bitrix\Main\ArgumentNullException;
 use Bitrix\Sale\TradingPlatform\Ebay\Feed\Manager;
@@ -263,6 +264,7 @@ class Helper
 			"EBAY_DATA_PROCESSOR_ORDER_SAVE_ERROR" => Loc::getMessage("SALE_EBAY_AT_DATA_PROCESSOR_ORDER_SAVE_ERROR"),
 			"EBAY_DATA_PROCESSOR_ORDER_CORR_SAVE_ERROR" => Loc::getMessage("SALE_EBAY_AT_DATA_PROCESSOR_ORDER_CORR_SAVE_ERROR"),
 			"EBAY_DATA_PROCESSOR_SFTPQUEUE_FLUSHING" => Loc::getMessage("SALE_EBAY_AT_DATA_PROCESSOR_SFTPQUEUE_FLUSHING"),
+			"EBAY_SFTP_TOKEN_EXP" => Loc::getMessage("SALE_EBAY_AT_SFTP_TOKEN_EXP"),
 		);
 
 		array_walk($result, function(&$value, $key, $prefix)	{
@@ -290,11 +292,25 @@ class Helper
 		{
 			$ebay = \Bitrix\Sale\TradingPlatform\Ebay\Ebay::getInstance();
 			$settings = $ebay->getSettings();
+			$host = isset($settings[$siteId]["SFTP_HOST"]) ? $settings[$siteId]["SFTP_HOST"] : "mip.ebay.com";
+			$port = isset($settings[$siteId]["SFTP_PORT"]) ? $settings[$siteId]["SFTP_PORT"] : 22;
+			$fingerprint = strlen($settings[$siteId]["SFTP_HOST_FINGERPRINT"]) > 0 ? $settings[$siteId]["SFTP_HOST_FINGERPRINT"] : "DD1FEE728C2E1FF2AACC2724929C3CF1";
 
-			$sftp[$siteId] = new Sftp(
-				$settings[$siteId]["SFTP_LOGIN"],
-				$settings[$siteId]["SFTP_PASS"]
-			);
+			if(!empty($settings[$siteId]["SFTP_TOKEN_EXP"]) && date('c') > date($settings[$siteId]["SFTP_TOKEN_EXP"]))
+			{
+					Ebay::log(Logger::LOG_LEVEL_ERROR, "EBAY_SFTP_TOKEN_EXP", 'SFTP token', Loc::getMessage('SALE_EBAY_AT_SFTP_TOKEN_EXP_MESSAGE'), $siteId);
+					throw new SystemException(Loc::getMessage('SALE_EBAY_AT_SFTP_TOKEN_EXP_MESSAGE'));
+			}
+			else
+			{
+				$sftp[$siteId] = new Sftp(
+					$settings[$siteId]["SFTP_LOGIN"],
+					$settings[$siteId]["SFTP_PASS"],
+					$host,
+					$port,
+					$fingerprint
+				);
+			}
 		}
 
 		return $sftp[$siteId];

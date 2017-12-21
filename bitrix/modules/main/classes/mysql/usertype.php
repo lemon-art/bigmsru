@@ -60,16 +60,6 @@ class CUserTypeEntity extends CAllUserTypeEntity
 	}
 }
 
-class CUserTypeManager extends CAllUserTypeManager
-{
-
-	function DateTimeToChar($FIELD_NAME)
-	{
-		global $DB;
-		return "IF(DATE(".$FIELD_NAME.")<>".$FIELD_NAME.", ".$DB->DateToCharFunction($FIELD_NAME, "FULL").", ".$DB->DateToCharFunction($FIELD_NAME, "SHORT").")";
-	}
-}
-
 class CSQLWhere extends CAllSQLWhere
 {
 	function _Empty($field)

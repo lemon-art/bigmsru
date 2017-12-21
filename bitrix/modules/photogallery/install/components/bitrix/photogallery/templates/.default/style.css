@@ -585,7 +585,7 @@ div.photo-edit-fields-gallery div.photo-edit-field-description label{
 				Pages
 ********************************************************************/
 /************** Index Page *****************************************/
-div.photo-page-main {position: relative;}
+div.photo-page-main {position: relative; min-height: 300px;}
 div.photo-page-main div.photo-controls-buttons, div.photo-page-main div#photo-links-on-main-page, div.photo-page-main div.photo-info-box-tags-cloud {margin-bottom: 2.8em;}
 div.photo-page-main div#photo-main-page-right ul.photo-controls {height: auto;}
 div.photo-page-main div#photo-main-page-right ul.photo-controls li{clear: both;}

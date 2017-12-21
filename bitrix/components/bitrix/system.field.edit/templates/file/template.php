@@ -1,5 +1,10 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
+/**
+ * @var array $arParams
+ * @var array $arResult
+ */
+
 foreach (GetModuleEvents("main", "system.field.edit.file", true) as $arEvent)
 {
 	if (ExecuteModuleEventEx($arEvent, array($arResult, $arParams)))
@@ -10,6 +15,13 @@ foreach (GetModuleEvents("main", "system.field.edit.file", true) as $arEvent)
 <div id="main_<?=$arParams["arUserField"]["FIELD_NAME"]?>">
 <?
 $postFix = ($arParams["arUserField"]["MULTIPLE"] == "Y" ? "[]" : "");
+
+if($arParams["arUserField"]["MULTIPLE"] == "Y" && $arParams["SHOW_BUTTON"] != "N" && $arParams["bVarsFromForm"])
+{
+	//multiple - we have additional hidden to clone, need to remove it
+	array_pop($arResult["VALUE"]);
+}
+
 foreach ($arResult["VALUE"] as $res):
 	?>
 	<div class="fields files">

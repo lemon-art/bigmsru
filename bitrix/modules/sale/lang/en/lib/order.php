@@ -52,4 +52,6 @@ $MESS["SALE_ORDER_RETURN_ORDER_CANCELED"] = "Cannot refund a canceled order.";
 $MESS["SALE_ORDER_PRICE_DELIVERY_ORDER_CANCELED"] = "Cannot change delivery price for a canceled order.";
 $MESS["SALE_ORDER_WRONG_ID"] = "Invalid order ID.";
 $MESS["SALE_EVENT_ON_BEFORE_SALEORDER_SET_FIELD_ERROR"] = "Error in order field value set event";
+$MESS["SALE_ORDER_PAYMENT_CANCELLED_PAID"] = "Error canceling payment";
+$MESS["SALE_ORDER_PAYMENT_RETURN_NO_SUPPORTED"] = "The payment system does not support chargebacks";
 ?>

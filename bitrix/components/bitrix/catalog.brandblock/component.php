@@ -22,17 +22,6 @@ if (!isset($arParams["CACHE_TIME"]))
 
 $arParams['ELEMENT_COUNT'] = (isset($arParams['ELEMENT_COUNT']) ? (int)$arParams['ELEMENT_COUNT'] : 0);
 $arParams['SINGLE_COMPONENT'] = (isset($arParams['SINGLE_COMPONENT']) && $arParams['SINGLE_COMPONENT'] == 'Y' ? 'Y' : 'N');
-if ($arParams['SINGLE_COMPONENT'] == 'Y')
-{
-	$countImg = $arParams["ELEMENT_COUNT"];
-	if($arParams["ELEMENT_COUNT"] > 7)
-		$countImg = 7;
-	else if($arParams["ELEMENT_COUNT"] < 2)
-		$countImg = 2;
-
-	$arParams["ELEMENT_COUNT"] = $countImg;
-	$arParams["~ELEMENT_COUNT"] = $countImg;
-}
 
 if(!isset($arParams["WIDTH"]) || intval($arParams["WIDTH"]) <= 0)
 	$arParams["WIDTH"] = 120;
@@ -53,18 +42,18 @@ if (!is_array($arParams['PROP_CODE']))
 
 //Let's cache it
 $additionalCache = $arParams["CACHE_GROUPS"] === "N"? false: array($USER->GetGroups());
-if ($this->StartResultCache(false, $additionalCache))
+if ($this->startResultCache(false, $additionalCache))
 {
 	if (!Loader::includeModule("iblock"))
 	{
-		$this->AbortResultCache();
+		$this->abortResultCache();
 		ShowError(GetMessage("IBLOCK_CBB_IBLOCK_NOT_INSTALLED"));
 		return;
 	}
 
 	if (!Loader::includeModule('highloadblock'))
 	{
-		$this->AbortResultCache();
+		$this->abortResultCache();
 		ShowError(GetMessage("IBLOCK_CBB_HLIBLOCK_NOT_INSTALLED"));
 		return;
 	}
@@ -72,7 +61,7 @@ if ($this->StartResultCache(false, $additionalCache))
 	$arParams['PROP_CODE'] = array_filter($arParams['PROP_CODE'], 'CIBlockParameters::checkParamValues');
 	if (empty($arParams['PROP_CODE']))
 	{
-		$this->AbortResultCache();
+		$this->abortResultCache();
 		return;
 	}
 
@@ -92,7 +81,7 @@ if ($this->StartResultCache(false, $additionalCache))
 
 		$arParams["ELEMENT_ID"] = CIBlockFindTools::GetElementID(
 			$arParams["ELEMENT_ID"],
-			$arParams["ELEMENT_CODE"],
+			$arParams["~ELEMENT_CODE"],
 			false,
 			false,
 			$findFilter
@@ -178,7 +167,7 @@ if ($this->StartResultCache(false, $additionalCache))
 
 	if (empty($propList))
 	{
-		$this->AbortResultCache();
+		$this->abortResultCache();
 		return;
 	}
 
@@ -226,10 +215,11 @@ if ($this->StartResultCache(false, $additionalCache))
 
 	if (empty($reqParams))
 	{
-		$this->AbortResultCache();
+		$this->abortResultCache();
 		return;
 	}
 
+	$checkCount = ($arParams['SINGLE_COMPONENT'] == 'Y' && $arParams['ELEMENT_COUNT'] > 0);
 	$fullCount = 0;
 	foreach ($reqParams as &$params)
 	{
@@ -249,9 +239,11 @@ if ($this->StartResultCache(false, $additionalCache))
 		$directoryOrder['ID'] = 'ASC';
 
 		$arFilter = array(
-			'order' => $directoryOrder,
-			'limit' => $arParams['ELEMENT_COUNT']
+			'order' => $directoryOrder
 		);
+		if ($arParams['ELEMENT_COUNT'] > 0)
+			$arFilter['limit'] = $arParams['ELEMENT_COUNT'];
+
 		if($arResult['ID'] > 0 && $params['VALUES'] !== false)
 		{
 			$arFilter['filter'] = array(
@@ -334,14 +326,14 @@ if ($this->StartResultCache(false, $additionalCache))
 				'PICT' => ($boolPict ? $arEnum['PREVIEW_PICTURE'] : false)
 			);
 			$fullCount++;
-			if ($arParams['SINGLE_COMPONENT'] == 'Y' && $fullCount >= $arParams['ELEMENT_COUNT'])
+			if ($checkCount && $fullCount >= $arParams['ELEMENT_COUNT'])
 				break 2;
 		}
 	}
 	unset($params, $reqParams);
-	unset($fullCount);
+	unset($fullCount, $checkCount);
 
 	$arResult["BRAND_BLOCKS"] = $arBrandBlocks;
 
-	$this->IncludeComponentTemplate();
+	$this->includeComponentTemplate();
 }

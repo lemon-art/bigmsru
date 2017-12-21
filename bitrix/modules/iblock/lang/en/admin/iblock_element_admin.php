@@ -59,7 +59,6 @@ $MESS["IBEL_A_IBLOCK_MANAGE_HINT"] = "You can edit the Information Block access 
 $MESS["IBEL_A_IBLOCK_MANAGE_HINT_HREF"] = "Information Block settings page.";
 $MESS["IBEL_A_COPY_ELEMENT"] = "Copy";
 $MESS["IBEL_CATALOG_AVAILABLE"] = "Availability";
-$MESS["IBEL_CATALOG_AVAILABLE_TITLE"] = "Available for purchase";
 $MESS["IBEL_CATALOG_BUNDLE"] = "Bundle";
 $MESS["IBEL_CATALOG_QUANTITY_EXT"] = "Quantity in stock";
 $MESS["IBEL_CATALOG_QUANTITY_RESERVED"] = "Reserved";
@@ -126,4 +125,5 @@ $MESS["IBLIST_CHPRICE_ERROR_BASE_FROM_EXTRA_SIMPLE_ELEMENTS"] = "Error updating 
 $MESS["IBLIST_CHPRICE_ERROR_WRONG_VALUE_SKU_ELEMENTS"] = "Update error: the new value of the SKU [##ID#] \"#NAME#\" is less than or equal to zero.";
 $MESS["IBLIST_CHPRICE_ERROR_PRICE_WITH_EXTRA_SKU_ELEMENTS"] = "Error updating SKU [##ID#] \"#NAME#\": cannot change price defined as surcharge to the base price.";
 $MESS["IBLIST_CHPRICE_ERROR_BASE_FROM_EXTRA_SKU_ELEMENTS"] = "Error updating SKU [##ID#] \"#NAME#\": cannot calculate base price using surcharge and the specified price.";
+$MESS["IBEL_CATALOG_AVAILABLE_TITLE_EXT"] = "Product availability (not the same as available for purchase)";
 ?>

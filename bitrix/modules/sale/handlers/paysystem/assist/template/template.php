@@ -13,23 +13,24 @@ $context = \Bitrix\Main\Application::getInstance()->getContext();
 	echo $payment->getField('ACCOUNT_NUMBER').Loc::getMessage("SALE_HANDLERS_PAY_SYSTEM_ASSIST_ORDER_FROM").$params['PAYMENT_DATE_INSERT']."<br>";
 	echo Loc::getMessage("SALE_HANDLERS_PAY_SYSTEM_ASSIST_ORDER_SUM")." <b>";
 	echo SaleFormatCurrency($params['PAYMENT_SHOULD_PAY'], $params['PAYMENT_CURRENCY'])."</b><br>";
+	$comment = "Invoice ".$params['PAYMENT_ID']." (".$params['PAYMENT_DATE_INSERT'].")";
 ?>
 <br>
-<input type="hidden" name="Merchant_ID" value="<?=$params['ASSIST_SHOP_IDP'];?>">
-<input type="hidden" name="OrderNumber" value="<?=$params['PAYMENT_ID']?>">
+<input type="hidden" name="Merchant_ID" value="<?=htmlspecialcharsbx($params['ASSIST_SHOP_IDP']);?>">
+<input type="hidden" name="OrderNumber" value="<?=htmlspecialcharsbx($params['PAYMENT_ID'])?>">
 <input type="hidden" name="OrderAmount" value="<?=(str_replace(",", ".", $params['PAYMENT_SHOULD_PAY']));?>">
-<input type="hidden" name="OrderCurrency" value="<?=(($params['PAYMENT_CURRENCY'] == "RUR") ? "RUB" : $params['PAYMENT_CURRENCY']);?>">
-<input type="hidden" name="Delay" value="<?=$params['ASSIST_DELAY']?>">
+<input type="hidden" name="OrderCurrency" value="<?=(($params['PAYMENT_CURRENCY'] == "RUR") ? "RUB" : htmlspecialcharsbx($params['PAYMENT_CURRENCY']));?>">
+<input type="hidden" name="Delay" value="<?=htmlspecialcharsbx($params['ASSIST_DELAY'])?>">
 <input type="hidden" name="Language" value="<?=$context->getLanguage();?>">
-<input type="hidden" name="URL_RETURN_OK" value="<?=$params['ASSIST_SUCCESS_URL'];?>">
-<input type="hidden" name="URL_RETURN_NO" value="<?=$params['ASSIST_FAIL_URL'];?>">
-<input type="hidden" name="OrderComment" value="Invoice <?=$params['PAYMENT_ID']." (".$params['PAYMENT_DATE_INSERT'].")" ?>">
-<input type="hidden" name="Lastname" value="<?=$params['BUYER_PERSON_NAME_LAST'];?>">
-<input type="hidden" name="Firstname" value="<?=$params['BUYER_PERSON_NAME_FIRST'];?>">
-<input type="hidden" name="Middlename" value="<?=$params['BUYER_PERSON_NAME_SECOND'];?>">
-<input type="hidden" name="Email" value="<?=$params['BUYER_PERSON_EMAIL'];?>">
-<input type="hidden" name="Address" value="<?=$params['BUYER_PERSON_ADDRESS'];?>">
-<input type="hidden" name="MobilePhone" value="<?=$params['BUYER_PERSON_PHONE'];?>">
+<input type="hidden" name="URL_RETURN_OK" value="<?=htmlspecialcharsbx($params['ASSIST_SUCCESS_URL']);?>">
+<input type="hidden" name="URL_RETURN_NO" value="<?=htmlspecialcharsbx($params['ASSIST_FAIL_URL']);?>">
+<input type="hidden" name="OrderComment" value="<?=htmlspecialcharsbx($comment)?>">
+<input type="hidden" name="Lastname" value="<?=htmlspecialcharsbx($params['BUYER_PERSON_NAME_LAST']);?>">
+<input type="hidden" name="Firstname" value="<?=htmlspecialcharsbx($params['BUYER_PERSON_NAME_FIRST']);?>">
+<input type="hidden" name="Middlename" value="<?=htmlspecialcharsbx($params['BUYER_PERSON_NAME_SECOND']);?>">
+<input type="hidden" name="Email" value="<?=htmlspecialcharsbx($params['BUYER_PERSON_EMAIL']);?>">
+<input type="hidden" name="Address" value="<?=htmlspecialcharsbx($params['BUYER_PERSON_ADDRESS']);?>">
+<input type="hidden" name="MobilePhone" value="<?=htmlspecialcharsbx($params['BUYER_PERSON_PHONE']);?>">
 <input type="hidden" name="CardPayment" value="<?=((int)$params['ASSIST_PAYMENT_CardPayment'] == 1) ? 1 : 0;?>">
 <input type="hidden" name="YMPayment" value="<?=((int)$params['ASSIST_PAYMENT_YMPayment'] == 1) ? 1 : 0;?>">
 <input type="hidden" name="QIWIPayment" value="<?=((int)$params['ASSIST_PAYMENT_QIWIPayment'] == 1) ? 1 : 0;?>">

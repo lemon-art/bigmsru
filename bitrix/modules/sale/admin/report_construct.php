@@ -260,9 +260,9 @@ if (!$fCriticalError)
 			<input type="hidden" name="ID" value="<?=$ID?>" />
 			<?php if (!$fSelectHelperMode && $arParams['REPORT_HELPER_CLASS']) : ?>
 			<input type="hidden" name="rep_owner" value="<?=$rep_owner?>" />
-			<input type="hidden" name="rep_referer" value="<?=(!empty($rep_referer)) ? $rep_referer : $_SERVER['HTTP_REFERER']?>" />
+			<input type="hidden" name="rep_referer" value="<?=htmlspecialcharsbx(!empty($rep_referer) ? $rep_referer : $_SERVER['HTTP_REFERER'])?>" />
 			<?php else : ?>
-			<input type="hidden" name="rep_referer" value="<?=$_SERVER['HTTP_REFERER']?>" />
+			<input type="hidden" name="rep_referer" value="<?=htmlspecialcharsbx($_SERVER['HTTP_REFERER'])?>" />
 			<?php endif; ?>
 
 			<style type="text/css">

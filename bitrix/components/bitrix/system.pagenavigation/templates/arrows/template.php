@@ -3,6 +3,8 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
 $ClientID = 'navigation_'.$arResult['NavNum'];
 
+$this->setFrameMode(true);
+
 if(!$arResult["NavShowAlways"])
 {
 	if ($arResult["NavRecordCount"] == 0 || ($arResult["NavPageCount"] == 1 && $arResult["NavShowAll"] == false))

@@ -91,14 +91,20 @@ class CMainInterfaceButtons extends CBitrixComponent
 		$this->arParams["CLASS_ITEM_COUNTER"] = $this->prepareItemClass($this->arParams["CLASS_ITEM_COUNTER"]);
 		$this->arParams["ITEMS"] = $this->prepareItems($this->arParams["ITEMS"]);
 		$this->arParams["MORE_BUTTON"] = $this->prepareMoreItem($this->arParams["MORE_BUTTON"]);
+		$this->arParams["DISABLE_SETTINGS"] = $this->prepareDisableSettings($this->arParams["DISABLE_SETTINGS"]);
 
 		return $this;
+	}
+
+	protected function prepareDisableSettings($settings = false)
+	{
+		return is_bool($settings) ? $settings : false;
 	}
 
 
 	/**
 	 * Gets user options as is
-	 * @return array|null
+	 * @return array|bool
 	 */
 	protected function getUserOptions()
 	{
@@ -108,7 +114,7 @@ class CMainInterfaceButtons extends CBitrixComponent
 
 	/**
 	 * Prepares container id
-	 * @param  string $id
+	 * @param string $id
 	 * @return string Container id
 	 */
 	protected function prepareContainerId($id)
@@ -123,7 +129,7 @@ class CMainInterfaceButtons extends CBitrixComponent
 
 	/**
 	 * Prepares user options
-	 * @param  array $arUserOptions $this->getUserOptions() result
+	 * @param array $userOptions
 	 * @return array User options
 	 */
 	protected function prepareUserOptions($userOptions)
@@ -364,7 +370,7 @@ class CMainInterfaceButtons extends CBitrixComponent
 
 	/**
 	 * Prepares item is active value
-	 * @param  string $url
+	 * @param array $item
 	 * @return boolean
 	 */
 	protected function prepareItemIsActive($item)
@@ -464,7 +470,6 @@ class CMainInterfaceButtons extends CBitrixComponent
 
 	protected function prepareMoreItem($item)
 	{
-		$text = $this->prepareItemText($item["TEXT"]);
 		$html = $this->prepareItemHtml($item["HTML"]);
 		$class = $this->prepareItemClass($item["CLASS"]);
 
@@ -478,7 +483,6 @@ class CMainInterfaceButtons extends CBitrixComponent
 
 	protected function filterItems()
 	{
-		$itemsCount;
 		$items = array_filter($this->arParams["ITEMS"], function($item)
 		{
 			return is_array($item);

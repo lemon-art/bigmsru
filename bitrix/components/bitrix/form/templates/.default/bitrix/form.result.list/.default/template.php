@@ -176,7 +176,7 @@ function Form_Filter_Click_<?=$arResult["filter_id"]?>()
 							?>
 		<tr>
 			<td>
-				<?=$arrF["FILTER_TITLE"] ? $arrF['FILTER_TITLE'] : $arrF['TITLE']?>
+				<?=htmlspecialcharsbx($arrF["FILTER_TITLE"] ? $arrF['FILTER_TITLE'] : $arrF['TITLE'])?>
 				<?=($arrF["FILTER_TYPE"]=="date" ? " (".CSite::GetDateFormat("SHORT").")" : "")?>
 			</td>
 			<td>
@@ -471,7 +471,7 @@ if (strlen($arResult["FORM_NOTE"]) > 0) ShowNote($arResult["FORM_NOTE"]);
 					if ($arParams["SHOW_STATUS"] == "Y") 
 					{
 					?>
-						<?=GetMessage("FORM_STATUS")?>:&nbsp;[&nbsp;<span class='<?=$arRes["STATUS_CSS"]?>'><?=$arRes["STATUS_TITLE"]?></span>&nbsp;]
+						<?=GetMessage("FORM_STATUS")?>:&nbsp;[&nbsp;<span class="<?=htmlspecialcharsbx($arRes["STATUS_CSS"])?>"><?=htmlspecialcharsbx($arRes["STATUS_TITLE"])?></span>&nbsp;]
 						<?
 						if ($arRes["can_edit"] && ($arParams["F_RIGHT"] >= 20 || $arParams["F_RIGHT"] >= 15 && ($arParams["USER_ID"]==$arRes["USER_ID"]))) 
 						{ 
@@ -553,8 +553,9 @@ if (strlen($arResult["FORM_NOTE"]) > 0) ShowNote($arResult["FORM_NOTE"]);
 				<td><?
 					if ($arRes["USER_ID"]>0) 
 					{
+						$userName = array("NAME" => $arRes["USER_FIRST_NAME"], "LAST_NAME" => $arRes["USER_LAST_NAME"], "SECOND_NAME" => $arRes["USER_SECOND_NAME"], "LOGIN" => $arRes["LOGIN"]);
 					?>
-						[<a title="<?=GetMessage("FORM_EDIT_USER")?>" href="/bitrix/admin/user_edit.php?lang=<?=LANGUAGE_ID?>&ID=<?=$arRes["USER_ID"]?>"><?=$arRes["USER_ID"]?></a>] (<?=$arRes["LOGIN"]?>) <?=$arRes["USER_FIRST_NAME"]?> <?=$arRes["USER_LAST_NAME"]?>
+						[<a title="<?=GetMessage("FORM_EDIT_USER")?>" href="/bitrix/admin/user_edit.php?lang=<?=LANGUAGE_ID?>&ID=<?=$arRes["USER_ID"]?>"><?=$arRes["USER_ID"]?></a>] (<?=$arRes["LOGIN"]?>) <?=CUser::FormatName($arParams["NAME_TEMPLATE"], $userName)?>
 						<?if($arRes["USER_AUTH"]=="N") { ?><?=GetMessage("FORM_NOT_AUTH")?><?}?>
 					<?
 					}

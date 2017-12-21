@@ -39,10 +39,12 @@ class SitemapFile
 	protected $settings = array();
 	protected $parser = false;
 
+	protected $siteRoot = '';
 	protected $partFile = '';
 	protected $partList = array();
 	protected $part = 0;
 	protected $partChanged = false;
+	protected $footerClosed = false;
 
 	protected $urlToSearch = '';
 	protected $urlFound = false;
@@ -58,18 +60,21 @@ class SitemapFile
 		$site = SiteTable::getRow(array("filter" => array("LID" => $this->settings['SITE_ID'])));
 
 		$this->documentRoot = SiteTable::getDocumentRoot($this->settings['SITE_ID']);
+		$this->footerClosed = false;
 
 		$this->siteRoot = Path::combine(
 			$this->documentRoot,
 			$site['DIR']
 		);
 
-		if(substr($fileName, -strlen(self::FILE_EXT)) != self::FILE_EXT)
+//		normalize slashes
+		$fileName = Path::normalize($fileName);
+		if (substr($fileName, -strlen(self::FILE_EXT)) != self::FILE_EXT)
 		{
 			$fileName .= self::FILE_EXT;
 		}
-
-		if($this->partFile == '')
+		
+		if ($this->partFile == '')
 		{
 			$this->partFile = $fileName;
 		}
@@ -126,14 +131,14 @@ class SitemapFile
 	 */
 	public function addEntry($entry)
 	{
-		if($this->isSplitNeeded())
+		if ($this->isSplitNeeded())
 		{
 			$this->split();
 			$this->addEntry($entry);
 		}
 		else
 		{
-			if(!$this->partChanged)
+			if (!$this->partChanged)
 			{
 				$this->addHeader();
 			}
@@ -190,11 +195,11 @@ class SitemapFile
 	public function getPathDirectory()
 	{
 //		normalize slashes
-		$documentRoot = Path::normalize($this->documentRoot);
+		$siteRoot = Path::normalize($this->siteRoot);
 		$fileName = $this->getName();
 		$path = Path::normalize($this->path);
 		
-		$directory = str_replace(array($documentRoot, $fileName), array('',''), $path);
+		$directory = str_replace(array($siteRoot, $fileName), array('',''), $path);
 		
 		return ltrim($directory, '/');
 	}
@@ -264,6 +269,8 @@ class SitemapFile
 				Converter::getXmlConverter()->encode($entry['XML_LASTMOD'])
 			).self::FILE_FOOTER);
 			fclose($fd);
+			
+			$this->footerClosed = true;
 		}
 	}
 
@@ -276,11 +283,12 @@ class SitemapFile
 	 *
 	 * @param string $url Entry URL.
 	 *
-	 * @return void
+	 * @return string
 	 */
 	public function removeEntry($url)
 	{
-		$url = $this->settings['PROTOCOL'].'://'.\CBXPunycode::toASCII($this->settings['DOMAIN'], $e = null).$url;
+		$fileName = $this->partFile;
+		$url = $this->settings['PROTOCOL'] . '://' . \CBXPunycode::toASCII($this->settings['DOMAIN'], $e = NULL) . $url;
 		$pattern = sprintf(self::ENTRY_TPL_SEARCH, $url);
 
 		while($this->isExists())
@@ -310,13 +318,12 @@ class SitemapFile
 			else
 			{
 				$this->part++;
-
-				$fileName = $this->partFile;
-				$fileName = substr($fileName, 0, -strlen(self::FILE_EXT)).self::FILE_PART_SUFFIX.$this->part.substr($fileName, -strlen(self::FILE_EXT));
-
+				$fileName = substr($fileName, 0, -strlen(self::FILE_EXT)) . self::FILE_PART_SUFFIX . $this->part . substr($fileName, -strlen(self::FILE_EXT));
 				$this->reInit($fileName);
 			}
 		}
+		
+		return $fileName;
 	}
 
 	/**
@@ -387,6 +394,7 @@ class SitemapFile
 	public function addFooter()
 	{
 		$this->putContents(self::FILE_FOOTER, self::APPEND);
+		$this->footerClosed = true;
 	}
 
 	/**

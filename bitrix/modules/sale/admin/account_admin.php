@@ -165,7 +165,7 @@ while ($arAccount = $dbResultList->NavNext(true, "f_"))
 	$fieldValue = "[<a href=\"/bitrix/admin/user_edit.php?ID=".$f_USER_ID."&lang=".LANG."\" title=\"".GetMessage("SAA_USER_INFO")."\">".$f_USER_ID."</a>] ";
 	$fieldValue .= htmlspecialcharsEx($arAccount["USER_NAME"].((strlen($arAccount["USER_NAME"])<=0 || strlen($arAccount["USER_LAST_NAME"])<=0) ? "" : " ").$arAccount["USER_LAST_NAME"])."<br>";
 	$fieldValue .= htmlspecialcharsEx($arAccount["USER_LOGIN"])."&nbsp;&nbsp;&nbsp; ";
-	$fieldValue .= "<a href=\"mailto:".htmlspecialcharsEx($arAccount["USER_EMAIL"])."\" title=\"".GetMessage("SAA_MAILTO")."\">".htmlspecialcharsEx($arAccount["USER_EMAIL"])."</a>";
+	$fieldValue .= "<a href=\"mailto:".htmlspecialcharsbx($arAccount["USER_EMAIL"])."\" title=\"".GetMessage("SAA_MAILTO")."\">".htmlspecialcharsEx($arAccount["USER_EMAIL"])."</a>";
 	$row->AddField("USER_ID", $fieldValue);
 
 	$row->AddField("CURRENT_BUDGET", SaleFormatCurrency($arAccount["CURRENT_BUDGET"], $arAccount["CURRENCY"]));
@@ -284,7 +284,7 @@ $oFilter->Begin();
 	<tr>
 		<td><?echo GetMessage("SAA_USER")?>:</td>
 		<td>
-			<input type="text" name="filter_user" size="50" value="<?= htmlspecialcharsEx($filter_user) ?>">&nbsp;<?=ShowFilterLogicHelp()?>
+			<input type="text" name="filter_user" size="50" value="<?= htmlspecialcharsbx($filter_user) ?>">&nbsp;<?=ShowFilterLogicHelp()?>
 		</td>
 	</tr>
 	<tr>
@@ -296,13 +296,13 @@ $oFilter->Begin();
 	<tr>
 		<td><?echo GetMessage("SAA_USER_LOGIN")?>:</td>
 		<td>
-			<input type="text" name="filter_login" size="50" value="<?= htmlspecialcharsEx($filter_login) ?>">
+			<input type="text" name="filter_login" size="50" value="<?= htmlspecialcharsbx($filter_login) ?>">
 		</td>
 	</tr>
 	<tr>
 		<td nowrap><?echo GetMessage("SAA_CURRENCY")?>:</td>
 		<td align="left" nowrap>
-			<?= CCurrency::SelectBox("filter_currency", $filter_currency, GetMessage("SAA_ALL"), True, "", ""); ?>
+			<?= CCurrency::SelectBox("filter_currency", $filter_currency, GetMessage("SAA_ALL"), true, "", ""); ?>
 		</td>
 	</tr>
 	<tr>
@@ -310,8 +310,8 @@ $oFilter->Begin();
 		<td>
 			<select name="filter_locked">
 				<option value=""><?echo GetMessage("SAA_ALL")?></option>
-				<option value="Y"<?if ($filter_locked=="Y") echo " selected"?>><?= htmlspecialcharsex(GetMessage("SAA_YES")) ?></option>
-				<option value="N"<?if ($filter_locked=="N") echo " selected"?>><?= htmlspecialcharsex(GetMessage("SAA_NO")) ?></option>
+				<option value="Y"<?if ($filter_locked=="Y") echo " selected"?>><?= htmlspecialcharsEx(GetMessage("SAA_YES")) ?></option>
+				<option value="N"<?if ($filter_locked=="N") echo " selected"?>><?= htmlspecialcharsEx(GetMessage("SAA_NO")) ?></option>
 			</select>
 		</td>
 	</tr>
@@ -335,4 +335,3 @@ echo BeginNote();
 echo EndNote();
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");
-?>

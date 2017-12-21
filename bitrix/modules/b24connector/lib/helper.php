@@ -128,16 +128,22 @@ class Helper
 			));
 
 			while($row = $dbRes->fetch())
-				$result .= $row['SCRIPT']."\n";
+			{
+				if(strlen($row['SCRIPT']) > 0)
+					$result .= $row['SCRIPT']."\n";
+			}
 
-			\Bitrix\Main\Page\Asset::getInstance()->addString($result);
+			if(strlen($result) > 0)
+			{
+				\Bitrix\Main\Page\Asset::getInstance()->addString($result);
 
-			ob_start();
-			$APPLICATION->IncludeComponent("bitrix:b24connector.openline.info", "", Array());
-			$saoRes = ob_get_contents();
-			ob_end_clean();
+				ob_start();
+				$APPLICATION->IncludeComponent("bitrix:b24connector.openline.info", "", Array("COMPOSITE_FRAME_TYPE" => "STATIC"));
+				$saoRes = ob_get_contents();
+				ob_end_clean();
 
-			\Bitrix\Main\Page\Asset::getInstance()->addString($saoRes);
+				\Bitrix\Main\Page\Asset::getInstance()->addString($saoRes);
+			}
 		}
 	}
 }

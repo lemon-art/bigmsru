@@ -21,6 +21,7 @@ class _CIBElement
 		if (count($arFilter)==0 && is_array($this->props))
 		{
 			$arAllProps = array();
+			/** @noinspection PhpWrongForeachArgumentTypeInspection */
 			foreach($this->props as $arProp)
 			{
 				if(strlen(trim($arProp["CODE"]))>0)
@@ -40,11 +41,11 @@ class _CIBElement
 						{
 							$arProp["~VALUE"] = $arEnum["VALUE"];
 							if(is_array($arProp["VALUE"]) || preg_match("/[;&<>\"]/", $arProp["VALUE"]))
-								$arProp["VALUE"]  = htmlspecialcharsex($arEnum["VALUE"]);
+								$arProp["VALUE"]  = htmlspecialcharsEx($arEnum["VALUE"]);
 							else
 								$arProp["VALUE"]  = $arEnum["VALUE"];
 							$arProp["VALUE_ENUM"] = $arProp["VALUE"];
-							$arProp["VALUE_XML_ID"]  = htmlspecialcharsex($arEnum["XML_ID"]);
+							$arProp["VALUE_XML_ID"]  = htmlspecialcharsEx($arEnum["XML_ID"]);
 							$arProp["VALUE_SORT"] = $arEnum["SORT"];
 						}
 						else
@@ -56,7 +57,7 @@ class _CIBElement
 					elseif(is_array($arProp["VALUE"]) || strlen($arProp["VALUE"]))
 					{
 						if($arProp["PROPERTY_TYPE"]=="N")
-							$arProp["VALUE"] = htmlspecialcharsex(CIBlock::NumberFormat($arProp["VALUE"]));
+							$arProp["VALUE"] = htmlspecialcharsEx(CIBlock::NumberFormat($arProp["VALUE"]));
 						$arProp["~VALUE"] = $this->fields["~PROPERTY_".$arProp["ID"]];
 						$arProp["~DESCRIPTION"] = $this->fields["~DESCRIPTION_".$arProp["ID"]];
 					}
@@ -81,7 +82,7 @@ class _CIBElement
 								$arEnum = CIBlockPropertyEnum::GetByID($key);
 								if($arEnum!==false)
 								{
-									$xml_id = htmlspecialcharsex($arEnum["XML_ID"]);
+									$xml_id = htmlspecialcharsEx($arEnum["XML_ID"]);
 									$sort = $arEnum["SORT"];
 								}
 								else
@@ -96,7 +97,7 @@ class _CIBElement
 									$arProp["VALUE_ENUM_ID"][] = $key;
 									$arProp["~VALUE"][] = $val;
 									if(is_array($val) || preg_match("/[;&<>\"]/", $val))
-										$arProp["VALUE"][] = htmlspecialcharsex($val);
+										$arProp["VALUE"][] = htmlspecialcharsEx($val);
 									else
 										$arProp["VALUE"][] = $val;
 									$arProp["VALUE_XML_ID"][] = $xml_id;
@@ -107,7 +108,7 @@ class _CIBElement
 									$arProp["VALUE_ENUM_ID"] = array($key);
 									$arProp["~VALUE"] = array($val);
 									if(is_array($val) || preg_match("/[;&<>\"]/", $val))
-										$arProp["VALUE"] = array(htmlspecialcharsex($val));
+										$arProp["VALUE"] = array(htmlspecialcharsEx($val));
 									else
 										$arProp["VALUE"] = array($val);
 									$arProp["VALUE_XML_ID"] = array($xml_id);
@@ -132,7 +133,7 @@ class _CIBElement
 								{
 									$arProp["~VALUE"][] = $arListTilda[$key];
 									if($arProp["PROPERTY_TYPE"]=="N")
-										$val = htmlspecialcharsex(CIBlock::NumberFormat($val));
+										$val = htmlspecialcharsEx(CIBlock::NumberFormat($val));
 									$arProp["VALUE"][] = $val;
 									$arProp["~DESCRIPTION"][] = $arDescTilda[$key];
 									$arProp["DESCRIPTION"][] = $arDesc[$key];
@@ -141,7 +142,7 @@ class _CIBElement
 								{
 									$arProp["~VALUE"] = array($arListTilda[$key]);
 									if($arProp["PROPERTY_TYPE"]=="N")
-										$val = htmlspecialcharsex(CIBlock::NumberFormat($val));
+										$val = htmlspecialcharsEx(CIBlock::NumberFormat($val));
 									$arProp["VALUE"] = array($val);
 									$arProp["~DESCRIPTION"] = array($arDescTilda[$key]);
 									$arProp["DESCRIPTION"] = array($arDesc[$key]);
@@ -187,10 +188,10 @@ class _CIBElement
 			{
 				$arProp["~VALUE"] = $arProp["VALUE"];
 				if(is_array($arProp["VALUE"]) || preg_match("/[;&<>\"]/", $arProp["VALUE"]))
-					$arProp["VALUE"] = htmlspecialcharsex($arProp["VALUE"]);
+					$arProp["VALUE"] = htmlspecialcharsEx($arProp["VALUE"]);
 				$arProp["~DESCRIPTION"] = $arProp["DESCRIPTION"];
 				if(preg_match("/[;&<>\"]/", $arProp["DESCRIPTION"]))
-					$arProp["DESCRIPTION"] = htmlspecialcharsex($arProp["DESCRIPTION"]);
+					$arProp["DESCRIPTION"] = htmlspecialcharsEx($arProp["DESCRIPTION"]);
 			}
 			else
 			{
@@ -200,7 +201,12 @@ class _CIBElement
 
 			if($arProp["MULTIPLE"]=="Y")
 			{
-				if(array_key_exists($PIND, $arAllProps))
+				if (isset($arAllProps[$PIND]))
+				{
+					if ($arAllProps[$PIND]['ID'] != $arProp['ID'])
+						unset($arAllProps[$PIND]);
+				}
+				if (isset($arAllProps[$PIND]))
 				{
 					$arTemp = &$arAllProps[$PIND];
 					if($arProp["VALUE"]!=="")
@@ -217,7 +223,7 @@ class _CIBElement
 								$arTemp["VALUE_ENUM_ID"][] = $arProp["VALUE_ENUM_ID"];
 								$arTemp["VALUE_ENUM"][] = $arProp["VALUE_ENUM"];
 								$arTemp["VALUE_XML_ID"][] = $arProp["VALUE_XML_ID"];
-								//$arTemp["VALUE_SORT"][] = $arProp["VALUE_SORT"];
+								$arTemp["VALUE_SORT"][] = $arProp["VALUE_SORT"];
 							}
 						}
 						else
@@ -241,10 +247,10 @@ class _CIBElement
 				{
 					$arProp["~NAME"] = $arProp["NAME"];
 					if(preg_match("/[;&<>\"]/", $arProp["NAME"]))
-						$arProp["NAME"] = htmlspecialcharsex($arProp["NAME"]);
+						$arProp["NAME"] = htmlspecialcharsEx($arProp["NAME"]);
 					$arProp["~DEFAULT_VALUE"] = $arProp["DEFAULT_VALUE"];
 					if(is_array($arProp["DEFAULT_VALUE"]) || preg_match("/[;&<>\"]/", $arProp["DEFAULT_VALUE"]))
-						$arProp["DEFAULT_VALUE"] = htmlspecialcharsex($arProp["DEFAULT_VALUE"]);
+						$arProp["DEFAULT_VALUE"] = htmlspecialcharsEx($arProp["DEFAULT_VALUE"]);
 					if($arProp["VALUE"]!=="")
 					{
 						$arProp["VALUE"] = array($arProp["VALUE"]);
@@ -282,10 +288,10 @@ class _CIBElement
 			{
 				$arProp["~NAME"] = $arProp["NAME"];
 				if(preg_match("/[;&<>\"]/", $arProp["NAME"]))
-					$arProp["NAME"] = htmlspecialcharsex($arProp["NAME"]);
+					$arProp["NAME"] = htmlspecialcharsEx($arProp["NAME"]);
 				$arProp["~DEFAULT_VALUE"] = $arProp["DEFAULT_VALUE"];
 				if(is_array($arProp["DEFAULT_VALUE"]) || preg_match("/[;&<>\"]/", $arProp["DEFAULT_VALUE"]))
-					$arProp["DEFAULT_VALUE"] = htmlspecialcharsex($arProp["DEFAULT_VALUE"]);
+					$arProp["DEFAULT_VALUE"] = htmlspecialcharsEx($arProp["DEFAULT_VALUE"]);
 				$arAllProps[$PIND] = $arProp;
 			}
 		}
@@ -302,8 +308,6 @@ class _CIBElement
 
 	function GetGroups()
 	{
-		$res = CIBlockElement::GetElementGroups($this->fields["ID"]);
-		return $res;
+		return CIBlockElement::GetElementGroups($this->fields["ID"]);
 	}
 }
-?>

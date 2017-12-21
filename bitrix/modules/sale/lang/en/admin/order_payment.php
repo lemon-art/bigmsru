@@ -47,4 +47,5 @@ $MESS["SALE_PAYMENT_F_USER_EMAIL"] = "Customer's e-mail address";
 $MESS["SALE_PAYMENT_F_USER_ID"] = "Customer ID";
 $MESS["SALE_PAYMENT_F_USER_LOGIN"] = "Customer login";
 $MESS["SALE_ORDER_USER_NAME"] = "Customer";
+$MESS["SALE_ORDER_HIDDEN"] = "[Hidden]";
 ?>

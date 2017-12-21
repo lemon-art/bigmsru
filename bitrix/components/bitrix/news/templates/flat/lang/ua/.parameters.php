@@ -15,4 +15,7 @@ $MESS["TP_BN_THEME_WOOD"] = "дерево";
 $MESS["TP_BN_THEME_YELLOW"] = "жовта";
 $MESS["TP_BN_THEME_BLACK"] = "темна";
 $MESS["TP_BN_TEMPLATE_THEME"] = "Колірна тема";
+$MESS["TP_BN_LIST_USE_SHARE"] = "Відображати панель соц. закладок в списку";
+$MESS["TP_BN_MEDIA_PROPERTY"] = "Властивість для відображення медіа";
+$MESS["TP_BN_SLIDER_PROPERTY"] = "Властивість із зображеннями для слайдера";
 ?>

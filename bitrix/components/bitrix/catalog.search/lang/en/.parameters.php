@@ -42,6 +42,14 @@ $MESS["SEARCH_CHECK_DATES"] = "Search only in documents active on date of search
 $MESS["SEARCH_RESTART"] = "Try to search without morphology support (if no search results found)";
 $MESS["CP_BSP_USE_LANGUAGE_GUESS"] = "Autodetect Keyboard Layout";
 $MESS["CP_BSP_NO_WORD_LOGIC"] = "Disable processing of common words as logical operators";
-$MESS["CP_BCS_HIDE_NOT_AVAILABLE"] = "Hide items not in stock";
-$MESS["HIDE_NOT_AVAILABLE_TIP"] = "If checked: the products whose stock at all the warehouses is zero or less will be hidden; stock control will be enabled; out-of-stock items will be available for purchase.";
+$MESS["CP_BCS_HIDE_NOT_AVAILABLE"] = "Unavailable products";
+$MESS["CP_BCS_HIDE_NOT_AVAILABLE_HIDE"] = "don't show";
+$MESS["CP_BCS_HIDE_NOT_AVAILABLE_LAST"] = "move to the bottom";
+$MESS["CP_BCS_HIDE_NOT_AVAILABLE_SHOW"] = "show as usual";
+$MESS["HIDE_NOT_AVAILABLE_TIP"] = "A product whose quantity is equal to or less than zero will be unavailable for purchase if: 1) stock control option is enabled for the product, and 2) out-of-stock items cannot be purchased.<hr>A product having SKU(s) is considered available if there is at least one available SKU.<hr>Even if a product is available, it does not necessarily mean it can be purchased. To be purchasable, a product requires prices of the types that are selected as available for a customer.";
+$MESS["CP_BCS_HIDE_NOT_AVAILABLE_OFFERS"] = "Unavailable SKU's";
+$MESS["HIDE_NOT_AVAILABLE_OFFERS_TIP"] = "An SKU whose quantity is equal to or less than zero will be unavailable for purchase if: 1) stock control option is enabled for the SKU, and 2) out-of-stock items cannot be purchased.<hr>Even if an SKU is available, it does not necessarily mean it can be purchased. To be purchasable, an SKU requires prices of the types that are selected as available for a customer.";
+$MESS["CP_BCS_HIDE_NOT_AVAILABLE_OFFERS_HIDE"] = "don't show";
+$MESS["CP_BCS_HIDE_NOT_AVAILABLE_OFFERS_SUBSCRIBE"] = "show as subscribe-to option";
+$MESS["CP_BCS_HIDE_NOT_AVAILABLE_OFFERS_SHOW"] = "show all";
 ?>

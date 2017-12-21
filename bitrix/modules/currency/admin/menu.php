@@ -23,6 +23,7 @@ return array(
 			"url" => "currencies.php?lang=".LANGUAGE_ID,
 			"more_url" => array(
 				"currency_edit.php",
+				"currency_add_from_classifier.php"
 			)
 		),
 		array(

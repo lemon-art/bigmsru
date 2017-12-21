@@ -13,4 +13,9 @@ $MESS["CRM_FF_CHOISE"] = "Выбрать";
 $MESS["CRM_FF_CHANGE"] = "Изменить";
 $MESS["CRM_FF_LAST"] = "Последние";
 $MESS["CRM_FF_SEARCH"] = "Поиск";
+$MESS["CRM_CES_CREATE"] = "Создать";
+$MESS["CRM_CES_CREATE_LEAD"] = "Лид";
+$MESS["CRM_CES_CREATE_CONTACT"] = "Контакт";
+$MESS["CRM_CES_CREATE_COMPANY"] = "Компанию";
+$MESS["CRM_CES_CREATE_DEAL"] = "Сделку";
 ?>

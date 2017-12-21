@@ -3,8 +3,16 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admi
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/b24connector/admin/prolog_before.php");
 
 use Bitrix\Main\Localization\Loc;
+use Bitrix\B24Connector\Connection;
 
 Loc::loadMessages(__FILE__);
+
+$listParams = array(
+	'EMPTY_BUTTON' => array(
+		'TITLE' => Loc::getMessage('B24C_BUTT_EMPTY'),
+		'URL_METHOD' => '\Bitrix\B24Connector\Connection::getWidgetsConfigUrl'
+	)
+);
 
 $APPLICATION->SetTitle(Loc::getMessage('B24C_BUTT_TITLE'));
 
@@ -30,7 +38,7 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admi
 		$APPLICATION->IncludeComponent(
 			"bitrix:b24connector.button.list",
 			".default",
-			array(),
+			$listParams,
 			false
 		);
 	?>

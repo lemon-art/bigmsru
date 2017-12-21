@@ -181,7 +181,7 @@ class CIBlockRights
 		return $arRights;
 	}
 
-	function GetRightsList($bTitle = true)
+	public static function GetRightsList($bTitle = true)
 	{
 		global $DB;
 		$arResult = array();
@@ -416,8 +416,6 @@ class CIBlockRights
 
 	function SetRights($arRights)
 	{
-		global $DB;
-
 		if(!$this->_self_check())
 			return false;
 
@@ -509,7 +507,6 @@ class CIBlockRights
 
 		foreach($arDBRights as $RIGHT_ID => $arRightSet)
 		{
-
 			if($arRightSet["IS_INHERITED"] == "Y")
 				continue;
 
@@ -595,6 +592,13 @@ class CIBlockRights
 		return CIBlockRights::_check_if_user_has_right($obRights, $ID, $permission, $flags);
 	}
 
+	/**
+	 * @param CIBlockRights $obRights
+	 * @param array|integer $ID
+	 * @param string $permission
+	 * @param integer $flags
+	 * @return array|boolean
+	 */
 	static function _check_if_user_has_right($obRights, $ID, $permission, $flags = 0)
 	{
 		global $DB, $USER;
@@ -629,15 +633,15 @@ class CIBlockRights
 		$RIGHTS_MODE = CIBlock::GetArrayByID($obRights->GetIBlockID(), "RIGHTS_MODE");
 		if($RIGHTS_MODE === "E")
 		{
-			static $Ecache;
 			if(is_array($ID))
 				$arOperations = $obRights->GetUserOperations($ID, $user_id);
 			else
 			{
-				$cache_id = $user_id."|".$ID;
-				if(!isset($Ecache[$cache_id]))
-					$Ecache[$cache_id] = $obRights->GetUserOperations($ID, $user_id);
-				$arOperations = $Ecache[$cache_id];
+				static $cache;
+				$cache_id = get_class($obRights).$user_id."|".$ID;
+				if(!isset($cache[$cache_id]))
+					$cache[$cache_id] = $obRights->GetUserOperations($ID, $user_id);
+				$arOperations = $cache[$cache_id];
 			}
 
 			if($flags & CIBlockRights::RETURN_OPERATIONS)
@@ -1882,7 +1886,7 @@ class CIBlockRightsStorage
 		}
 	}
 
-	function OnTaskOperationsChanged($TASK_ID, $arOld, $arNew)
+	public static function OnTaskOperationsChanged($TASK_ID, $arOld, $arNew)
 	{
 		global $DB;
 		$TASK_ID = intval($TASK_ID);
@@ -1898,7 +1902,7 @@ class CIBlockRightsStorage
 			$DB->Query("UPDATE b_iblock_right SET OP_SREAD = 'N' WHERE TASK_ID = ".$TASK_ID);
 	}
 
-	function OnGroupDelete($GROUP_ID)
+	public static function OnGroupDelete($GROUP_ID)
 	{
 		global $DB;
 		$GROUP_ID = intval($GROUP_ID);
@@ -1918,7 +1922,7 @@ class CIBlockRightsStorage
 		");
 	}
 
-	function OnUserDelete($USER_ID)
+	public static function OnUserDelete($USER_ID)
 	{
 		global $DB;
 		$USER_ID = intval($USER_ID);

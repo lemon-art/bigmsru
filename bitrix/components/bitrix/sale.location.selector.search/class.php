@@ -101,7 +101,7 @@ class CBitrixLocationSelectorSearchComponent extends CBitrixComponent
 
 		// which site it is
 		if(!is_string($arParams['FILTER_SITE_ID']) || empty($arParams['FILTER_SITE_ID']) || $arParams['FILTER_SITE_ID'] == 'current')
-			$arParams['FILTER_SITE_ID'] = SITE_ID;
+			$arParams['FILTER_SITE_ID'] = SITE_ID; //todo: it looks like a bug for admin pages, where SITE_ID == 'ru'.
 		else
 			$arParams['FILTER_SITE_ID'] = substr(self::tryParseStringStrict($arParams['FILTER_SITE_ID']), 0, 2);
 
@@ -553,6 +553,8 @@ class CBitrixLocationSelectorSearchComponent extends CBitrixComponent
 		'NAME.NAME' => 's',
 		'NAME.LANGUAGE_ID' => 's',
 		'GROUPLOCATION.LOCATION_GROUP_ID' => 'i',
+		'LONGITUDE' => 's',
+		'LATITUDE' => 's',
 
 		// special (filter only)
 		'PHRASE' => 's',
@@ -579,6 +581,8 @@ class CBitrixLocationSelectorSearchComponent extends CBitrixComponent
 			$safe['PAGE'] = intval($parameters['PAGE']);
 		if(isset($parameters['PAGE_SIZE']))
 			$safe['PAGE_SIZE'] = intval($parameters['PAGE_SIZE']);
+		if(isset($parameters['order']))
+			$safe['order'] = $parameters['order'];
 
 		$parameters = $safe;
 
@@ -615,14 +619,21 @@ class CBitrixLocationSelectorSearchComponent extends CBitrixComponent
 			if(!isset(static::$allowedLocationFields[$field]))
 				throw new Main\ArgumentException(Loc::getMessage('SALE_SLS_BAD_QUERY'));
 
+			if(!is_array($value))
+				$value = array($value);
+
 			// check value
 			$type = static::$allowedLocationFields[$field];
-			if(
-				($type == 'i' && !((string) $value === (string) intval($value)))
-				||
-				($type == 's' && !is_string($value))
-			)
-				throw new Main\ArgumentException(Loc::getMessage('SALE_SLS_BAD_QUERY'));
+
+			foreach($value as $item)
+			{
+				if(
+					($type == 'i' && !((string) $item === (string) intval($item)))
+					||
+					($type == 's' && !is_string($item))
+				)
+					throw new Main\ArgumentException(Loc::getMessage('SALE_SLS_BAD_QUERY'));
+			}
 		}
 
 		// check limitation, if searching by PHRASE
@@ -693,7 +704,6 @@ class CBitrixLocationSelectorSearchComponent extends CBitrixComponent
 		$clean['select'][] = 'LEFT_MARGIN';
 		$clean['select'][] = 'RIGHT_MARGIN';
 		$clean['select'][] = 'ID';
-
 		return $clean;
 	}
 
@@ -715,6 +725,9 @@ class CBitrixLocationSelectorSearchComponent extends CBitrixComponent
 			$parameters['limit'] = $pageSize;
 			$parameters['offset'] = ($page ? $page * $pageSize : 0);
 		}
+
+		$parameters['select'][] = 'CHILD_CNT';
+
 		unset($parameters['PAGE_SIZE']);
 		unset($parameters['PAGE']);
 
@@ -731,10 +744,15 @@ class CBitrixLocationSelectorSearchComponent extends CBitrixComponent
 			if(!isset($item['ID']))
 				$item['ID'] = $item['VALUE'];
 
+			if(intval($item['CHILD_CNT']) > 0)
+				$item['IS_PARENT'] = true;
+
+			unset($item['CHILD_CNT']);
 			$data['ITEMS'][] = $item;
 		}
 
 		static::processSearchRequestV2GetAdditional($data, $parameters);
+		$parameters['select'][] = 'IS_PARENT';
 		static::processSearchRequestV2AfterSearchFormatResult($data, $parameters);
 
 		return $data;
@@ -890,7 +908,7 @@ class CBitrixLocationSelectorSearchComponent extends CBitrixComponent
 	{
 		return	intval($this->arParams['CACHE_TIME']) > 0 &&
 				$this->arParams['CACHE_TYPE'] != 'N' &&
-				(ADMIN_SECTION !== 1) && 
+				(!(defined("ADMIN_SECTION") && ADMIN_SECTION == true)) &&
 				Config\Option::get("main", "component_cache_on", "Y") == "Y";
 	}
 

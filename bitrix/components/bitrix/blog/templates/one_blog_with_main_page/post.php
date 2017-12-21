@@ -54,33 +54,43 @@ $APPLICATION->IncludeComponent(
 			),
 		$component 
 	);
+$componentCommentParams = Array(
+	"BLOG_VAR"		=> $arResult["ALIASES"]["blog"],
+	"USER_VAR"		=> $arResult["ALIASES"]["user_id"],
+	"PAGE_VAR"		=> $arResult["ALIASES"]["page"],
+	"POST_VAR"			=> $arResult["ALIASES"]["post_id"],
+	"PATH_TO_BLOG"	=> $arResult["PATH_TO_BLOG"],
+	"PATH_TO_POST"	=> $arResult["PATH_TO_POST"],
+	"PATH_TO_USER"	=> $arResult["PATH_TO_USER"],
+	"PATH_TO_SMILE"	=> $arResult["PATH_TO_SMILE"],
+	"BLOG_URL"		=> $arResult["VARIABLES"]["blog"],
+	"ID"			=> $arResult["VARIABLES"]["post_id"],
+	"CACHE_TYPE"	=> $arResult["CACHE_TYPE"],
+	"CACHE_TIME"	=> $arResult["CACHE_TIME"],
+	"COMMENTS_COUNT" => $arResult["COMMENTS_COUNT"],
+	"DATE_TIME_FORMAT"	=> $arResult["DATE_TIME_FORMAT"],
+	"USE_ASC_PAGING"	=> $arParams["USE_ASC_PAGING"],
+	"NOT_USE_COMMENT_TITLE"	=> $arParams["NOT_USE_COMMENT_TITLE"],
+	"NAME_TEMPLATE" => $arParams["NAME_TEMPLATE"],
+	"SHOW_LOGIN" => $arParams["SHOW_LOGIN"],
+	"PATH_TO_CONPANY_DEPARTMENT" => $arParams["PATH_TO_CONPANY_DEPARTMENT"],
+	"PATH_TO_SONET_USER_PROFILE" => $arParams["PATH_TO_SONET_USER_PROFILE"],
+	"PATH_TO_MESSAGES_CHAT" => $arParams["PATH_TO_MESSAGES_CHAT"],
+	"PATH_TO_VIDEO_CALL" => $arParams["PATH_TO_VIDEO_CALL"],
+);
+if(isset($arParams["USER_CONSENT"]))
+	$componentCommentParams["USER_CONSENT"] = $arParams["USER_CONSENT"];
+if(isset($arParams["USER_CONSENT_ID"]))
+	$componentCommentParams["USER_CONSENT_ID"] = $arParams["USER_CONSENT_ID"];
+if(isset($arParams["USER_CONSENT_IS_CHECKED"]))
+	$componentCommentParams["USER_CONSENT_IS_CHECKED"] = $arParams["USER_CONSENT_IS_CHECKED"];
+if(isset($arParams["USER_CONSENT_IS_LOADED"]))
+	$componentCommentParams["USER_CONSENT_IS_LOADED"] = $arParams["USER_CONSENT_IS_LOADED"];
+
 $APPLICATION->IncludeComponent(
-		"bitrix:blog.post.comment", 
-		"", 
-		Array(
-				"BLOG_VAR"		=> $arResult["ALIASES"]["blog"],
-				"USER_VAR"		=> $arResult["ALIASES"]["user_id"],
-				"PAGE_VAR"		=> $arResult["ALIASES"]["page"],
-				"POST_VAR"			=> $arResult["ALIASES"]["post_id"],
-				"PATH_TO_BLOG"	=> $arResult["PATH_TO_BLOG"],
-				"PATH_TO_POST"	=> $arResult["PATH_TO_POST"],
-				"PATH_TO_USER"	=> $arResult["PATH_TO_USER"],
-				"PATH_TO_SMILE"	=> $arResult["PATH_TO_SMILE"],
-				"BLOG_URL"		=> $arResult["VARIABLES"]["blog"],
-				"ID"			=> $arResult["VARIABLES"]["post_id"],
-				"CACHE_TYPE"	=> $arResult["CACHE_TYPE"],
-				"CACHE_TIME"	=> $arResult["CACHE_TIME"],
-				"COMMENTS_COUNT" => $arResult["COMMENTS_COUNT"],
-				"DATE_TIME_FORMAT"	=> $arResult["DATE_TIME_FORMAT"],
-				"USE_ASC_PAGING"	=> $arParams["USE_ASC_PAGING"],
-				"NOT_USE_COMMENT_TITLE"	=> $arParams["NOT_USE_COMMENT_TITLE"],
-				"NAME_TEMPLATE" => $arParams["NAME_TEMPLATE"],
-				"SHOW_LOGIN" => $arParams["SHOW_LOGIN"],
-				"PATH_TO_CONPANY_DEPARTMENT" => $arParams["PATH_TO_CONPANY_DEPARTMENT"],
-				"PATH_TO_SONET_USER_PROFILE" => $arParams["PATH_TO_SONET_USER_PROFILE"],
-				"PATH_TO_MESSAGES_CHAT" => $arParams["PATH_TO_MESSAGES_CHAT"],
-				"PATH_TO_VIDEO_CALL" => $arParams["PATH_TO_VIDEO_CALL"],
-			),
-		$component 
-	);
+	"bitrix:blog.post.comment",
+	"",
+	$componentCommentParams,
+	$component
+);
 ?>

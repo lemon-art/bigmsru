@@ -11,7 +11,7 @@ global $USER, $APPLICATION;
 if(!check_bitrix_sessid())
 	die();
 
-if($_REQUEST['action'] === 'getUrlPreviewEditForm')
+if($_REQUEST['action'] === 'attachUrlPreview')
 {
 	session_write_close();
 
@@ -41,7 +41,7 @@ if($_REQUEST['action'] === 'getUrlPreviewEditForm')
 		if(!\Bitrix\Main\Application::isUtfMode())
 			$url = \Bitrix\Main\Text\Encoding::convertEncoding($url, 'UTF-8', \Bitrix\Main\Context::getCurrent()->getCulture()->getCharset());
 
-		$urlMetadata = UrlPreview::getMetadataByUrl($url);
+		$urlMetadata = UrlPreview::getMetadataByUrl($url, true, false);
 	}
 	else if(isset($_REQUEST['id']))
 	{

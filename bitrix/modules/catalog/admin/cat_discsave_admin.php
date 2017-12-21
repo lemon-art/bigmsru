@@ -1,8 +1,11 @@
 <?
+use Bitrix\Main,
+	Bitrix\Currency;
+
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/catalog/prolog.php");
-global $APPLICATION;
-global $DB;
+
+global $APPLICATION, $DB, $USER;
 
 if (!($USER->CanDoOperation('catalog_read') || $USER->CanDoOperation('catalog_discount')))
 	$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
@@ -37,15 +40,22 @@ $FilterArr = array(
 
 $lAdmin->InitFilter($FilterArr);
 
-$arFilter = array(
+$arFilter = array();
 
-);
+$filterSite = array();
+if (!empty($find_site_id))
+{
+	if (!is_array($find_site_id))
+		$find_site_id = ($find_site_id == 'NOT_REF' ? array() : array($find_site_id));
+	$filterSite = $find_site_id;
+}
+if (!empty($filterSite))
+	$arFilter["@SITE_ID"] = $filterSite;
+
 if (!empty($find_id_from))
 	$arFilter['>=ID'] = $find_id_from;
 if (!empty($find_id_to))
 	$arFilter['<=ID'] = $find_id_to;
-if (!empty($find_site_id))
-	$arFilter['=SITE_ID'] = $find_site_id;
 if (strlen($find_name) > 0)
 	$arFilter['%NAME'] = $find_name;
 if (!empty($find_active))
@@ -299,30 +309,29 @@ if (false !== $intKey)
 $arSelectFields = array_values($arSelectFields);
 $arSelectFieldsMap = array_merge($arSelectFieldsMap, array_fill_keys($arSelectFields, true));
 
+$siteList = array();
 $arSiteList = array();
 $arSiteLinkList = array();
-if ($arSelectFieldsMap['SITE_ID'])
+
+$iterator = Main\SiteTable::getList(array(
+	'select' => array('LID', 'SORT', 'NAME'),
+	'order' => array('SORT' => 'ASC')
+));
+while ($row = $iterator->fetch())
 {
-	$by2 = 'sort';
-	$order2 = 'asc';
-	$rsSites = CSite::GetList($by2, $order2);
-	while ($arSite = $rsSites->Fetch())
-	{
-		$arSiteList[$arSite['LID']] = $arSite['LID'];
-		$arSiteLinkList[$arSite['LID']] = '<a href="/bitrix/admin/site_edit.php?lang='.urlencode(LANGUAGE_ID).'&LID='.urlencode($arSite['LID']).'" title="'.GetMessage('BT_CAT_DISC_SAVE_ADM_MESS_SITE_ID').'">'.htmlspecialcharsex($arSite['LID']).'</a>';
-	}
+	$siteList[] = $row;
+	$arSiteList[$row['LID']] = $row['LID'];
+	$arSiteLinkList[$row['LID']] = '<a href="/bitrix/admin/site_edit.php?lang='.LANGUAGE_ID.'&LID='.$row['LID'].'" title="'.GetMessage('BT_CAT_DISCOUNT_ADM_MESS_SITE_ID').'">'.$row['LID'].'</a>';
 }
+unset($row, $iterator);
 
 $arCurrencyList = array();
 if ($arSelectFieldsMap['CURRENCY'])
 {
-	$by2 = 'sort';
-	$order2 = 'asc';
-	$rsCurrencies = CCurrency::GetList($by2, $order2);
-	while ($arCurrency = $rsCurrencies->Fetch())
-	{
-		$arCurrencyList[$arCurrency['CURRENCY']] = $arCurrency['CURRENCY'];
-	}
+	$currencyList = array_keys(Currency\CurrencyManager::getCurrencyList());
+	foreach ($currencyList as $currency)
+		$arCurrencyList[$currency] = $currency;
+	unset($currencyList);
 }
 
 $arPeriodTypeList = CCatalogDiscountSave::GetPeriodTypeList(true);
@@ -386,13 +395,13 @@ while($arRes = $rsDiscSaves->Fetch())
 		}
 		else
 		{
-			$strViewAction = str_replace('#TYPE#',htmlspecialcharsex($arPeriodTypeList[$arRes['ACTION_TYPE']]),GetMessage('BT_CAT_DISC_SAVE_ADM_MESS_ACTION_TYPE')).'<br />'.str_replace('#SIZE#',$arRes['ACTION_SIZE'],GetMessage('BT_CAT_DISC_SAVE_ADM_MESS_ACTION_SIZE'));
+			$strViewAction = str_replace('#TYPE#',htmlspecialcharsEx($arPeriodTypeList[$arRes['ACTION_TYPE']]),GetMessage('BT_CAT_DISC_SAVE_ADM_MESS_ACTION_TYPE')).'<br />'.str_replace('#SIZE#',$arRes['ACTION_SIZE'],GetMessage('BT_CAT_DISC_SAVE_ADM_MESS_ACTION_SIZE'));
 		}
 		$strHtmlAction = '<input type="text" name="FIELDS['.$arRes['ID'].'][ACTION_SIZE]" size="3" value="'.intval($arRes['ACTION_SIZE']).'"> ';
 		$strHtmlAction .= '<select name="FIELDS['.$arRes['ID'].'][ACTION_TYPE]">';
 		foreach ($arPeriodTypeList as $strTypeID => $strTypeName)
 		{
-			$strHtmlAction .= '<option value="'.htmlspecialcharsbx($strTypeID).'" '.($strTypeID == $arRes['ACTION_TYPE'] ? 'selected' : '').'>'.htmlspecialcharsex($strTypeName).'</option>';
+			$strHtmlAction .= '<option value="'.htmlspecialcharsbx($strTypeID).'" '.($strTypeID == $arRes['ACTION_TYPE'] ? 'selected' : '').'>'.htmlspecialcharsEx($strTypeName).'</option>';
 		}
 		$strHtmlAction .= '</select>';
 	}
@@ -405,13 +414,13 @@ while($arRes = $rsDiscSaves->Fetch())
 		}
 		else
 		{
-			$strViewCount = str_replace('#TYPE#',htmlspecialcharsex($arPeriodTypeList[$arRes['COUNT_TYPE']]),GetMessage('BT_CAT_DISC_SAVE_ADM_MESS_COUNT_TYPE')).'<br />'.str_replace('#SIZE#',$arRes['COUNT_SIZE'],GetMessage('BT_CAT_DISC_SAVE_ADM_MESS_COUNT_SIZE'));
+			$strViewCount = str_replace('#TYPE#',htmlspecialcharsEx($arPeriodTypeList[$arRes['COUNT_TYPE']]),GetMessage('BT_CAT_DISC_SAVE_ADM_MESS_COUNT_TYPE')).'<br />'.str_replace('#SIZE#',$arRes['COUNT_SIZE'],GetMessage('BT_CAT_DISC_SAVE_ADM_MESS_COUNT_SIZE'));
 		}
 		$strHtmlCount = '<input type="text" name="FIELDS['.$arRes['ID'].'][COUNT_SIZE]" size="3" value="'.intval($arRes['COUNT_SIZE']).'"> ';
 		$strHtmlCount .= '<select name="FIELDS['.$arRes['ID'].'][COUNT_TYPE]">';
 		foreach ($arPeriodTypeList as $strTypeID => $strTypeName)
 		{
-			$strHtmlCount .= '<option value="'.htmlspecialcharsbx($strTypeID).'" '.($strTypeID == $arRes['COUNT_TYPE'] ? 'selected' : '').'>'.htmlspecialcharsex($strTypeName).'</option>';
+			$strHtmlCount .= '<option value="'.htmlspecialcharsbx($strTypeID).'" '.($strTypeID == $arRes['COUNT_TYPE'] ? 'selected' : '').'>'.htmlspecialcharsEx($strTypeName).'</option>';
 		}
 		$strHtmlCount .= '</select>';
 	}
@@ -460,7 +469,7 @@ while($arRes = $rsDiscSaves->Fetch())
 		if ($arSelectFieldsMap['SITE_ID'])
 			$row->AddViewField('SITE_ID',$arSiteLinkList[$arRes['SITE_ID']]);
 		if ($arSelectFieldsMap['NAME'])
-			$row->AddViewField("NAME", '<a href="/bitrix/admin/cat_discsave_edit.php?lang='.LANGUAGE_ID.'&ID='.$arRes["ID"].'">'.htmlspecialcharsex($arRes['NAME']).'</a>');
+			$row->AddViewField("NAME", '<a href="/bitrix/admin/cat_discsave_edit.php?lang='.LANGUAGE_ID.'&ID='.$arRes["ID"].'">'.htmlspecialcharsEx($arRes['NAME']).'</a>');
 		if ($arSelectFieldsMap['ACTIVE'])
 			$row->AddCheckField("ACTIVE", false);
 		if ($arSelectFieldsMap['SORT'])
@@ -622,12 +631,20 @@ $oFilter = new CAdminFilter(
 </tr>
 <tr>
 	<td><? echo GetMessage("BT_CAT_DISC_SAVE_ADM_TITLE_SITE_ID"); ?>:</td>
-	<td><select name="find_site_id"><option value="" <? echo ($find_site_id == '' ? 'selected' : ''); ?>><? echo htmlspecialcharsex(GetMessage('BT_CAT_DISC_SAVE_ADM_MESS_ALL_SITES')) ?></option><?
-		foreach ($arSiteList as $strSiteID => $strSiteName)
+	<td><?
+		$siteSize = count($siteList);
+		if ($siteSize > 10)
+			$siteSize = 10;
+		elseif ($siteSize < 3)
+			$siteSize = 3;
+		?><select name="find_site_id[]" multiple size="<?=$siteSize; ?>"><?
+		foreach ($siteList as $row)
 		{
-			?><option value="<? echo htmlspecialcharsbx($strSiteID); ?>" <? echo ($strSiteID == $find_site_id ? 'selected' : ''); ?>>(<? echo htmlspecialcharsex($strSiteID)?>) <? echo htmlspecialcharsex($strSiteName); ?></option><?
+			?><option value="<?=$row['LID']; ?>"<?=(in_array($row['LID'], $filterSite) ? ' selected' : ''); ?>>[<?=$row['LID']; ?>]&nbsp;<?=htmlspecialcharsEx($row['NAME']); ?></option><?
 		}
-	?></select></td>
+		unset($row);
+		?></select>
+	</td>
 </tr>
 <tr>
 	<td><? echo GetMessage("BT_CAT_DISC_SAVE_ADM_TITLE_NAME2")?>:</td>
@@ -636,19 +653,19 @@ $oFilter = new CAdminFilter(
 <tr>
 	<td><? echo GetMessage('BT_CAT_DISC_SAVE_ADM_TITLE_ACTIVE2') ?>:</td>
 	<td><select name="find_active">
-		<option value=""><? echo htmlspecialcharsex(GetMessage('BT_CAT_DISC_SAVE_ADM_MESS_ACTIVE_ANY'))?></option>
-		<option value="Y"<?if($find_active=="Y")echo " selected"?>><? echo htmlspecialcharsex(GetMessage("BT_CAT_DISC_SAVE_ADM_MESS_ACTIVE_YES"))?></option>
-		<option value="N"<?if($find_active=="N")echo " selected"?>><? echo htmlspecialcharsex(GetMessage("BT_CAT_DISC_SAVE_ADM_MESS_ACTIVE_NO"))?></option>
+		<option value=""><? echo htmlspecialcharsEx(GetMessage('BT_CAT_DISC_SAVE_ADM_MESS_ACTIVE_ANY'))?></option>
+		<option value="Y"<?if($find_active=="Y")echo " selected"?>><? echo htmlspecialcharsEx(GetMessage("BT_CAT_DISC_SAVE_ADM_MESS_ACTIVE_YES"))?></option>
+		<option value="N"<?if($find_active=="N")echo " selected"?>><? echo htmlspecialcharsEx(GetMessage("BT_CAT_DISC_SAVE_ADM_MESS_ACTIVE_NO"))?></option>
 		</select>
 	</td>
 </tr>
 <tr>
-	<td><? echo htmlspecialcharsex(GetMessage('BT_CAT_DISC_SAVE_ADM_TITLE_CURRENCY')); ?>:</td>
-	<td><select name="find_currency"><option value="" <? echo ($find_currency == '' ? 'selected' : ''); ?>><? echo htmlspecialcharsex(GetMessage('BT_CAT_DISC_SAVE_ADM_MESS_CURRENCY_ANY')); ?></option>
+	<td><? echo htmlspecialcharsEx(GetMessage('BT_CAT_DISC_SAVE_ADM_TITLE_CURRENCY')); ?>:</td>
+	<td><select name="find_currency"><option value="" <? echo ($find_currency == '' ? 'selected' : ''); ?>><? echo htmlspecialcharsEx(GetMessage('BT_CAT_DISC_SAVE_ADM_MESS_CURRENCY_ANY')); ?></option>
 	<?
 	foreach ($arCurrencyList as $strCurrencyID => $strCurrencyName)
 	{
-		?><option value="<? echo htmlspecialcharsbx($strCurrencyID); ?>" <? echo ($strCurrencyID == $find_currency ? 'selected' : ''); ?>><? echo htmlspecialcharsex($strCurrencyName); ?></option><?
+		?><option value="<? echo htmlspecialcharsbx($strCurrencyID); ?>" <? echo ($strCurrencyID == $find_currency ? 'selected' : ''); ?>><? echo htmlspecialcharsEx($strCurrencyName); ?></option><?
 	}
 	?>
 	</select></td>
@@ -661,5 +678,3 @@ $oFilter->End();
 $lAdmin->DisplayList();
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");
-
-?>

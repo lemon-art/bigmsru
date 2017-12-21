@@ -657,6 +657,28 @@ else
 				</tr>
 			<?endif;?>
 			</table>
+			<?
+//			userconsent only for once for registered early users
+			if ($arParams['USER_CONSENT'] == 'Y' && !$arParams['USER_CONSENT_WAS_GIVEN'])
+			{
+				$APPLICATION->IncludeComponent(
+					"bitrix:main.userconsent.request",
+					"",
+					array(
+						"ID" => $arParams["USER_CONSENT_ID"],
+						"IS_CHECKED" => $arParams["USER_CONSENT_IS_CHECKED"],
+						"AUTO_SAVE" => "Y",
+						"IS_LOADED" => $arParams["USER_CONSENT_IS_LOADED"],
+						"ORIGIN_ID" => "sender/sub",
+						"ORIGINATOR_ID" => "",
+						"REPLACE" => array(
+							'button_caption' => GetMessage("B_B_MS_SEND"),
+							'fields' => array('Alias', 'Personal site', 'Birthday', 'Photo')
+						),
+					)
+				);
+			}
+			?>
 			<br />
 			<input type="hidden" name="save" value="Y">
 			<input tabindex="3" type="submit" name="save" value="<?=GetMessage("BLOG_SAVE")?>">

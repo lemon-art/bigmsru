@@ -178,8 +178,8 @@ class CTopPanel
 					if($pageTemplate['type'] == '' || $pageTemplate['type'] == 'page')
 					{
 						$arSubmenu[] = array(
-							"TEXT"=>"<b>".$pageTemplate['name']."</b>".($pageTemplate['description'] <> ''? "<br>".$pageTemplate['description']:""),
-							"TITLE"=>GetMessage("top_panel_template")." ".$pageTemplate['file'],
+							"TEXT"=>$pageTemplate['name'],
+							"TITLE"=>GetMessage("top_panel_template")." ".$pageTemplate['file'].($pageTemplate['description'] <> ''? "\n".$pageTemplate['description']:""),
 							"ICON"=>($pageTemplate['icon'] == ''? "panel-new-file-template":""),
 							"IMAGE"=>($pageTemplate['icon'] <> ''? $pageTemplate['icon']:""),
 							"ACTION"=> str_replace("public_file_new.php?", "public_file_new.php?wiz_template=".urlencode($pageTemplate['file'])."&", $defaultUrl),
@@ -265,8 +265,8 @@ class CTopPanel
 					if($pageTemplate['type'] == '' || $pageTemplate['type'] == 'section')
 					{
 						$arSectSubmenu[] = array(
-							"TEXT"=>"<b>".$pageTemplate['name']."</b>".($pageTemplate['description'] <> ''? "<br>".$pageTemplate['description']:""),
-							"TITLE"=>GetMessage("top_panel_template")." ".$pageTemplate['file'],
+							"TEXT"=>$pageTemplate['name'],
+							"TITLE"=>GetMessage("top_panel_template")." ".$pageTemplate['file'].($pageTemplate['description'] <> ''? "\n".$pageTemplate['description']:""),
 							"ICON"=>($pageTemplate['icon'] == ''? "panel-new-file-template":""),
 							"IMAGE"=>($pageTemplate['icon'] <> ''? $pageTemplate['icon']:""),
 							"ACTION"=> str_replace("public_file_new.php?", "public_file_new.php?newFolder=Y&wiz_template=".urlencode($pageTemplate['file'])."&", $defaultUrl),

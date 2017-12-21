@@ -43,10 +43,15 @@ class CBitrixComponent
 	private $__children_js = array();
 	private $__children_epilogs = array();
 
+	/** @var \Bitrix\Main\Composite\StaticArea[] */
+	private $__children_frames = array();
+
 	private $__view = array();
 
 	private static $__componentCounter = array();
 	private $__currentCounter = 0;
+	private $__currentCounters = array();
+
 	private $__editButtons = array();
 	private static $__classes_map = array();
 	private $classOfComponent = "";
@@ -122,8 +127,10 @@ class CBitrixComponent
 			$this->__children_css = $component->__children_css;
 			$this->__children_js = $component->__children_js;
 			$this->__children_epilogs = $component->__children_epilogs;
+			$this->__children_frames = $component->__children_frames;
 			$this->__view = $component->__view;
 			$this->__currentCounter = $component->__currentCounter;
+			$this->__currentCounters = $component->__currentCounters;
 			$this->__editButtons = $component->__editButtons;
 			$this->classOfComponent = $component->classOfComponent;
 			$this->setSiteId($component->getSiteId());
@@ -416,11 +423,7 @@ class CBitrixComponent
 			}
 		}
 
-		if (!isset(self::$__componentCounter[$componentName]))
-			self::$__componentCounter[$componentName] = 1;
-		else
-			self::$__componentCounter[$componentName]++;
-
+		self::increaseComponentCounter($componentName);
 		$this->__currentCounter = self::$__componentCounter[$componentName];
 
 		$this->__name = $componentName;
@@ -579,7 +582,7 @@ class CBitrixComponent
 			$component->arParams = $component->onPrepareComponentParams($arParams);
 			$component->__prepareComponentParams($component->arParams);
 
-			$componentFrame = new Bitrix\Main\Page\FrameComponent($component);
+			$componentFrame = new \Bitrix\Main\Composite\Internals\AutomaticArea($component);
 			$componentFrame->start();
 
 			$result = $component->executeComponent();
@@ -594,7 +597,7 @@ class CBitrixComponent
 			$this->__prepareComponentParams($arParams);
 			$this->arParams = $arParams;
 
-			$componentFrame = new Bitrix\Main\Page\FrameComponent($this);
+			$componentFrame = new \Bitrix\Main\Composite\Internals\AutomaticArea($this);
 			$componentFrame->start();
 
 			$result = $this->__IncludeComponent();
@@ -605,7 +608,8 @@ class CBitrixComponent
 
 		if (!$frameMode)
 		{
-			\Bitrix\Main\Data\StaticHtmlCache::applyComponentFrameMode($this->__name);
+			$page = \Bitrix\Main\Composite\Page::getInstance();
+			$page->giveNegativeComponentVote($this->__name);
 		}
 
 		return $result;
@@ -775,6 +779,11 @@ class CBitrixComponent
 		if ($additionalCacheID !== false)
 			$cacheID .= "|".serialize($additionalCacheID);
 
+		if ($this->__currentCounter > 1)
+		{
+			$cacheID .= "|".$this->__currentCounter;
+		}
+
 		return $cacheID;
 	}
 	/**
@@ -809,6 +818,8 @@ class CBitrixComponent
 		if ($this->__cache->startDataCache($cacheTime, $this->__cacheID, $this->__cachePath))
 		{
 			$this->__NavNum = $GLOBALS["NavNum"];
+			$this->__currentCounters = self::$__componentCounter;
+
 			if (defined("BX_COMP_MANAGED_CACHE") && $this->__cache->isStarted())
 				$CACHE_MANAGER->startTagCache($this->__cachePath);
 
@@ -840,9 +851,24 @@ class CBitrixComponent
 
 					if (array_key_exists("frames", $templateCachedData) && is_array($templateCachedData["frames"]))
 					{
-						foreach($templateCachedData["frames"] as $frameState)
+						foreach ($templateCachedData["frames"] as $frameState)
 						{
-							\Bitrix\Main\Page\FrameStatic::applyCachedData($frameState);
+							$frame = \Bitrix\Main\Composite\StaticArea::applyCachedData($frameState);
+							if ($this->__parent)
+							{
+								$this->__parent->addChildFrame($frame);
+							}
+						}
+					}
+
+					if (
+						array_key_exists("__children_frames", $templateCachedData) &&
+						is_array($templateCachedData["__children_frames"])
+					)
+					{
+						foreach ($templateCachedData["__children_frames"] as $frame)
+						{
+							\Bitrix\Main\Composite\StaticArea::applyCachedData($frame);
 						}
 					}
 
@@ -861,7 +887,8 @@ class CBitrixComponent
 								? "(from component cache) ".$templateCachedData["frameModeCtx"]
 								: $this->__name." - a cached template set frameMode=false";
 
-							\Bitrix\Main\Data\StaticHtmlCache::applyComponentFrameMode($context);
+							$page = \Bitrix\Main\Composite\Page::getInstance();
+							$page->giveNegativeComponentVote($context);
 						}
 					}
 
@@ -907,6 +934,14 @@ class CBitrixComponent
 				if (array_key_exists("__NavNum", $templateCachedData))
 					$GLOBALS["NavNum"]+= $templateCachedData["__NavNum"];
 
+				if (array_key_exists("__currentCounters", $templateCachedData))
+				{
+					foreach ($templateCachedData["__currentCounters"] as $componentName => $counter)
+					{
+						self::increaseComponentCounter($componentName, $counter);
+					}
+				}
+
 				if (array_key_exists("__children_css", $templateCachedData))
 				{
 					foreach ($templateCachedData["__children_css"] as $css_url)
@@ -951,12 +986,25 @@ class CBitrixComponent
 		{
 			if ($this->__parent)
 			{
-				foreach($this->__children_css as $cssPath)
+				foreach ($this->__children_css as $cssPath)
+				{
 					$this->__parent->addChildCSS($cssPath);
-				foreach($this->__children_js as $jsPath)
+				}
+
+				foreach ($this->__children_js as $jsPath)
+				{
 					$this->__parent->addChildJS($jsPath);
-				foreach($this->__children_epilogs as $epilogFile)
+				}
+
+				foreach ($this->__children_epilogs as $epilogFile)
+				{
 					$this->__parent->addChildEpilog($epilogFile);
+				}
+
+				foreach ($this->__children_frames as $frame)
+				{
+					$this->__parent->addChildFrame($frame);
+				}
 			}
 			return null;
 		}
@@ -978,6 +1026,28 @@ class CBitrixComponent
 		if (($this->__NavNum !== false) && ($this->__NavNum !== $NavNum))
 		{
 			$arCache["templateCachedData"]["__NavNum"] = $NavNum - $this->__NavNum;
+		}
+
+		$currentCountersDiff = array();
+		foreach (self::$__componentCounter as $componentName => $counter)
+		{
+			if (array_key_exists($componentName, $this->__currentCounters))
+			{
+				if (self::$__componentCounter[$componentName] > $this->__currentCounters[$componentName])
+				{
+					$currentCountersDiff[$componentName] =
+						self::$__componentCounter[$componentName] - $this->__currentCounters[$componentName];
+				}
+			}
+			else
+			{
+				$currentCountersDiff[$componentName] = self::$__componentCounter[$componentName];
+			}
+		}
+
+		if (!empty($currentCountersDiff))
+		{
+			$arCache["templateCachedData"]["__currentCounters"] = $currentCountersDiff;
 		}
 
 		if (!empty($this->__children_css))
@@ -1007,6 +1077,25 @@ class CBitrixComponent
 			{
 				foreach($this->__children_epilogs as $epilogFile)
 					$this->__parent->addChildEpilog($epilogFile);
+			}
+		}
+
+		if (!empty($this->__children_frames))
+		{
+			$arCache["templateCachedData"]["__children_frames"] =
+				array_map(
+					function($frame) {
+						return $frame->getCachedData();
+					},
+					$this->__children_frames
+				);
+
+			if ($this->__parent)
+			{
+				foreach ($this->__children_frames as $frame)
+				{
+					$this->__parent->addChildFrame($frame);
+				}
 			}
 		}
 
@@ -1355,6 +1444,19 @@ class CBitrixComponent
 	{
 		$this->__children_epilogs[] = $epilogFile;
 	}
+
+	/**
+	 * Registers child frame for cache.
+	 *
+	 * @param \Bitrix\Main\Composite\StaticArea $frame
+	 * @return void
+	 *
+	 */
+	final public function addChildFrame($frame)
+	{
+		$this->__children_frames[] = $frame;
+	}
+
 	/**
 	 * Function adds a button to be displayed.
 	 *
@@ -1381,6 +1483,18 @@ class CBitrixComponent
 			$this->__view[$target] = array();
 
 		$this->__view[$target][] = array($content, $pos);
+	}
+
+	private static function increaseComponentCounter($componentName, $counter = 1)
+	{
+		if (!isset(self::$__componentCounter[$componentName]))
+		{
+			self::$__componentCounter[$componentName] = $counter;
+		}
+		else
+		{
+			self::$__componentCounter[$componentName] += $counter;
+		}
 	}
 
 	/**
@@ -1437,7 +1551,7 @@ class CBitrixComponent
 	{
 		$frameMode = null;
 
-		$compositeOptions = CHTMLPagesCache::getOptions();
+		$compositeOptions = \Bitrix\Main\Composite\Helper::getOptions();
 		$componentParams = $this->arParams;
 		
 		if (

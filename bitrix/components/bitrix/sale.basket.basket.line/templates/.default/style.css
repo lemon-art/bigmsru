@@ -30,7 +30,7 @@
 	.bx-basket-fixed{
 		width: 200px;
 		position: fixed;
-		z-index: 1100;
+		z-index: 998;
 		background: #fff;
 		padding-top: 10px;
 		border: 1px solid #F0F0F0;
@@ -48,7 +48,7 @@
 	.bx-basket-fixed{
 		/*width: 200px;*/
 		position: fixed;
-		z-index: 1100;
+		z-index: 998;
 		background: #fff;
 		padding-top: 10px;
 		border: 1px solid #F0F0F0;

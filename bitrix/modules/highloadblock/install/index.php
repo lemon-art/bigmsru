@@ -26,9 +26,29 @@ class highloadblock extends CModule
 		$this->MODULE_DESCRIPTION = GetMessage("HLBLOCK_MODULE_DESCRIPTION");
 	}
 
-	function GetModuleTasks()
+	public function GetModuleTasks()
 	{
-		return array();
+		return array(
+			'hblock_denied' => array(
+				'LETTER' => 'D',
+				'BINDING' => 'module',
+				'OPERATIONS' => array(),
+			),
+			'hblock_read' => array(
+				'LETTER' => 'R',
+				'BINDING' => 'module',
+				'OPERATIONS' => array(
+					'hl_element_read'
+				),
+			),
+			'hblock_write' => array(
+				'LETTER' => 'W',
+				'BINDING' => 'module',
+				'OPERATIONS' => array(
+					'hl_element_write', 'hl_element_delete'
+				),
+			),
+		);
 	}
 
 	function InstallDB($arParams = array())
@@ -74,6 +94,8 @@ class highloadblock extends CModule
 			{
 				\Bitrix\Highloadblock\HighloadBlockTable::delete($hldata['ID']);
 			}
+
+			$this->UnInstallTasks();
 
 			// remove hl system data
 			$this->errors = $DB->RunSQLBatch($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/highloadblock/install/db/".strtolower($DB->type)."/uninstall.sql");

@@ -15,4 +15,7 @@ $MESS["CATALOG_SET_BUTTON_BUY"] = "Warenkorb anzeigen";
 $MESS["CATALOG_SET_BUTTON_ADD"] = "Hinzufügen";
 $MESS["CATALOG_SET_MESS_NOT_AVAILABLE"] = "Nicht am Lager vorhanden";
 $MESS["CT_BCE_CATALOG_MESS_EMPTY_SET"] = "Im Paket gibt es keine Produkte. Wählen Sie Produkte aus der Liste aus.";
+$MESS["CATALOG_SET_PRODUCTS_PRICE"] = "Individuelle Produktpreise";
+$MESS["CATALOG_SET_SET_PRICE"] = "Paketpreis";
+$MESS["CATALOG_SET_ECONOMY_PRICE"] = "Sie sparen";
 ?>

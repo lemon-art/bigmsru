@@ -9,7 +9,7 @@ $arTypes = CIBlockParameters::GetIBlockTypes();
 $arIBlocks=array();
 $db_iblock = CIBlock::GetList(array("SORT"=>"ASC"), array("SITE_ID"=>$_REQUEST["site"], "TYPE" => ($arCurrentValues["IBLOCK_TYPE"]!="-"?$arCurrentValues["IBLOCK_TYPE"]:"")));
 while($arRes = $db_iblock->Fetch())
-	$arIBlocks[$arRes["ID"]] = $arRes["NAME"];
+	$arIBlocks[$arRes["ID"]] = "[".$arRes["ID"]."] ".$arRes["NAME"];
 
 $arProperty_LNS = array();
 $rsProp = CIBlockProperty::GetList(array("sort"=>"asc", "name"=>"asc"), Array("ACTIVE"=>"Y", "IBLOCK_ID"=>(isset($arCurrentValues["IBLOCK_ID"])?$arCurrentValues["IBLOCK_ID"]:$arCurrentValues["ID"])));
@@ -186,6 +186,12 @@ $arComponentParameters = array(
 			"VALUES" => $arUGroupsEx,
 			"DEFAULT" => array(1),
 			"MULTIPLE" => "Y",
+		),
+		"STRICT_SECTION_CHECK" => array(
+			"PARENT" => "ADDITIONAL_SETTINGS",
+			"NAME" => GetMessage("CP_BND_STRICT_SECTION_CHECK"),
+			"TYPE" => "CHECKBOX",
+			"DEFAULT" => "N",
 		),
 		"CACHE_TIME"  =>  array("DEFAULT"=>36000000),
 		"CACHE_GROUPS" => array(

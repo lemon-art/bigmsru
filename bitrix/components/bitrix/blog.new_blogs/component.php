@@ -97,9 +97,15 @@ else
 		$arSelectedFields
 	);
 	$i=0;
+	
+	$authors = array();
 	while ($arBlog = $dbBlogs->GetNext())
 	{
-		$arBlog["AuthorName"] = CBlogUser::GetUserName($arBlog["BLOG_USER_ALIAS"], $arBlog["OWNER_NAME"], $arBlog["OWNER_LAST_NAME"], $arBlog["OWNER_LOGIN"]);
+		unset($arBlog["~ID"], $arBlog["~URL"], $arBlog["~OWNER_ID"], $arBlog["~GROUP_ID"], $arBlog["~SOCNET_GROUP_ID"], $arBlog["~LAST_POST_ID"]);
+//		save authors params in hit cache var
+		if(!array_key_exists($arBlog["OWNER_LOGIN"], $authors))
+			$authors[$arBlog["OWNER_LOGIN"]] = CBlogUser::GetUserName($arBlog["BLOG_USER_ALIAS"], $arBlog["OWNER_NAME"], $arBlog["OWNER_LAST_NAME"], $arBlog["OWNER_LOGIN"]);
+		$arBlog["AuthorName"] = $authors[$arBlog["OWNER_LOGIN"]];
 	
 		if(IntVal($arBlog["SOCNET_GROUP_ID"]) > 0)
 		{

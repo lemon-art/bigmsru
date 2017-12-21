@@ -30,7 +30,7 @@ class Ebay extends Platform
 			"?action=OAUTH_AUTH".
 			"&LICENCE_HASH=".self::getLicenseHash().
 			"&BACK_URL=".urlencode((\CMain::IsHTTPS() ? "https://" : "http://").$_SERVER['HTTP_HOST']).
-			"&ACCOUNT_NAME=".$accountName;
+			"&ACCOUNT_NAME=".htmlspecialcharsbx($accountName);
 	}
 
 	public static function getApiTokenUrl()
@@ -91,9 +91,9 @@ class Ebay extends Platform
 
 		$ebay = Ebay::getInstance();
 		$catMapEntRes = \Bitrix\Sale\TradingPlatform\MapEntityTable::add(array(
-			"TRADING_PLATFORM_ID" => $ebay->getId(),
-			"CODE" => "CATEGORY"
-		));
+		"TRADING_PLATFORM_ID" => $ebay->getId(),
+		"CODE" => "CATEGORY"
+	));
 
 		$eventRes = Helper::installEvents();
 		$fsRes = Helper::createFeedFileStructure();

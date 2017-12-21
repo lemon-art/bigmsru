@@ -59,20 +59,37 @@ class CIBlock extends CAllIBlock
 			|| array_key_exists("OPERATION", $arFilter)
 		;
 		$bIsAdmin = is_object($USER) && $USER->IsAdmin();
-		if($bCheckPermissions && !$bIsAdmin)
+		$permissionsBy = null;
+		if ($bCheckPermissions && isset($arFilter['PERMISSIONS_BY']))
+		{
+			$permissionsBy = (int)$arFilter['PERMISSIONS_BY'];
+			if ($permissionsBy < 0)
+				$permissionsBy = null;
+		}
+		if($bCheckPermissions && ($permissionsBy !== null || !$bIsAdmin))
 		{
 			$min_permission = (strlen($arFilter["MIN_PERMISSION"])==1) ? $arFilter["MIN_PERMISSION"] : "R";
-			if(is_object($USER))
+
+			if ($permissionsBy !== null)
 			{
-				$iUserID = intval($USER->GetID());
-				$strGroups = $USER->GetGroups();
-				$bAuthorized = $USER->IsAuthorized();
+				$iUserID = $permissionsBy;
+				$strGroups = implode(',', CUser::GetUserGroup($permissionsBy));
+				$bAuthorized = false;
 			}
 			else
 			{
-				$iUserID = 0;
-				$strGroups = "2";
-				$bAuthorized = false;
+				if (is_object($USER))
+				{
+					$iUserID = (int)$USER->GetID();
+					$strGroups = $USER->GetGroups();
+					$bAuthorized = $USER->IsAuthorized();
+				}
+				else
+				{
+					$iUserID = 0;
+					$strGroups = "2";
+					$bAuthorized = false;
+				}
 			}
 
 			$stdPermissions = "
@@ -100,7 +117,7 @@ class CIBlock extends CAllIBlock
 			if($operation)
 			{
 				$acc = new CAccess;
-				$acc->UpdateCodes();
+				$acc->UpdateCodes($permissionsBy !== null ? array('USER_ID' => $permissionsBy) : false);
 
 				$extPermissions = "
 					SELECT IBLOCK_ID
@@ -110,7 +127,7 @@ class CIBlock extends CAllIBlock
 					".($iUserID > 0? "LEFT": "INNER")." JOIN b_user_access UA ON UA.ACCESS_CODE = IBR.GROUP_CODE AND UA.USER_ID = ".$iUserID."
 					WHERE IBR.ENTITY_TYPE = 'iblock'
 					AND O.NAME in (".$operation.")
-					".($bAuthorized? "AND (UA.USER_ID IS NOT NULL OR IBR.GROUP_CODE = 'AU')": "")."
+					".($bAuthorized || $iUserID > 0? "AND (UA.USER_ID IS NOT NULL OR IBR.GROUP_CODE = 'AU')": "")."
 				";
 				$sqlPermissions = "AND (
 					B.ID IN ($stdPermissions)
@@ -219,7 +236,7 @@ class CIBlock extends CAllIBlock
 		return $res;
 	}
 
-	function _Upper($str)
+	public static function _Upper($str)
 	{
 		return $str;
 	}
@@ -261,7 +278,7 @@ class CIBlock extends CAllIBlock
 		return $rs;
 	}
 
-	function _Order($by, $order, $default_order, $nullable = true)
+	public static function _Order($by, $order, $default_order, $nullable = true)
 	{
 		$o = parent::_Order($by, $order, $default_order, $nullable);
 		//$o[0] - bNullsFirst
@@ -290,9 +307,8 @@ class CIBlock extends CAllIBlock
 		}
 	}
 
-	function _NotEmpty($column)
+	public static function _NotEmpty($column)
 	{
 		return "if(".$column." is null, 0, 1)";
 	}
 }
-?>

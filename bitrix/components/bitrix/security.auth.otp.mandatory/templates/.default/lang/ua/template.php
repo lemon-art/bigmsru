@@ -31,4 +31,5 @@ $MESS["SECURITY_OTP_MANDATORY_AUTH_CODE_INFO_TOTP"] = "за часом";
 $MESS["SECURITY_OTP_MANDATORY_AUTH_CODE_INFO_HOTP"] = "по лічильнику";
 $MESS["SECURITY_OTP_MANDATORY_AUTH_BACK"] = "Повернутися на форму авторизації";
 $MESS["SECURITY_OTP_MANDATORY_REQUIRED"] = "Вхід без одноразового пароля неможливий.";
+$MESS["SECURITY_OTP_MANDATORY_AUTH_INPUT_METHODS_SEPARATOR"] = "або";
 ?>

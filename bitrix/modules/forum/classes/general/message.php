@@ -57,7 +57,7 @@ class CAllForumMessage
 			$iUserID = intVal($iUserID);
 			if ($iUserID <= 0 || intVal($arMessage["AUTHOR_ID"]) != $iUserID)
 				return false;
-			if (COption::GetOptionString("forum", "USER_EDIT_OWN_POST", "N") == "Y")
+			if (COption::GetOptionString("forum", "USER_EDIT_OWN_POST", "Y") == "Y")
 				return true;
 			$iCnt = CForumMessage::GetList(array("ID" => "ASC"), array("TOPIC_ID"=>$arTopic["ID"], ">ID"=>$MID), True);
 			if (intVal($iCnt) <= 0)

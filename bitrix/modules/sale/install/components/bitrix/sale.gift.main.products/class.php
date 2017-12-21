@@ -190,10 +190,6 @@ class CSaleGiftMainProductsComponent extends CBitrixComponent
 			),
 		));
 
-		global $USER;
-		$query->addFilter('=DISCOUNT_GROUP.ACTIVE', 'Y');
-		$query->addFilter('DISCOUNT_GROUP.GROUP_ID', $USER->getUserGroupArray());
-
 		$referenceField2 = new ReferenceField(
 			'D',
 			DiscountTable::getEntity(),
@@ -230,6 +226,11 @@ class CSaleGiftMainProductsComponent extends CBitrixComponent
 		$query->addSelect('D.APPLICATION', 'APPLICATION');
 		$query->addSelect('D.USE_COUPONS', 'USE_COUPONS');
 		$query->addSelect('D.EXECUTE_MODULE', 'EXECUTE_MODULE');
+
+		global $USER;
+		$query->addFilter('=DISCOUNT_GROUP.ACTIVE', 'Y');
+		$query->addFilter('DISCOUNT_GROUP.GROUP_ID', $USER->getUserGroupArray());
+		$query->addFilter('=D.LID', SITE_ID);
 
 		$discounts = array();
 		$dbResult = $query->exec();

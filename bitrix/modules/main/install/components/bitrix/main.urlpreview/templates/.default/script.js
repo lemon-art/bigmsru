@@ -42,7 +42,7 @@ BXUrlPreview.prototype.attachUrlPreview = function(params)
 
 	ufId = this.element.getAttribute('data-field-id');
 	requestParams = {
-		'action': 'getUrlPreviewEditForm',
+		'action': 'attachUrlPreview',
 		'userFieldId': ufId,
 		'elementId': this.id,
 		'sessid': BX.bitrix_sessid()

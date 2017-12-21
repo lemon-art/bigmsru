@@ -2,6 +2,7 @@
 namespace Sale\Handlers\Delivery\Spsr;
 
 use Bitrix\Main\Error;
+use Bitrix\Sale\Order;
 use Bitrix\Sale\Result;
 use Bitrix\Sale\Shipment;
 use Bitrix\Main\Text\Encoding;
@@ -24,6 +25,7 @@ class Calculator
 
 	protected static function getLocationCode(Shipment $shipment)
 	{
+		/** @var Order $order */
 		$order = $shipment->getCollection()->getOrder();
 
 		if(!$props = $order->getPropertyCollection())
@@ -60,7 +62,7 @@ class Calculator
 			return $result;
 		}
 
-		$fromCity = Location::getExternal($fromBLocationCode);
+		$fromCity = Location::getExternalId($fromBLocationCode);
 
 		if(strlen($fromCity) <= 0)
 		{
@@ -96,7 +98,7 @@ class Calculator
 			return $result;
 		}
 
-		$toCity = Location::getExternal($toBLocationCode);
+		$toCity = Location::getExternalId($toBLocationCode);
 
 		if(strlen($toCity) <= 0)
 		{
@@ -137,7 +139,7 @@ class Calculator
 			return $result;
 		}
 
-		$request .= '&ToCity='.$toCity.'&FromCity='.$fromCity.'&Weight='.$weight;
+		$request .= '&ToCity='.$toCity.'&FromCity='.$fromCity;
 
 		if(!empty($additional['NATURE']))
 			$request .= '&Nature='.$additional['NATURE'];
@@ -175,29 +177,52 @@ class Calculator
 		$maxWeight = 0;
 		$gabarit180 = false;
 		$price = 0;
+		$volume = 0;
+		$volumeWeight = 0;
 
 		/** @var \Bitrix\Sale\ShipmentItem $item */
 		foreach($shipment->getShipmentItemCollection() as $item)
 		{
 			$basketItem = $item->getBasketItem();
+
+			if(!$basketItem)
+				continue;
+
+			if($basketItem->isBundleChild())
+				continue;
+
 			$itemWeight = floatval($basketItem->getWeight());
+			$quantityItem = floatval($basketItem->getField('QUANTITY'));
 
 			if($maxWeight < $itemWeight)
 				$maxWeight = $itemWeight;
 
 			$dimensions = $basketItem->getField('DIMENSIONS');
 
+			if(!is_array($dimensions) && strlen($dimensions) > 0)
+				$dimensions = unserialize($dimensions);
+
 			if(!empty($dimensions['WIDTH']) && !empty($dimensions['HEIGHT']) && !empty($dimensions['LENGTH']))
 			{
-				if(!$gabarit180 && $dimensions['WIDTH']+$dimensions['HEIGHT']+$dimensions['LENGTH'] > 1800) //mm
+				$width = floatval($dimensions['WIDTH']);
+				$height = floatval($dimensions['HEIGHT']);
+				$length = floatval($dimensions['LENGTH']);
+				$volume += $quantityItem*$width*$height*$length/1000 ; //cm
+
+				if(!$gabarit180 && $width+$height+$length > 1800) //mm
 				{
 					$request .= '&GabarythB=1';
 					$gabarit180 = true;
 				}
 			}
 
-			$price += $basketItem->getPrice();
+			$price += $basketItem->getPrice() * $quantityItem;
 		}
+
+		if($volume > 0)
+			$volumeWeight = $volume / 5000;
+
+		$request .= '&Weight='.($volumeWeight > $weight ? $volumeWeight : $weight);
 
 		if($maxWeight > 200000) // gr
 			$request .= '&Weight200=1';
@@ -252,7 +277,7 @@ class Calculator
 					"AUDIT_TYPE_ID" => "SALE_DELIVERY_HANDLER_SPSR_ERROR",
 					"MODULE_ID" => "sale",
 					"ITEM_ID" => "CALCULATOR",
-					"DESCRIPTION" => Loc::getMessage('SALE_DLV_SRV_SPSR_ERROR_CALCULATE').": ".self::utfDecode($xmlAnswer->Error),
+					"DESCRIPTION" => Loc::getMessage('SALE_DLV_SRV_SPSR_ERROR_CALCULATE').": ".self::utfDecode($xmlAnswer->Error->__toString()),
 				));
 
 				return $result;

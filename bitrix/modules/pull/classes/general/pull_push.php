@@ -5,14 +5,14 @@ require_once('pushservices/services_descriptions.php');
 
 /**
  * Class CPullPush
- * @deprecated use Bitrix\Pull\PushTable
- * @see \Bitrix\Pull\PushTable
+ * @deprecated use Bitrix\Pull\Model\PushTable
+ * @see \Bitrix\Pull\Model\PushTable
  */
 class CPullPush
 {
 	/**
-	 * @deprecated use Bitrix\Pull\PushTable::getList
-	 * @see Bitrix\Pull\PushTable::getList
+	 * @deprecated use Bitrix\Pull\Model\PushTable::getList
+	 * @see Bitrix\Pull\Model\PushTable::getList
 	 * @param array $arOrder
 	 * @param array $arFilter
 	 * @param array $arSelect
@@ -36,22 +36,22 @@ class CPullPush
 			$params["limit"] = intval($arNavStartParams["nTopCount"]);
 		}
 
-		$res = \Bitrix\Pull\PushTable::getList($params);
+		$res = \Bitrix\Pull\Model\PushTable::getList($params);
 
 		return $res;
 	}
 
 
 	/**
-	 * @deprecated use Bitrix\Pull\PushTable::add
-	 * @see Bitrix\Pull\PushTable::add
+	 * @deprecated use Bitrix\Pull\Model\PushTable::add
+	 * @see Bitrix\Pull\Model\PushTable::add
 	 * @param array $arFields
 	 * @return int
 	 * @throws Exception
 	 */
 	public static function Add($arFields = Array())
 	{
-		$result = \Bitrix\Pull\PushTable::add($arFields);
+		$result = \Bitrix\Pull\Model\PushTable::add($arFields);
 
 		return $result->getId();
 	}
@@ -62,8 +62,8 @@ class CPullPush
 	}
 
 	/**
-	 * @deprecated use Bitrix\Pull\PushTable::update
-	 * @see Bitrix\Pull\PushTable::update
+	 * @deprecated use Bitrix\Pull\Model\PushTable::update
+	 * @see Bitrix\Pull\Model\PushTable::update
 	 * @param $ID
 	 * @param array $arFields
 	 * @return int
@@ -71,20 +71,20 @@ class CPullPush
 	 */
 	public static function Update($ID, $arFields = Array())
 	{
-		$result = \Bitrix\Pull\PushTable::update($ID, $arFields);
+		$result = \Bitrix\Pull\Model\PushTable::update($ID, $arFields);
 		return $result->getId();
 	}
 
 	/**
-	 * @deprecated use Bitrix\Pull\PushTable::delete
-	 * @see Bitrix\Pull\PushTable::delete
+	 * @deprecated use Bitrix\Pull\Model\PushTable::delete
+	 * @see Bitrix\Pull\Model\PushTable::delete
 	 * @param bool $ID
 	 * @return bool
 	 * @throws Exception
 	 */
 	public static function Delete($ID = false)
 	{
-		$result = \Bitrix\Pull\PushTable::delete(intval($ID));
+		$result = \Bitrix\Pull\Model\PushTable::delete(intval($ID));
 		return $result->isSuccess();
 	}
 
@@ -303,6 +303,10 @@ class CPushManager
 			{
 				$arAdd['BADGE'] = $arFields['BADGE'];
 			}
+			else
+			{
+				$arAdd['BADGE'] = \Bitrix\Pull\MobileCounter::get($arAdd['USER_ID']);
+			}
 			if (strlen($arFields['SOUND']) > 0)
 			{
 				$arAdd['SOUND'] = $arFields['SOUND'];
@@ -416,7 +420,7 @@ class CPushManager
 			$query->addSelect('im.IDLE', 'IDLE')->addSelect('im.MOBILE_LAST_DATE', 'MOBILE_LAST_DATE');
 		}
 
-		$query->registerRuntimeField('', new \Bitrix\Main\Entity\ReferenceField('push', 'Bitrix\Pull\PushTable', array('=this.ID' => 'ref.USER_ID')));
+		$query->registerRuntimeField('', new \Bitrix\Main\Entity\ReferenceField('push', 'Bitrix\Pull\Model\PushTable', array('=this.ID' => 'ref.USER_ID')));
 		$query->registerRuntimeField('', new \Bitrix\Main\Entity\ExpressionField('HAS_MOBILE', 'CASE WHEN main_user_push.USER_ID > 0 THEN \'Y\' ELSE \'N\' END'));
 		$query->addSelect('HAS_MOBILE')
 			->addSelect('push.APP_ID', 'APP_ID')
@@ -586,11 +590,14 @@ class CPushManager
 		{
 			return false;
 		}
-		$batch = "";
+
+		$batches = array();
 
 		/**
 		 * @var CPushService $obPush
 		 */
+		$batchMessageCount = CPullOptions::GetPushMessagePerHit();
+		$useChunks = ($batchMessageCount > 0);
 		foreach ($arServicesIDs as $serviceID)
 		{
 			if ($arPushMessages[$serviceID])
@@ -600,12 +607,39 @@ class CPushManager
 					$obPush = new self::$pushServices[$serviceID]["CLASS"];
 					if (method_exists($obPush, "getBatch"))
 					{
-						$batch .= $obPush->getBatch($arPushMessages[$serviceID]);
+						if(!$useChunks)
+						{
+							if(count($batches) > 0)
+							{
+								$batches[0] .= $obPush->getBatch($arPushMessages[$serviceID]);
+							}
+							else
+							{
+								$batches[] = $obPush->getBatch($arPushMessages[$serviceID]);
+							}
+						}
+						else
+						{
+							$offset = 0;
+							$counter = 1;
+							$messages = null;
+							while($messages = array_slice($arPushMessages[$serviceID],$offset, $batchMessageCount))
+							{
+								$batches[] = $obPush->getBatch($messages);
+								$offset += count($messages);
+								$counter++;
+							}
+						}
+
 					}
 				}
 			}
 		}
-		$this->sendBatch($batch);
+
+		foreach ($batches as $chunkBatch)
+		{
+			$this->sendBatch($chunkBatch);
+		}
 
 		return true;
 	}
@@ -664,7 +698,7 @@ class CPushManager
 
 		$count = 0;
 		$maxId = 0;
-		$pushLimit = 70;
+		$pushLimit = 10;
 		$arPush = Array();
 
 		$sqlDate = "";
@@ -694,10 +728,17 @@ class CPushManager
 		{
 			if ($arRes['BADGE'] == '')
 			{
-				unset($arRes['BADGE']);
+				$arRes['BADGE'] = \Bitrix\Pull\MobileCounter::get($arRes['USER_ID']);
 			}
 
-			$arRes['PARAMS'] = $arRes['PARAMS'] ? Bitrix\Main\Web\Json::decode($arRes['PARAMS']) : "";
+			try
+			{
+				$arRes['PARAMS'] = $arRes['PARAMS'] ? Bitrix\Main\Web\Json::decode($arRes['PARAMS']) : "";
+			}
+			catch (Exception $e)
+			{
+				$arRes['PARAMS'] = "";
+			}
 			if (is_array($arRes['PARAMS']))
 			{
 				if (isset($arRes['PARAMS']['CATEGORY']))
@@ -707,7 +748,14 @@ class CPushManager
 				}
 				$arRes['PARAMS'] = Bitrix\Main\Web\Json::encode($arRes['PARAMS']);
 			}
-			$arRes['ADVANCED_PARAMS'] = strlen($arRes['ADVANCED_PARAMS']) > 0 ? Bitrix\Main\Web\Json::decode($arRes['ADVANCED_PARAMS']) : Array();
+			try
+			{
+				$arRes['ADVANCED_PARAMS'] = strlen($arRes['ADVANCED_PARAMS']) > 0 ? Bitrix\Main\Web\Json::decode($arRes['ADVANCED_PARAMS']) : Array();
+			}
+			catch (Exception $e)
+			{
+				$arRes['ADVANCED_PARAMS'] = Array();
+			}
 
 			$arPush[$count][] = $arRes;
 			if ($pushLimit <= count($arPush[$count]))
@@ -899,6 +947,29 @@ class CPushManager
 	public function getServices()
 	{
 		return self::$pushServices;
+	}
+
+	public function sendBadges($userId = null, $appId = 'Bitrix24')
+	{
+		if (is_null($userId))
+		{
+			$userId = $GLOBALS['USER']->getId();
+		}
+
+		$userId = intval($userId);
+		if ($userId <= 0)
+		{
+			return false;
+		}
+
+		$CPushManager = new CPushManager();
+		$CPushManager->AddQueue(Array(
+			'USER_ID' => $userId,
+			'APP_ID' => $appId,
+			'SEND_IMMEDIATELY' => 'Y'
+		));
+
+		return true;
 	}
 }
 

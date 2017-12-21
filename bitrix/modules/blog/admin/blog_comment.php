@@ -251,6 +251,7 @@ while($arSite = $dbSite->Fetch())
 		if (strlen($serverName) <=0)
 			$serverName = $_SERVER["SERVER_NAME"];
 	}
+	$serverName = \Bitrix\Main\Text\HtmlFilter::encode($serverName);
 	$arServerName[$arSite["ID"]] = "http://".$serverName;
 }
 

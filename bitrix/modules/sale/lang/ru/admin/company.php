@@ -3,6 +3,7 @@ $MESS["SALE_COMPANY_SECTION_TITLE"] = "Компании";
 $MESS["SALE_COMPANY_NAME"] = "Название";
 $MESS["SALE_COMPANY_LOCATION_ID"] = "Расположение";
 $MESS["SALE_COMPANY_CODE"] = "Код";
+$MESS["SALE_COMPANY_SORT"] = "Сортировка";
 $MESS["SALE_COMPANY_ADD_NEW"] = "Добавить компанию";
 $MESS["SALE_COMPANY_ADD_NEW_ALT"] = "Добавить компанию";
 $MESS["SALE_COMPANY_EDIT"] = "Изменить";

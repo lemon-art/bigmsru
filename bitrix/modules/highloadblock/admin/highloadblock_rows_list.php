@@ -11,17 +11,13 @@ global $APPLICATION, $USER, $USER_FIELD_MANAGER;
 
 IncludeModuleLangFile(__FILE__);
 
-if (!$USER->IsAdmin())
-{
-	$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
-}
-
 if (!CModule::IncludeModule(ADMIN_MODULE_NAME))
 {
 	$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
 }
 
 // get entity settings
+$hblockName = '';
 $hlblock = null;
 $ENTITY_ID = 0;
 if (isset($_REQUEST['ENTITY_ID']))
@@ -29,6 +25,40 @@ if (isset($_REQUEST['ENTITY_ID']))
 if ($ENTITY_ID > 0)
 {
 	$hlblock = HL\HighloadBlockTable::getById($ENTITY_ID)->fetch();
+
+	if (!empty($hlblock))
+	{
+		//localization
+		$lng = HL\HighloadBlockLangTable::getList(array(
+					'filter' => array('ID' => $hlblock['ID'], '=LID' => LANG))
+				)->fetch();
+		if ($lng)
+		{
+			$hblockName = $lng['NAME'];
+		}
+		else
+		{
+			$hblockName = $hlblock['NAME'];
+		}
+		//check rights
+		if ($USER->isAdmin())
+		{
+			$canEdit = $canDelete = true;
+		}
+		else
+		{
+			$operations = HL\HighloadBlockRightsTable::getOperationsName($ENTITY_ID);
+			if (empty($operations))
+			{
+				$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
+			}
+			else
+			{
+				$canEdit = in_array('hl_element_write', $operations);
+				$canDelete = in_array('hl_element_delete', $operations);
+			}
+		}
+	}
 }
 
 if (empty($hlblock))
@@ -42,7 +72,7 @@ if (empty($hlblock))
 	die;
 }
 
-$APPLICATION->SetTitle(GetMessage('HLBLOCK_ADMIN_ROWS_LIST_PAGE_TITLE', array('#NAME#' => $hlblock['NAME'])));
+$APPLICATION->SetTitle(GetMessage('HLBLOCK_ADMIN_ROWS_LIST_PAGE_TITLE', array('#NAME#' => $hblockName)));
 
 $entity = HL\HighloadBlockTable::compileEntity($hlblock);
 
@@ -104,7 +134,7 @@ $filter = new CAdminFilter(
 
 
 // group actions
-if($lAdmin->EditAction())
+if($lAdmin->EditAction() && $canEdit)
 {
 	foreach($FIELDS as $ID=>$arFields)
 	{
@@ -146,13 +176,16 @@ if($arID = $lAdmin->GroupAction())
 		switch($_REQUEST['action'])
 		{
 			case "delete":
-				$entity_data_class::delete($ID);
+				if ($canDelete)
+				{
+					$entity_data_class::delete($ID);
+				}
 				break;
 		}
 	}
 }
 
-$arr = array('delete' => true);
+$arr = $canDelete ? array('delete' => true) : array();
 $lAdmin->AddGroupActionTable($arr);
 
 // select data
@@ -235,37 +268,55 @@ $lAdmin->NavText($rsData->GetNavPrint(GetMessage("PAGES")));
 while($arRes = $rsData->NavNext(true, "f_"))
 {
 	$row = $lAdmin->AddRow($f_ID, $arRes);
-	$USER_FIELD_MANAGER->AddUserFields('HLBLOCK_'.$hlblock['ID'], $arRes, $row);
-
-	$can_edit = true;
+	$row->AddViewField('ID', '<a href="' . 'highloadblock_row_edit.php?ENTITY_ID='.$hlblock['ID'].'&ID='.$f_ID.'&lang='.LANGUAGE_ID . '">'.$f_ID.'</a>');
+	
+	if ($canEdit)
+	{
+		$USER_FIELD_MANAGER->AddUserFields('HLBLOCK_'.$hlblock['ID'], $arRes, $row);
+	}
 
 	$arActions = array();
 
 	$arActions[] = array(
-		"ICON" => "edit",
-		"TEXT" => GetMessage($can_edit ? "MAIN_ADMIN_MENU_EDIT" : "MAIN_ADMIN_MENU_VIEW"),
-		"ACTION" => $lAdmin->ActionRedirect("highloadblock_row_edit.php?ENTITY_ID=".$hlblock['ID'].'&ID='.$f_ID.'&lang='.LANGUAGE_ID),
-		"DEFAULT" => true
+		'ICON' => 'edit',
+		'TEXT' => GetMessage($canEdit ? 'MAIN_ADMIN_MENU_EDIT' : 'MAIN_ADMIN_MENU_VIEW'),
+		'ACTION' => $lAdmin->ActionRedirect('highloadblock_row_edit.php?ENTITY_ID='.$hlblock['ID'].'&ID='.$f_ID.'&lang='.LANGUAGE_ID),
+		'DEFAULT' => true
 	);
-
-	$arActions[] = array(
-		"ICON"=>"delete",
-		"TEXT" => GetMessage("MAIN_ADMIN_MENU_DELETE"),
-		"ACTION" => "if(confirm('".GetMessageJS('HLBLOCK_ADMIN_DELETE_ROW_CONFIRM')."')) ".
-			$lAdmin->ActionRedirect("highloadblock_row_edit.php?action=delete&ENTITY_ID=".$hlblock['ID'].'&ID='.$f_ID.'&lang='.LANGUAGE_ID.'&'.bitrix_sessid_get())
-	);
+	if ($canEdit)
+	{
+		$arActions[] = array(
+			'ICON' => 'copy',
+			'TEXT' => GetMessage('MAIN_ADMIN_MENU_COPY'),
+			'ACTION' => $lAdmin->ActionRedirect('highloadblock_row_edit.php?ENTITY_ID='.$hlblock['ID'].'&ID='.$f_ID.'&lang='.LANGUAGE_ID.'&action=copy')
+		);
+	}
+	if ($canDelete)
+	{
+		$arActions[] = array(
+			'ICON'=>'delete',
+			'TEXT' => GetMessage('MAIN_ADMIN_MENU_DELETE'),
+			'ACTION' => 'if(confirm(\''.GetMessageJS('HLBLOCK_ADMIN_DELETE_ROW_CONFIRM').'\')) '.
+				$lAdmin->ActionRedirect('highloadblock_row_edit.php?action=delete&ENTITY_ID='.$hlblock['ID'].'&ID='.$f_ID.'&lang='.LANGUAGE_ID.'&'.bitrix_sessid_get())
+		);
+	}
 
 	$row->AddActions($arActions);
 }
 
 
 // view
-$lAdmin->AddAdminContextMenu(array(array(
-	"TEXT"	=> GetMessage('HLBLOCK_ADMIN_ROWS_ADD_NEW_BUTTON'),
-	"TITLE"	=> GetMessage('HLBLOCK_ADMIN_ROWS_ADD_NEW_BUTTON'),
-	"LINK"	=> "highloadblock_row_edit.php?ENTITY_ID=".$ENTITY_ID."&lang=".LANGUAGE_ID,
-	"ICON"	=> "btn_new"
-)));
+$menu = array();
+if ($canEdit)
+{
+	$menu[] = array(
+		'TEXT'	=> GetMessage('HLBLOCK_ADMIN_ROWS_ADD_NEW_BUTTON'),
+		'TITLE'	=> GetMessage('HLBLOCK_ADMIN_ROWS_ADD_NEW_BUTTON'),
+		'LINK'	=> 'highloadblock_row_edit.php?ENTITY_ID='.$ENTITY_ID.'&amp;lang='.LANGUAGE_ID,
+		'ICON'	=> 'btn_new'
+	);
+}
+$lAdmin->AddAdminContextMenu($menu);
 
 $lAdmin->CheckListMode();
 

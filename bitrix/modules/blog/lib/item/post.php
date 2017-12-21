@@ -45,8 +45,27 @@ class Post
 			}
 			else
 			{
+				$select = array('*', 'UF_BLOG_POST_URL_PRV');
+
+				if (
+					\Bitrix\Main\Config\Option::get('disk', 'successfully_converted', false)
+					&& Main\ModuleManager::isModuleInstalled('disk')
+				)
+				{
+					$select[] = 'UF_BLOG_POST_FILE';
+				}
+
+				if (
+					Main\ModuleManager::isModuleInstalled('vote')
+					&& Main\ModuleManager::isModuleInstalled('socialnetwork')
+				)
+				{
+					$select[] = 'UF_BLOG_POST_VOTE';
+				}
+
 				$res = PostTable::getList(array(
-					'filter' => array('=ID' => $postId)
+					'filter' => array('=ID' => $postId),
+					'select' => $select
 				));
 				if ($fields = $res->fetch())
 				{
@@ -253,22 +272,22 @@ class Post
 						if($userId > 0 && $key == "U" && $userId == $id)
 						{
 							$perms = (
-							in_array("US".$userId, $p) // author
-								? Permissions::FULL
-								: Permissions::READ
+								in_array("US".$userId, $p) // author
+									? Permissions::FULL
+									: Permissions::WRITE
 							);
 							break;
 						}
 
 						if(in_array("G2", $p))
 						{
-							$perms = Permissions::READ;
+							$perms = Permissions::WRITE;
 							break;
 						}
 
 						if($userId > 0 && in_array("AU", $p))
 						{
-							$perms = Permissions::READ;
+							$perms = Permissions::WRITE;
 							break;
 						}
 
@@ -291,7 +310,7 @@ class Post
 						{
 							if(in_array("DR".$id, $entityList["DR"]))
 							{
-								$perms = Permissions::READ;
+								$perms = Permissions::WRITE;
 								break;
 							}
 						}
@@ -397,6 +416,71 @@ class Post
 			'PERM' => $perms,
 			'READ_BY_OSG' => $readByOpenSonetGroup
 		);
+
+		return $result;
+	}
+
+	/**
+	 * Detect tags in data array.
+	 * @param array $fields Data array.
+	 * @return array
+	 */
+	public function detectTags()
+	{
+		$result = array();
+		$fields = $this->getFields();
+		$searchFields = array('DETAIL_TEXT');
+		if (
+			!isset($fields['MICRO'])
+			|| $fields['MICRO'] != 'Y'
+		)
+		{
+			$searchFields[] = 'TITLE';
+		}
+
+		foreach ($searchFields as $fieldCode)
+		{
+			if (
+				isset($fields[$fieldCode])
+				&& preg_match_all('/\s#([^\s,\[\]<>]+)/is', ' '.$fields[$fieldCode], $tags)
+			)
+			{
+				$result = array_merge($result, $tags[1]);
+			}
+		}
+
+		return $result;
+	}
+
+	public function getTags()
+	{
+		$result = array();
+
+		$fields = $this->getFields();
+
+		if (
+			empty($fields)
+			|| empty($fields['ID'])
+			|| intval($fields['ID']) <= 0
+		)
+		{
+			return false;
+		}
+
+		$res = \CBlogPostCategory::getList(
+			array(),
+			array(
+				'POST_ID' => $fields['ID']
+			),
+			false,
+			false,
+			array('NAME')
+		);
+
+		while ($category = $res->fetch())
+		{
+			$result[] = $category['NAME'];
+		}
 
 		return $result;
 	}

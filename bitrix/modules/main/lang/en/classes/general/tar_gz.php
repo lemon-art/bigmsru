@@ -13,8 +13,8 @@ $MESS["MAIN_ARCHIVE_ERR_CREATE_DIR"] = "Cannot create directory \"#DIR_NAME#\"."
 $MESS["MAIN_ARCHIVE_ERR_CREATE_FILE"] = "Error creating the file \"#FILE_NAME#\".";
 $MESS["MAIN_ARCHIVE_ERR_SIZE_CHECK"] = "The size of extracted file \"#FILE_NAME#\" is incorrect: \"#SIZE#\", should be \"EXP_SIZE#\". The archive may be damaged.";
 $MESS["MAIN_ARCHIVE_INV_BLOCK_SIZE"] = "Invalid block size: \"#BLOCK_SIZE#\".";
-$MESS["MAIN_ARCHIVE_INV_BLOCK_CHECK"] = "Checksum of \"#FILE_NAME#\" is incorrect: \"#CHECKSUM#\", expected \"#EXP_CHECKSUM#\".";
 $MESS["MAIN_ARCHIVE_ERR_OPEN_WRITE"] = "Cannot open \"#FILE_NAME#\" for writing.";
 $MESS["MAIN_ARCHIVE_ERR_RENAME"] = "Cannot rename \"#FILE_NAME#\" to temporary file \"#FILE_NAME2#\".tmp";
 $MESS["MAIN_ARCHIVE_CANT_CREATE_PATH"] = "Cannot create directory \"#DIR_NAME#\".";
+$MESS["MAIN_ARCHIVE_INV_BLOCK_CHECK1"] = "Invalid file header checksum";
 ?>

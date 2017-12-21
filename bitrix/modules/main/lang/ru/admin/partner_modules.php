@@ -1,5 +1,5 @@
 <?
-$MESS["TITLE"] = "Решения Marketplace";
+$MESS["TITLE"] = "Решения Маркетплейс";
 $MESS["MOD_SETUP"] = "Статус";
 $MESS["MOD_ACTION"] = "Действие";
 $MESS["MOD_NAME"] = "Название";

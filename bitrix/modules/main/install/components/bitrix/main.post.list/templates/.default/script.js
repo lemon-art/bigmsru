@@ -6,7 +6,7 @@
 	var safeEditing = true,
 		safeEditingCurrentObj = null,
 		quoteData = null,
-		repo = {};
+		repo = {commentExemplarId : {}};
 
 	window.FCList = function (params, add) {
 		this.CID = params["CID"];
@@ -32,8 +32,10 @@
 				}, this)
 			]
 		];
+
+		this.exemplarId = BX.util.getRandomString(20);
 		this.windowEvents = {
-			OnUCUserIsWriting : BX.delegate(function(ENTITY_XML_ID/*, id*/) {
+			OnUCUserIsWriting : BX.delegate(function(ENTITY_XML_ID, id, commentExemplarId) {
 				if (this.ENTITY_XML_ID == ENTITY_XML_ID) {
 					BX.ajax({
 						url: this.url.activity,
@@ -41,6 +43,7 @@
 						data: {
 							AJAX_POST : "Y",
 							ENTITY_XML_ID : this.ENTITY_XML_ID,
+							COMMENT_EXEMPLAR_ID : commentExemplarId,
 							MODE : "PUSH&PULL",
 							sessid : BX.bitrix_sessid(),
 							sign : params["sign"],
@@ -57,8 +60,9 @@
 					this.add(data["messageId"], data, true, "simple");
 				}
 			}, this),
-			OnUCFormSubmit : BX.delegate(function(ENTITY_XML_ID/*, ENTITY_ID, obj, data*/) {
+			OnUCFormSubmit : BX.delegate(function(ENTITY_XML_ID, ENTITY_ID, obj, data) {
 				if (this.ENTITY_XML_ID == ENTITY_XML_ID) {
+					data["EXEMPLAR_ID"] = this.exemplarId;
 					this.pullNewRecords[ENTITY_XML_ID + '-0'] = "busy";
 				}
 			}, this),
@@ -80,6 +84,8 @@
 					this.ENTITY_XML_ID == params["ENTITY_XML_ID"]
 					&& (
 						(params["USER_ID"] + '') != (BX.message("USER_ID") + '')
+						||
+						( params["EXEMPLAR_ID"] && params["EXEMPLAR_ID"] != this.exemplarId )
 						|| (
 							typeof params["AUX"] != 'undefined'
 							&& BX.util.in_array(params["AUX"], ['createtask', 'fileversion'])
@@ -87,11 +93,16 @@
 					)
 				)
 				{
-					if (command == 'comment' && params["ID"])
+					if (command === 'comment' && params["ID"])
 					{
-							this.pullNewRecord(params);
+						if (params["COMMENT_EXEMPLAR_ID"])
+							repo.commentExemplarId[params["ENTITY_XML_ID"] + '_' + params["COMMENT_EXEMPLAR_ID"]] = true;
+						this.pullNewRecord(params);
 					}
-					else if (command == 'answer')
+					else if (command === 'answer' &&
+						((params["USER_ID"] + '') !== (BX.message("USER_ID") + '')) &&
+						(!params["COMMENT_EXEMPLAR_ID"] || repo.commentExemplarId[params["ENTITY_XML_ID"] + '_' + params["COMMENT_EXEMPLAR_ID"]] !== true)
+					)
 					{
 						this.pullNewAuthor(params["USER_ID"], params["NAME"], params["AVATAR"]);
 					}
@@ -156,6 +167,12 @@
 		if (repo[this.ENTITY_XML_ID])
 			repo[this.ENTITY_XML_ID].destroy();
 		repo[this.ENTITY_XML_ID] = this;
+
+		BX.ready(function() {
+			setTimeout(BX.delegate(function() {
+				BX.onCustomEvent(window, "OnUCHasBeenInitialized", [this.ENTITY_XML_ID, this]);
+			}, this), 100)
+		});
 
 		return this;
 	};
@@ -1003,10 +1020,60 @@
 				href : el.getAttribute('bx-mpl-view-url').replace(/\\#(.+)$/gi, "") + "#com" + ID
 			});
 			panels.push({
-				text : '<span id="record-popup-' + ENTITY_XML_ID + '-' + ID + '-link-text">' + BX.message("B_B_MS_LINK") + '</span>',
+				text : '<span id="record-popup-' + ENTITY_XML_ID + '-' + ID + '-link-text">' + BX.message("B_B_MS_LINK") + '</span>' +
+					'<span id="record-popup-' + ENTITY_XML_ID + '-' + ID + '-link-icon-animate" class="comment-menu-link-icon-wrap">' +
+						'<span class="comment-menu-link-icon" id="record-popup-' + ENTITY_XML_ID + '-' + ID + '-link-icon-done" style="display: none;">' +
+
+						'</span>' +
+					'</span>',
 				onclick : function() {
 					var
 						id = 'record-popup-' + ENTITY_XML_ID + '-' + ID + '-link',
+						urlView = el.getAttribute('bx-mpl-view-url').replace(/#(.+)$/gi, "") + "#com" + ID,
+						menuItemText = BX(id + '-text'),
+						menuItemIconDone = BX(id + '-icon-done');
+
+					urlView = (urlView.indexOf('http') < 0 ? (location.protocol + '//' + location.host) : '') + urlView;
+
+					if (BX.clipboard.isCopySupported())
+					{
+						if (menuItemText && menuItemText.getAttribute('data-block-click') == 'Y')
+						{
+							return;
+						}
+
+						BX.clipboard.copy(urlView);
+						if (
+							menuItemText
+							&& menuItemIconDone
+						)
+						{
+							menuItemIconDone.style.display = 'inline-block';
+							BX.removeClass(BX(id + '-icon-animate'), 'comment-menu-link-icon-animate');
+
+							BX.adjust(BX(id + '-text'), {
+								attrs: {
+									'data-block-click': 'Y'
+								}
+							});
+
+							setTimeout(function() {
+								BX.addClass(BX(id + '-icon-animate'), 'comment-menu-link-icon-animate');
+							}, 1);
+
+							setTimeout(function() {
+								BX.adjust(BX(id + '-text'), {
+									attrs: {
+										'data-block-click': 'N'
+									}
+								});
+							}, 500);
+						}
+
+						return;
+					}
+
+					var
 						it = BX.proxy_context,
 						height = parseInt(!!it.getAttribute("bx-height") ? it.getAttribute("bx-height") : it.offsetHeight);
 
@@ -1019,8 +1086,8 @@
 								node = BX(id + '-text'),
 								pos = BX.pos(node),
 								pos2 = BX.pos(node.parentNode),
-								nodes = BX.findChildren(node.parentNode.parentNode.parentNode, {className : "menu-popup-item-text"}, true),
-								urlView = el.getAttribute('bx-mpl-view-url').replace(/#(.+)$/gi, "") + "#com" + ID;
+								nodes = BX.findChildren(node.parentNode.parentNode.parentNode, {className : "menu-popup-item-text"}, true);
+
 							pos["height"] = pos2["height"] - 1;
 							if (nodes)
 							{
@@ -1047,7 +1114,7 @@
 															attrs : {
 																id : id + '-input',
 																type : "text",
-																value : (urlView.indexOf('http') < 0 ? (location.protocol + '//' + location.host) : '') + urlView} ,
+																value : urlView} ,
 															style : {
 																height : pos2["height"] + 'px',
 																width : pos2["width"] + 'px'
@@ -1267,6 +1334,7 @@
 			replacement = {
 				"ID" : '',
 				"FULL_ID" : '',
+				"CONTENT_ID" : '',
 				"ENTITY_XML_ID" : '',
 				"NEW" : "old",
 				"APPROVED" : 'Y',
@@ -1338,6 +1406,7 @@
 			replacement = {
 				"ID" : res["ID"],
 				"FULL_ID" : res["FULL_ID"].join('-'),
+				"CONTENT_ID" : (res["RATING"] && res["RATING"]["ENTITY_TYPE_ID"] && res["RATING"]["ENTITY_ID"] ? res["RATING"]["ENTITY_TYPE_ID"] + "-" + res["RATING"]["ENTITY_ID"] : ""),
 				"ENTITY_XML_ID" : res["ENTITY_XML_ID"],
 				"NEW" : res["NEW"] == "Y" ? "new" : "old",
 				"APPROVED" : (res["APPROVED"] != "Y" ? "hidden" : "approved"),

@@ -1216,12 +1216,7 @@ window.JCSaleGiftProduct.prototype.Basket = function()
 		if (this.basketData.useProps && !this.basketData.emptyProps)
 		{
 			this.InitPopupWindow();
-			this.obPopupWin.setTitleBar({
-				content: BX.create('div', {
-					style: { marginRight: '30px', whiteSpace: 'nowrap' },
-					text: BX.message('CVP_TITLE_BASKET_PROPS')
-				})
-			});
+			this.obPopupWin.setTitleBar(BX.message('CVP_TITLE_BASKET_PROPS'));
 			if (BX(this.visual.BASKET_PROP_DIV))
 			{
 				contentBasketProps = BX(this.visual.BASKET_PROP_DIV).innerHTML;
@@ -1283,7 +1278,7 @@ window.JCSaleGiftProduct.prototype.BasketResult = function(arResult)
 			);
 			break;
 		}
-		strContent = '<div style="width: 96%; margin: 10px 2%; text-align: center;"><img src="'+strPict+'" height="130" style="max-height:130px"><p>'+strName+'</p></div>';
+		strContent = '<div style="width: 100%; margin: 0; text-align: center;"><img src="'+strPict+'" height="130" style="max-height:130px"><p>'+strName+'</p></div>';
 		buttons = [
 			new BasketButton({
 				ownerClass: this.obProduct.parentNode.parentNode.parentNode.className,
@@ -1310,12 +1305,7 @@ window.JCSaleGiftProduct.prototype.BasketResult = function(arResult)
 		];
 	}
 	this.InitPopupWindow();
-	this.obPopupWin.setTitleBar({
-		content: BX.create('div', {
-			style: { marginRight: '30px', whiteSpace: 'nowrap' },
-			text: (successful ? BX.message('CVP_TITLE_SUCCESSFUL') : BX.message('CVP_TITLE_ERROR'))
-		})
-	});
+	this.obPopupWin.setTitleBar(successful ? BX.message('CVP_TITLE_SUCCESSFUL') : BX.message('CVP_TITLE_ERROR'));
 	this.obPopupWin.setContent(strContent);
 	this.obPopupWin.setButtons(buttons);
 	this.obPopupWin.show();
@@ -1334,7 +1324,8 @@ window.JCSaleGiftProduct.prototype.InitPopupWindow = function()
 		overlay : true,
 		closeByEsc: true,
 		titleBar: true,
-		closeIcon: {top: '10px', right: '10px'}
+		closeIcon: true,
+		contentColor: 'white'
 	});
 };
 })(window);

@@ -161,7 +161,7 @@ class TargetSaleMailConnector extends \Bitrix\Sender\Connector
 			function AddProductSearch_%CONNECTOR_NUM%()
 			{
 				var productPopup = new BX.CDialog({
-					content_url: '/bitrix/admin/cat_product_search_dialog.php?lang=".LANG."&caller=sender_target_sale&func_name=catchProduct_%CONNECTOR_NUM%',
+					content_url: '/bitrix/tools/sale/product_search_dialog.php?lang=".LANGUAGE_ID."&caller=sender_target_sale&func_name=catchProduct_%CONNECTOR_NUM%',
 					height: Math.max(500, window.innerHeight-400),
 					width: Math.max(800, window.innerWidth-400),
 					draggable: true,

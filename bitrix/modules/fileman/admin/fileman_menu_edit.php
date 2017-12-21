@@ -70,6 +70,7 @@ $DOC_ROOT = CSite::GetSiteDocRoot($site);
 $arParsedPath = CFileMan::ParsePath(Array($site, $path), true, false, "", $logical == "Y");
 $menufilename = $path;
 
+$name = preg_replace("/[^a-z0-9_]/i", "", $_REQUEST["name"]);
 $bExists = false;
 $arTypes = Array();
 $armt = GetMenuTypes($site, "left=".GetMessage("FILEMAN_MENU_EDIT_LEFT_MENU").",top=".GetMessage("FILEMAN_MENU_EDIT_TOP_MENU"));
@@ -84,9 +85,11 @@ foreach($armt as $key => $title)
 		$bExists = true;
 }
 if(!$bExists)
-	$name = $arTypes[0][0];
+{
+	$arTypes[] = array($name, $name);
+}
 
-if(strlen($name)>0)
+if($name <> '')
 	$menufilename = $path."/.".$name.".menu.php";
 
 $abs_path = $DOC_ROOT.$menufilename;

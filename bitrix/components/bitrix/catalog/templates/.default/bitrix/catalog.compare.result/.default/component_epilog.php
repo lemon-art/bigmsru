@@ -3,7 +3,4 @@
 /** @var @global CMain $APPLICATION */
 global $APPLICATION;
 if (isset($templateData['TEMPLATE_THEME']))
-{
 	$APPLICATION->SetAdditionalCSS($templateData['TEMPLATE_THEME']);
-}
-?>

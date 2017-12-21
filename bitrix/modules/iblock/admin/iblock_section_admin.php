@@ -233,6 +233,7 @@ $arHeaders = array(
 	array(
 		"id" => "XML_ID",
 		"content" => GetMessage("IBSEC_A_XML_ID"),
+		"sort" => "xml_id",
 	),
 	array(
 		"id" => "ELEMENT_CNT",

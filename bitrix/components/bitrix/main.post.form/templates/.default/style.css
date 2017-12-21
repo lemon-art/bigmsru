@@ -244,7 +244,7 @@
 	-moz-box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
 	-webkit-box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
 	box-shadow: 0 0 2px rgba(137, 137, 137, 0.3);
-	display: inline-block;
+	display: block;
 	text-align: center;
 	padding: 4px;
 	position: relative;
@@ -266,6 +266,17 @@
 	top: 1px;
 	right: 1px;
 	width: 22px;
+}
+
+.feed-add-photo-block .feed-add-post-del-but {
+	background-color: #fff;
+	background-position: 8px -19px;
+	cursor: pointer;
+	right: 0;
+	top: 0;
+	height: 20px;
+	position: absolute;
+	width: 20px;
 }
 
 .feed-add-photo-block .feed-add-close-icon:hover {
@@ -389,7 +400,8 @@
 	margin-bottom: 0;
 }
 
-.feed-add-close-icon {
+.feed-add-close-icon,
+.feed-add-post-del-but {
 	background: url("images/sprite_mpf_5.png") no-repeat 9px -17px;
 	cursor: pointer;
 	height: 25px;
@@ -702,7 +714,8 @@
 	padding-right: 30px;
 }
 
-.feed-add-post-del-but {
+.feed-add-post-destination .feed-add-post-del-but,
+ .feed-add-post-tags .feed-add-post-del-but {
 	background: url("images/sprite_mpf_5.png") no-repeat;
 	cursor: pointer;
 	right: 0;
@@ -1082,6 +1095,7 @@
 	position: absolute;
 	text-align: right;
 	width: 14px;
+	box-sizing: content-box;
 }
 
 .feed-add-com-button.feed-add-button-load:before {
@@ -1093,7 +1107,7 @@
 	content: '';
 	height: 7px;
 	position: absolute;
-	top: 18px;
+	top: 23px;
 	left: 50%;
 	width: 1px;
 	-webkit-transform-origin: 0 100%;
@@ -1104,7 +1118,7 @@
 }
 
 .feed-add-com-button.feed-add-button-load:after {
-	top: 14px;
+	top: 19px;
 }
 
 .feed-add-button-transparent.feed-add-button-load {
@@ -1185,30 +1199,6 @@
 
 .feed-add-post-buttons .mpf-load-img {
 	height: 23px !important;
-}
-
-.feed-add-post-micro {
-	color: #80868e;
-	font-size: 18px;
-	font-family: "OpenSans-Regular", Helvetica, Arial, sans-serif;
-	margin: 0;
-	height: 18px;
-	padding: 19px 2px 27px 22px;
-	position: relative;
-	cursor: text;
-}
-.feed-add-post-micro-dnd-ready.feed-add-post-micro {
-	background: rgba(248,250,250,0.9);
-	border: 2px dashed #a7b0b5;
-	padding: 17px 0 25px 16px;
-	cursor: default;
-}
-.feed-add-post-micro .feed-add-post-micro-dnd,
-.feed-add-post-micro-dnd-ready.feed-add-post-micro .feed-add-post-micro-title{
-	display: none;
-}
-.feed-add-post-micro-dnd-ready.feed-add-post-micro .feed-add-post-micro-dnd {
-	display: block;
 }
 
 .bx-smile-f {
@@ -1421,4 +1411,7 @@ div.lhe-list-item-cont[title="xx-large"] span.lhe-list-font-span {
 .feed-add-post-destination.feed-add-post-destination-email::before {
 	background-position: -33px -92px;
 
+}
+html.bx-ios.bx-ios-fix-frame-focus, html.bx-ios.bx-ios-fix-frame-focus iframe, .bx-ios.bx-ios-fix-frame-focus body {
+	-webkit-overflow-scrolling: touch;
 }

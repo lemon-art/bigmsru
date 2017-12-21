@@ -197,6 +197,7 @@ $MESS["SALE_NEW_ORDER_DESC"] = "#ORDER_ID# - order ID
 #EMAIL# - customer e-mail
 #BCC# - BCC e-mail
 #ORDER_LIST# - order contents
+#ORDER_PUBLIC_URL# - order view link for unauthorized users (requires configuration in the e-Store module settings)
 #SALE_EMAIL# - sales dept. e-mail";
 $MESS["SALE_ORDER_CANCEL_DESC"] = "#ORDER_ID# - order ID
 #ORDER_ACCOUNT_NUMBER_ENCODE# - order ID (for URL's)
@@ -205,6 +206,7 @@ $MESS["SALE_ORDER_CANCEL_DESC"] = "#ORDER_ID# - order ID
 #EMAIL# - customer e-mail
 #ORDER_LIST# - order contents
 #ORDER_CANCEL_DESCRIPTION# - reason for cancellation
+#ORDER_PUBLIC_URL# - order view link for unauthorized users (requires configuration in the e-Store module settings)
 #SALE_EMAIL# - sales dept. e-mail
 ";
 $MESS["SALE_ORDER_PAID_DESC"] = "#ORDER_ID# - order ID
@@ -212,12 +214,14 @@ $MESS["SALE_ORDER_PAID_DESC"] = "#ORDER_ID# - order ID
 #ORDER_REAL_ID# - real order ID
 #ORDER_DATE# - order date
 #EMAIL# - customer e-mail
+#ORDER_PUBLIC_URL# - order view link for unauthorized users (requires configuration in the e-Store module settings)
 #SALE_EMAIL# - sales dept. e-mail";
 $MESS["SALE_ORDER_DELIVERY_DESC"] = "#ORDER_ID# - order ID
 #ORDER_ACCOUNT_NUMBER_ENCODE# - order ID (for URL's)
 #ORDER_REAL_ID# - real order ID
 #ORDER_DATE# - order date
 #EMAIL# - customer e-mail
+#ORDER_PUBLIC_URL# - order view link for unauthorized users (requires configuration in the e-Store module settings)
 #SALE_EMAIL# - sales dept. e-mail";
 $MESS["SALE_RECURRING_CANCEL_DESC"] = "#ORDER_ID# - order ID
 #ORDER_ACCOUNT_NUMBER_ENCODE# - order ID (for URL's)
@@ -245,6 +249,7 @@ $MESS["SALE_ORDER_REMIND_PAYMENT_DESC"] = "#ORDER_ID# - order ID
 #EMAIL# - customer e-mail
 #BCC# - BCC e-mail
 #ORDER_LIST# - order contents
+#ORDER_PUBLIC_URL# - order view link for unauthorized users (requires configuration in the e-Store module settings)
 #SALE_EMAIL# - sales dept. e-mail";
 $MESS["SALE_ORDER_TRACKING_NUMBER_TYPE_DESC"] = "#ORDER_ID# - order ID
 #ORDER_ACCOUNT_NUMBER_ENCODE# - order ID (for URL's)
@@ -252,7 +257,54 @@ $MESS["SALE_ORDER_TRACKING_NUMBER_TYPE_DESC"] = "#ORDER_ID# - order ID
 #ORDER_DATE# - order date
 #ORDER_USER# - customer
 #ORDER_TRACKING_NUMBER# - tracking number
+#ORDER_PUBLIC_URL# - order view link for unauthorized users (requires configuration in the e-Store module settings)
 #EMAIL# - customer e-mail
 #BCC# - BCC e-mail
 #SALE_EMAIL# - sales dept. e-mail";
+$MESS["SALE_CHECK_PRINT_TYPE_NAME"] = "Receipt printout notification";
+$MESS["SALE_CHECK_PRINT_TYPE_DESC"] = "#ORDER_ID# - order ID
+#ORDER_DATE# - order date
+#ORDER_USER# - customer
+#ORDER_ACCOUNT_NUMBER_ENCODE# - order Id for use in links
+#ORDER_PUBLIC_URL# - order view link for unauthorized users (requires configuration in the e-Store module settings)
+#CHECK_LINK# - receipt link";
+$MESS["SALE_CHECK_PRINT_SUBJECT"] = "Receipt link";
+$MESS["SALE_CHECK_PRINT_HTML_TITLE"] = "Your payment for order with #SITE_NAME#";
+$MESS["SALE_CHECK_PRINT_HTML_SUB_TITLE"] = "Dear #ORDER_USER#,";
+$MESS["SALE_CHECK_PRINT_HTML_TEXT"] = "
+your payment has been processed and a respective receipt has been created. To view the receipt, use the link:
+
+#CHECK_LINK#
+
+To get more details on your order ##ORDER_ID# or #ORDER_DATE# please follow this link: http://#SERVER_NAME#/personal/order/detail/#ORDER_ACCOUNT_NUMBER_ENCODE#/
+";
+$MESS["SALE_ORDER_SHIPMENT_STATUS_CHANGED_SUBJECT"] = "Status of your shipment from #SITE_NAME# has updated";
+$MESS["SALE_ORDER_SHIPMENT_STATUS_CHANGED_HTML_TITLE"] = "Tracking information for your shipment from #SITE_NAME# has been updated";
+$MESS["SALE_ORDER_SHIPMENT_STATUS_CHANGED_HTML_SUB_TITLE"] = "Dear #ORDER_USER#,";
+$MESS["SALE_ORDER_SHIPMENT_STATUS_CHANGED_HTML_TEXT"] = "Status of your shipment for order ##ORDER_NO# of #ORDER_DATE# has been updated to 
+
+\"#STATUS_NAME#\" (#STATUS_DESCRIPTION#).
+
+Tracking number: #TRACKING_NUMBER#.
+
+Shipped with: #DELIVERY_NAME#.
+
+#DELIVERY_TRACKING_URL##ORDER_DETAIL_URL#
+";
+$MESS["SALE_ORDER_SHIPMENT_STATUS_CHANGED_TYPE_NAME"] = "Package status update";
+$MESS["SALE_ORDER_SHIPMENT_STATUS_CHANGED_TYPE_DESC"] = "#SHIPMENT_NO# - shipment ID
+#SHIPMENT_DATE# - shipped on
+#ORDER_NO# - order #
+#ORDER_DATE# - order date
+#STATUS_NAME# - status name
+#STATUS_DESCRIPTION# - status description
+#TRACKING_NUMBER# - tracking number
+#EMAIL# - notify e-mail address
+#BCC# - send copy to address
+#ORDER_USER# - customer
+#DELIVERY_NAME# - delivery service name
+#DELIVERY_TRACKING_URL# - delivery service website for more tracking details
+#ORDER_ACCOUNT_NUMBER_ENCODE# - order ID (for links)
+#ORDER_PUBLIC_URL# - order view link for unauthorized users (requires configuration in the e-Store module settings)
+#ORDER_DETAIL_URL# - order details URL";
 ?>

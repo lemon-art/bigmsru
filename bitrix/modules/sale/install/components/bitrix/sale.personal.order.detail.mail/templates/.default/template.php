@@ -22,7 +22,7 @@
 						<?=GetMessage('SPOD_ORDER_STATUS')?>:
 					</td>
 					<td>
-						<?=$arResult["STATUS"]["NAME"]?>
+						<?=htmlspecialcharsbx($arResult["STATUS"]["NAME"])?>
 						<?if(strlen($arResult["DATE_STATUS_FORMATED"])):?>
 							(<?=GetMessage("SPOD_FROM")?> <?=$arResult["DATE_STATUS_FORMATED"]?>)
 						<?endif?>
@@ -67,16 +67,16 @@
 					<?if(strlen($arResult["USER_NAME"])):?>
 						<tr>
 							<td><?=GetMessage('SPOD_ACCOUNT')?>:</td>
-							<td><?=$arResult["USER_NAME"]?></td>
+							<td><?=htmlspecialcharsbx($arResult["USER_NAME"])?></td>
 						</tr>
 					<?endif?>
 					<tr>
 						<td><?=GetMessage('SPOD_LOGIN')?>:</td>
-						<td><?=$arResult["USER"]["LOGIN"]?></td>
+						<td><?=htmlspecialcharsbx($arResult["USER"]["LOGIN"])?></td>
 					</tr>
 					<tr>
 						<td><?=GetMessage('SPOD_EMAIL')?>:</td>
-						<td><a href="mailto:<?=$arResult["USER"]["EMAIL"]?>"><?=$arResult["USER"]["EMAIL"]?></a></td>
+						<td><a href="mailto:<?=htmlspecialcharsbx($arResult["USER"]["EMAIL"])?>"><?=htmlspecialcharsbx($arResult["USER"]["EMAIL"])?></a></td>
 					</tr>
 
 					<tr><td><br></td><td></td></tr>
@@ -90,7 +90,7 @@
 				</tr>
 				<tr>
 					<td><?=GetMessage('SPOD_ORDER_PERS_TYPE')?>:</td>
-					<td><?=$arResult["PERSON_TYPE"]["NAME"]?></td>
+					<td><?=htmlspecialcharsbx($arResult["PERSON_TYPE"]["NAME"])?></td>
 				</tr>
 			<?endif?>
 			
@@ -110,10 +110,10 @@
 						<td><?=$prop['NAME']?>:</td>
 						<td>
 
-							<?if($prop["TYPE"] == "CHECKBOX"):?>
+							<?if($prop["TYPE"] == "Y/N"):?>
 								<?=GetMessage('SPOD_'.($prop["VALUE"] == "Y" ? 'YES' : 'NO'))?>
 							<?else:?>
-								<?=$prop["VALUE"]?>
+								<?=htmlspecialcharsbx($prop["VALUE"])?>
 							<?endif?>
 
 						</td>
@@ -142,7 +142,7 @@
 					<td><?=GetMessage('SPOD_PAY_SYSTEM')?>:</td>
 					<td>
 						<?if(intval($arResult["PAY_SYSTEM_ID"])):?>
-							<?=$arResult["PAY_SYSTEM"]["NAME"]?>
+							<?=htmlspecialcharsbx($arResult["PAY_SYSTEM"]["NAME"])?>
 						<?else:?>
 							<?=GetMessage("SPOD_NONE")?>
 						<?endif?>
@@ -169,7 +169,7 @@
 					<td><?=GetMessage("SPOD_ORDER_DELIVERY")?>:</td>
 					<td>
 						<?if(strpos($arResult["DELIVERY_ID"], ":") !== false || intval($arResult["DELIVERY_ID"])):?>
-							<?=$arResult["DELIVERY"]["NAME"]?>
+							<?=htmlspecialcharsbx($arResult["DELIVERY"]["NAME"])?>
 
 							<?if(intval($arResult['STORE_ID']) && !empty($arResult["DELIVERY"]["STORE_LIST"][$arResult['STORE_ID']])):?>
 
@@ -307,8 +307,8 @@
 							<table cellspacing="0" class="bx_ol_sku_prop">
 								<?foreach($prod["PROPS"] as $prop):?>
 									<tr>
-										<td><nobr><?=$prop["NAME"]?>:</nobr></td>
-										<td style="padding-left: 10px !important"><b><?=$prop["VALUE"]?></b></td>
+										<td><nobr><?=htmlspecialcharsbx($prop["NAME"])?>:</nobr></td>
+										<td style="padding-left: 10px !important"><b><?=htmlspecialcharsbx($prop["VALUE"])?></b></td>
 									</tr>
 								<?endforeach?>
 							</table>
@@ -359,7 +359,7 @@
 				<? ///// PRICE SUM ?>
 				<tr>
 					<td class="custom_t1"><?=GetMessage('SPOD_PRODUCT_SUM')?>:</td>
-					<td class="custom_t2"><?=$arResult['PRODUCT_SUM_FORMATTED']?></td>
+					<td class="custom_t2"><?=$arResult['PRODUCT_SUM_FORMATED']?></td>
 				</tr>
 
 				<? ///// DELIVERY PRICE: print even equals 2 zero ?>

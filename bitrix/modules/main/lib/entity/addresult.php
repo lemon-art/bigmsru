@@ -10,8 +10,8 @@ namespace Bitrix\Main\Entity;
 
 class AddResult extends Result
 {
-	/** @var  int */
-	protected $id;
+	/** @var array */
+	protected $primary;
 
 	public function __construct()
 	{
@@ -20,15 +20,36 @@ class AddResult extends Result
 
 	public function setId($id)
 	{
-		$this->id = $id;
+		$this->primary = array('ID' => $id);
 	}
 
 	/**
 	 * Returns id of added record
-	 * @return int
+	 * @return int|array
 	 */
 	public function getId()
 	{
-		return $this->id;
+		if (count($this->primary) == 1)
+		{
+			return end($this->primary);
+		}
+
+		return $this->primary;
+	}
+
+	/**
+	 * @param array $primary
+	 */
+	public function setPrimary($primary)
+	{
+		$this->primary = $primary;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getPrimary()
+	{
+		return $this->primary;
 	}
 }

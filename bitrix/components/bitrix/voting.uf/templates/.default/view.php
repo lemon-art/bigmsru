@@ -21,7 +21,7 @@ $style = "web";
 if (is_callable(array('\Bitrix\MobileApp\Mobile', 'getApiVersion')) && \Bitrix\MobileApp\Mobile::getApiVersion() >= 1 &&
 	defined("BX_MOBILE") && BX_MOBILE === true)
 	$style = "mobile";
-
+$frame = $this->createFrame()->begin("");
 /* @var \Bitrix\Vote\Attachment\Attach $attach*/
 foreach ($arResult['ATTACHES'] as $attach)
 {
@@ -39,7 +39,9 @@ foreach ($arResult['ATTACHES'] as $attach)
 	<div style="color:red;" data-bx-vote-role="error"></div>
 	<form action="" method="get" class="vote-form" name="vote-form-<?= $uid ?>">
 		<input type="hidden" name="attachId" value="<?= $attach["ID"] ?>"/>
-		<?= bitrix_sessid_post() ?>
+		<?= bitrix_sessid_post()
+	?><input id="checkbox_<?=$uid?>" class="bx-vote-checkbox" type="checkbox" <?if ($arParams["VIEW_MODE"] == "EXTENDED"): ?> checked="checked"<?endif;?> /><?
+	?><div class="bx-vote-body">
 	<div class="bx-vote-block">
 		<ol class="bx-vote-question-list">
 		<?
@@ -49,9 +51,10 @@ foreach ($arResult['ATTACHES'] as $attach)
 				<? if ($question["IMAGE"] !== false): ?>
 					<div class="bx-vote-question-image"><img src="<?= $question["IMAGE"]["SRC"] ?>"/>
 					</div><? endif; ?>
-				<div class="bx-vote-question-title"><?= $question["QUESTION"] ?></div>
+				<div class="bx-vote-question-title"><?= FormatText($question["QUESTION"], $question["QUESTION_TYPE"]) ?></div>
 				<table class="bx-vote-answer-list" cellspacing="0">
-					<? foreach ($question["ANSWERS"] as $answer): ?>
+					<? foreach ($question["ANSWERS"] as $answer):
+						$answer["MESSAGE"] = FormatText($answer["MESSAGE"], $answer["MESSAGE_TYPE"]);?>
 						<tr data-bx-vote-answer="<?=$answer["ID"]?>" class="bx-vote-answer-item">
 							<td>
 								<div class="bx-vote-bar"><?
@@ -62,18 +65,14 @@ foreach ($arResult['ATTACHES'] as $attach)
 											{
 												$question["answerIsFound"] = $value = 'checked="checked"';
 											}
-											?><span
-											class="bx-vote-block-input-wrap bx-vote-block-radio-wrap"><?
-											?><label class="bx-vote-block-input-wrap-inner"
-													for="vote_radio_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>"><?
-											?><input type="radio"
-													name="<?= $answer["FIELD_NAME"] ?>" <?
-											?>id="vote_radio_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>" <?
-											?>value="<?= $answer["ID"] ?>" <?= $value ?> /><?
-											?><span class="bx-vote-block-inp-substitute"></span><?
-											?></label><?
-											?><label
-											for="vote_radio_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>"><?= $answer["MESSAGE"] ?></label><?
+											?><span class="bx-vote-block-input-wrap bx-vote-block-radio-wrap"><?
+												?><label class="bx-vote-block-input-wrap-inner" for="vote_radio_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>"><?
+													?><input type="radio" name="<?= $answer["FIELD_NAME"] ?>" <?
+														?>id="vote_radio_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>" <?
+														?>value="<?= $answer["ID"] ?>" <?= $value ?> /><?
+													?><span class="bx-vote-block-inp-substitute"></span><?
+												?></label><?
+												?><label for="vote_radio_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>"><?= $answer["MESSAGE"] ?></label><?
 											?></span><?
 											break;
 										case 1://checkbox
@@ -82,19 +81,13 @@ foreach ($arResult['ATTACHES'] as $attach)
 											{
 												$value = 'checked="checked"';
 											}
-											?><span
-											class="bx-vote-block-input-wrap bx-vote-block-checbox-wrap"><?
-											?><label class="bx-vote-block-input-wrap-inner"
-													for="vote_checkbox_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>"><?
-											?><input type="checkbox"
-													name="<?=$answer["FIELD_NAME"]?>[]"
-													value="<?= $answer["ID"] ?>" <?
-											?>
-													id="vote_checkbox_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>" <?= $value ?> /><?
-											?><span class="bx-vote-block-inp-substitute"></span><?
-											?></label><?
-											?><label
-											for="vote_checkbox_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>"><?= $answer["MESSAGE"] ?></label><?
+											?><span class="bx-vote-block-input-wrap bx-vote-block-checbox-wrap"><?
+												?><label class="bx-vote-block-input-wrap-inner" for="vote_checkbox_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>"><?
+													?><input type="checkbox" name="<?=$answer["FIELD_NAME"]?>[]" value="<?= $answer["ID"] ?>" <?
+														?> id="vote_checkbox_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>" <?= $value ?> /><?
+													?><span class="bx-vote-block-inp-substitute"></span><?
+												?></label><?
+												?><label for="vote_checkbox_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>"><?= $answer["MESSAGE"] ?></label><?
 											?></span><?
 											break;
 										case 2://select
@@ -103,18 +96,14 @@ foreach ($arResult['ATTACHES'] as $attach)
 											{
 												$question["answerIsFound"] = $value = 'checked="checked"';
 											}
-											?><span
-												class="bx-vote-block-input-wrap bx-vote-block-radio-wrap"><?
-											?><label class="bx-vote-block-input-wrap-inner"
-													 for="vote_dropdown_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>"><?
-											?><input type="radio"
-													 name="<?= $answer["FIELD_NAME"] ?>" <?
-											?>id="vote_dropdown_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>" <?
-											?>value="<?= $answer["ID"] ?>" <?= $value ?> /><?
-											?><span class="bx-vote-block-inp-substitute"></span><?
-											?></label><?
-											?><label
-											for="vote_dropdown_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>"><?= $answer["MESSAGE"] ?></label><?
+											?><span class="bx-vote-block-input-wrap bx-vote-block-radio-wrap"><?
+												?><label class="bx-vote-block-input-wrap-inner" for="vote_dropdown_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>"><?
+													?><input type="radio" name="<?= $answer["FIELD_NAME"] ?>" <?
+														?>id="vote_dropdown_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>" <?
+														?>value="<?= $answer["ID"] ?>" <?= $value ?> /><?
+													?><span class="bx-vote-block-inp-substitute"></span><?
+												?></label><?
+												?><label for="vote_dropdown_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>"><?= $answer["MESSAGE"] ?></label><?
 											?></span><?
 											break;
 										case 3://multiselect
@@ -123,37 +112,28 @@ foreach ($arResult['ATTACHES'] as $attach)
 											{
 												$value = 'checked="checked"';
 											}
-											?><span
-												class="bx-vote-block-input-wrap bx-vote-block-checbox-wrap"><?
-											?><label class="bx-vote-block-input-wrap-inner"
-													 for="vote_multiselect_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>"><?
-											?><input type="checkbox"
-													 name="<?=$answer["FIELD_NAME"]?>[]"
-													 value="<?= $answer["ID"] ?>" <?
-											?>
-													 id="vote_multiselect_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>" <?= $value ?> /><?
-											?><span class="bx-vote-block-inp-substitute"></span><?
-											?></label><?
-											?><label
-											for="vote_multiselect_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>"><?= $answer["MESSAGE"] ?></label><?
+											?><span class="bx-vote-block-input-wrap bx-vote-block-checbox-wrap"><?
+												?><label class="bx-vote-block-input-wrap-inner" for="vote_multiselect_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>"><?
+													?><input type="checkbox" name="<?=$answer["FIELD_NAME"]?>[]" value="<?= $answer["ID"] ?>" id="vote_multiselect_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>" <?= $value ?> /><?
+													?><span class="bx-vote-block-inp-substitute"></span><?
+													?></label><?
+												?><label for="vote_multiselect_<?= $answer["QUESTION_ID"] ?>_<?= $answer["ID"] ?>"><?= $answer["MESSAGE"] ?></label><?
 											?></span><?
 											break;
 										case 4://text field
 											$value = htmlspecialcharsbx($_REQUEST["vote_field_" . $answer["ID"]]);
 											?><span class="bx-vote-block-input-wrap bx-vote-block-text-wrap"><?
-											?><label for="vote_field_<?= $answer["ID"] ?>"><?= $answer["MESSAGE"] ?></label><?
-											?><input type="text" name="<?=$answer["FIELD_NAME"]?>" id="vote_field_<?= $answer["ID"] ?>" <?
-												?>value="<?= $value ?>" size="<?= $answer["FIELD_WIDTH"] ?>" <?= $answer["~FIELD_PARAM"] ?> /><?
+												?><label for="vote_field_<?= $answer["ID"] ?>"><?= $answer["MESSAGE"] ?></label><?
+												?><input type="text" name="<?=$answer["FIELD_NAME"]?>" id="vote_field_<?= $answer["ID"] ?>" <?
+													?>value="<?= $value ?>" size="<?= $answer["FIELD_WIDTH"] ?>" <?= $answer["~FIELD_PARAM"] ?> /><?
 											?></span><?
 											break;
 										case 5://memo
 											?><span class="bx-vote-block-input-wrap bx-vote-block-memo-wrap"><?
-											?><label for="vote_memo_<?= $answer["ID"] ?>"><?= $answer["MESSAGE"] ?></label><?
-											?><textarea name="<?=$answer["FIELD_NAME"]?>"
-														id="vote_memo_<?= $answer["ID"] ?>" <?
-											?><?= $answer["~FIELD_PARAM"] ?>
-														cols="<?= $answer["FIELD_WIDTH"] ?>" <?
-											?>rows="<?= $answer["FIELD_HEIGHT"] ?>"><?= htmlspecialcharsbx($_REQUEST["vote_memo_" . $answer["ID"]]) ?></textarea><?
+												?><label for="vote_memo_<?= $answer["ID"] ?>"><?= $answer["MESSAGE"] ?></label><?
+												?><textarea name="<?=$answer["FIELD_NAME"]?>" id="vote_memo_<?= $answer["ID"] ?>" <?
+													?><?= $answer["~FIELD_PARAM"] ?> cols="<?= $answer["FIELD_WIDTH"] ?>" <?
+													?>rows="<?= $answer["FIELD_HEIGHT"] ?>"><?= htmlspecialcharsbx($_REQUEST["vote_memo_" . $answer["ID"]]) ?></textarea><?
 											?></span><?
 											break;
 									endswitch;
@@ -194,6 +174,9 @@ foreach ($arResult['ATTACHES'] as $attach)
 		</span>
 	</div><?
 	}
+		?><label for="checkbox_<?=$uid?>" class="bx-vote-switcher"><span class="bx-vote-switcher-arrow"></span></label><?
+	?></div><?
+
 	?><div class="bx-vote-buttons"><?
 		if ($voted === false || ($voted == 8 && $USER->isAuthorized()))
 		{
@@ -235,3 +218,4 @@ if ($GLOBALS["USER"]->IsAuthorized() && CModule::IncludeModule("pull"))
 </div>
 <?
 }
+$frame->end();

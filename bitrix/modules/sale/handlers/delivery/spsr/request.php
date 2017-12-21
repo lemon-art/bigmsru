@@ -93,7 +93,7 @@ class Request
 						"AUDIT_TYPE_ID" => "SALE_DELIVERY_HANDLER_SPSR_ERROR",
 						"MODULE_ID" => "sale",
 						"ITEM_ID" => 'REQUEST',
-						"DESCRIPTION" => Loc::getMessage('SALE_DLV_SRV_SPSR_ERROR').": ".self::utfDecode($xmlAnswer->error['ErrorMessageRU']),
+						"DESCRIPTION" => Loc::getMessage('SALE_DLV_SRV_SPSR_ERROR').": ".self::utfDecode($xmlAnswer->error['ErrorMessageRU']->__toString()),
 					));
 				}
 			}

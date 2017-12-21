@@ -162,7 +162,9 @@ class CPerfomanceMeasure
 			$result[] = new CPerfAccelAPC;
 		if (extension_loaded('xcache'))
 			$result[] = new CPerfAccelXCache;
-		if (extension_loaded('wincache'))
+		// Wincache removed opcode cache since 2.0.0.1
+		// https://pecl.php.net/package-changelog.php?package=WinCache&release=2.0.0.1
+		if (extension_loaded('wincache') && function_exists('wincache_ocache_meminfo'))
 			$result[] = new CPerfAccelWinCache;
 		if (extension_loaded('Zend OPcache'))
 			$result[] = new CPerfAccelZendOpCache;

@@ -350,8 +350,25 @@ if ($boolCatalog)
 	$arComponentParameters["PARAMETERS"]['HIDE_NOT_AVAILABLE'] = array(
 		'PARENT' => 'DATA_SOURCE',
 		'NAME' => GetMessage('CP_BCS_HIDE_NOT_AVAILABLE'),
-		'TYPE' => 'CHECKBOX',
+		'TYPE' => 'LIST',
 		'DEFAULT' => 'N',
+		'VALUES' => array(
+			'Y' => GetMessage('CP_BCS_HIDE_NOT_AVAILABLE_HIDE'),
+			'L' => GetMessage('CP_BCS_HIDE_NOT_AVAILABLE_LAST'),
+			'N' => GetMessage('CP_BCS_HIDE_NOT_AVAILABLE_SHOW')
+		),
+		'ADDITIONAL_VALUES' => 'N'
+	);
+	$arComponentParameters['PARAMETERS']['HIDE_NOT_AVAILABLE_OFFERS'] = array(
+		'PARENT' => 'DATA_SOURCE',
+		'NAME' => GetMessage('CP_BCS_HIDE_NOT_AVAILABLE_OFFERS'),
+		'TYPE' => 'LIST',
+		'DEFAULT' => 'N',
+		'VALUES' => array(
+			'Y' => GetMessage('CP_BCS_HIDE_NOT_AVAILABLE_OFFERS_HIDE'),
+			'L' => GetMessage('CP_BCS_HIDE_NOT_AVAILABLE_OFFERS_SUBSCRIBE'),
+			'N' => GetMessage('CP_BCS_HIDE_NOT_AVAILABLE_OFFERS_SHOW')
+		)
 	);
 	if (CModule::IncludeModule('currency'))
 	{
@@ -364,20 +381,12 @@ if ($boolCatalog)
 		);
 		if (isset($arCurrentValues['CONVERT_CURRENCY']) && 'Y' == $arCurrentValues['CONVERT_CURRENCY'])
 		{
-			$arCurrencyList = array();
-			$by = 'SORT';
-			$order = 'ASC';
-			$rsCurrencies = CCurrency::GetList($by, $order);
-			while ($arCurrency = $rsCurrencies->Fetch())
-			{
-				$arCurrencyList[$arCurrency['CURRENCY']] = $arCurrency['CURRENCY'];
-			}
 			$arComponentParameters['PARAMETERS']['CURRENCY_ID'] = array(
 				'PARENT' => 'PRICES',
 				'NAME' => GetMessage('CP_BCS_CURRENCY_ID'),
 				'TYPE' => 'LIST',
-				'VALUES' => $arCurrencyList,
-				'DEFAULT' => CCurrency::GetBaseCurrency(),
+				'VALUES' => \Bitrix\Currency\CurrencyManager::getCurrencyList(),
+				'DEFAULT' => \Bitrix\Currency\CurrencyManager::getBaseCurrency(),
 				"ADDITIONAL_VALUES" => "Y",
 			);
 		}
@@ -404,4 +413,3 @@ else
 		"VALUES" => $arProperty_Offers,
 	);
 }
-?>

@@ -108,7 +108,7 @@ class LiqPayHandler extends PaySystem\ServiceHandler
 	{
 		return array(
 			'pay' => array(
-				self::ACTIVE_URL => 'https://liqpay.com/?do=clickNbuy'
+				self::ACTIVE_URL => 'https://liqpay.ua/?do=clickNbuy'
 			)
 		);
 	}

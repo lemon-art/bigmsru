@@ -101,6 +101,7 @@ $this->setFrameMode(true);
 		"FILTER_NAME" => $arParams["FILTER_NAME"],
 		"HIDE_LINK_WHEN_NO_DETAIL" => $arParams["HIDE_LINK_WHEN_NO_DETAIL"],
 		"CHECK_DATES" => $arParams["CHECK_DATES"],
+		"STRICT_SECTION_CHECK" => $arParams["STRICT_SECTION_CHECK"],
 
 		"PARENT_SECTION" => $arResult["VARIABLES"]["SECTION_ID"],
 		"PARENT_SECTION_CODE" => $arResult["VARIABLES"]["SECTION_CODE"],

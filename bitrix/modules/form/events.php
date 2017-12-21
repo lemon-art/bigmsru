@@ -47,7 +47,7 @@ class CFormEventHandlers
 		);
 		
 		$dbRes = CEventMessage::GetList($by="id", $order="asc", array(
-			'ID' => implode('|', $arTemplates),
+			'ID' => $arTemplates,
 			"ACTIVE"		=> "Y",
 			"EVENT_NAME"	=> $arStatus["MAIL_EVENT_TYPE"]
 		));

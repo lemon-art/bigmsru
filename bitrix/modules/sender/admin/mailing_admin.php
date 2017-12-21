@@ -37,6 +37,7 @@ $FilterArr = Array(
 	"find_id",
 	"find_lid",
 	"find_name",
+	"find_chain_name",
 	"find_active",
 	"find_is_public",
 );
@@ -48,6 +49,7 @@ if (CheckFilter())
 	$arFilter = Array(
 		"ID" => ($find!="" && $find_type == "id"? $find:$find_id),
 		"NAME" => ($find!="" && $find_type == "name"? $find:$find_name),
+		"CHAIN.SUBJECT" => $find_chain_name,
 		"ACTIVE" => $find_active,
 		"SITE_ID" => $find_lid,
 		"IS_PUBLIC" => $find_is_public,
@@ -145,7 +147,11 @@ $arFilter['IS_TRIGGER'] = 'N';
 $groupListDb = \Bitrix\Sender\MailingTable::getList(array(
 	'select' => array('ID', 'NAME', 'SORT', 'DATE_INSERT', 'ACTIVE', 'IS_PUBLIC', 'SITE_ID', 'RECIPIENT_CNT'),
 	'filter' => $arFilter,
-	'runtime' => array(new \Bitrix\Main\Entity\ExpressionField('RECIPIENT_CNT', 'SUM(%2$s*(%1$s))', array('MAILING_GROUP.INCLUDE', 'MAILING_GROUP.GROUP.ADDRESS_COUNT'))),
+	'runtime' => array(
+		new \Bitrix\Main\Entity\ExpressionField(
+			'RECIPIENT_CNT', 'SUM(%2$s*(%1$s))', array('MAILING_GROUP.INCLUDE', 'MAILING_GROUP.GROUP.ADDRESS_COUNT')
+		)
+	),
 	'order' => array($by=>$order)
 ));
 
@@ -279,6 +285,7 @@ $oFilter = new CAdminFilter(
 		GetMessage("rub_f_active"),
 		GetMessage("rub_f_site"),
 		GetMessage("rub_f_is_public"),
+		GetMessage("rub_f_chain_name"),
 	)
 );
 ?>
@@ -362,6 +369,13 @@ $oFilter = new CAdminFilter(
 			);
 			echo SelectBoxFromArray("find_is_public", $arr, $find_is_public, GetMessage("MAIN_ALL"), "");
 			?>
+		</td>
+	</tr>
+
+	<tr>
+		<td><?=GetMessage("rub_f_chain_name")?>:</td>
+		<td>
+			<input type="text" name="find_chain_name" size="47" value="<?echo htmlspecialcharsbx($find_chain_name)?>">
 		</td>
 	</tr>
 <?

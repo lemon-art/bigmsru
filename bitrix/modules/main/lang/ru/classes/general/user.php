@@ -60,4 +60,11 @@ $MESS["MAIN_SEND_PASS_CONFIRM"] = "Вы еще не подтвердили ре�
 $MESS["USER_LOGIN_OTP_ERROR"] = "Одноразовые пароли не используются.";
 $MESS["USER_LOGIN_OTP_INCORRECT"] = "Неверный одноразовый пароль.";
 $MESS["main_user_captcha_error"] = "Символы с картинки введены неверно.";
+$MESS["USER_STATUS_ONLINE"] = "В сети";
+$MESS["USER_STATUS_OFFLINE"] = "Не в сети";
+$MESS["USER_LAST_SEEN_TOMORROW"] = "завтра в #TIME#";
+$MESS["USER_LAST_SEEN_NOW"] = "только что";
+$MESS["USER_LAST_SEEN_TODAY"] = "сегодня в #TIME#";
+$MESS["USER_LAST_SEEN_YESTERDAY"] = "вчера в #TIME#";
+$MESS["USER_LAST_SEEN_MORE_YEAR"] = "более года назад";
 ?>

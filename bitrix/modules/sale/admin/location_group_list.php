@@ -65,7 +65,7 @@ try
 
 			try
 			{
-				$res = Helper::update($id, $arFields);
+				$res = Helper::updateFields($id, $arFields);
 
 				if(!empty($res['errors']))
 				{

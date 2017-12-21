@@ -1,5 +1,7 @@
 <?
 IncludeModuleLangFile(__FILE__);
+
+use Bitrix\Main\Web\HttpClient;
 class CSeoPageChecker
 {
 	var $__site;
@@ -27,6 +29,7 @@ class CSeoPageChecker
 	var $__qualifier_links_count = 100;
 
 	var $bError = false;
+	var $errorString = '';
 	var $bSearch = false;
 
 	function CSeoPageChecker($site, $url, $get = true, $check_errors = true)
@@ -57,7 +60,13 @@ class CSeoPageChecker
 					.CBXPunycode::ToASCII($this->__server_name, $e = null)
 					.$url;
 
-				return $get ? $this->GetHTTPData() : true;
+				if(!$get || $this->GetHTTPData())
+					return true;
+				
+				if($this->bError && strlen($this->errorString) > 0)
+					$APPLICATION->ThrowException($this->errorString);
+				
+				return false;
 			}
 			else
 			{
@@ -72,15 +81,23 @@ class CSeoPageChecker
 
 	function GetHTTPData()
 	{
-		global $APPLICATION;
-		$this->__getter = new CHTTP();
-		$this->__getter->http_timeout = 25;
-		$this->__getter->setFollowRedirect(true);
+		$this->__getter = new HttpClient();
+		$this->__getter->setStreamTimeout(25);
+		$this->__getter->setRedirect(true);
 
-		if ($this->__getter->HTTPQuery('GET', $this->__url))
+		if ($result = $this->__getter->get($this->__url))
 		{
-			$this->__result_data = $this->__getter->result;
-			$this->__result_headers = $this->__getter->headers;
+			$this->__result_data = $result;
+			$headers = $this->__getter->getHeaders()->toArray();
+			
+			foreach ($headers as $header)
+			{
+				$currHeader = array();
+				foreach($header['values'] as $value)
+					$currHeader[] = $value;
+				$currHeader = implode(", ", $currHeader);
+				$this->__result_headers[$header["name"]] = $currHeader;
+			}
 
 			$this->_PrepareData();
 
@@ -88,9 +105,11 @@ class CSeoPageChecker
 			$this->bError = false;
 			return true;
 		}
-
+		if($errors = $this->__getter->getError())
+			$this->errorString = implode(', ', $errors);
 		unset($this->__getter);
 		$this->bError = true;
+		
 		return false;
 	}
 

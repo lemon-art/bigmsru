@@ -67,7 +67,7 @@ foreach($arAuthServices as $service):
 	$onclick = ($service["ONCLICK"] <> ''? $service["ONCLICK"] : "BxSocServPopup('".$service["ID"]."')");
 ?>
 		<li>
-			<a id="bx_socserv_icon_<?=$service["ID"]?>" class="<?=$service["ICON"]?> bx-authform-social-icon" href="javascript:void(0)" onclick="<?=htmlspecialcharsbx($onclick)?>" title="<?=htmlspecialcharsbx($service["NAME"])?>"></a>
+			<a id="bx_socserv_icon_<?=$service["ID"]?>" class="<?=\Bitrix\Main\Text\HtmlFilter::encode($service["ICON"])?> bx-authform-social-icon" href="javascript:void(0)" onclick="<?=\Bitrix\Main\Text\HtmlFilter::encode($onclick)?>" title="<?=\Bitrix\Main\Text\HtmlFilter::encode($service["NAME"])?>"></a>
 	<?if($service["ONCLICK"] == '' && $service["FORM_HTML"] <> ''):?>
 			<div id="bx_socserv_form_<?=$service["ID"]?>" class="bx-authform-social-popup">
 				<form action="<?=$arParams["AUTH_URL"]?>" method="post">

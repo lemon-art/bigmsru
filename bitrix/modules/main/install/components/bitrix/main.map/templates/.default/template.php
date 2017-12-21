@@ -24,7 +24,11 @@ $colNum = ceil($allNum / $arParams["COL_NUM"]);
 		$previousLevel = -1;
 		$counter = 0;
 		$column = 1;
-		foreach($arResult["arMap"] as $index => $arItem):?>
+		foreach($arResult["arMap"] as $index => $arItem):
+			$arItem["FULL_PATH"] = htmlspecialcharsbx($arItem["FULL_PATH"], ENT_COMPAT, false);
+			$arItem["NAME"] = htmlspecialcharsbx($arItem["NAME"], ENT_COMPAT, false);
+			$arItem["DESCRIPTION"] = htmlspecialcharsbx($arItem["DESCRIPTION"], ENT_COMPAT, false);
+		?>
 
 			<?if ($arItem["LEVEL"] < $previousLevel):?>
 				<?=str_repeat("</ul></li>", ($previousLevel - $arItem["LEVEL"]));?>

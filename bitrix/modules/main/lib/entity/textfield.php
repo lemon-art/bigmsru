@@ -15,4 +15,8 @@ namespace Bitrix\Main\Entity;
  */
 class TextField extends StringField
 {
+	public function convertValueToDb($value)
+	{
+		return $this->getConnection()->getSqlHelper()->convertToDbText($value);
+	}
 }

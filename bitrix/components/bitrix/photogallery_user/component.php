@@ -43,8 +43,7 @@ if ($arParams["PERMISSION"] < "R")
 
 $arParams["SET_STATUS_404"] = "Y";
 
-if (empty($arParams["UPLOADER_TYPE"]))
-	$arParams["UPLOADER_TYPE"] = "form";
+$arParams["UPLOADER_TYPE"] = "form";
 
 /********************************************************************
 				/Get data from cache
@@ -299,8 +298,6 @@ if ($GLOBALS['USER'] && $GLOBALS['USER']->IsAuthorized() && $GLOBALS["USER"]->Ca
 			"set_404" => $arParams["SET_STATUS_404"]
 		)
 	);
-
-	$oPhoto::CheckUploaderType($arParams["UPLOADER_TYPE"]);
 }
 
 $this->IncludeComponentTemplate($componentPage);

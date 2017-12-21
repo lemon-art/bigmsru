@@ -41,7 +41,7 @@
 					}
 					else if(result && result.ERROR)
 					{
-						alert(BX.message("SALE_EBAY_EXCHANGE_ERROR")+"."+result.ERROR);
+						alert(BX.message("SALE_EBAY_EXCHANGE_ERROR")+".\n"+result.ERROR);
 					}
 					else if(result)
 					{

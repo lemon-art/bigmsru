@@ -23,8 +23,6 @@ if (!Loader::includeModule('sale') || !Loader::includeModule('catalog'))
 
 global $USER, $APPLICATION;
 
-include(dirname(__FILE__)."/functions.php");
-
 CUtil::JSPostUnescape();
 
 $arRes = array();
@@ -48,238 +46,40 @@ if (isset($_POST[$action_var]) && strlen($_POST[$action_var]) > 0)
 
 	if ($_POST[$action_var] == "select_item")
 	{
-		$arItemSelect = array(
-			"ID",
-			"XML_ID",
-			"PRODUCT_ID",
-			"PRICE",
-			"CURRENCY",
-			"WEIGHT",
-			"QUANTITY",
-			"MODULE",
-			"PRODUCT_PROVIDER_CLASS",
-			"CALLBACK_FUNC",
-			"NOTES"
-		);
-		$arItem = false;
+		CBitrixComponent::includeComponentClass("bitrix:sale.basket.basket");
+
+		$basket = new CBitrixBasketComponent();
+
+		$basket->weightKoef = htmlspecialcharsbx(COption::GetOptionString('sale', 'weight_koef', 1, SITE_ID));
+		$basket->weightUnit = htmlspecialcharsbx(COption::GetOptionString('sale', 'weight_unit', "", SITE_ID));
+		$basket->columns = $arColumns;
+		$basket->offersProps = $strOffersProps;
+
+		$basket->quantityFloat = (isset($_POST["quantity_float"]) && $_POST["quantity_float"] == "Y") ? "Y" : "N";
+		$basket->priceVatShowValue = (isset($_POST["price_vat_show_value"]) && $_POST["price_vat_show_value"] == "Y") ? "Y" : "N";
+		$basket->hideCoupon = (isset($_POST["hide_coupon"]) && $_POST["hide_coupon"] == "Y") ? "Y" : "N";
+		$basket->usePrepayment = (isset($_POST["use_prepayment"]) && $_POST["use_prepayment"] == "Y") ? "Y" : "N";
+
 		$currentId = 0;
 		if (isset($_POST['basketItemId']))
 			$currentId = (int)$_POST['basketItemId'];
-		if ($currentId > 0)
-		{
-			$dbItemRes = CSaleBasket::GetList(array(),
-				array('ID' => $currentId),
-				false,
-				false,
-				$arItemSelect
-			);
-			$arItem = $dbItemRes->Fetch();
-		}
 
-		if ($arItem)
-		{
-			$dbProp = CSaleBasket::GetPropsList(
-				array("SORT" => "ASC", "ID" => "ASC"),
-				array("BASKET_ID" => $arItem["ID"]),
-				false,
-				false,
-				array('NAME', 'CODE', 'VALUE', 'SORT')
-			);
-			while ($arProp = $dbProp->Fetch())
-			{
-				if (!isset($arItem['PROPS']))
-					$arItem['PROPS'] = array();
-				$arItem['PROPS'][] = $arProp;
-			}
+		$basket->changeProductOffer(
+			$currentId,
+			CBitrixBasketComponent::SEARCH_OFFER_BY_PROPERTIES,
+			$arPropsValues
+		);
 
-			$element = false;
-			$sku = false;
-			$parentId = 0;
-			$elementIterator = \Bitrix\Iblock\ElementTable::getList(array(
-				'select' => array('ID', 'IBLOCK_ID', 'XML_ID'),
-				'filter' => array('ID' => $arItem['PRODUCT_ID'])
-			));
-			$element = $elementIterator->fetch();
-			unset($elementIterator);
-			if (!empty($element))
-			{
-				$sku = CCatalogSKU::GetInfoByOfferIBlock($element['IBLOCK_ID']);
-				if (!empty($sku))
-				{
-					$propertyIterator = CIBlockElement::GetProperty(
-						$element['IBLOCK_ID'],
-						$element['ID'],
-						array(),
-						array('ID' => $sku['SKU_PROPERTY_ID'])
-					);
-					if ($property = $propertyIterator->Fetch())
-					{
-						$parentId = (int)$property['VALUE'];
-					}
-					unset($property, $propertyIterator);
-				}
-			}
-			if (!empty($element) && $parentId > 0)
-			{
-				$bBasketUpdate = false;
-				$arPropsValues["CML2_LINK"] = $parentId;
+		$arRes["DELETE_ORIGINAL"] = "Y";
+		$arRes["BASKET_DATA"]["GRID"]["HEADERS"] = $basket->getCustomColumns();
+		$arRes["BASKET_DATA"] = $basket->getBasketItems();
+		$arRes["COLUMNS"] = $strColumns;
 
-				$newProductId = getProductByProps($element['IBLOCK_ID'], $arPropsValues, true);
+		$arRes["BASKET_ID"] = $currentId;
 
-				if (!empty($newProductId))
-				{
-					if ($productProvider = CSaleBasket::GetProductProvider($arItem))
-					{
-						$arFieldsTmp = $productProvider::GetProductData(array(
-							"PRODUCT_ID" => $newProductId['ID'],
-							"QUANTITY"   => $arItem['QUANTITY'],
-							"RENEWAL"    => "N",
-							"USER_ID"    => $USER->GetID(),
-							"SITE_ID"    => SITE_ID,
-							"BASKET_ID" => $arItem['ID'],
-							"CHECK_QUANTITY" => "Y",
-							"CHECK_PRICE" => "Y",
-							"NOTES" => $arItem["NOTES"]
-						));
-					}
-					elseif (isset($arItem["CALLBACK_FUNC"]) && !empty($arItem["CALLBACK_FUNC"]))
-					{
-						$arFieldsTmp = CSaleBasket::ExecuteCallbackFunction(
-							$arItem["CALLBACK_FUNC"],
-							$arItem["MODULE"],
-							$newProductId['ID'],
-							$arItem['QUANTITY'],
-							"N",
-							$USER->GetID(),
-							SITE_ID
-						);
-					}
-
-					if (!empty($arFieldsTmp) && is_array($arFieldsTmp))
-					{
-						$arFields = array(
-							'PRODUCT_ID' => $newProductId['ID'],
-							'PRODUCT_PRICE_ID' => $arFieldsTmp["PRODUCT_PRICE_ID"],
-							'PRICE' => $arFieldsTmp["PRICE"],
-							'CURRENCY' => $arFieldsTmp["CURRENCY"],
-							'QUANTITY' => $arFieldsTmp['QUANTITY'],
-							'WEIGHT' => $arFieldsTmp['WEIGHT'],
-						);
-
-						$arProps = array();
-						if (strpos($newProductId['XML_ID'], '#') === false)
-						{
-							$parentIterator = \Bitrix\Iblock\ElementTable::getList(array(
-								'select' => array('ID', 'XML_ID'),
-								'filter' => array('ID' => $parentId)
-							));
-							if ($parentProduct = $parentIterator->fetch())
-							{
-								$newProductId['XML_ID'] = $parentProduct['XML_ID'].'#'.$newProductId['XML_ID'];
-							}
-							unset($parentProduct, $parentIterator);
-						}
-						$arFields["PRODUCT_XML_ID"] = $newProductId['XML_ID'];
-
-						$propertyIterator = \Bitrix\Iblock\PropertyTable::getList(array(
-							'select' => array('ID', 'CODE'),
-							'filter' => array('IBLOCK_ID' => $newProductId['IBLOCK_ID'], '!ID' => $sku['SKU_PROPERTY_ID'])
-						));
-						while ($property = $propertyIterator->fetch())
-						{
-							$property['CODE'] = (string)$property['CODE'];
-							$arPropsSku[] = ($property['CODE'] != '' ? $property['CODE'] : $property['ID']);
-						}
-						unset($property, $propertyIterator);
-						$product_properties = CIBlockPriceTools::GetOfferProperties(
-							$newProductId['ID'],
-							$sku['PRODUCT_IBLOCK_ID'],
-							$arPropsSku
-						);
-
-						$newValues = array();
-						foreach ($product_properties as $productSkuProp)
-						{
-							$bFieldExists = false;
-							foreach ($strOffersProps as $existingSkuProp)
-							{
-								if ($existingSkuProp == $productSkuProp["CODE"])
-								{
-									$bFieldExists = true;
-									break;
-								}
-							}
-
-							if ($bFieldExists === true)
-							{
-								$newValues[] = array(
-									"NAME" => $productSkuProp["NAME"],
-									"CODE" => $productSkuProp["CODE"],
-									"VALUE" => $productSkuProp["VALUE"],
-									"SORT" => $productSkuProp["SORT"]
-								);
-							}
-						}
-
-						$newValues[] = array(
-							"NAME" => "Product XML_ID",
-							"CODE" => "PRODUCT.XML_ID",
-							"VALUE" => $newProductId["XML_ID"]
-						);
-
-						$arFields['PROPS'] = (isset($arItem['PROPS']) ? updateBasketOffersProps($arItem['PROPS'], $newValues) : $newValues);
-						unset($newValues);
-						if (empty($arErrors))
-						{
-							$bBasketUpdate = CSaleBasket::Update($arItem['ID'], $arFields);
-						}
-					}
-					else
-					{
-						$arErrors[] = GetMessage('SBB_PRODUCT_PRICE_NOT_FOUND');
-					}
-				}
-
-				if ($bBasketUpdate === true)
-				{
-					CBitrixComponent::includeComponentClass("bitrix:sale.basket.basket");
-
-					$basket = new CBitrixBasketComponent();
-
-					$basket->weightKoef = htmlspecialcharsbx(COption::GetOptionString('sale', 'weight_koef', 1, SITE_ID));
-					$basket->weightUnit = htmlspecialcharsbx(COption::GetOptionString('sale', 'weight_unit', "", SITE_ID));
-					$basket->columns = $arColumns;
-					$basket->offersProps = $strOffersProps;
-
-					$basket->quantityFloat = (isset($_POST["quantity_float"]) && $_POST["quantity_float"] == "Y") ? "Y" : "N";
-					$basket->countDiscount4AllQuantity = (isset($_POST["count_discount_4_all_quantity"]) && $_POST["count_discount_4_all_quantity"] == "Y") ? "Y" : "N";
-					$basket->priceVatShowValue = (isset($_POST["price_vat_show_value"]) && $_POST["price_vat_show_value"] == "Y") ? "Y" : "N";
-					$basket->hideCoupon = (isset($_POST["hide_coupon"]) && $_POST["hide_coupon"] == "Y") ? "Y" : "N";
-					$basket->usePrepayment = (isset($_POST["use_prepayment"]) && $_POST["use_prepayment"] == "Y") ? "Y" : "N";
-
-					$columnsData = $basket->getCustomColumns();
-					$basketData  = $basket->getBasketItems();
-
-					$arRes["DELETE_ORIGINAL"] = "Y";
-					$arRes["BASKET_DATA"] = $basketData;
-					$arRes["BASKET_DATA"]["GRID"]["HEADERS"] = $columnsData;
-					$arRes["COLUMNS"] = $strColumns;
-
-					$arRes["BASKET_ID"] = $arItem['ID'];
-				}
-
-				$arRes["CODE"] = ($bBasketUpdate === true) ? "SUCCESS" : "ERROR";
-				if ($bBasketUpdate === false && is_array($arErrors) && !empty($arErrors))
-				{
-					foreach ($arErrors as $error)
-					{
-						$arRes["MESSAGE"] .= (strlen($arRes["MESSAGE"]) > 0 ? "<br/>" : ""). $error;
-					}
-				}
-			}
-		}
+		$arRes["CODE"] = "SUCCESS";
 	}
-	else if ($_POST[$action_var] == "recalculate")
+	elseif ($_POST[$action_var] == "recalculate")
 	{
 		// todo: extract duplicated code to function
 
@@ -294,7 +94,6 @@ if (isset($_POST[$action_var]) && strlen($_POST[$action_var]) > 0)
 		$basket->offersProps = $strOffersProps;
 
 		$basket->quantityFloat = (isset($_POST["quantity_float"]) && $_POST["quantity_float"] == "Y") ? "Y" : "N";
-		$basket->countDiscount4AllQuantity = (isset($_POST["count_discount_4_all_quantity"]) && $_POST["count_discount_4_all_quantity"] == "Y") ? "Y" : "N";
 		$basket->priceVatShowValue = (isset($_POST["price_vat_show_value"]) && $_POST["price_vat_show_value"] == "Y") ? "Y" : "N";
 		$basket->hideCoupon = (isset($_POST["hide_coupon"]) && $_POST["hide_coupon"] == "Y") ? "Y" : "N";
 		$basket->usePrepayment = (isset($_POST["use_prepayment"]) && $_POST["use_prepayment"] == "Y") ? "Y" : "N";
@@ -305,8 +104,8 @@ if (isset($_POST[$action_var]) && strlen($_POST[$action_var]) > 0)
 			$arRes[$key] = $value;
 		}
 
-		$arRes["BASKET_DATA"] = $basket->getBasketItems();
 		$arRes["BASKET_DATA"]["GRID"]["HEADERS"] = $basket->getCustomColumns();
+		$arRes["BASKET_DATA"] = $basket->getBasketItems();
 		$arRes["COLUMNS"] = $strColumns;
 
 		$arRes["CODE"] = "SUCCESS";
@@ -317,7 +116,7 @@ if (isset($_POST[$action_var]) && strlen($_POST[$action_var]) > 0)
 			if(!empty($arRes['BASKET_DATA']['FULL_DISCOUNT_LIST']))
 			{
 				global $USER;
-				$userId = $USER instanceof CAllUser? $USER->getId() : null;
+				$userId = $USER instanceof CUser? $USER->GetID() : null;
 				$giftManager = \Bitrix\Sale\Discount\Gift\Manager::getInstance()->setUserId($userId);
 
 				\Bitrix\Sale\Compatible\DiscountCompatibility::stopUsageCompatible();
@@ -333,7 +132,6 @@ if (isset($_POST[$action_var]) && strlen($_POST[$action_var]) > 0)
 				}
 			}
 		}
-
 	}
 }
 
@@ -343,5 +141,5 @@ $arRes["PARAMS"]["QUANTITY_FLOAT"] = (isset($_POST["quantity_float"]) && $_POST[
 
 $APPLICATION->RestartBuffer();
 header('Content-Type: application/json; charset='.LANG_CHARSET);
-echo CUtil::PhpToJSObject($arRes);
+echo \Bitrix\Main\Web\Json::encode($arRes);
 die();

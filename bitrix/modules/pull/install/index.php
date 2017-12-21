@@ -65,12 +65,10 @@ class pull extends CModule
 		RegisterModuleDependences("perfmon", "OnGetTableSchema", "pull", "CPullTableSchema", "OnGetTableSchema");
 		RegisterModuleDependences("main", "OnAfterRegisterModule", "pull", "CPullOptions", "ClearCheckCache");
 		RegisterModuleDependences("main", "OnAfterUnRegisterModule", "pull", "CPullOptions", "ClearCheckCache");
-		if (IsModuleInstalled('intranet'))
-		{
-			RegisterModuleDependences("main", "OnAfterUserAuthorize", "pull", "CPullChannel", "OnAfterUserAuthorize");
-			RegisterModuleDependences("main", "OnAfterUserLogout", "pull", "CPullChannel", "OnAfterUserLogout");
-		}
-
+		
+		$eventManager = \Bitrix\Main\EventManager::getInstance();
+		$eventManager->registerEventHandler('rest', 'OnRestServiceBuildDescription', 'pull', '\Bitrix\Pull\Rest', 'onRestServiceBuildDescription');
+		
 		CAgent::AddAgent("CPullOptions::ClearAgent();", "pull", "N", 30, "", "Y", ConvertTimeStamp(time()+CTimeZone::GetOffset()+30, "FULL"));
 
 		return true;
@@ -85,6 +83,8 @@ class pull extends CModule
 		}
 		return true;
 	}
+	
+	function InstallEvents(){ return true; }
 
 	function DoUninstall()
 	{
@@ -129,11 +129,10 @@ class pull extends CModule
 		UnRegisterModuleDependences("main", "OnEpilog", "pull", "CPullOptions", "OnEpilog");
 		UnRegisterModuleDependences("main", "OnProlog", "main", "", "", "/modules/pull/ajax_hit.php");
 		UnRegisterModuleDependences("main", "OnBeforeProlog", "main", "", "", "/modules/pull/ajax_hit_before.php");
-		if (IsModuleInstalled('intranet'))
-		{
-			UnRegisterModuleDependences("main", "OnAfterUserAuthorize", "pull", "CPullChannel", "OnAfterUserAuthorize");
-			UnRegisterModuleDependences("main", "OnAfterUserLogout", "pull", "CPullChannel", "OnAfterUserLogout");
-		}
+
+		$eventManager = \Bitrix\Main\EventManager::getInstance();
+		$eventManager->unRegisterEventHandler('rest', 'OnRestServiceBuildDescription', 'pull', '\Bitrix\Pull\Rest', 'onRestServiceBuildDescription');
+		
 		UnRegisterModule("pull");
 
 		return true;
@@ -143,4 +142,6 @@ class pull extends CModule
 	{
 		return true;
 	}
+	
+	function UnInstallEvents(){ return true; }
 }

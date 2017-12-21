@@ -6,7 +6,6 @@ IncludeModuleLangFile(__FILE__);
 class CSocServGoogleOAuth extends CSocServAuth
 {
 	const ID = "GoogleOAuth";
-	const CONTROLLER_URL = "https://www.bitrix24.ru/controller";
 	const LOGIN_PREFIX = "G_";
 
 	/** @var CGoogleOAuthInterface null  */
@@ -78,7 +77,7 @@ class CSocServGoogleOAuth extends CSocServAuth
 		CSocServAuthManager::SetUniqueKey();
 		if(IsModuleInstalled('bitrix24') && defined('BX24_HOST_NAME'))
 		{
-			$redirect_uri = static::CONTROLLER_URL."/redirect.php";
+			$redirect_uri = static::getControllerUrl()."/redirect.php";
 			$state = $this->getEntityOAuth()->getRedirectUri()."?check_key=".$_SESSION["UNIQUE_KEY"]."&state=";
 			$backurl = $GLOBALS["APPLICATION"]->GetCurPageParam('', array("logout", "auth_service_error", "auth_service_id", "backurl"));
 			$state .= urlencode('provider='.static::ID. "&state=".urlencode("backurl=".urlencode($backurl).'&mode='.$location.(isset($arParams['BACKURL']) ? '&redirect_url='.urlencode($arParams['BACKURL']) : '')));
@@ -384,11 +383,12 @@ class CGoogleOAuthInterface extends CSocServOAuthTransport
 
 	const REDIRECT_URI = "/bitrix/tools/oauth/google.php";
 
-	protected $scope = array(
+	protected $standardScope = array(
 		'https://www.googleapis.com/auth/userinfo.email',
 		'https://www.googleapis.com/auth/userinfo.profile',
-		'https://www.google.com/m8/feeds',
 	);
+
+	protected $scope = array();
 
 	protected $arResult = array();
 
@@ -404,7 +404,39 @@ class CGoogleOAuthInterface extends CSocServOAuthTransport
 			$appSecret = trim(CSocServGoogleOAuth::GetOption("google_appsecret"));
 		}
 
+		$this->scope = $this->standardScope;
+
+		$this->checkSavedScope();
+
 		parent::__construct($appID, $appSecret, $code);
+	}
+
+	protected function checkSavedScope()
+	{
+		$savedScope = \Bitrix\Main\Config\Option::get('socialservices', 'saved_scope_'.static::SERVICE_ID, '');
+		if(strlen($savedScope) > 0 && CheckSerializedData($savedScope))
+		{
+			$savedScope = unserialize($savedScope);
+			if(is_array($savedScope))
+			{
+				$this->scope = array_merge($this->scope, $savedScope);
+			}
+		}
+	}
+
+	protected function saveScope()
+	{
+		$scope = array_unique(array_diff($this->scope, $this->standardScope));
+		\Bitrix\Main\Config\Option::set('socialservices', 'saved_scope_'.static::SERVICE_ID, serialize($scope));
+	}
+
+	public function addScope($scope)
+	{
+		parent::addScope($scope);
+
+		$this->saveScope();
+
+		return $this;
 	}
 
 	public function getScopeEncode()
@@ -472,7 +504,7 @@ class CGoogleOAuthInterface extends CSocServOAuthTransport
 		{
 			if(IsModuleInstalled('bitrix24') && defined('BX24_HOST_NAME'))
 			{
-				$redirect_uri = \CSocServGoogleOAuth::CONTROLLER_URL."/redirect.php";
+				$redirect_uri = \CSocServGoogleOAuth::getControllerUrl()."/redirect.php";
 			}
 			else
 			{

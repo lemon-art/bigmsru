@@ -6,6 +6,7 @@ $arComponentParameters = array(
 	),
 	"PARAMETERS" => array(
 		"AJAX_MODE" => array(),
+		"USER_CONSENT" => array(),
 		"USE_PERSONALIZATION" => array(
 			"PARENT" => "BASE",
 			"NAME" => GetMessage("CP_BSF_USE_PERSONALIZATION"),
@@ -24,12 +25,18 @@ $arComponentParameters = array(
 			"TYPE" => "CHECKBOX",
 			"DEFAULT" => "Y",
 		),
+		"HIDE_MAILINGS" => array(
+			"PARENT" => "BASE",
+			"NAME" => GetMessage("CP_BSF_HIDE_MAILINGS"),
+			"TYPE" => "CHECKBOX",
+			"DEFAULT" => "N",
+		),
 		"SHOW_HIDDEN" => array(
 			"PARENT" => "DATA_SOURCE",
 			"NAME" => GetMessage("CP_BSF_SHOW_HIDDEN"),
 			"TYPE" => "CHECKBOX",
 			"DEFAULT" => "N",
-			),
+		),
 		"CACHE_TIME" => array("DEFAULT"=>3600),
 	),
 );

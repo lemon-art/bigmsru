@@ -648,7 +648,11 @@ BXBlockEditor.prototype.initEditDialog = function()
 		BX.findParent(this.resultNode, {'tag': 'form'}),
 		'submit',
 		BX.delegate(function(){
-			this.editDialog.save(BX.delegate(function(){this.save()}, this));
+			this.editDialog.save(
+				BX.delegate(function(){
+					this.isFinalSave = true;
+					this.save();
+				}, this));
 		}, this)
 	);
 };
@@ -748,19 +752,40 @@ BXBlockEditor.prototype.load = function(url, callback)
 };
 
 
+BXBlockEditor.prototype.getSortedBlockListWithReplacedEmptyPlaces = function()
+{
+	this.helper.each(this.findBlockPlaces(), function (placeNode, placeCode) {
+		var blockNodes = placeNode.querySelectorAll('[' + this.CONST_ATTR_BLOCK + ']');
+		if (blockNodes.length > 0 )
+		{
+			return;
+		}
+		if (placeNode.children.length != 1)
+		{
+			return;
+		}
+
+		var blockNode = this.getBlockNodeByType('text');
+		if (blockNode)
+		{
+			var block = this.addBlockByNode(blockNode, placeNode.children[0], true);
+			block.setContentHtml('');
+		}
+
+	}, this);
+
+	return this.getSortedBlockList();
+};
+
 BXBlockEditor.prototype.getSortedBlockList = function()
 {
 	var sortedBlockList = [];
 	var nodeList = this.iframe.contentDocument.body.querySelectorAll('[' + this.CONST_ATTR_BLOCK + ']');
-	if(!nodeList)
-	{
-		nodeList = [];
-	}
+	nodeList = BX.convert.nodeListToArray(nodeList);
 
 	// get as changed that places what have changed blocks
 	var changedPlaceList = this.statusManager.getPlaceNameList(nodeList);
-
-	this.helper.each(nodeList, function(node, sort)
+	nodeList.forEach(function(node, sort)
 	{
 		// add blocks only from changed places
 		if(!node.parentNode || !BX.util.in_array(node.parentNode.getAttribute(this.CONST_ATTR_PLACE), changedPlaceList))
@@ -817,7 +842,10 @@ BXBlockEditor.prototype.getContentForSave = function()
 		}
 
 		// save blocks
-		this.helper.each(this.getSortedBlockList(), function(block)
+		var blockList = this.isFinalSave
+			? this.getSortedBlockListWithReplacedEmptyPlaces()
+			: this.getSortedBlockList();
+		this.helper.each(blockList, function(block)
 		{
 			params['BLOCKS'].push({
 				section: 'BLOCKS',

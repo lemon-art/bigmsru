@@ -1190,11 +1190,12 @@ class CAllSaleDeliveryHandler
 			return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::ERROR, null, 'sale');
 
 		$oldOrder = \Bitrix\Sale\Compatible\OrderCompatibility::convertOrderToArray($order);
+		$errorMessage = $result->isSuccess() ? '' : implode("<br>\n", $result->getErrorMessages());
 
 		$oldResult = array(
 			"VALUE" => $result->getPrice(),
 			"TRANSIT" => $result->getPeriodDescription(),
-			"TEXT" => $result->isSuccess() ? $result->getDescription() : implode("<br>\n", $result->getErrorMessages()),
+			"TEXT" => $result->isSuccess() ? $result->getDescription() : $errorMessage,
 			"RESULT" => $result->isSuccess() ? "OK" : "ERROR"
 		);
 
@@ -1215,9 +1216,14 @@ class CAllSaleDeliveryHandler
 		$result->setDeliveryPrice($oldResult["VALUE"]);
 
 		if($oldResult["RESULT"] == "ERROR")
-			$result->addError(new \Bitrix\Main\Entity\EntityError($oldResult["TEXT"]));
+		{
+			if($oldResult["TEXT"] != $errorMessage)
+				$result->addError(new \Bitrix\Main\Entity\EntityError($oldResult["TEXT"]));
+		}
 		elseif($oldResult["RESULT"] == "NEXT_STEP")
+		{
 			$result->setAsNextStep();
+		}
 
 		if(isset($oldResult["TRANSIT"])) $result->setPeriodDescription($oldResult["TRANSIT"]);
 		if(isset($oldResult["TEXT"])) $result->setDescription($oldResult["TEXT"]);
@@ -1517,7 +1523,7 @@ class CAllSaleDeliveryHandler
 		{
 			if(strlen($delivery["HID"]) <= 0)
 			{
-				$result->addError( new \Bitrix\Main\Entity\EntityError("Can't find delivery HID. ID: \"".$delivery["ID"]."\""));
+				//$result->addError( new \Bitrix\Main\Entity\EntityError("Can't find delivery HID. ID: \"".$delivery["ID"]."\""));
 				continue;
 			}
 
@@ -1543,7 +1549,16 @@ class CAllSaleDeliveryHandler
 			// Something strange it probably not used
 			if($delivery["PROFILES"] == false || !is_array($delivery["PROFILES"]) || empty($delivery["PROFILES"] ))
 			{
-				$result->addError( new \Bitrix\Main\Entity\EntityError("Can't receive info about profiles. Delivery HID: \"".$delivery["HID"]."\""));
+				//$result->addError( new \Bitrix\Main\Entity\EntityError("Can't receive info about profiles. Delivery HID: \"".$delivery["HID"]."\""));
+
+				\CEventLog::Add(array(
+					"SEVERITY" => "ERROR",
+					"AUDIT_TYPE_ID" => "SALE_CONVERTER_ERROR",
+					"MODULE_ID" => "sale",
+					"ITEM_ID" => "CAllSaleDeliveryHandler::convertToNew()",
+					"DESCRIPTION" => "Can't receive info about profiles. Delivery HID: \"".$delivery["HID"]."\"",
+				));
+
 				continue;
 			}
 

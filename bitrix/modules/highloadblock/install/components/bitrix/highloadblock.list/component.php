@@ -1,9 +1,6 @@
-<?php
-
-if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+<?php if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED!==true)die();
 
 $requiredModules = array('highloadblock');
-
 foreach ($requiredModules as $requiredModule)
 {
 	if (!CModule::IncludeModule($requiredModule))
@@ -18,19 +15,27 @@ use Bitrix\Main\Entity;
 
 // hlblock info
 $hlblock_id = $arParams['BLOCK_ID'];
-
 if (empty($hlblock_id))
 {
 	ShowError(GetMessage('HLBLOCK_LIST_NO_ID'));
 	return 0;
 }
-
 $hlblock = HL\HighloadBlockTable::getById($hlblock_id)->fetch();
-
 if (empty($hlblock))
 {
-	ShowError('404');
+	ShowError(GetMessage('HLBLOCK_LIST_404'));
 	return 0;
+}
+
+// check rights
+if (isset($arParams['CHECK_PERMISSIONS']) && $arParams['CHECK_PERMISSIONS'] == 'Y' && !$USER->isAdmin())
+{
+	$operations = HL\HighloadBlockRightsTable::getOperationsName($hlblock_id);
+	if (empty($operations))
+	{
+		ShowError(GetMessage('HLBLOCK_LIST_404'));
+		return 0;
+	}
 }
 
 $entity = HL\HighloadBlockTable::compileEntity($hlblock);
@@ -41,113 +46,115 @@ $fields = $GLOBALS['USER_FIELD_MANAGER']->GetUserFields('HLBLOCK_'.$hlblock['ID'
 // sort
 $sort_id = 'ID';
 $sort_type = 'DESC';
-
 if (!empty($_GET['sort_id']) && (isset($fields[$_GET['sort_id']])))
 {
 	$sort_id = $_GET['sort_id'];
 }
-
 if (!empty($_GET['sort_type']) && in_array($_GET['sort_type'], array('ASC', 'DESC'), true))
 {
 	$sort_type = $_GET['sort_type'];
 }
 
-// limit
-$limit = array(
-	'nPageSize' => $arParams['ROWS_PER_PAGE'],
-	'iNumPage' => is_set($_GET['PAGEN_1']) ? $_GET['PAGEN_1'] : 1,
-	'bShowAll' => true
-);
-
-
-
-// execute query
-
-$main_query = new Entity\Query($entity);
-$main_query->setSelect(array('*'));
-$main_query->setOrder(array($sort_id => $sort_type));
-//$main_query->setSelect($select)
-//	->setFilter($filter)
-//	->setGroup($group)
-//	->setOrder($order)
-//	->setOptions($options);
-
-
-if (isset($limit['nPageTop']))
+// pagen
+if (isset($arParams['ROWS_PER_PAGE']) && $arParams['ROWS_PER_PAGE']>0)
 {
-	$main_query->setLimit($limit['nPageTop']);
+	$pagenId = isset($arParams['PAGEN_ID']) && trim($arParams['PAGEN_ID']) != '' ? trim($arParams['PAGEN_ID']) : 'page';
+	$perPage = intval($arParams['ROWS_PER_PAGE']);
+	$nav = new \Bitrix\Main\UI\PageNavigation($pagenId);
+	$nav->allowAllRecords(true)
+		->setPageSize($perPage)
+		->initFromUri();
 }
 else
 {
-	$main_query->setLimit($limit['nPageSize']);
-	$main_query->setOffset(($limit['iNumPage']-1) * $limit['nPageSize']);
+	$arParams['ROWS_PER_PAGE'] = 0;
 }
 
-//$main_query->setLimit($limit['nPageSize']);
-//$main_query->setOffset(($limit['iNumPage']-1) * $limit['nPageSize']);
+// start query
+$mainQuery = new Entity\Query($entity);
+$mainQuery->setSelect(array('*'));
+$mainQuery->setOrder(array($sort_id => $sort_type));
 
-$result = $main_query->exec();
+// filter
+if (
+	isset($arParams['FILTER_NAME']) &&
+	!empty($arParams['FILTER_NAME']) &&
+	preg_match('/^[A-Za-z_][A-Za-z01-9_]*$/', $arParams['FILTER_NAME']))
+{
+	global ${$arParams['FILTER_NAME']};
+	$filter = ${$arParams['FILTER_NAME']};
+	if (is_array($filter))
+	{
+		$mainQuery->setFilter($filter);
+	}
+}
+
+// pagen
+if ($perPage > 0)
+{
+	$mainQueryCnt = $mainQuery;
+	$result = $mainQueryCnt->exec();
+	$result = new CDBResult($result);
+	$nav->setRecordCount($result->selectedRowsCount());
+	$arResult['nav_object'] = $nav;
+	unset($mainQueryCnt, $result);
+
+	$mainQuery->setLimit($nav->getLimit());
+	$mainQuery->setOffset($nav->getOffset());
+}
+
+// execute query
+//	->setGroup($group)
+//	->setOptions($options);
+$result = $mainQuery->exec();
 $result = new CDBResult($result);
 
 // build results
 $rows = array();
-
 $tableColumns = array();
-
-while ($row = $result->Fetch())
+while ($row = $result->fetch())
 {
 	foreach ($row as $k => $v)
 	{
+		$arUserField = $fields[$k];
+
 		if ($k == 'ID')
 		{
 			$tableColumns['ID'] = true;
 			continue;
 		}
-
-		$arUserField = $fields[$k];
-
-		if ($arUserField["SHOW_IN_LIST"]!="Y")
+		if ($arUserField['SHOW_IN_LIST'] != 'Y')
 		{
 			continue;
 		}
 
 		$html = call_user_func_array(
-			array($arUserField["USER_TYPE"]["CLASS_NAME"], "getadminlistviewhtml"),
+			array($arUserField['USER_TYPE']['CLASS_NAME'], 'getadminlistviewhtml'),
 			array(
 				$arUserField,
 				array(
-					"NAME" => "FIELDS[".$row['ID']."][".$arUserField["FIELD_NAME"]."]",
-					"VALUE" => htmlspecialcharsbx($v)
+					'NAME' => 'FIELDS['.$row['ID'].']['.$arUserField['FIELD_NAME'].']',
+					'VALUE' => htmlspecialcharsbx(is_array($v) ? implode(', ', $v) : $v)
 				)
 			)
 		);
 
-		if($html == '')
-		{
-			$html = '&nbsp;';
-		}
-
 		$tableColumns[$k] = true;
-
 		$row[$k] = $html;
 	}
-
 
 	$rows[] = $row;
 }
 
-
-$arResult["NAV_STRING"] = $result->GetPageNavString('', (is_set($arParams['NAV_TEMPLATE'])) ? $arParams['NAV_TEMPLATE'] : 'arrows');
-$arResult["NAV_PARAMS"] = $result->GetNavParams();
-$arResult["NAV_NUM"] = $result->NavNum;
-
-
 $arResult['rows'] = $rows;
 $arResult['fields'] = $fields;
 $arResult['tableColumns'] = $tableColumns;
-
 $arResult['sort_id'] = $sort_id;
 $arResult['sort_type'] = $sort_type;
 
+// for compatibility
+$arResult['NAV_STRING'] = '';
+$arResult['NAV_PARAMS'] = '';
+$arResult['NAV_NUM'] = 0;
 
 $this->IncludeComponentTemplate();

@@ -182,6 +182,12 @@ $headers = array(
 		"content"=>Loc::getMessage("SALE_COMPANY_CODE"),
 		"sort"=>"CODE",
 		"default"=>true
+	),
+	array(
+		"id"=>"SORT",
+		"content"=>Loc::getMessage("SALE_COMPANY_SORT"),
+		"sort"=>"SORT",
+		"default"=>true
 	)
 );
 $USER_FIELD_MANAGER->AdminListAddHeaders(CompanyTable::getUfId(), $headers);

@@ -58,6 +58,11 @@ class StatusTable extends Main\Entity\DataManager
 				'title'         => Loc::getMessage('B_SALE_STATUS_NOTIFY'),
 			)),
 
+			new Main\Entity\StringField('COLOR', array(
+				'default_value' => 'Y',
+				'title'         => Loc::getMessage('B_SALE_STATUS_COLOR'),
+			)),
+
 		);
 	}
 }

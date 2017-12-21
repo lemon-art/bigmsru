@@ -1136,7 +1136,7 @@ body {
   .search-form__input {
     width: 100%;
     border: 0;
-    border-bottom: 2px solid #dfe4ea;
+    border-bottom: 2px solid #666bff;
     color: #a9b8c9;
     padding: 7px 2px;
     font-size: 14px;

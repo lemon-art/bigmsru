@@ -156,6 +156,7 @@ if($obSearch->errorno==0)
 			$arResult["ORDER_LINK"] = $APPLICATION->GetCurPageParam("q=".urlencode($arResult["q"])."&where=".urlencode($arResult["where"]), Array("q", "where", "how"));
 		if($arResult["~how"]!="d")
 			$arResult["ORDER_LINK"] .= "&how=d";
+		$arResult["ORDER_LINK"] = htmlspecialcharsbx($arResult["ORDER_LINK"]);
 	}
 	else
 	{

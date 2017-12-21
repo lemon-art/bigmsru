@@ -54,4 +54,15 @@ $MESS["JS_CORE_VIEWER_SERVICE_B24_DISK"] = "Bitrix24.Drive";
 $MESS["JS_CORE_VIEWER_SHOW_FILE_DIALOG_OAUTH_NOTICE"] = "Please log in to your <a id=\"bx-js-disk-run-oauth-modal\" href=\"#\">#SERVICE#</a> account to view the file.";
 $MESS["JS_CORE_VIEWER_SERVICE_OFFICE365"] = "Office 365";
 $MESS["JS_CORE_VIEWER_DOCUMENT_IS_LOCKED_BY"] = "The document is locked for editing";
+$MESS["JS_CORE_VIEWER_SERVICE_MYOFFICE"] = "MyOffice";
+$MESS["JS_CORE_VIEWER_OPEN_PDF_PREVIEW"] = "View PDF file";
+$MESS["JS_CORE_VIEWER_AJAX_ACCESS_DENIED"] = "Insufficient permission to view file. Please try to refresh the page.";
+$MESS["JS_CORE_VIEWER_AJAX_CONNECTION_FAILED"] = "Error opening file. Please try again later.";
+$MESS["JS_CORE_VIEWER_AJAX_OPEN_NEW_TAB"] = "Open in a new window";
+$MESS["JS_CORE_VIEWER_AJAX_PRINT"] = "Print";
+$MESS["JS_CORE_VIEWER_TRANSFORMATION_IN_PROCESS"] = "The document has been saved and is now being prepared for viewing.";
+$MESS["JS_CORE_VIEWER_IFRAME_ERROR_TITLE"] = "Cannot open document";
+$MESS["JS_CORE_VIEWER_DOWNLOAD_B24_DESKTOP_FULL"] = "Download Application";
+$MESS["JS_CORE_VIEWER_DOWNLOAD_DOCUMENT"] = "Download Document";
+$MESS["JS_CORE_VIEWER_IFRAME_ERROR_COULD_NOT_VIEW"] = "Cannot open document view.";
 ?>

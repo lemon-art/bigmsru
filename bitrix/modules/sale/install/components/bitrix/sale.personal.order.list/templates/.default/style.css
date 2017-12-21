@@ -177,3 +177,378 @@
 .bx_my_order_switch .bx_mo_link{
 	margin-right: 20px;
 }
+
+.sale-order-link,
+.sale-order-history-link {
+	display: inline-block;
+	font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: #4a90e2;
+	padding: 0 34px 0 0;
+	margin-bottom: 22px;
+}
+
+.sale-order-title {
+	margin-top:40px;
+	font: 20px "Open Sans", "Helvetica Neue", Arial, Helvetica, sans-serif;
+	color: #262626;
+}
+
+.sale-order-description {
+	font: 13px "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: #888;
+}
+
+.sale-order-list-title-container {
+	background: rgba(194,243,136, .5);
+}
+
+.sale-order-list-title,
+.sale-order-list-accomplished-title {
+	margin-top: 10px;
+	font: bold 15px "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: #2f3435;
+}
+
+.sale-order-list-container {
+	margin: 0 0 34px 0;
+}
+
+.sale-order-list-inner-container {
+	padding: 0 15px 15px 15px;
+	border: 1px solid #efecec;
+}
+
+.sale-order-list-inner-title-line {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	padding: 18px 0 14px 0;
+	text-transform: uppercase;
+}
+
+.sale-order-list-inner-title-line-item {
+	display: inline-block;
+	margin: 0 5px 0 0;
+	vertical-align: middle;
+	font: bold 10px "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: #9b9b9b;
+}
+
+.sale-order-list-inner-title-line-border {
+	display: inline-block;
+	margin: 6px 0;
+	height: 1px;
+	width: 100%;
+	vertical-align: middle;
+	background: #f2f2f2;
+}
+
+.sale-order-list-inner-row {
+	padding: 0;
+	position: relative;
+}
+
+.sale-order-list-inner-row-template{
+	display: none;
+}
+
+.sale-order-list-payment-title,
+.sale-order-list-shipment-title {
+	font: bold 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: #000;
+}
+
+.sale-order-list-payment-about-link,
+.sale-order-list-payment-repeat-link,
+.sale-order-list-payment-cancel-link {
+	padding: 21px 0 0 0;
+}
+
+.sale-order-list-shipment-button,
+.sale-order-list-repeat-link,
+.sale-order-list-cancel-link,
+.sale-order-list-about-link,
+.sale-order-list-change-payment {
+	font: 13px "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: #4a90e2;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.sale-order-list-cancel-link {
+	display: inline-block;
+	color: #9b9b9b;
+	/*vertical-align: middle;*/
+}
+
+div.sale-order-list-repeat-container {
+	padding: 0;
+}
+
+.sale-order-list-repeat-link {
+	display: inline-block;
+	padding: 0 0 0 13px;
+	vertical-align: middle;
+}
+
+.sale-order-list-repeat-link:before {
+	content: "";
+	display: inline-block;
+	margin: 0 3px 4px 0;
+	width: 10px;
+	height: 13px;
+	background: url(images/sale-order-repeat.svg) no-repeat;
+	vertical-align: middle;
+}
+
+.sale-order-link-accomplished {
+	padding: 0;
+	text-decoration: none;
+}
+
+.sale-order-list-shipment-button:hover,
+.sale-order-list-repeat-link:hover,
+.sale-order-list-cancel-link:hover,
+.sale-order-list-cancel-payment:hover,
+.sale-order-list-about-link:hover,
+.sale-order-list-cancel-payment,
+.sale-order-list-change-payment:hover{
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.sale-order-list-cancel-payment{
+	margin-top: 20px;
+	display: block;
+}
+
+.sale-order-list-about-link {
+	font: bold 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.sale-order-list-status-restricted,
+.sale-order-list-status-alert,
+.sale-order-list-status-success {
+	display: inline-block;
+	padding: 4px 10px 5px 8px;
+	border: 1px solid #eab3b9;
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	-o-border-radius: 2px;
+	border-radius: 2px;
+	background: #ffe5e8;
+	font: bold 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: #d0021b;
+}
+
+.sale-order-list-status-success {
+	background: #e3f0bd;
+	border: 1px solid #bed277;
+	color: #597707;
+}
+
+.sale-order-list-status-restricted {
+	background: #f3f4f5;
+	border: 1px solid rgba(128,134,142,0.20);
+	color: #535c69;
+}
+
+.sale-order-list-status-restricted-message-block{
+	padding-top:10px;
+}
+
+.sale-order-list-status-restricted-message{
+	font: 11px "Helvetica Neue", Arial, Helvetica, sans-serif;
+	color: #9e9fa2;
+}
+
+.sale-order-list-payment-check ,
+.sale-order-list-payment-price {
+	padding: 4px 0 0 0;
+	font: 13px "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.sale-order-list-payment-check{
+	width:100%;
+	float: left;
+}
+
+.sale-order-list-payment-check-left{
+	display: inline;
+	float: left;
+	padding-right: 5px;
+}
+
+.sale-order-list-change-payment {
+	display: block;
+	margin: 6px 0 0 0;
+	font: 13px "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/*.sale-order-list-button-container {*/
+	/*position: absolute;*/
+	/*top: 50%;*/
+	/*right: 15px;*/
+	/*-webkit-transform: translateY(-50%);*/
+	/*-moz-transform: translateY(-50%);*/
+	/*transform: translateY(-50%);*/
+/*}*/
+
+.sale-order-list-button {
+	display: block;
+	padding: 0 17px;
+	float: right;
+	max-width: 115px;
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+	height: 38px;
+	background: #70bb18;
+	color: #fff;
+	font: bold 13px/38px "Helvetica Neue", Helvetica, Arial, sans-serif;
+	text-align: center;
+}
+
+.sale-order-list-button:hover {
+	color: #fff;
+	background: #7bd314;
+	-webkit-transition: background ease-out 0.5s;
+	-moz-transition: background ease-out 0.5s;
+	-o-transition: background ease-out 0.5s;
+	transition: background ease-out 0.5s;
+}
+
+.sale-order-list-button.inactive-button {
+	background: #dff0d8;
+	cursor: pointer;
+}
+
+.sale-order-list-button.inactive-button:hover{
+	color: #FFFFFF;
+}
+
+
+.sale-order-list-shipment {
+	font: 13px "Helvetica Neue", Helvetica, Arial, sans-serif;
+	list-style: none;
+}
+
+.sale-order-list-shipment-item {
+	padding: 6px 0 0 0;
+}
+
+.sale-order-list-shipment-list-item-link {
+	padding: 16px 0 0 0;
+	text-decoration: underline;
+}
+
+.sale-order-list-shipment-id {
+	font-weight: 700;
+}
+
+.sale-order-list-shipment-id-icon {
+	display: inline-block;
+	width: 11px;
+	height: 13px;
+	background: url("images/sale-order-order-list-options-methods-shipment-list-item-id-element.svg") center no-repeat;
+	cursor: pointer;
+}
+
+.sale-order-list-top-border {
+	width: auto;
+	height: 1px;
+	margin: 18px 15px 21px 15px;
+	background: #f2f2f2;
+}
+
+.sale-order-list-accomplished-title-container {
+	background: #f2f2f2;
+}
+
+.sale-order-list-accomplished-date-container {
+	text-align: right;
+}
+
+.sale-order-list-accomplished-date {
+	padding: 0 8px 0 0;
+}
+
+.sale-order-list-accomplished-date,
+.sale-order-list-accomplished-date-number {
+	display: inline-block;
+	margin: 10px 0 0 0;
+	font: bold 13px "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.sale-order-list-accomplished-date {
+	color: #4b8c03;
+}
+.sale-order-list-accomplished-date.canceled-order {
+	color: #ff0000;
+}
+
+.sale-order-list-accomplished-date-number {
+	color: #888;
+}
+
+.sale-order-list-repeat-accomplished {
+	text-align: right;
+}
+
+.sale-order-list-inner-accomplished {
+	border: 1px solid #efecec;
+	padding: 13px 15px 15px 15px;
+}
+
+.sale-order-list-shipment-status {
+	margin: 2px 0 0 0;
+}
+
+.sale-order-list-shipment-status-item {
+	display: inline-block;
+	margin: 6px 0 5px 0;
+	vertical-align: middle;
+}
+
+.sale-order-list-shipment-status-block {
+	display: inline-block;
+	padding: 5px;
+	border: 1px solid rgba(128,134,142,0.20);
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+	background: #f3f4f5;
+	font: bold 13px "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: #535c69;
+	vertical-align: middle;
+}
+
+/* state's */
+
+.sale-order-state-green {
+	background: #c2f388;
+}
+.sale-order-state-yellow {
+	background: #d7dd39;
+}
+.sale-order-state-red {
+	background: #dd6239;
+}
+.sale-order-state-grey {
+	background: #f2f2f2;
+}
+
+@media (max-width: 991px) {
+	.sale-order-list-accomplished-date-container,
+	.sale-order-list-repeat-accomplished {
+		text-align: left;
+	}
+}
+
+@media (max-width: 767px) {
+	.sale-order-list-button {
+		margin: 10px 0 0 0;
+		max-width: none;
+		float: none;
+	}
+}

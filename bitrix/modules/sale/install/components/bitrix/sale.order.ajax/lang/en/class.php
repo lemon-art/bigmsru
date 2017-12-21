@@ -54,3 +54,5 @@ $MESS["P2D_CALCULATE_ERROR"] = "Error while calculating order";
 $MESS["DELIVERY_CHANGE_WARNING"] = "First available delivery service selected";
 $MESS["PAY_SYSTEM_CHANGE_WARNING"] = "First available payment system selected";
 $MESS["SESSID_ERROR"] = "Your session has expired. Please reload your page.";
+$MESS["ORDER_CONSISTENCY_CHANGED"] = "The order has been changed while saving.";
+?>

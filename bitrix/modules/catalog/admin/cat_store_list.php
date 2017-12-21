@@ -67,10 +67,16 @@ function getSiteTitle($siteId)
 $sTableID = "b_catalog_store";
 $entityId = "CAT_STORE";
 
-$oSort = new CAdminSorting($sTableID, "SORT", "asc");
+$oSort = new CAdminSorting($sTableID, "SORT", "ASC");
 $lAdmin = new CAdminList($sTableID, $oSort);
 
 $arFilter = array();
+$filterFields = array(
+	'filter_site_id'
+);
+$USER_FIELD_MANAGER->AdminListAddFilterFields($entityId, $filterFields);
+$lAdmin->InitFilter($filterFields);
+
 if(strlen($filter_site_id) > 0 && $filter_site_id != "NOT_REF")
 	$arFilter["SITE_ID"] = $filter_site_id;
 
@@ -86,6 +92,10 @@ if($lAdmin->EditAction() && !$bReadOnly)
 			continue;
 		if(isset($arFields["IMAGE_ID"]))
 			unset($arFields["IMAGE_ID"]);
+		if (isset($arFields['GPS_N']))
+			$arFields['GPS_N'] = str_replace(',', '.', $arFields['GPS_N']);
+		if (isset($arFields['GPS_S']))
+			$arFields['GPS_S'] = str_replace(',', '.', $arFields['GPS_S']);
 
 		$DB->StartTransaction();
 		if(!CCatalogStore::Update($ID, $arFields))
@@ -109,8 +119,8 @@ if(($arID = $lAdmin->GroupAction()) && !$bReadOnly)
 {
 	if($_REQUEST['action_target']=='selected')
 	{
-		$arID = Array();
-		$dbResultList = CCatalogStore::GetList(array($_REQUEST["by"] => $_REQUEST["order"], $arFilter, false, false, array('ID')));
+		$arID = array();
+		$dbResultList = CCatalogStore::GetList(array(), $arFilter, false, false, array('ID'));
 		while ($arResult = $dbResultList->Fetch())
 			$arID[] = $arResult['ID'];
 	}
@@ -162,8 +172,14 @@ $arSelect = array(
 	"ISSUING_CENTER",
 	"SHIPPING_CENTER",
 	"SITE_ID",
+	"CODE",
 	"UF_*"
 );
+
+if (!isset($by))
+	$by = 'ID';
+if (!isset($order))
+	$order = 'ASC';
 
 if(array_key_exists("mode", $_REQUEST) && $_REQUEST["mode"] == "excel")
 	$arNavParams = false;
@@ -171,9 +187,7 @@ else
 	$arNavParams = array("nPageSize"=>CAdminResult::GetNavSize($sTableID));
 
 $dbResultList = CCatalogStore::GetList(
-	array(
-		$_REQUEST["by"] => $_REQUEST["order"]
-	),
+	array($by => $order),
 	$arFilter,
 	false,
 	$arNavParams,
@@ -298,6 +312,18 @@ $headers = array(
 		"content" => GetMessage("STORE_SITE_ID"),
 		"sort" => "SITE_ID",
 		"default" => true
+	),
+	array(
+		"id" => "CODE",
+		"content" => GetMessage("STORE_CODE"),
+		"sort" => "CODE",
+		"default" => false
+	),
+	array(
+		"id" => "XML_ID",
+		"content" => GetMessage("STORE_XML_ID"),
+		"sort" => "XML_ID",
+		"default" => false
 	)
 );
 
@@ -321,7 +347,9 @@ $arSelectFieldsMap = array(
 	"EMAIL" => false,
 	"ISSUING_CENTER" => false,
 	"SHIPPING_CENTER" => false,
-	"SITE_ID" => false
+	"SITE_ID" => false,
+	"CODE" => false,
+	"XML_ID" => false
 );
 
 $lAdmin->AddHeaders($headers);
@@ -341,6 +369,7 @@ $arRows = array();
 while ($arRes = $dbResultList->Fetch())
 {
 	$arRes['ID'] = (int)$arRes['ID'];
+	$arRes['SORT'] = (int)$arRes['SORT'];
 	if($arSelectFieldsMap['USER_ID'])
 	{
 		$arRes['USER_ID'] = (int)$arRes['USER_ID'];
@@ -358,7 +387,9 @@ while ($arRes = $dbResultList->Fetch())
 	$row->AddField("ID", "<a href=\""."cat_store_edit.php?ID=".$arRes['ID']."&lang=".LANGUAGE_ID."&".GetFilterParams("filter_")."\">".$arRes['ID']."</a>");
 	if($bReadOnly)
 	{
-		$row->AddViewField("SORT", $f_SORT);
+		$row->AddViewField("SORT", $arRes['SORT']);
+		if($arSelectFieldsMap['CODE'])
+			$row->AddInputField("CODE", false);
 		if($arSelectFieldsMap['TITLE'])
 			$row->AddInputField("TITLE", false);
 		if($arSelectFieldsMap['ADDRESS'])
@@ -379,12 +410,18 @@ while ($arRes = $dbResultList->Fetch())
 			$row->AddInputField("EMAIL", false);
 		if($arSelectFieldsMap['IMAGE_ID'] && !$bExport)
 			$row->AddField("IMAGE_ID", CFile::ShowImage($arRes['IMAGE_ID'], 100, 100, "border=0", "", true));
+		if($arSelectFieldsMap['GPS_N'])
+			$row->AddInputField('GPS_N', false);
+		if($arSelectFieldsMap['GPS_S'])
+			$row->AddInputField('GPS_S', false);
+		if($arSelectFieldsMap['XML_ID'])
+			$row->AddInputField("XML_ID", false);
 	}
 	else
 	{
 		$row->AddInputField("SORT", array("size" => "3"));
-		if($arSelectFieldsMap['SITE_ID'])
-			$row->AddViewField("SITE_ID", getSiteTitle($arRes['SITE_ID']));
+		if($arSelectFieldsMap['CODE'])
+			$row->AddInputField("CODE");
 		if($arSelectFieldsMap['TITLE'])
 			$row->AddInputField("TITLE");
 		if($arSelectFieldsMap['ACTIVE'])
@@ -405,8 +442,16 @@ while ($arRes = $dbResultList->Fetch())
 			$row->AddInputField("EMAIL", array("size" => 35));
 		if($arSelectFieldsMap['IMAGE_ID'] && !$bExport)
 			$row->AddField("IMAGE_ID", CFile::ShowImage($arRes['IMAGE_ID'], 100, 100, "border=0", "", true));
+		if($arSelectFieldsMap['GPS_N'])
+			$row->AddInputField('GPS_N', array('size' => 35));
+		if($arSelectFieldsMap['GPS_S'])
+			$row->AddInputField('GPS_S', array('size' => 35));
+		if($arSelectFieldsMap['XML_ID'])
+			$row->AddInputField("XML_ID");
 	}
 
+	if($arSelectFieldsMap['SITE_ID'])
+		$row->AddViewField("SITE_ID", htmlspecialcharsbx(getSiteTitle($arRes['SITE_ID'])));
 	if($arSelectFieldsMap['DATE_CREATE'])
 		$row->AddCalendarField("DATE_CREATE", false);
 	if($arSelectFieldsMap['DATE_MODIFY'])
@@ -511,7 +556,6 @@ $lAdmin->CheckListMode();
 $APPLICATION->SetTitle(GetMessage("STORE_TITLE"));
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
 ?>
-
 	<form name="find_form" method="GET" action="<?echo $APPLICATION->GetCurPage()?>?">
 		<?
 		$arFindFields = array(GetMessage("STORE_SITE_ID"));
@@ -543,10 +587,7 @@ require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_aft
 		$oFilter->End();
 		?>
 	</form>
-
-
 <?
 $lAdmin->DisplayList();
-?>
 
-<?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");?>
+require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");

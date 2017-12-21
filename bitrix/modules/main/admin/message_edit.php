@@ -138,7 +138,7 @@ if($REQUEST_METHOD=="POST" && (strlen($save)>0 || strlen($apply)>0)&& $isAdmin &
 				while($arDeleteFile = $deleteFileDb->fetch())
 				{
 					CFile::Delete($arDeleteFile["FILE_ID"]);
-					\Bitrix\Main\Mail\Internal\EventMessageAttachmentTable::delete($arDeleteFile['FILE_ID']);
+					\Bitrix\Main\Mail\Internal\EventMessageAttachmentTable::delete($ID);
 				}
 			}
 		}

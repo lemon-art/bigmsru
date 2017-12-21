@@ -3,6 +3,10 @@
 namespace Bitrix\Main\UI\Filter;
 
 
+/**
+ * Class Type. Available field types
+ * @package Bitrix\Main\UI\Filter
+ */
 class Type
 {
 	const STRING = "STRING";
@@ -12,7 +16,14 @@ class Type
 	const MULTI_SELECT = "MULTI_SELECT";
 	const USER = "USER";
 	const ENTITY = "ENTITY";
+	const CUSTOM = "CUSTOM";
+	const CUSTOM_ENTITY = "CUSTOM_ENTITY";
 
+
+	/**
+	 * Gets field types list
+	 * @return array
+	 */
 	public static function getList()
 	{
 		$reflection = new \ReflectionClass(__CLASS__);

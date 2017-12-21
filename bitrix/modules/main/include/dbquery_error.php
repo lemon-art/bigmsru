@@ -19,7 +19,7 @@
 								$strSupportErrorText .= "[".$error_position."]\n";
 							if (strlen($strSql)>0)
 								$strSupportErrorText .= "Query: ".$strSql."\n";
-							if (is_object($this) && strlen($this->db_Error)>0)
+							if (isset($this) && is_object($this) && strlen($this->db_Error)>0)
 								$strSupportErrorText .= "[".$this->db_Error."]\n";
 
 							$d = Bitrix\Main\Diag\Helper::getBackTrace();

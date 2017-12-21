@@ -2,7 +2,9 @@
 use Bitrix\Main\Loader,
 	Bitrix\Main\Localization\Loc,
 	Bitrix\Highloadblock\HighloadBlockTable,
+	Bitrix\Currency,
 	Bitrix\Iblock,
+	Bitrix\Catalog,
 	Bitrix\Main;
 
 Loc::loadMessages(__FILE__);
@@ -12,7 +14,7 @@ class CIBlockPriceTools
 	protected static $catalogIncluded = null;
 	protected static $highLoadInclude = null;
 	protected static $needDiscountCache = null;
-	protected static $calculationDiscounts = true;
+	protected static $calculationDiscounts = 0;
 
 	/**
 	 * @param int $IBLOCK_ID
@@ -44,8 +46,13 @@ class CIBlockPriceTools
 					$arCatalogGroupsFilter[] = $key;
 					$arCatalogPrices[$value["NAME"]] = array(
 						"ID" => (int)$value["ID"],
+						"CODE" => $value["NAME"],
+						"SORT" => (int)$value["SORT"],
+						"BASE" => $value["BASE"],
+						"XML_ID" => $value["XML_ID"],
 						"TITLE" => htmlspecialcharsbx($value["NAME_LANG"]),
-						"SELECT" => "CATALOG_GROUP_".$value["ID"],
+						"~TITLE" => $value["NAME_LANG"],
+						"SELECT" => "CATALOG_GROUP_".$value["ID"]
 					);
 				}
 			}
@@ -61,9 +68,6 @@ class CIBlockPriceTools
 		}
 		else
 		{
-			$arPriceGroups = array(
-				"view" => array(),
-			);
 			$rsProperties = CIBlockProperty::GetList(array(), array(
 				"IBLOCK_ID" => $IBLOCK_ID,
 				"CHECK_PERMISSIONS" => "N",
@@ -74,10 +78,14 @@ class CIBlockPriceTools
 			{
 				if (in_array($arProperty["CODE"], $arPriceCode))
 				{
-					$arPriceGroups["view"][]=htmlspecialcharsbx("PROPERTY_".$arProperty["CODE"]);
 					$arCatalogPrices[$arProperty["CODE"]] = array(
 						"ID" => (int)$arProperty["ID"],
+						"CODE" => $arProperty["CODE"],
+						"SORT" => (int)$arProperty["SORT"],
+						"BASE" => "N",
+						"XML_ID" => $arProperty["XML_ID"],
 						"TITLE" => htmlspecialcharsbx($arProperty["NAME"]),
+						"~TITLE" => $arProperty["NAME"],
 						"SELECT" => "PROPERTY_".$arProperty["ID"],
 						"CAN_VIEW"=>true,
 						"CAN_BUY"=>false,
@@ -95,22 +103,30 @@ class CIBlockPriceTools
 	public static function GetAllowCatalogPrices($arPriceTypes)
 	{
 		$arResult = array();
-		if (!empty($arPriceTypes) && is_array($arPriceTypes))
+		if (empty($arPriceTypes) || !is_array($arPriceTypes))
+			return $arResult;
+
+		foreach ($arPriceTypes as $arOnePriceType)
 		{
-			foreach ($arPriceTypes as &$arOnePriceType)
-			{
-				if ($arOnePriceType['CAN_VIEW'] || $arOnePriceType['CAN_BUY'])
-					$arResult[] = (int)$arOnePriceType['ID'];
-			}
-			unset($arOnePriceType);
+			if ($arOnePriceType['CAN_VIEW'] || $arOnePriceType['CAN_BUY'])
+				$arResult[] = (int)$arOnePriceType['ID'];
 		}
+		unset($arOnePriceType);
+		if (!empty($arResult))
+			Main\Type\Collection::normalizeArrayValuesByInt($arResult, true);
 		return $arResult;
 	}
 
-	public static function SetCatalogDiscountCache($arCatalogGroups, $arUserGroups)
+	public static function SetCatalogDiscountCache($arCatalogGroups, $arUserGroups, $siteId = false)
 	{
+		if(\Bitrix\Main\Config\Option::get('sale', 'use_sale_discount_only') === 'Y')
+			return true;
+
 		global $DB;
 		$result = false;
+
+		if ($siteId === false)
+			$siteId = SITE_ID;
 
 		if (self::$catalogIncluded === null)
 			self::$catalogIncluded = Loader::includeModule('catalog');
@@ -134,7 +150,7 @@ class CIBlockPriceTools
 			$arDiscountResult = array();
 			if (empty($arRest) || (array_key_exists('DISCOUNTS', $arRest) && empty($arRest['DISCOUNTS'])))
 			{
-				foreach ($arCatalogGroups as &$intOneGroupID)
+				foreach ($arCatalogGroups as $intOneGroupID)
 				{
 					$strCacheKey = CCatalogDiscount::GetDiscountFilterCacheKey(array($intOneGroupID), $arUserGroups, false);
 					$arDiscountFilter[$strCacheKey] = array();
@@ -153,12 +169,12 @@ class CIBlockPriceTools
 				);
 				$strDate = date($DB->DateFormatToPHP(CSite::GetDateFormat('FULL')));
 				$discountRows = array_chunk($arRest['DISCOUNTS'], 500);
-				foreach ($discountRows as &$row)
+				foreach ($discountRows as $row)
 				{
 					$arFilter = array(
 						'@ID' => $row,
-						'SITE_ID' => SITE_ID,
-						'TYPE' => DISCOUNT_TYPE_STANDART,
+						'SITE_ID' => $siteId,
+						'TYPE' => Catalog\DiscountTable::TYPE_DISCOUNT,
 						'RENEWAL' => 'N',
 						'+<=ACTIVE_FROM' => $strDate,
 						'+>=ACTIVE_TO' => $strDate,
@@ -173,7 +189,7 @@ class CIBlockPriceTools
 					unset($arPriceDiscount, $rsPriceDiscounts, $arFilter);
 				}
 				unset($row, $discountRows);
-				foreach ($arCatalogGroups as &$intOneGroupID)
+				foreach ($arCatalogGroups as $intOneGroupID)
 				{
 					$strCacheKey = CCatalogDiscount::GetDiscountFilterCacheKey(array($intOneGroupID), $arUserGroups, false);
 					$arDiscountDetailList = array();
@@ -189,11 +205,10 @@ class CIBlockPriceTools
 					}
 					sort($arDiscountList);
 					$arDiscountFilter[$strCacheKey] = $arDiscountList;
-					$strResultCacheKey = CCatalogDiscount::GetDiscountResultCacheKey($arDiscountList, SITE_ID, 'N');
+					$strResultCacheKey = CCatalogDiscount::GetDiscountResultCacheKey($arDiscountList, $siteId, 'N');
 					$arDiscountResult[$strResultCacheKey] = $arDiscountDetailList;
 				}
-				if (isset($intOneGroupID))
-					unset($intOneGroupID);
+				unset($intOneGroupID);
 			}
 			$boolFlag = CCatalogDiscount::SetAllDiscountFilterCache($arDiscountFilter, false);
 			$boolFlagExt = CCatalogDiscount::SetAllDiscountResultCache($arDiscountResult);
@@ -203,7 +218,14 @@ class CIBlockPriceTools
 		return $result;
 	}
 
-	public static function GetItemPrices($IBLOCK_ID, $arCatalogPrices, $arItem, $bVATInclude = true, $arCurrencyParams = array(), $USER_ID = 0, $LID = SITE_ID)
+	public static function GetItemPrices(
+		/** @noinspection PhpUnusedParameterInspection */$IBLOCK_ID,
+		$arCatalogPrices,
+		$arItem, $bVATInclude = true,
+		$arCurrencyParams = array(),
+		$USER_ID = 0,
+		$LID = SITE_ID
+	)
 	{
 		$arPrices = array();
 
@@ -237,14 +259,14 @@ class CIBlockPriceTools
 			$arUserGroups = $arCurUserGroups[$intUserID];
 
 			$boolConvert = false;
-			$strCurrencyID = '';
+			$resultCurrency = '';
 			if (isset($arCurrencyParams['CURRENCY_ID']) && !empty($arCurrencyParams['CURRENCY_ID']))
 			{
 				$boolConvert = true;
-				$strCurrencyID = $arCurrencyParams['CURRENCY_ID'];
+				$resultCurrency = $arCurrencyParams['CURRENCY_ID'];
 			}
 			if (!$boolConvert && '' == $strBaseCurrency)
-				$strBaseCurrency = CCurrency::GetBaseCurrency();
+				$strBaseCurrency = Currency\CurrencyManager::getBaseCurrency();
 
 			$percentVat = $arItem['CATALOG_VAT'] * 0.01;
 			$percentPriceWithVat = 1 + $arItem['CATALOG_VAT'] * 0.01;
@@ -252,189 +274,194 @@ class CIBlockPriceTools
 			$strMinCode = '';
 			$boolStartMin = true;
 			$dblMinPrice = 0;
-			$strMinCurrency = ($boolConvert ? $strCurrencyID : $strBaseCurrency);
+			$strMinCurrency = ($boolConvert ? $resultCurrency : $strBaseCurrency);
 			CCatalogDiscountSave::Disable();
 			foreach ($arCatalogPrices as $key => $value)
 			{
 				$catalogPriceValue = 'CATALOG_PRICE_'.$value['ID'];
 				$catalogCurrencyValue = 'CATALOG_CURRENCY_'.$value['ID'];
-				if ($value["CAN_VIEW"] && isset($arItem[$catalogPriceValue]) && $arItem[$catalogPriceValue] != '')
+				if (
+					!$value['CAN_VIEW']
+					|| !isset($arItem[$catalogPriceValue])
+					|| $arItem[$catalogPriceValue] == ''
+				)
+					continue;
+
+				$arItem[$catalogPriceValue] = (float)$arItem[$catalogPriceValue];
+				// get final price with VAT included.
+				if ($arItem['CATALOG_VAT_INCLUDED'] != 'Y')
+					$arItem[$catalogPriceValue] *= $percentPriceWithVat;
+
+				$originalCurrency = $arItem[$catalogCurrencyValue];
+				$calculateCurrency = $arItem[$catalogCurrencyValue];
+				$calculatePrice = $arItem[$catalogPriceValue];
+				$cnangeCurrency = ($boolConvert && $resultCurrency != $calculateCurrency);
+				if ($cnangeCurrency)
 				{
-					// get final price with VAT included.
-					if ($arItem['CATALOG_VAT_INCLUDED'] != 'Y')
-						$arItem[$catalogPriceValue] *= $percentPriceWithVat;
+					$calculateCurrency = $resultCurrency;
+					$calculatePrice = CCurrencyRates::ConvertCurrency($calculatePrice, $originalCurrency, $resultCurrency);
+				}
 
-					// so discounts will include VAT
-					$arDiscounts = array();
-					if(self::isEnabledCalculationDiscounts())
+				// so discounts will include VAT
+				$discounts = array();
+				if (self::isEnabledCalculationDiscounts())
+				{
+					$discounts = CCatalogDiscount::GetDiscount(
+						$arItem['ID'],
+						$arItem['IBLOCK_ID'],
+						array($value['ID']),
+						$arUserGroups,
+						'N',
+						$LID,
+						array()
+					);
+				}
+				$discountPrice = CCatalogProduct::CountPriceWithDiscount(
+					$calculatePrice,
+					$calculateCurrency,
+					$discounts
+				);
+				unset($discounts);
+				if ($discountPrice === false)
+					continue;
+
+				$originalPriceWithVat = $arItem[$catalogPriceValue];
+				$priceWithVat = $calculatePrice;
+				$discountPriceWithVat = $discountPrice;
+
+				if ($cnangeCurrency)
+					$originalDiscountPrice = CCurrencyRates::ConvertCurrency($discountPrice, $calculateCurrency, $arItem[$catalogCurrencyValue]);
+				else
+					$originalDiscountPrice = $discountPrice;
+				$originalDiscountPriceWithVat = $originalDiscountPrice;
+
+				$arItem[$catalogPriceValue] /= $percentPriceWithVat;
+				$calculatePrice /= $percentPriceWithVat;
+				$originalDiscountPrice /= $percentPriceWithVat;
+				$discountPrice /= $percentPriceWithVat;
+
+				$originalVatValue = $originalPriceWithVat - $arItem[$catalogPriceValue];
+				$vatValue = $priceWithVat - $calculatePrice;
+				$originalDiscountVatValue = $originalDiscountPriceWithVat - $originalDiscountPrice;
+				$discountVatValue = $discountPriceWithVat - $discountPrice;
+
+				$roundPriceWithVat = Catalog\Product\Price::roundPrice($value['ID'], $discountPriceWithVat, $calculateCurrency);
+				$roundPrice = Catalog\Product\Price::roundPrice($value['ID'], $discountPrice, $calculateCurrency);
+
+				$priceResult = array(
+					'VALUE_NOVAT' => $calculatePrice,
+					'PRINT_VALUE_NOVAT' => CCurrencyLang::CurrencyFormat($calculatePrice, $calculateCurrency, true),
+
+					'VALUE_VAT' => $priceWithVat,
+					'PRINT_VALUE_VAT' => CCurrencyLang::CurrencyFormat($priceWithVat, $calculateCurrency, true),
+
+					'VATRATE_VALUE' => $vatValue,
+					'PRINT_VATRATE_VALUE' => CCurrencyLang::CurrencyFormat($vatValue, $calculateCurrency, true),
+
+					'DISCOUNT_VALUE_NOVAT' => $discountPrice,
+					'PRINT_DISCOUNT_VALUE_NOVAT' => CCurrencyLang::CurrencyFormat($discountPrice, $calculateCurrency, true),
+
+					'DISCOUNT_VALUE_VAT' => $discountPriceWithVat,
+					'PRINT_DISCOUNT_VALUE_VAT' => CCurrencyLang::CurrencyFormat($discountPriceWithVat, $calculateCurrency, true),
+
+					'DISCOUNT_VATRATE_VALUE' => $discountVatValue,
+					'PRINT_DISCOUNT_VATRATE_VALUE' => CCurrencyLang::CurrencyFormat($discountVatValue, $calculateCurrency, true),
+
+					'CURRENCY' => $calculateCurrency,
+
+					'ROUND_VALUE_VAT' => $roundPriceWithVat,
+					'ROUND_VALUE_NOVAT' => $roundPrice,
+					'ROUND_VATRATE_VALUE' => $roundPriceWithVat - $roundPrice,
+				);
+
+				if ($cnangeCurrency)
+				{
+					$priceResult['ORIG_VALUE_NOVAT'] = $arItem[$catalogPriceValue];
+					$priceResult['ORIG_VALUE_VAT'] = $originalPriceWithVat;
+					$priceResult['ORIG_VATRATE_VALUE'] = $originalVatValue;
+					$priceResult['ORIG_DISCOUNT_VALUE_NOVAT'] = $originalDiscountPrice;
+					$priceResult['ORIG_DISCOUNT_VALUE_VAT'] = $originalDiscountPriceWithVat;
+					$priceResult['ORIG_DISCOUNT_VATRATE_VALUE'] = $originalDiscountVatValue;
+					$priceResult['ORIG_CURRENCY'] = $originalCurrency;
+				}
+
+				$priceResult['PRICE_ID'] = $value['ID'];
+				$priceResult['ID'] = $arItem['CATALOG_PRICE_ID_'.$value['ID']];
+				$priceResult['CAN_ACCESS'] = $arItem['CATALOG_CAN_ACCESS_'.$value['ID']];
+				$priceResult['CAN_BUY'] = $arItem['CATALOG_CAN_BUY_'.$value['ID']];
+				$priceResult['MIN_PRICE'] = 'N';
+
+				if ($bVATInclude)
+				{
+					$priceResult['VALUE'] = $priceWithVat;
+					$priceResult['PRINT_VALUE'] = $priceResult['PRINT_VALUE_VAT'];
+					$priceResult['UNROUND_DISCOUNT_VALUE'] = $discountPriceWithVat;
+					$priceResult['DISCOUNT_VALUE'] = $roundPriceWithVat;
+					$priceResult['PRINT_DISCOUNT_VALUE'] = CCurrencyLang::CurrencyFormat(
+						$roundPriceWithVat,
+						$calculateCurrency,
+						true
+					);
+				}
+				else
+				{
+					$priceResult['VALUE'] = $calculatePrice;
+					$priceResult['PRINT_VALUE'] = $priceResult['PRINT_VALUE_NOVAT'];
+					$priceResult['UNROUND_DISCOUNT_VALUE'] = $discountPrice;
+					$priceResult['DISCOUNT_VALUE'] = $roundPrice;
+					$priceResult['PRINT_DISCOUNT_VALUE'] = CCurrencyLang::CurrencyFormat(
+						$roundPrice,
+						$calculateCurrency,
+						true
+					);;
+				}
+
+				if ((roundEx($priceResult['VALUE'], 2) - roundEx($priceResult['UNROUND_DISCOUNT_VALUE'], 2)) < 0.01)
+				{
+					$priceResult['VALUE'] = $priceResult['DISCOUNT_VALUE'];
+					$priceResult['PRINT_VALUE'] = $priceResult['PRINT_DISCOUNT_VALUE'];
+					$priceResult['DISCOUNT_DIFF'] = 0;
+					$priceResult['DISCOUNT_DIFF_PERCENT'] = 0;
+				}
+				else
+				{
+					$priceResult['DISCOUNT_DIFF'] = $priceResult['VALUE'] - $priceResult['DISCOUNT_VALUE'];
+					$priceResult['DISCOUNT_DIFF_PERCENT'] = roundEx(100*$priceResult['DISCOUNT_DIFF']/$priceResult['VALUE'], 0);
+				}
+				$priceResult['PRINT_DISCOUNT_DIFF'] = CCurrencyLang::CurrencyFormat(
+					$priceResult['DISCOUNT_DIFF'],
+					$calculateCurrency,
+					true
+				);
+
+				if ($boolStartMin)
+				{
+					$dblMinPrice = ($boolConvert || ($calculateCurrency == $strMinCurrency)
+						? $priceResult['DISCOUNT_VALUE']
+						: CCurrencyRates::ConvertCurrency($priceResult['DISCOUNT_VALUE'], $calculateCurrency, $strMinCurrency)
+					);
+					$strMinCode = $key;
+					$boolStartMin = false;
+				}
+				else
+				{
+					$dblComparePrice = ($boolConvert || ($calculateCurrency == $strMinCurrency)
+						? $priceResult['DISCOUNT_VALUE']
+						: CCurrencyRates::ConvertCurrency($priceResult['DISCOUNT_VALUE'], $calculateCurrency, $strMinCurrency)
+					);
+					if ($dblMinPrice > $dblComparePrice)
 					{
-						$arDiscounts = CCatalogDiscount::GetDiscount(
-							$arItem["ID"],
-							$arItem["IBLOCK_ID"],
-							array($value["ID"]),
-							$arUserGroups,
-							"N",
-							$LID,
-							array()
-						);
-					}
-
-					$strOrigCurrencyID = $arItem[$catalogCurrencyValue];
-					$calculateCurrency = $arItem[$catalogCurrencyValue];
-					$calculatePrice = $arItem[$catalogPriceValue];
-					$cnangeCurrency = ($boolConvert && ($strCurrencyID != $arItem[$catalogCurrencyValue]));
-					if ($cnangeCurrency)
-					{
-						$calculateCurrency = $strCurrencyID;
-						$calculatePrice = CCurrencyRates::ConvertCurrency($calculatePrice, $strOrigCurrencyID, $strCurrencyID);
-					}
-					$discountPrice = $calculatePrice;
-					if (!empty($arDiscounts))
-					{
-						$discountPrice = CCatalogProduct::CountPriceWithDiscount(
-							$calculatePrice,
-							$calculateCurrency,
-							$arDiscounts
-						);
-					}
-					// get clear prices WO VAT
-					$origVatPrice = $arItem[$catalogPriceValue];
-					$arItem[$catalogPriceValue] /= $percentPriceWithVat;
-					$origVatValue = $origVatPrice - $arItem[$catalogPriceValue];
-					if ($cnangeCurrency)
-						$origDiscountPrice = CCurrencyRates::ConvertCurrency($discountPrice, $calculateCurrency, $arItem[$catalogCurrencyValue]);
-					else
-						$origDiscountPrice = $discountPrice;
-
-					$origVatDiscountPrice = $origDiscountPrice;
-					$origDiscountPrice /= $percentPriceWithVat;
-					$origVatValueDiscountPrice = $origVatDiscountPrice - $origDiscountPrice;
-
-					$vat_price = $calculatePrice;
-					$calculatePrice /= $percentPriceWithVat;
-					$vat_value = $vat_price - $calculatePrice;
-
-					$vat_discountPrice = $discountPrice;
-					$discountPrice /= $percentPriceWithVat;
-					$vat_value_discount = $vat_discountPrice - $discountPrice;
-
-					if ($cnangeCurrency)
-					{
-						$arPrices[$key] = array(
-							'ORIG_VALUE_NOVAT' => $arItem[$catalogPriceValue],
-							'VALUE_NOVAT' => $calculatePrice,
-							'PRINT_VALUE_NOVAT' => CCurrencyLang::CurrencyFormat($calculatePrice, $calculateCurrency, true),
-
-							'ORIG_VALUE_VAT' => $origVatPrice,
-							'VALUE_VAT' => $vat_price,
-							'PRINT_VALUE_VAT' => CCurrencyLang::CurrencyFormat($vat_price, $calculateCurrency, true),
-
-							'ORIG_VATRATE_VALUE' => $origVatValue,
-							'VATRATE_VALUE' => $vat_value,
-							'PRINT_VATRATE_VALUE' => CCurrencyLang::CurrencyFormat($vat_value, $calculateCurrency, true),
-
-							'ORIG_DISCOUNT_VALUE_NOVAT' => $origDiscountPrice,
-							'DISCOUNT_VALUE_NOVAT' => $discountPrice,
-							"PRINT_DISCOUNT_VALUE_NOVAT" => CCurrencyLang::CurrencyFormat($discountPrice, $calculateCurrency, true),
-
-							'ORIG_DISCOUNT_VALUE_VAT' => $origVatDiscountPrice,
-							'DISCOUNT_VALUE_VAT' => $vat_discountPrice,
-							"PRINT_DISCOUNT_VALUE_VAT" => CCurrencyLang::CurrencyFormat($vat_discountPrice, $calculateCurrency, true),
-
-							'ORIG_DISCOUNT_VATRATE_VALUE' => $origVatValueDiscountPrice,
-							'DISCOUNT_VATRATE_VALUE' => $vat_value_discount,
-							'PRINT_DISCOUNT_VATRATE_VALUE' => CCurrencyLang::CurrencyFormat($vat_value_discount, $calculateCurrency, true),
-
-							'ORIG_CURRENCY' => $strOrigCurrencyID,
-							'CURRENCY' => $calculateCurrency,
-						);
-					}
-					else
-					{
-						$strPriceCurrency = $arItem[$catalogCurrencyValue];
-						$arPrices[$key] = array(
-							"VALUE_NOVAT" => $calculatePrice,
-							"PRINT_VALUE_NOVAT" => CCurrencyLang::CurrencyFormat($calculatePrice, $strPriceCurrency, true),
-
-							"VALUE_VAT" => $vat_price,
-							"PRINT_VALUE_VAT" => CCurrencyLang::CurrencyFormat($vat_price, $strPriceCurrency, true),
-
-							"VATRATE_VALUE" => $vat_value,
-							"PRINT_VATRATE_VALUE" => CCurrencyLang::CurrencyFormat($vat_value, $strPriceCurrency, true),
-
-							"DISCOUNT_VALUE_NOVAT" => $discountPrice,
-							"PRINT_DISCOUNT_VALUE_NOVAT" => CCurrencyLang::CurrencyFormat($discountPrice, $strPriceCurrency, true),
-
-							"DISCOUNT_VALUE_VAT" => $vat_discountPrice,
-							"PRINT_DISCOUNT_VALUE_VAT" => CCurrencyLang::CurrencyFormat($vat_discountPrice, $strPriceCurrency, true),
-
-							'DISCOUNT_VATRATE_VALUE' => $vat_value_discount,
-							'PRINT_DISCOUNT_VATRATE_VALUE' => CCurrencyLang::CurrencyFormat($vat_value_discount, $strPriceCurrency, true),
-
-							'CURRENCY' => $calculateCurrency
-						);
-					}
-					$arPrices[$key]['PRICE_ID'] = $value['ID'];
-					$arPrices[$key]["ID"] = $arItem["CATALOG_PRICE_ID_".$value["ID"]];
-					$arPrices[$key]["CAN_ACCESS"] = $arItem["CATALOG_CAN_ACCESS_".$value["ID"]];
-					$arPrices[$key]["CAN_BUY"] = $arItem["CATALOG_CAN_BUY_".$value["ID"]];
-					$arPrices[$key]['MIN_PRICE'] = 'N';
-
-					if ($bVATInclude)
-					{
-						$arPrices[$key]['VALUE'] = $arPrices[$key]['VALUE_VAT'];
-						$arPrices[$key]['PRINT_VALUE'] = $arPrices[$key]['PRINT_VALUE_VAT'];
-						$arPrices[$key]['DISCOUNT_VALUE'] = $arPrices[$key]['DISCOUNT_VALUE_VAT'];
-						$arPrices[$key]['PRINT_DISCOUNT_VALUE'] = $arPrices[$key]['PRINT_DISCOUNT_VALUE_VAT'];
-					}
-					else
-					{
-						$arPrices[$key]['VALUE'] = $arPrices[$key]['VALUE_NOVAT'];
-						$arPrices[$key]['PRINT_VALUE'] = $arPrices[$key]['PRINT_VALUE_NOVAT'];
-						$arPrices[$key]['DISCOUNT_VALUE'] = $arPrices[$key]['DISCOUNT_VALUE_NOVAT'];
-						$arPrices[$key]['PRINT_DISCOUNT_VALUE'] = $arPrices[$key]['PRINT_DISCOUNT_VALUE_NOVAT'];
-					}
-
-					if (roundEx($arPrices[$key]['VALUE'], 2) == roundEx($arPrices[$key]['DISCOUNT_VALUE'], 2))
-					{
-						$arPrices[$key]['DISCOUNT_DIFF'] = 0;
-						$arPrices[$key]['DISCOUNT_DIFF_PERCENT'] = 0;
-						$arPrices[$key]['PRINT_DISCOUNT_DIFF'] = CCurrencyLang::CurrencyFormat(0, $arPrices[$key]['CURRENCY'], true);
-					}
-					else
-					{
-						$arPrices[$key]['DISCOUNT_DIFF'] = $arPrices[$key]['VALUE'] - $arPrices[$key]['DISCOUNT_VALUE'];
-						$arPrices[$key]['DISCOUNT_DIFF_PERCENT'] = roundEx(100*$arPrices[$key]['DISCOUNT_DIFF']/$arPrices[$key]['VALUE'], 0);
-						$arPrices[$key]['PRINT_DISCOUNT_DIFF'] = CCurrencyLang::CurrencyFormat($arPrices[$key]['DISCOUNT_DIFF'], $arPrices[$key]['CURRENCY'], true);
-					}
-
-					if ($value["CAN_VIEW"])
-					{
-						if ($boolStartMin)
-						{
-							$dblMinPrice = ($boolConvert || ($arPrices[$key]['CURRENCY'] == $strMinCurrency)
-								? $arPrices[$key]['DISCOUNT_VALUE']
-								: CCurrencyRates::ConvertCurrency($arPrices[$key]['DISCOUNT_VALUE'], $arPrices[$key]['CURRENCY'], $strMinCurrency)
-							);
-							$strMinCode = $key;
-							$boolStartMin = false;
-						}
-						else
-						{
-							$dblComparePrice = ($boolConvert || ($arPrices[$key]['CURRENCY'] == $strMinCurrency)
-								? $arPrices[$key]['DISCOUNT_VALUE']
-								: CCurrencyRates::ConvertCurrency($arPrices[$key]['DISCOUNT_VALUE'], $arPrices[$key]['CURRENCY'], $strMinCurrency)
-							);
-							if ($dblMinPrice > $dblComparePrice)
-							{
-								$dblMinPrice = $dblComparePrice;
-								$strMinCode = $key;
-							}
-						}
+						$dblMinPrice = $dblComparePrice;
+						$strMinCode = $key;
 					}
 				}
+				unset($calculateCurrency);
+				unset($originalCurrency);
+
+				$arPrices[$key] = $priceResult;
+				unset($priceResult);
 			}
-			if ('' != $strMinCode)
+			if ($strMinCode != '')
 				$arPrices[$strMinCode]['MIN_PRICE'] = 'Y';
 			CCatalogDiscountSave::Enable();
 
@@ -448,41 +475,41 @@ class CIBlockPriceTools
 			$dblMinPrice = 0;
 			foreach($arCatalogPrices as $key => $value)
 			{
-				if($value["CAN_VIEW"])
+				if (!$value['CAN_VIEW'])
+					continue;
+
+				$dblValue = round(doubleval($arItem["PROPERTY_".$value["ID"]."_VALUE"]), 2);
+				if ($boolStartMin)
 				{
-					$dblValue = round(doubleval($arItem["PROPERTY_".$value["ID"]."_VALUE"]), 2);
-					if ($boolStartMin)
+					$dblMinPrice = $dblValue;
+					$strMinCode = $key;
+					$boolStartMin = false;
+				}
+				else
+				{
+					if ($dblMinPrice > $dblValue)
 					{
 						$dblMinPrice = $dblValue;
 						$strMinCode = $key;
-						$boolStartMin = false;
 					}
-					else
-					{
-						if ($dblMinPrice > $dblValue)
-						{
-							$dblMinPrice = $dblValue;
-							$strMinCode = $key;
-						}
-					}
-					$arPrices[$key] = array(
-						"ID" => $arItem["PROPERTY_".$value["ID"]."_VALUE_ID"],
-						"VALUE" => $dblValue,
-						"PRINT_VALUE" => $dblValue." ".$arItem["PROPERTY_".$value["ID"]."_DESCRIPTION"],
-						"DISCOUNT_VALUE" => $dblValue,
-						"PRINT_DISCOUNT_VALUE" => $dblValue." ".$arItem["PROPERTY_".$value["ID"]."_DESCRIPTION"],
-						"CURRENCY" => $arItem["PROPERTY_".$value["ID"]."_DESCRIPTION"],
-						"CAN_ACCESS" => true,
-						"CAN_BUY" => false,
-						'DISCOUNT_DIFF_PERCENT' => 0,
-						'DISCOUNT_DIFF' => 0,
-						'PRINT_DISCOUNT_DIFF' => '0 '.$arItem["PROPERTY_".$value["ID"]."_DESCRIPTION"],
-						"MIN_PRICE" => "N",
-						'PRICE_ID' => $value['ID']
-					);
 				}
+				$arPrices[$key] = array(
+					"ID" => $arItem["PROPERTY_".$value["ID"]."_VALUE_ID"],
+					"VALUE" => $dblValue,
+					"PRINT_VALUE" => $dblValue." ".$arItem["PROPERTY_".$value["ID"]."_DESCRIPTION"],
+					"DISCOUNT_VALUE" => $dblValue,
+					"PRINT_DISCOUNT_VALUE" => $dblValue." ".$arItem["PROPERTY_".$value["ID"]."_DESCRIPTION"],
+					"CURRENCY" => $arItem["PROPERTY_".$value["ID"]."_DESCRIPTION"],
+					"CAN_ACCESS" => true,
+					"CAN_BUY" => false,
+					'DISCOUNT_DIFF_PERCENT' => 0,
+					'DISCOUNT_DIFF' => 0,
+					'PRINT_DISCOUNT_DIFF' => '0 '.$arItem["PROPERTY_".$value["ID"]."_DESCRIPTION"],
+					"MIN_PRICE" => "N",
+					'PRICE_ID' => $value['ID']
+				);
 			}
-			if ('' != $strMinCode)
+			if ($strMinCode != '')
 				$arPrices[$strMinCode]['MIN_PRICE'] = 'Y';
 		}
 		return $arPrices;
@@ -494,9 +521,16 @@ class CIBlockPriceTools
 	 * @param array $arItem
 	 * @return bool
 	 */
-	public static function CanBuy($IBLOCK_ID, $arCatalogPrices, $arItem)
+	public static function CanBuy(
+		/** @noinspection PhpUnusedParameterInspection */$IBLOCK_ID,
+		$arCatalogPrices,
+		$arItem
+	)
 	{
-		if (isset($arItem['CATALOG_AVAILABLE']) && 'N' == $arItem['CATALOG_AVAILABLE'])
+		if (isset($arItem['ACTIVE']) && $arItem['ACTIVE'] === 'N')
+			return false;
+
+		if (isset($arItem['CATALOG_AVAILABLE']) && $arItem['CATALOG_AVAILABLE'] === 'N')
 			return false;
 
 		if (!empty($arItem["PRICE_MATRIX"]) && is_array($arItem["PRICE_MATRIX"]))
@@ -518,7 +552,12 @@ class CIBlockPriceTools
 		return false;
 	}
 
-	public static function GetProductProperties($IBLOCK_ID, $ELEMENT_ID, $arPropertiesList, $arPropertiesValues)
+	public static function GetProductProperties(
+		$IBLOCK_ID,
+		/** @noinspection PhpUnusedParameterInspection */$ELEMENT_ID,
+		$arPropertiesList,
+		$arPropertiesValues
+	)
 	{
 		static $cache = array();
 		static $userTypeList = array();
@@ -539,6 +578,8 @@ class CIBlockPriceTools
 		$result = array();
 		foreach ($arPropertiesList as $pid)
 		{
+			if (preg_match("/[^A-Za-z0-9_]/", $pid) || !isset($arPropertiesValues[$pid]))
+				continue;
 			$prop = $arPropertiesValues[$pid];
 			$prop['ID'] = (int)$prop['ID'];
 			if (!isset($propertyTypeSupport[$prop['MULTIPLE']][$prop['PROPERTY_TYPE']]))
@@ -1077,7 +1118,7 @@ class CIBlockPriceTools
 				self::$catalogIncluded = Loader::includeModule('catalog');
 			if (self::$catalogIncluded)
 			{
-				$arCatalog = CCatalogSKU::GetInfoByProductIBlock($IBLOCK_ID);
+				$arCatalog = CCatalogSku::GetInfoByProductIBlock($IBLOCK_ID);
 				if (!empty($arCatalog) && is_array($arCatalog))
 				{
 					$arResult = array(
@@ -1137,7 +1178,7 @@ class CIBlockPriceTools
 			self::$catalogIncluded = Loader::includeModule('catalog');
 		if (self::$catalogIncluded)
 		{
-			$iblockInfo = CCatalogSKU::GetInfoByProductIBlock($iblockID);
+			$iblockInfo = CCatalogSku::GetInfoByProductIBlock($iblockID);
 		}
 		if (empty($iblockInfo))
 			return $result;
@@ -1254,7 +1295,9 @@ class CIBlockPriceTools
 		$boolCheckPermissions = false;
 		$boolHideNotAvailable = false;
 		$showPriceCount = false;
+		$customFilter = false;
 		$IBLOCK_ID = 0;
+
 		if (!empty($arFilter) && is_array($arFilter))
 		{
 			if (isset($arFilter['IBLOCK_ID']))
@@ -1269,6 +1312,11 @@ class CIBlockPriceTools
 				if ($showPriceCount <= 0)
 					$showPriceCount = false;
 			}
+
+			if (isset($arFilter['CUSTOM_FILTER']))
+			{
+				$customFilter = $arFilter['CUSTOM_FILTER'];
+			}
 		}
 		else
 		{
@@ -1277,23 +1325,30 @@ class CIBlockPriceTools
 
 		if (self::$needDiscountCache === null)
 		{
-			$pricesAllow = CIBlockPriceTools::GetAllowCatalogPrices($arPrices);
-			if (empty($pricesAllow))
+			if(\Bitrix\Main\Config\Option::get('sale', 'use_sale_discount_only') === 'Y')
 			{
 				self::$needDiscountCache = false;
 			}
 			else
 			{
-				$USER_ID = (int)$USER_ID;
-				$userGroups = array(2);
-				if ($USER_ID > 0)
-					$userGroups = CUser::GetUserGroup($USER_ID);
-				elseif (isset($USER) && $USER instanceof CUser)
-					$userGroups = $USER->GetUserGroupArray();
-				self::$needDiscountCache = CIBlockPriceTools::SetCatalogDiscountCache($pricesAllow, $userGroups);
-				unset($userGroups);
+				$pricesAllow = CIBlockPriceTools::GetAllowCatalogPrices($arPrices);
+				if (empty($pricesAllow))
+				{
+					self::$needDiscountCache = false;
+				}
+				else
+				{
+					$USER_ID = (int)$USER_ID;
+					$userGroups = array(2);
+					if ($USER_ID > 0)
+						$userGroups = CUser::GetUserGroup($USER_ID);
+					elseif (isset($USER) && $USER instanceof CUser)
+						$userGroups = $USER->GetUserGroupArray();
+					self::$needDiscountCache = CIBlockPriceTools::SetCatalogDiscountCache($pricesAllow, $userGroups);
+					unset($userGroups);
+				}
+				unset($pricesAllow);
 			}
-			unset($pricesAllow);
 		}
 
 		$arOffersIBlock = CIBlockPriceTools::GetOffersIBlock($IBLOCK_ID);
@@ -1342,6 +1397,12 @@ class CIBlockPriceTools
 				"ACTIVE" => "Y",
 				"ACTIVE_DATE" => "Y",
 			);
+
+			if (!empty($customFilter))
+			{
+				$arFilter[] = $customFilter;
+			}
+
 			if ($boolHideNotAvailable)
 				$arFilter['CATALOG_AVAILABLE'] = 'Y';
 			if ($boolCheckPermissions)
@@ -1372,7 +1433,7 @@ class CIBlockPriceTools
 
 			if (!empty($arSelectFields))
 			{
-				foreach ($arSelectFields as &$code)
+				foreach ($arSelectFields as $code)
 					$arSelect[$code] = 1; //mark to select
 				unset($code);
 			}
@@ -1417,7 +1478,7 @@ class CIBlockPriceTools
 					if (!empty($checkFields))
 					{
 						$checkValues = '';
-						foreach ($checkFields as &$code)
+						foreach ($checkFields as $code)
 							$checkValues .= (isset($arOffer[$code]) ? $arOffer[$code] : '').'|';
 						unset($code);
 						if ($checkValues != '')
@@ -1501,8 +1562,10 @@ class CIBlockPriceTools
 					{
 						if (self::$needDiscountCache)
 							CCatalogDiscount::SetProductPropertiesCache($arOffer['ID'], $arOffer["PROPERTIES"]);
+						if (\Bitrix\Main\Config\Option::get('sale', 'use_sale_discount_only') === 'Y')
+							Catalog\Discount\DiscountManager::setProductPropertiesCache($arOffer['ID'], $arOffer["PROPERTIES"]);
 
-						foreach ($propertyList as &$pid)
+						foreach ($propertyList as $pid)
 						{
 							if (!isset($arOffer["PROPERTIES"][$pid]))
 								continue;
@@ -1510,11 +1573,12 @@ class CIBlockPriceTools
 							$boolArr = is_array($prop["VALUE"]);
 							if(
 								($boolArr && !empty($prop["VALUE"])) ||
-								(!$boolArr && strlen($prop["VALUE"])>0))
+								(!$boolArr && (string)$prop["VALUE"] !== '')
+							)
 							{
 								$arOffer["DISPLAY_PROPERTIES"][$pid] = CIBlockFormatProperties::GetDisplayValue($arOffer, $prop, "catalog_out");
 							}
-							unset($prop);
+							unset($boolArr, $prop);
 						}
 						unset($pid);
 					}
@@ -1537,6 +1601,23 @@ class CIBlockPriceTools
 				{
 					CCatalogDiscount::SetProductSectionsCache($arOfferIDs);
 					CCatalogDiscount::SetDiscountProductCache($arOfferIDs, array('IBLOCK_ID' => $intOfferIBlockID, 'GET_BY_ID' => 'Y'));
+				}
+				if (\Bitrix\Main\Config\Option::get('sale', 'use_sale_discount_only') === 'Y')
+				{
+					$pricesAllow = CIBlockPriceTools::GetAllowCatalogPrices($arPrices);
+					if (!empty($pricesAllow))
+					{
+						$USER_ID = (int)$USER_ID;
+						$userGroups = array(2);
+						if ($USER_ID > 0)
+							$userGroups = CUser::GetUserGroup($USER_ID);
+						elseif (isset($USER) && $USER instanceof CUser)
+							$userGroups = $USER->GetUserGroupArray();
+						Catalog\Discount\DiscountManager::preloadPriceData($arOfferIDs, $pricesAllow);
+						Catalog\Discount\DiscountManager::preloadProductDataToExtendOrder($arOfferIDs, $userGroups);
+						unset($userGroups);
+					}
+					unset($pricesAllow);
 				}
 				foreach ($arResult as &$arOffer)
 				{
@@ -1578,7 +1659,7 @@ class CIBlockPriceTools
 					$arMeasure['ID'] = (int)$arMeasure['ID'];
 					if (isset($arMeasureMap[$arMeasure['ID']]) && !empty($arMeasureMap[$arMeasure['ID']]))
 					{
-						foreach ($arMeasureMap[$arMeasure['ID']] as &$intOneKey)
+						foreach ($arMeasureMap[$arMeasure['ID']] as $intOneKey)
 						{
 							$arResult[$intOneKey]['CATALOG_MEASURE_NAME'] = $arMeasure['SYMBOL_RUS'];
 							$arResult[$intOneKey]['~CATALOG_MEASURE_NAME'] = $arMeasure['~SYMBOL_RUS'];
@@ -1727,7 +1808,7 @@ class CIBlockPriceTools
 				self::$catalogIncluded = Loader::includeModule('catalog');
 			if (!self::$catalogIncluded)
 				return $result;
-			$skuInfo = CCatalogSKU::GetInfoByProductIBlock($skuInfo);
+			$skuInfo = CCatalogSku::GetInfoByProductIBlock($skuInfo);
 			if (empty($skuInfo))
 				return $result;
 		}
@@ -1741,7 +1822,7 @@ class CIBlockPriceTools
 				'ID', 'IBLOCK_ID', 'CODE', 'NAME', 'SORT', 'LINK_IBLOCK_ID', 'PROPERTY_TYPE', 'USER_TYPE', 'USER_TYPE_SETTINGS'
 			),
 			'filter' => array(
-				'IBLOCK_ID' => $skuInfo['IBLOCK_ID'],
+				'=IBLOCK_ID' => $skuInfo['IBLOCK_ID'],
 				'=PROPERTY_TYPE' => array(
 					Iblock\PropertyTable::TYPE_LIST,
 					Iblock\PropertyTable::TYPE_ELEMENT,
@@ -1787,13 +1868,12 @@ class CIBlockPriceTools
 					continue;
 
 				$entity = HighloadBlockTable::compileEntity($highBlock);
-				$entityDataClass = $entity->getDataClass();
-				$fieldsList = $entityDataClass::getEntity()->getFields();
+				$fieldsList = $entity->getFields();
 				if (empty($fieldsList))
 					continue;
 
 				$flag = true;
-				foreach ($requireFields as &$fieldCode)
+				foreach ($requireFields as $fieldCode)
 				{
 					if (!isset($fieldsList[$fieldCode]) || empty($fieldsList[$fieldCode]))
 					{
@@ -1838,9 +1918,7 @@ class CIBlockPriceTools
 			if ($showMode == 'PICT')
 			{
 				if (isset($defaultFields['PICT']))
-				{
 					$treeProp['DEFAULT_VALUES']['PICT'] = $defaultFields['PICT'];
-				}
 			}
 			if (isset($defaultFields['NAME']))
 			{
@@ -1856,35 +1934,61 @@ class CIBlockPriceTools
 		$result = array();
 		if (!empty($propList) && is_array($propList))
 		{
+			$useFilterValues = !empty($propNeedValues) && is_array($propNeedValues);
 			foreach ($propList as $oneProperty)
 			{
 				$values = array();
 				$valuesExist = false;
 				$pictMode = ('PICT' == $oneProperty['SHOW_MODE']);
 				$needValuesExist = !empty($propNeedValues[$oneProperty['ID']]) && is_array($propNeedValues[$oneProperty['ID']]);
-				$filterValuesExist = ($needValuesExist && count($propNeedValues[$oneProperty['ID']]) <= 500);
-				$needValues = array();
-				if ($needValuesExist)
-					$needValues = array_fill_keys($propNeedValues[$oneProperty['ID']], true);
+				if ($useFilterValues && !$needValuesExist)
+					continue;
 				switch($oneProperty['PROPERTY_TYPE'])
 				{
 					case Iblock\PropertyTable::TYPE_LIST:
-						$propEnums = CIBlockProperty::GetPropertyEnum(
-							$oneProperty['ID'],
-							array('SORT' => 'ASC', 'VALUE' => 'ASC')
-						);
-						while ($oneEnum = $propEnums->Fetch())
+						if ($needValuesExist)
 						{
-							$oneEnum['ID'] = (int)$oneEnum['ID'];
-							if ($needValuesExist && !isset($needValues[$oneEnum['ID']]))
-								continue;
-							$values[$oneEnum['ID']] = array(
-								'ID' => $oneEnum['ID'],
-								'NAME' => $oneEnum['VALUE'],
-								'SORT' => (int)$oneEnum['SORT'],
-								'PICT' => false
-							);
-							$valuesExist = true;
+							foreach (array_chunk($propNeedValues[$oneProperty['ID']], 500) as $pageIds)
+							{
+								$iterator = Iblock\PropertyEnumerationTable::getList(array(
+									'select' => array('ID', 'VALUE', 'SORT'),
+									'filter' => array('=PROPERTY_ID' => $oneProperty['ID'], '@ID' => $pageIds),
+									'order' => array('SORT' => 'ASC', 'VALUE' => 'ASC')
+								));
+								while ($row = $iterator->fetch())
+								{
+									$row['ID'] = (int)$row['ID'];
+									$values[$row['ID']] = array(
+										'ID' => $row['ID'],
+										'NAME' => $row['VALUE'],
+										'SORT' => (int)$row['SORT'],
+										'PICT' => false
+									);
+									$valuesExist = true;
+								}
+								unset($row, $iterator);
+							}
+							unset($pageIds);
+						}
+						else
+						{
+							$iterator = Iblock\PropertyEnumerationTable::getList(array(
+								'select' => array('ID', 'VALUE', 'SORT'),
+								'filter' => array('=PROPERTY_ID' => $oneProperty['ID']),
+								'order' => array('SORT' => 'ASC', 'VALUE' => 'ASC')
+							));
+							while ($row = $iterator->fetch())
+							{
+								$row['ID'] = (int)$row['ID'];
+								$values[$row['ID']] = array(
+									'ID' => $row['ID'],
+									'NAME' => $row['VALUE'],
+									'SORT' => (int)$row['SORT'],
+									'PICT' => false
+								);
+								$valuesExist = true;
+							}
+							unset($row, $iterator);
 						}
 						$values[0] = array(
 							'ID' => 0,
@@ -1898,53 +2002,90 @@ class CIBlockPriceTools
 						$selectFields = array('ID', 'NAME');
 						if ($pictMode)
 							$selectFields[] = 'PREVIEW_PICTURE';
-						$filterValues = (
-							$filterValuesExist
-							? array('ID' => array_values($propNeedValues[$oneProperty['ID']]), 'IBLOCK_ID' => $oneProperty['LINK_IBLOCK_ID'], 'ACTIVE' => 'Y')
-							: array('IBLOCK_ID' => $oneProperty['LINK_IBLOCK_ID'], 'ACTIVE' => 'Y')
-						);
-						$propEnums = CIBlockElement::GetList(
-							array('SORT' => 'ASC', 'NAME' => 'ASC'),
-							$filterValues,
-							false,
-							false,
-							$selectFields
-						);
-						while ($oneEnum = $propEnums->Fetch())
+
+						if ($needValuesExist)
 						{
-							if ($needValuesExist && !$filterValuesExist)
+							foreach (array_chunk($propNeedValues[$oneProperty['ID']], 500) as $pageIds)
 							{
-								if (!isset($needValues[$oneEnum['ID']]))
-									continue;
-							}
-							if ($pictMode)
-							{
-								$oneEnum['PICT'] = false;
-								if (!empty($oneEnum['PREVIEW_PICTURE']))
+								$iterator =  CIBlockElement::GetList(
+									array('SORT' => 'ASC', 'NAME' => 'ASC'),
+									array('ID' => $pageIds, 'IBLOCK_ID' => $oneProperty['LINK_IBLOCK_ID'], 'ACTIVE' => 'Y'),
+									false,
+									false,
+									$selectFields
+								);
+								while ($row = $iterator->Fetch())
 								{
-									$previewPict = CFile::GetFileArray($oneEnum['PREVIEW_PICTURE']);
-									if (!empty($previewPict))
+									if ($pictMode)
 									{
-										$oneEnum['PICT'] = array(
-											'SRC' => $previewPict['SRC'],
-											'WIDTH' => (int)$previewPict['WIDTH'],
-											'HEIGHT' => (int)$previewPict['HEIGHT']
-										);
+										$row['PICT'] = false;
+										if (!empty($row['PREVIEW_PICTURE']))
+										{
+											$previewPict = CFile::GetFileArray($row['PREVIEW_PICTURE']);
+											if (!empty($previewPict))
+											{
+												$row['PICT'] = array(
+													'SRC' => $previewPict['SRC'],
+													'WIDTH' => (int)$previewPict['WIDTH'],
+													'HEIGHT' => (int)$previewPict['HEIGHT']
+												);
+											}
+										}
+										if (empty($row['PICT']))
+											$row['PICT'] = $oneProperty['DEFAULT_VALUES']['PICT'];
 									}
+									$row['ID'] = (int)$row['ID'];
+									$values[$row['ID']] = array(
+										'ID' => $row['ID'],
+										'NAME' => $row['NAME'],
+										'SORT' => (int)$row['SORT'],
+										'PICT' => ($pictMode ? $row['PICT'] : false)
+									);
+									$valuesExist = true;
 								}
-								if (empty($oneEnum['PICT']))
-								{
-									$oneEnum['PICT'] = $oneProperty['DEFAULT_VALUES']['PICT'];
-								}
+								unset($row, $iterator);
 							}
-							$oneEnum['ID'] = (int)$oneEnum['ID'];
-							$values[$oneEnum['ID']] = array(
-								'ID' => $oneEnum['ID'],
-								'NAME' => $oneEnum['NAME'],
-								'SORT' => (int)$oneEnum['SORT'],
-								'PICT' => ($pictMode ? $oneEnum['PICT'] : false)
+							unset($pageIds);
+						}
+						else
+						{
+							$iterator =  CIBlockElement::GetList(
+								array('SORT' => 'ASC', 'NAME' => 'ASC'),
+								array('IBLOCK_ID' => $oneProperty['LINK_IBLOCK_ID'], 'ACTIVE' => 'Y'),
+								false,
+								false,
+								$selectFields
 							);
-							$valuesExist = true;
+							while ($row = $iterator->Fetch())
+							{
+								if ($pictMode)
+								{
+									$row['PICT'] = false;
+									if (!empty($row['PREVIEW_PICTURE']))
+									{
+										$previewPict = CFile::GetFileArray($row['PREVIEW_PICTURE']);
+										if (!empty($previewPict))
+										{
+											$row['PICT'] = array(
+												'SRC' => $previewPict['SRC'],
+												'WIDTH' => (int)$previewPict['WIDTH'],
+												'HEIGHT' => (int)$previewPict['HEIGHT']
+											);
+										}
+									}
+									if (empty($row['PICT']))
+										$row['PICT'] = $oneProperty['DEFAULT_VALUES']['PICT'];
+								}
+								$row['ID'] = (int)$row['ID'];
+								$values[$row['ID']] = array(
+									'ID' => $row['ID'],
+									'NAME' => $row['NAME'],
+									'SORT' => (int)$row['SORT'],
+									'PICT' => ($pictMode ? $row['PICT'] : false)
+								);
+								$valuesExist = true;
+							}
+							unset($row, $iterator);
 						}
 						$values[0] = array(
 							'ID' => 0,
@@ -1965,9 +2106,7 @@ class CIBlockPriceTools
 						$directorySelect = array('ID', 'UF_NAME', 'UF_XML_ID');
 						$directoryOrder = array();
 						if ($pictMode)
-						{
 							$directorySelect[] = 'UF_FILE';
-						}
 						if ($sortExist)
 						{
 							$directorySelect[] = 'UF_SORT';
@@ -1976,51 +2115,96 @@ class CIBlockPriceTools
 						$directoryOrder['UF_NAME'] = 'ASC';
 						$sortValue = 100;
 
-						$entityDataClass = $oneProperty['USER_TYPE_SETTINGS']['ENTITY']->getDataClass();
+						/** @var Main\Entity\Base $entity */
+						$entity = $oneProperty['USER_TYPE_SETTINGS']['ENTITY'];
+						if (!($entity instanceof Main\Entity\Base))
+							continue;
+						$entityDataClass = $entity->getDataClass();
 						$entityGetList = array(
 							'select' => $directorySelect,
 							'order' => $directoryOrder
 						);
-						if ($filterValuesExist)
-							$entityGetList['filter'] = array('=UF_XML_ID' => array_values($propNeedValues[$oneProperty['ID']]));
-						$propEnums = $entityDataClass::getList($entityGetList);
-						while ($oneEnum = $propEnums->fetch())
-						{
-							if ($needValuesExist && !$filterValuesExist)
-							{
-								if (!isset($needValues[$oneEnum['UF_XML_ID']]))
-									continue;
-							}
-							$oneEnum['ID'] = (int)$oneEnum['ID'];
-							$oneEnum['UF_SORT'] = ($sortExist ? (int)$oneEnum['UF_SORT'] : $sortValue);
-							$sortValue += 100;
 
-							if ($pictMode)
+						if ($needValuesExist)
+						{
+							foreach (array_chunk($propNeedValues[$oneProperty['ID']], 500) as $pageIds)
 							{
-								if (!empty($oneEnum['UF_FILE']))
+								$entityGetList['filter'] = array('=UF_XML_ID' => $pageIds);
+								$iterator = $entityDataClass::getList($entityGetList);
+								while ($row = $iterator->fetch())
 								{
-									$arFile = CFile::GetFileArray($oneEnum['UF_FILE']);
-									if (!empty($arFile))
+									$row['ID'] = (int)$row['ID'];
+									$row['UF_SORT'] = ($sortExist ? (int)$row['UF_SORT'] : $sortValue);
+									$sortValue += 100;
+
+									if ($pictMode)
 									{
-										$oneEnum['PICT'] = array(
-											'SRC' => $arFile['SRC'],
-											'WIDTH' => (int)$arFile['WIDTH'],
-											'HEIGHT' => (int)$arFile['HEIGHT']
-										);
+										if (!empty($row['UF_FILE']))
+										{
+											$arFile = CFile::GetFileArray($row['UF_FILE']);
+											if (!empty($arFile))
+											{
+												$row['PICT'] = array(
+													'SRC' => $arFile['SRC'],
+													'WIDTH' => (int)$arFile['WIDTH'],
+													'HEIGHT' => (int)$arFile['HEIGHT']
+												);
+											}
+										}
+										if (empty($row['PICT']))
+											$row['PICT'] = $oneProperty['DEFAULT_VALUES']['PICT'];
 									}
+									$values[$row['ID']] = array(
+										'ID' => $row['ID'],
+										'NAME' => $row['UF_NAME'],
+										'SORT' => (int)$row['UF_SORT'],
+										'XML_ID' => $row['UF_XML_ID'],
+										'PICT' => ($pictMode ? $row['PICT'] : false)
+									);
+									$valuesExist = true;
+									$xmlMap[$row['UF_XML_ID']] = $row['ID'];
 								}
-								if (empty($oneEnum['PICT']))
-									$oneEnum['PICT'] = $oneProperty['DEFAULT_VALUES']['PICT'];
+								unset($row, $iterator);
 							}
-							$values[$oneEnum['ID']] = array(
-								'ID' => $oneEnum['ID'],
-								'NAME' => $oneEnum['UF_NAME'],
-								'SORT' => (int)$oneEnum['UF_SORT'],
-								'XML_ID' => $oneEnum['UF_XML_ID'],
-								'PICT' => ($pictMode ? $oneEnum['PICT'] : false)
-							);
-							$valuesExist = true;
-							$xmlMap[$oneEnum['UF_XML_ID']] = $oneEnum['ID'];
+							unset($pageIds);
+						}
+						else
+						{
+							$iterator = $entityDataClass::getList($entityGetList);
+							while ($row = $iterator->fetch())
+							{
+								$row['ID'] = (int)$row['ID'];
+								$row['UF_SORT'] = ($sortExist ? (int)$row['UF_SORT'] : $sortValue);
+								$sortValue += 100;
+
+								if ($pictMode)
+								{
+									if (!empty($row['UF_FILE']))
+									{
+										$arFile = CFile::GetFileArray($row['UF_FILE']);
+										if (!empty($arFile))
+										{
+											$row['PICT'] = array(
+												'SRC' => $arFile['SRC'],
+												'WIDTH' => (int)$arFile['WIDTH'],
+												'HEIGHT' => (int)$arFile['HEIGHT']
+											);
+										}
+									}
+									if (empty($row['PICT']))
+										$row['PICT'] = $oneProperty['DEFAULT_VALUES']['PICT'];
+								}
+								$values[$row['ID']] = array(
+									'ID' => $row['ID'],
+									'NAME' => $row['UF_NAME'],
+									'SORT' => (int)$row['UF_SORT'],
+									'XML_ID' => $row['UF_XML_ID'],
+									'PICT' => ($pictMode ? $row['PICT'] : false)
+								);
+								$valuesExist = true;
+								$xmlMap[$row['UF_XML_ID']] = $row['ID'];
+							}
+							unset($row, $iterator);
 						}
 						$values[0] = array(
 							'ID' => 0,
@@ -2152,7 +2336,7 @@ class CIBlockPriceTools
 							array(0 => $item['DISPLAY_PROPERTIES'][$propertyCode]['FILE_VALUE']) :
 							$item['DISPLAY_PROPERTIES'][$propertyCode]['FILE_VALUE']
 						);
-						foreach ($fileValues as &$oneFileValue)
+						foreach ($fileValues as $oneFileValue)
 						{
 							$keyPict = (empty($result['PICT']) ? 'PICT' : 'SECOND_PICT');
 							$result[$keyPict] = array(
@@ -2172,7 +2356,7 @@ class CIBlockPriceTools
 						$propValues = $item['PROPERTIES'][$propertyCode]['VALUE'];
 						if (!is_array($propValues))
 							$propValues = array($propValues);
-						foreach ($propValues as &$oneValue)
+						foreach ($propValues as $oneValue)
 						{
 							$oneFileValue = CFile::GetFileArray($oneValue);
 							if (isset($oneFileValue['ID']))
@@ -2212,7 +2396,7 @@ class CIBlockPriceTools
 			{
 				if ('MORE_PHOTO' == $propertyCode && isset($item['MORE_PHOTO']) && !empty($item['MORE_PHOTO']))
 				{
-					foreach ($item['MORE_PHOTO'] as &$onePhoto)
+					foreach ($item['MORE_PHOTO'] as $onePhoto)
 					{
 						$result[] = array(
 							'ID' => (int)$onePhoto['ID'],
@@ -2231,11 +2415,11 @@ class CIBlockPriceTools
 					)
 					{
 						$fileValues = (
-						isset($item['DISPLAY_PROPERTIES'][$propertyCode]['FILE_VALUE']['ID']) ?
+							isset($item['DISPLAY_PROPERTIES'][$propertyCode]['FILE_VALUE']['ID']) ?
 							array(0 => $item['DISPLAY_PROPERTIES'][$propertyCode]['FILE_VALUE']) :
 							$item['DISPLAY_PROPERTIES'][$propertyCode]['FILE_VALUE']
 						);
-						foreach ($fileValues as &$oneFileValue)
+						foreach ($fileValues as $oneFileValue)
 						{
 							$result[] = array(
 								'ID' => (int)$oneFileValue['ID'],
@@ -2253,7 +2437,7 @@ class CIBlockPriceTools
 						if (!is_array($propValues))
 							$propValues = array($propValues);
 
-						foreach ($propValues as &$oneValue)
+						foreach ($propValues as $oneValue)
 						{
 							$oneFileValue = CFile::GetFileArray($oneValue);
 							if (isset($oneFileValue['ID']))
@@ -2303,49 +2487,76 @@ class CIBlockPriceTools
 		{
 			$item['LABEL'] = false;
 			$item['LABEL_VALUE'] = '';
-			$propertyCode = (string)$propertyCode;
-			if ('' !== $propertyCode && isset($item['PROPERTIES'][$propertyCode]))
-			{
-				$prop = $item['PROPERTIES'][$propertyCode];
-				if (!empty($prop['VALUE']))
-				{
-					$useName = false;
-					if ($prop['PROPERTY_TYPE'] == 'L' && $prop['MULTIPLE'] == 'N')
-					{
-						if (!isset($propertyEnum[$prop['ID']]))
-						{
-							$count = 0;
-							$enumList = CIBlockPropertyEnum::GetList(
-								array(),
-								array('PROPERTY_ID' => $prop['ID'])
-							);
-							while ($enum = $enumList->Fetch())
-							{
-								$count++;
-							}
-							$propertyEnum[$prop['ID']] = $count;
-							unset($enum, $enumList, $count);
-						}
-						$useName = ($propertyEnum[$prop['ID']] == 1);
-					}
-					if ($useName)
-					{
-						$item['LABEL_VALUE'] = $prop['NAME'];
-					}
-					else
-					{
-						$item['LABEL_VALUE'] = (is_array($prop['VALUE'])
-							? implode(' / ', $prop['VALUE'])
-							: $prop['VALUE']
-						);
-					}
-					unset($useName);
-					$item['LABEL'] = true;
+			$item['LABEL_ARRAY_VALUE'] = array();
 
-					if (isset($item['DISPLAY_PROPERTIES'][$propertyCode]))
-						unset($item['DISPLAY_PROPERTIES'][$propertyCode]);
+			if (!is_array($propertyCode))
+			{
+				$propertyCode = array($propertyCode);
+			}
+			
+			if (!empty($propertyCode))
+			{
+				foreach ($propertyCode as $index => $code)
+				{
+					$code = (string)$code;
+					
+					if ($code !== '' && isset($item['PROPERTIES'][$code]))
+					{
+						$prop = $item['PROPERTIES'][$code];
+
+						if (!empty($prop['VALUE']))
+						{
+							$useName = false;
+
+							if ($prop['PROPERTY_TYPE'] == 'L' && $prop['MULTIPLE'] == 'N')
+							{
+								if (!isset($propertyEnum[$prop['ID']]))
+								{
+									$count = 0;
+									$enumList = CIBlockPropertyEnum::GetList(
+										array(),
+										array('PROPERTY_ID' => $prop['ID'])
+									);
+									while ($enum = $enumList->Fetch())
+									{
+										$count++;
+									}
+
+									$propertyEnum[$prop['ID']] = $count;
+									unset($enum, $enumList, $count);
+								}
+
+								$useName = ($propertyEnum[$prop['ID']] == 1);
+							}
+
+							if ($useName)
+							{
+								$item['LABEL_ARRAY_VALUE'][$code] = $prop['NAME'];
+							}
+							else
+							{
+								$item['LABEL_ARRAY_VALUE'][$code] = (is_array($prop['VALUE'])
+									? implode(' / ', $prop['VALUE'])
+									: $prop['VALUE']
+								);
+							}
+
+							unset($useName);
+							$item['LABEL'] = true;
+
+							if ($item['LABEL_VALUE'] === '')
+							{
+								$item['LABEL_VALUE'] = $item['LABEL_ARRAY_VALUE'][$code];
+							}
+
+							if (isset($item['DISPLAY_PROPERTIES'][$code]))
+							{
+								unset($item['DISPLAY_PROPERTIES'][$code]);
+							}
+						}
+						unset($prop);
+					}
 				}
-				unset($prop);
 			}
 		}
 	}
@@ -2357,7 +2568,7 @@ class CIBlockPriceTools
 			if (!is_array($clearCodes))
 				$clearCodes = array($clearCodes);
 
-			foreach ($clearCodes as &$oneCode)
+			foreach ($clearCodes as $oneCode)
 			{
 				if (isset($properties[$oneCode]))
 					unset($properties[$oneCode]);
@@ -2372,7 +2583,7 @@ class CIBlockPriceTools
 		if (empty($priceList) || !is_array($priceList))
 			return false;
 		$result = false;
-		foreach ($priceList as &$price)
+		foreach ($priceList as $price)
 		{
 			if (isset($price['MIN_PRICE']) && $price['MIN_PRICE'] == 'Y')
 			{
@@ -2386,16 +2597,16 @@ class CIBlockPriceTools
 
 	public static function isEnabledCalculationDiscounts()
 	{
-		return self::$calculationDiscounts;
+		return (self::$calculationDiscounts >= 0);
 	}
 
 	public static function enableCalculationDiscounts()
 	{
-		self::$calculationDiscounts = true;
+		self::$calculationDiscounts++;
 	}
 
 	public static function disableCalculationDiscounts()
 	{
-		self::$calculationDiscounts = false;
+		self::$calculationDiscounts--;
 	}
 }
