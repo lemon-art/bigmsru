@@ -100,14 +100,18 @@ $this->EndViewTarget("row_div_class");
 							<a data-trigger="youtube" data-youtube='<?=$aOffice["PROPERTY_14"]?>' href="#" class="contacts-description__video popup-trigger">Видео проезда</a>
 						<?endif;?>
 						
+						<pre>
+						<?print_r();?>
+						</pre>
+						
 						<?if ( $aOffice["PROPERTY_622"] ):?>
-							<br>
-							<a data-trigger="youtube" data-youtube='<?=$aOffice["PROPERTY_387"]?>' href="#" class="contacts-description__video popup-trigger">Схема проезда на общественном транспорте</a>
+							<br><br>
+							<a data-trigger="youtube" data-youtube='<?=CFile::GetPath($aOffice["PROPERTY_622"]);?>' href="#" class="contacts-description__video popup-trigger">Схема проезда на общественном транспорте</a>
 						<?endif;?>
 						
 						<?if ( $aOffice["PROPERTY_623"] ):?>
-							<br>
-							<a data-trigger="youtube" data-youtube='<?=$aOffice["PROPERTY_589"]?>' href="#" class="contacts-description__video popup-trigger">Схема проезда на машине</a>
+							<br><br>
+							<a data-trigger="youtube" data-youtube='<?=CFile::GetPath($aOffice["PROPERTY_623"]);?>' href="#" class="contacts-description__video popup-trigger">Схема проезда на машине</a>
 						<?endif;?>
 						
 					  </div>
