@@ -5657,6 +5657,17 @@ ul.sublist[data-level="3"] .sublist__link:after {
 	  font-family: 'Museo500', sans-serif, Arial;
 
   }
+  
+  .viber {
+	background: url(/images/viber.png) no-repeat left top;
+    padding-left: 30px;
+  }
+  
+  .watsup {
+	background: url(/images/watsup.png) no-repeat left top;
+    padding-left: 30px;
+  }
+  
   .contacts-description__close {
     position: absolute;
     right: 15px;

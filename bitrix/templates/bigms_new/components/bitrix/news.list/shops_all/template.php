@@ -88,6 +88,21 @@ $this->EndViewTarget("row_div_class");
 						  <span class="contacts-description__subtitle">Телефон</span>
 						  <span class="contacts-description__text"><?=$aOffice["PROPERTY_13"][0]?></span>
 						</div>
+						
+						<?if ( $aOffice["PROPERTY_625"] ):?>
+							<div class="contacts-description__row">
+							  <span class="contacts-description__subtitle"></span>
+							  <span class="contacts-description__text watsup"><?=$aOffice["PROPERTY_625"]?></span>
+							</div>
+						<?endif;?>
+						
+						<?if ( $aOffice["PROPERTY_624"] ):?>
+							<div class="contacts-description__row">
+							  <span class="contacts-description__subtitle"></span>
+							  <span class="contacts-description__text viber"><?=$aOffice["PROPERTY_624"]?></span>
+							</div>
+						<?endif;?>
+						
 						<?if ( $aOffice["PREVIEW_TEXT"] ):?>
 							<div class="contacts-description__row">
 								<span>
