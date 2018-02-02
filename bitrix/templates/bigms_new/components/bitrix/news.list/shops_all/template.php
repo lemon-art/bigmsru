@@ -101,11 +101,13 @@ $this->EndViewTarget("row_div_class");
 						<?endif;?>
 						
 						<?if ( $aOffice["PROPERTY_622"] ):?>
-							<a data-trigger="slider" data-youtube='' href="<?=$aOffice["PROPERTY_387"]?>" class="contacts-description__video popup-trigger">Схема проезда на общественном транспорте</a>
+							<br>
+							<a data-trigger="youtube" data-youtube='<?=$aOffice["PROPERTY_387"]?>' href="#" class="contacts-description__video popup-trigger">Схема проезда на общественном транспорте</a>
 						<?endif;?>
 						
 						<?if ( $aOffice["PROPERTY_623"] ):?>
-							<a data-trigger="slider" data-youtube='' href="<?=$aOffice["PROPERTY_589"]?>" class="contacts-description__video popup-trigger">Схема проезда на машине</a>
+							<br>
+							<a data-trigger="youtube" data-youtube='<?=$aOffice["PROPERTY_589"]?>' href="#" class="contacts-description__video popup-trigger">Схема проезда на машине</a>
 						<?endif;?>
 						
 					  </div>
