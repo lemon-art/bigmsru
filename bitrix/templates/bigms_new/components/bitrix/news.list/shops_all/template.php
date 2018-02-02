@@ -105,13 +105,13 @@ $this->EndViewTarget("row_div_class");
 						</pre>
 						
 						<?if ( $aOffice["PROPERTY_622"] ):?>
-							<br><br>
-							<a data-trigger="youtube" data-youtube='<?=CFile::GetPath($aOffice["PROPERTY_622"]);?>' href="#" class="contacts-description__video popup-trigger">Схема проезда на общественном транспорте</a>
+							<br>
+							<a data-trigger="youtube" data-youtube='<img src="<?=CFile::GetPath($aOffice["PROPERTY_622"]);?>">' href="#" class="contacts-description__video popup-trigger">Схема проезда на общественном транспорте</a>
 						<?endif;?>
 						
 						<?if ( $aOffice["PROPERTY_623"] ):?>
-							<br><br>
-							<a data-trigger="youtube" data-youtube='<?=CFile::GetPath($aOffice["PROPERTY_623"]);?>' href="#" class="contacts-description__video popup-trigger">Схема проезда на машине</a>
+							<br>
+							<a data-trigger="youtube" data-youtube='<img src="<?=CFile::GetPath($aOffice["PROPERTY_623"]);?>">' href="#" class="contacts-description__video popup-trigger">Схема проезда на машине</a>
 						<?endif;?>
 						
 					  </div>
