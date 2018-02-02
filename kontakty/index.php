@@ -16,7 +16,7 @@ $APPLICATION->SetTitle("Контакты");
         "SORT_ORDER2" => "ASC",
         "FILTER_NAME" => "",
         "FIELD_CODE" => array(0=>"IBLOCK_SECTION_ID",1=>"",),
-        "PROPERTY_CODE" => array(0=>"ADRESS",1=>"PHONE",2=>"VIDEO",3=>"MAP",4=>"MORE_PHOTO",),
+        "PROPERTY_CODE" => array(0=>"ADRESS",1=>"PHONE",2=>"VIDEO",3=>"MAP",4=>"MORE_PHOTO",5=>"HOW_TO_GET",6=>"HOW_TO_CAR",),
         "CHECK_DATES" => "Y",
         "DETAIL_URL" => "",
         "AJAX_MODE" => "N",

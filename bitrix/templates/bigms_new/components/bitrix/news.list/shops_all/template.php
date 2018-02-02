@@ -88,9 +88,26 @@ $this->EndViewTarget("row_div_class");
 						  <span class="contacts-description__subtitle">Телефон</span>
 						  <span class="contacts-description__text"><?=$aOffice["PROPERTY_13"][0]?></span>
 						</div>
+						<?if ( $aOffice["PREVIEW_TEXT"] ):?>
+							<div class="contacts-description__row">
+								<span>
+									<?=$aOffice["PREVIEW_TEXT"]?>
+								</span>
+							</div>
+						<?endif;?>
+						
 						<?if ( $aOffice["PROPERTY_14"] ):?>
 							<a data-trigger="youtube" data-youtube='<?=$aOffice["PROPERTY_14"]?>' href="#" class="contacts-description__video popup-trigger">Видео проезда</a>
 						<?endif;?>
+						
+						<?if ( $aOffice["PROPERTY_622"] ):?>
+							<a data-trigger="slider" data-youtube='' href="<?=$aOffice["PROPERTY_387"]?>" class="contacts-description__video popup-trigger">Схема проезда на общественном транспорте</a>
+						<?endif;?>
+						
+						<?if ( $aOffice["PROPERTY_623"] ):?>
+							<a data-trigger="slider" data-youtube='' href="<?=$aOffice["PROPERTY_589"]?>" class="contacts-description__video popup-trigger">Схема проезда на машине</a>
+						<?endif;?>
+						
 					  </div>
 					</div>
 				<?endforeach;?>
