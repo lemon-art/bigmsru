@@ -82,3 +82,325 @@ Array
         )
 
 )
+Array
+(
+    [TIME] => 2017-12-27 15:41:02
+    [DATA] => Array
+        (
+            [api] => v5
+            [methodApi] => customersUpload
+            [errorMsg] => Customers are loaded with errors
+            [errors] => Array
+                (
+                    [0] => Customer with externalId=1956 already exists.
+                )
+
+            [params] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [externalId] => 1956
+                                    [email] => alex_chuk@list.ru
+                                    [createdAt] => 2017-12-07 16:32:43
+                                    [contragentType] => individual
+                                    [firstName] => Алексей
+                                    [lastName] => Лукьянчук
+                                )
+
+                        )
+
+                    [1] => 
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-01-21 15:45:02
+    [DATA] => Array
+        (
+            [api] => v5
+            [methodApi] => customersUpload
+            [errorMsg] => Customers are loaded with errors
+            [errors] => Array
+                (
+                    [0] => Customer with externalId=2033 already exists.
+                )
+
+            [params] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [externalId] => 2033
+                                    [email] => 106@bigms.ru
+                                    [createdAt] => 2018-01-21 15:35:08
+                                    [contragentType] => individual
+                                    [firstName] => ТЕСТ
+                                )
+
+                        )
+
+                    [1] => 
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-01-30 14:03:08
+    [DATA] => Array
+        (
+            [api] => v5
+            [methodApi] => customersUpload
+            [errorMsg] => Customers are loaded with errors
+            [errors] => Array
+                (
+                    [0] => Customer with externalId=567 already exists.
+                )
+
+            [params] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [externalId] => 567
+                                    [email] => pokirov@stone-xxi.ru
+                                    [createdAt] => 2016-05-30 07:56:18
+                                    [contragentType] => individual
+                                    [firstName] => Константин
+                                    [lastName] => Покиров
+                                )
+
+                        )
+
+                    [1] => 
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-02-02 13:29:02
+    [DATA] => Array
+        (
+            [api] => v5
+            [methodApi] => customersUpload
+            [errorMsg] => Customers are loaded with errors
+            [errors] => Array
+                (
+                    [0] => Customer with externalId=2052 already exists.
+                )
+
+            [params] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [externalId] => 2052
+                                    [email] => mak-kalinovskij@yandex.ru
+                                    [createdAt] => 2018-02-02 13:22:43
+                                    [contragentType] => individual
+                                    [firstName] => максим
+                                )
+
+                        )
+
+                    [1] => 
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-02-06 15:57:02
+    [DATA] => Array
+        (
+            [api] => v5
+            [methodApi] => customersUpload
+            [errorMsg] => Customers are loaded with errors
+            [errors] => Array
+                (
+                    [0] => Customer with externalId=655 already exists.
+                )
+
+            [params] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [externalId] => 655
+                                    [email] => llc.prosperity@gmail.com
+                                    [createdAt] => 2016-07-28 13:33:17
+                                    [contragentType] => individual
+                                    [firstName] => Виктор
+                                    [lastName] => Гургенидзе
+                                    [phones] => Array
+                                        (
+                                            [0] => Array
+                                                (
+                                                    [number] => +79162027286
+                                                )
+
+                                        )
+
+                                    [address] => Array
+                                        (
+                                            [city] => Москва
+                                            [text] => Автомобильный проезд, 7с2
+                                        )
+
+                                )
+
+                        )
+
+                    [1] => 
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-02-09 10:14:02
+    [DATA] => Array
+        (
+            [api] => v5
+            [methodApi] => customersUpload
+            [errorMsg] => Customers are loaded with errors
+            [errors] => Array
+                (
+                    [0] => Customer with externalId=655 already exists.
+                )
+
+            [params] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [externalId] => 655
+                                    [email] => llc.prosperity@gmail.com
+                                    [createdAt] => 2016-07-28 13:33:17
+                                    [contragentType] => individual
+                                    [firstName] => Виктор
+                                    [lastName] => Гургенидзе
+                                    [phones] => Array
+                                        (
+                                            [0] => Array
+                                                (
+                                                    [number] => +79162027286
+                                                )
+
+                                        )
+
+                                    [address] => Array
+                                        (
+                                            [city] => Москва
+                                            [text] => Автомобильный проезд, 7с2
+                                        )
+
+                                )
+
+                        )
+
+                    [1] => 
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-02-11 20:23:02
+    [DATA] => Array
+        (
+            [api] => v5
+            [methodApi] => customersUpload
+            [errorMsg] => Customers are loaded with errors
+            [errors] => Array
+                (
+                    [0] => Customer with externalId=655 already exists.
+                )
+
+            [params] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [externalId] => 655
+                                    [email] => llc.prosperity@gmail.com
+                                    [createdAt] => 2016-07-28 13:33:17
+                                    [contragentType] => individual
+                                    [firstName] => Виктор
+                                    [lastName] => Гургенидзе
+                                    [phones] => Array
+                                        (
+                                            [0] => Array
+                                                (
+                                                    [number] => +79162027286
+                                                )
+
+                                        )
+
+                                    [address] => Array
+                                        (
+                                            [city] => Москва
+                                            [text] => Автомобильный проезд, 7с2
+                                        )
+
+                                )
+
+                        )
+
+                    [1] => 
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-02-13 15:28:02
+    [DATA] => Array
+        (
+            [api] => v5
+            [methodApi] => customersUpload
+            [errorMsg] => Customers are loaded with errors
+            [errors] => Array
+                (
+                    [0] => Customer with externalId=2075 already exists.
+                )
+
+            [params] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [externalId] => 2075
+                                    [email] => god1987demo@mail.ru
+                                    [createdAt] => 2018-02-13 15:21:28
+                                    [contragentType] => individual
+                                    [firstName] => Шевцов Юрий
+                                )
+
+                        )
+
+                    [1] => 
+                )
+
+        )
+
+)

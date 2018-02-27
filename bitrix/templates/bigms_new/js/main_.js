@@ -454,7 +454,7 @@ $(document).ready(function() {
 		
 	}); 
   
-	$('body').on('click', '.popup-add-to-cart', function(e) {
+	$('.content-products, .products-similar, .content-products__list, .product-props, .content-product, .demanded-products').on('click', '.popup-add-to-cart', function(e) {
 		id = $(this).attr('data-id');
 		var ELEM_NAME = $('input[name="ELEM_NAME'+id+'"]').val();
 		var CAT_PRICE = $('input[name="CAT_PRICE'+id+'"]').val();

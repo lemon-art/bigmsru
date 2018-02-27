@@ -388,7 +388,7 @@ body {
     content: '';
     position: absolute;
     bottom: 24px;
-    right: 20px;
+    right: -47px;
     width: 11px;
     height: 7px;
     border-bottom: 2px solid #16ca62;
@@ -5652,22 +5652,7 @@ ul.sublist[data-level="3"] .sublist__link:after {
   padding: 10px;
   background: #f7f9fa;
   position: relative;
-  height: 470px;
-      overflow: auto;
-	  font-family: 'Museo500', sans-serif, Arial;
-
-  }
-  
-  .viber {
-	background: url(/images/viber.png) no-repeat left top;
-    padding-left: 30px;
-  }
-  
-  .watsup {
-	background: url(/images/watsup.png) no-repeat left top;
-    padding-left: 30px;
-  }
-  
+  height: 470px; }
   .contacts-description__close {
     position: absolute;
     right: 15px;

@@ -1,7 +1,5 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
 
-
-
 <?
 $db_ptype = CSalePaySystem::GetList(
 	$arOrder = Array("SORT"=>"ASC", "PSA_NAME"=>"ASC"), 
@@ -11,6 +9,25 @@ $bFirst = True;
 $arPayments = Array();
 while ($ptype = $db_ptype->Fetch()){
 	$arPayments[] = $ptype;
+}
+// при доставке через ТК или почтой убрать вариант оплаты наличные курьеру
+if ($_POST['DELIVERY_ID'] == 3 || $_POST['DELIVERY_ID'] == 4) {
+    foreach ($arPayments as $key => $paySystem) {
+        //echo'<pre>'; var_dump($paySystem); echo'</pre>';
+        if ($paySystem['ID'] == 1) {
+            unset($arPayments[$key]);
+        }
+    }
+}
+
+// при выборе доставки курьером нужно чтобы было 2 способа оплаты: наличными курьеру и сбербанконлайн
+//var_dump($arPayments);
+if ($_POST['DELIVERY_ID'] == 2 && $_POST['PERSON_TYPE'] == 1) {
+    foreach ($arPayments as $key => $paySystem) {
+        if ($paySystem['ID'] != 1 && $paySystem['ID'] != 6) {
+            unset($arPayments[$key]);
+        }
+    }
 }
 ?>
 

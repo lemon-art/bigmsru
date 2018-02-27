@@ -1,4 +1,5 @@
 <?
+
 use Bitrix\Sale;
 use Bitrix\Sale\Location;
 use Bitrix\Sale\Location\Admin\TypeHelper;
@@ -9,7 +10,7 @@ use Bitrix\Sale\Location\Admin\TypeHelper;
 function OnOrderSaveHandler($ID, $arFields, $arOrder, $isNew){*/
 
 
-
+require_once($_SERVER['DOCUMENT_ROOT'].'/local/classes/Bigms/Helpers/DeliveryHelper.php');
 
 AddEventHandler("iblock", "OnBeforeIBlockSectionUpdate", Array("MyClass", "OnBeforeIBlockSectionUpdateHandler"));
 class MyClass

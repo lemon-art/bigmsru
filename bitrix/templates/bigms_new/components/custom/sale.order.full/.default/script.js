@@ -209,36 +209,41 @@ function ChangeGenerate(val)
 						$(this).siblings().removeClass('active');
 						$(this).addClass('active');
 						$('.dev').hide();
-						$('.dev[data-content="'+data+'"]').show();
-						
-						if ( DELIVERY_ID == '3'){
-							activateStep4();
+
+						// При доставке авто показываем такое же поле адреса как и при доставке курьером.
+						if(DELIVERY_ID == '3' || DELIVERY_ID == '4' || DELIVERY_ID == '8'){
+                            $('.dev[data-content="dev2"]').show();
 						}
-						
-						if ( DELIVERY_ID == '2'){
-							checkAdress(); 
+						$('.dev[data-content="'+data+'"]').show();
+
+						if ( DELIVERY_ID == '3' || DELIVERY_ID == '4'){
+							//activateStep4();
+						}
+
+						if ( DELIVERY_ID == '2' || DELIVERY_ID == '3' || DELIVERY_ID == '4' || DELIVERY_ID == '8'){
+							checkAdress();
 							$('[data-content="dev2"]').find('.form__input').on('keyup', function() {
-				
-								
+
+
 									if ( $(this).val().replace(/(_)/g, '').length >= parseInt( $(this).attr('data-min') )){
 										$(this).parent('div').addClass('validated');
-										$(this).parent('.error').removeClass('error'); 
+										$(this).parent('.error').removeClass('error');
 									}
 									else {
-										if ( $(this).parent('div').hasClass( "validated" ) ){ 
+										if ( $(this).parent('div').hasClass( "validated" ) ){
 											$(this).parent('div').addClass('error');
 											$(this).parent('.error').removeClass('validated');
-										}	
+										}
 									}
-								
+
 								checkAdress();
 							});
-							
+
 							$('[data-content="dev2"]').find('.form__input').on('change', function() {
-								
+
 									if ( $(this).val().replace(/(_)/g, '').length >= parseInt( $(this).attr('data-min') )){
 										$(this).parent('div').addClass('validated');
-										$(this).parent('.error').removeClass('error'); 
+										$(this).parent('.error').removeClass('error');
 									}
 									else {
 										$(this).parent('div').addClass('error');
@@ -307,23 +312,129 @@ function ChangeGenerate(val)
 		}
 		
 		$('.city-search').on('keyup', function() {
-		
-			
-			
-				var city = $(this).val().toUpperCase();
-
-				$('.city-popup__item').find('a').each(function() {
-
-					if ( $(this).text().toUpperCase().indexOf( city) < 0 ){
-						$(this).hide();
-					}		
-					else {
-						$(this).show();
-					}
-				});	
-			
-		
+			var city = $(this).val().toUpperCase();
+			$('.city-popup__item').find('a').each(function() {
+                if ( $(this).text().toUpperCase().substr(0, city.length) !== city ){
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+			});
 			return false;
+		});
+
+		$('.content-order__form').on('submit', function(e){
+			var orderError = false;
+
+			var personTypeId = $('input[name="PERSON_TYPE"]').val();
+
+			if(personTypeId == '1'){
+                var orderName = $('#order_name');
+                if(orderName.length > 0){
+                    if(orderName.val() === ''){
+                        orderName.css('border', '2px solid red');
+                        orderError = true;
+                    }else{
+                        orderName.css('border', '');
+                    }
+                }
+
+                var orderEmail = $('input[name="ORDER_PROP_2"]');
+                if(orderEmail.length > 0) {
+                    if (orderEmail.val() === '') {
+                        orderEmail.css('border', '2px solid red');
+                        orderError = true;
+                    } else {
+                        orderEmail.css('border', '');
+                    }
+                }
+
+                var orderPhone = $('input[name="ORDER_PROP_3"]');
+                if(orderPhone.length > 0) {
+                    if(orderPhone.val() === ''){
+                        orderPhone.css('border', '2px solid red');
+                        orderError = true;
+                    }else{
+                        orderPhone.css('border', '');
+                    }
+                }
+			}else{
+                var inputs = [
+                	'input[name="ORDER_PROP_10"]',
+					'input[name="ORDER_PROP_8"]',
+					'input[name="ORDER_PROP_11"]',
+					'input[name="ORDER_PROP_12"]',
+					'input[name="ORDER_PROP_13"]',
+					'#bank',
+					'#bik',
+					'#corporate_account',
+					'#payment_account'
+				];
+
+                inputs.forEach(function(e, i){
+                    var field = $(e);
+                    if(field.length > 0) {
+                        if(field.val() === ''){
+                            field.css('border', '2px solid red');
+                            orderError = true;
+                        }else{
+                            field.css('border', '');
+                        }
+                    }
+                });
+
+			}
+
+
+
+            var orderCity = $('a.form-city__link');
+            if(orderCity.length > 0) {
+                if(orderCity.text() === "выберите город"){
+                    orderCity.closest('.form__container.form-city').find('.form__title').css('color', 'red');
+                    orderError = true;
+                }else{
+                    orderCity.closest('.form__container.form-city').find('.form__title').css('color', '');
+                }
+			}
+
+
+            var orderDelivery = $('#DELIVERY_ID');
+            if(orderDelivery.length > 0) {
+                if(orderDelivery.val() === ''){
+                    $('#step3').find('.form__title').css('color', 'red');
+                    orderError = true;
+                }else{
+                    $('#step3').find('.form__title').css('color', '');
+                }
+			}
+
+
+            var orderAddress = $('#street');
+            if(orderAddress.length > 0){
+                if(orderAddress.val() === ''){
+                    orderAddress.css('border', '2px solid red');
+                    orderError = true;
+                }else{
+                    orderAddress.css('border', '');
+                }
+			}
+
+
+            var orderPay = $('#PAYMENT_ID');
+            if(orderPay.length > 0){
+                if(orderPay.val() === ''){
+                    $('#step4').find('.form__title').eq(0).css('color', 'red');
+                    orderError = true;
+                }else{
+                    $('#step4').find('.form__title').eq(0).css('color', '');
+                }
+			}
+
+			if(orderError){
+                e.preventDefault();
+                return false;
+			}
+
 		});
 		
 });
