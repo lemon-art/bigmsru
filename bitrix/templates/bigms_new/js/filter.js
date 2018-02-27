@@ -1,6 +1,8 @@
 $(document).ready(function() {
 
-
+	$('.checkbox-custom').click(function(e) {
+		$(this).prev().click();
+	});
   
   $('.filter-result__delete').click(function(e) {
         e.preventDefault();

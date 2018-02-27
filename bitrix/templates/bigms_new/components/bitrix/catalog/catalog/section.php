@@ -366,7 +366,7 @@ if ($ar_result['DEPTH_LEVEL'] == 3 && !array_search($APPLICATION->GetCurPage(fal
 						$display = "block"; 
 					}
 					else {
-						$display = "table"; 
+						$display = "block"; 
 					}
 				}
 				$template = "catalog_".$display;

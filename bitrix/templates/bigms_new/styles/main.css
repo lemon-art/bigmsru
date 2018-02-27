@@ -6141,7 +6141,7 @@ ul.sublist[data-level="3"] .sublist__link:after {
 
 	
 	
-	
+
 .filter-result {
   padding: 25px 30px 30px 30px;
   box-shadow: 0px 2px 4px 1px #e4e8ea; }
@@ -6244,18 +6244,25 @@ ul.sublist[data-level="3"] .sublist__link:after {
     cursor: pointer;
     display: inline-block;
     border: 1px solid #f7f9fa;
-    border-bottom: 1px dotted #5c737e;
     color: #5c737e;
     margin-right: 4px;
     margin-bottom: 5px;
-    padding: 2px; }
+    padding: 2px; 
+	width: 80%;
+    vertical-align: top;
+	
+	}
     .filter-form__name:hover {
       color: #223955;
       border-bottom: 1px solid transparent; }
   .filter-form__section {
     cursor: pointer;
     border-bottom: 1px solid #dfe4ea;
-    border-top: 1px solid transparent; }
+    border-top: 1px solid transparent; 
+	max-height: 370px;
+    overflow: auto;
+	
+	}
     .filter-form__section:hover {
       border-bottom: 1px solid #636f80;
       border-top: 1px solid #636f80; }
@@ -6282,12 +6289,59 @@ ul.sublist[data-level="3"] .sublist__link:after {
     font-family: 'Museo700', sans-serif, Arial; }
     .filter-form__more:hover {
       border: 1px solid #636f80; }
-  .filter-form__checkbox {
-    display: none; }
+	  
+	.n-filter-block__item{
+		display: block;
+		margin-bottom: 9px;
+		padding-right: 10px;
+		vertical-align: top;
+		word-wrap: break-word;
+		word-break: break-word;
+		line-height: normal;
+	}
+	
+
+	
+	.filter-form__checkbox {
+		display: none;
+	
+	}
+	
+	.checkbox-custom {
+		position: relative;      /* Обязательно задаем, чтобы мы могли абсолютным образом позиционировать псевдоэлемент внютри нашего кастомного чекбокса */
+		width: 20px;             /* Обязательно задаем ширину */
+		height: 20px;            /* Обязательно задаем высоту */
+		border: 2px solid #7490aa;
+		border-radius: 3px;
+		display: inline-block;
+		vertical-align: middle;
+	}
+	
+	.filter-form__checkbox:checked + .checkbox-custom::before {
+		content: "";             /* Добавляем наш псевдоэлемент */
+		display: block;			 /* Делаем его блочным элементом */
+		position: absolute;      /* Позиционируем его абсолютным образом */
+		/* Задаем расстояние от верхней, правой, нижней и левой границы */
+		top: 2px;
+		right: 2px;
+		bottom: 2px;
+		left: 2px;
+		background: #006db8;     /* Добавляем фон. Если требуется, можете поставить сюда картинку в виде "галочки", которая будет символизировать, что чекбокс отмечен */
+		border-radius: 2px;
+	}
+	
+	
+	.filter-form__checkbox:before {
+		border: 1px solid;
+		border-color: rgba(0,0,0,.2);
+		border-radius: 3px;
+		background-color: #fff;
+		background-clip: padding-box;
+	}
+	
+	
     .filter-form__checkbox:checked + label {
-      border: 1px solid #aac4d1;
-      background: #ffffff;
-      color: #000000; }
+ }
   .filter-form__wrap {
     display: -webkit-flex;
     display: -ms-flexbox;

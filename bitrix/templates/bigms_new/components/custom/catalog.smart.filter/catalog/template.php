@@ -199,33 +199,31 @@ if ($USER->IsAdmin()){
 								<?$n = 0;?>
 								<?foreach($arItem["VALUES"] as $val => $ar):?>
 										<?if($ar["VALUE"] != ""):?>
-												<?if ( $n++ == 11 ):?>
-													<div class="filter-form__content-wrap">
-												<?endif;?>
-												<input
-													type="checkbox"
-													value="<? echo $ar["HTML_VALUE"] ?>"
-													name="<? echo $ar["CONTROL_NAME"] ?>"
-													id="<? echo $ar["CONTROL_ID"] ?>"
-													<? echo $ar["CHECKED"]? 'checked="checked"': '' ?>
-													onclick="smartFilter.click(this)"
-													class="filter-form__checkbox bx_filter_input_checkbox"
-												/>
+												
+												<div class="n-filter-block__item">
 
-												<label data-role="label_<?=$ar["CONTROL_ID"]?>" class="filter-form__name bx_filter_param_label <? echo $ar["DISABLED"] ? 'disabled': '' ?>" for="<? echo $ar["CONTROL_ID"] ?>">
+														<input
+															type="checkbox"
+															value="<? echo $ar["HTML_VALUE"] ?>"
+															name="<? echo $ar["CONTROL_NAME"] ?>"
+															id="<? echo $ar["CONTROL_ID"] ?>"
+															<? echo $ar["CHECKED"]? 'checked="checked"': '' ?>
+															onclick="smartFilter.click(this)"
+															class="filter-form__checkbox bx_filter_input_checkbox"
+														/>
+														<span class="checkbox-custom"></span>
+													<label data-role="label_<?=$ar["CONTROL_ID"]?>" class="filter-form__name bx_filter_param_label <? echo $ar["DISABLED"] ? 'disabled': '' ?>" for="<? echo $ar["CONTROL_ID"] ?>">
 
-														<span class="bx_filter_param_text" title="<?=$ar["VALUE"];?>"><?=$ar["VALUE"];?><?
-														if ($arParams["DISPLAY_ELEMENT_COUNT"] !== "N" && isset($ar["ELEMENT_COUNT"])):
-															?> (<span data-role="count_<?=$ar["CONTROL_ID"]?>"><? echo $ar["ELEMENT_COUNT"]; ?></span>)<?
-														endif;?></span>
+															<span class="bx_filter_param_text" title="<?=$ar["VALUE"];?>"><?=$ar["VALUE"];?><?
+															if ($arParams["DISPLAY_ELEMENT_COUNT"] !== "N" && isset($ar["ELEMENT_COUNT"])):
+																?> (<span data-role="count_<?=$ar["CONTROL_ID"]?>"><? echo $ar["ELEMENT_COUNT"]; ?></span>)<?
+															endif;?></span>
 
-												</label>
+													</label>
+												</div>
 										<?endif;?>
 								<?endforeach;?>
-										<?if ( $n > 10 ):?>
-											</div>
-											<a href="#" class="filter-form__more">Показать еще</a>
-										<?endif;?>
+										
 							</div>
 						</div>
 					<?endif?>
@@ -886,7 +884,9 @@ if ($USER->IsAdmin()){
 												<div class="filter-form__content-wrap">
 											<?//endif;?>
 											*/?>
-											
+												<div class="n-filter-block__item">
+												
+													
 													<input
 														type="checkbox"
 														class="filter-form__checkbox"
@@ -896,7 +896,7 @@ if ($USER->IsAdmin()){
 														<? echo $ar["CHECKED"]? 'checked="checked"': '' ?>
 														onclick="smartFilter.click(this)"
 													/>
-
+													<span class="checkbox-custom"></span>
 													<label data-role="label_<?=$ar["CONTROL_ID"]?>" class="filter-form__name <? echo $ar["DISABLED"] ? 'disabled': '' ?>" for="<? echo $ar["CONTROL_ID"] ?>">
 
 															<?=$ar["VALUE"];?><?
@@ -905,7 +905,8 @@ if ($USER->IsAdmin()){
 															endif;?>
 
 													</label> 
-												
+													
+												</div>
 										<?endforeach;?>
 										<?/*
 										<?if ( $n > 11 ):?>
