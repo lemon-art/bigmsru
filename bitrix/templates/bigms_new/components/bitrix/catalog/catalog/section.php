@@ -61,7 +61,7 @@ if ( $_REQUEST["SECTION_CODE"] ){
 }
 
 if ( $arResult["VARIABLES"]["SECTION_CODE"] == 'truby_i_fitingi' ){
-	$arResult["VARIABLES"]["SECTION_CODE"] == 'truby';
+	$arResult["VARIABLES"]["SECTION_CODE"] = 'truby';
 }
 
 $currentUrl = $APPLICATION->GetCurPageParam();

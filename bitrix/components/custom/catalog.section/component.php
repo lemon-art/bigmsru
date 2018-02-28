@@ -470,8 +470,12 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 	
 	//если это старница фильтра по короткому url то код раздела берем из запроса
 	if ( strlen($_REQUEST["SECTION_CODE"]) ){
-		$arParams["SECTION_CODE"] = $_REQUEST["SECTION_CODE"];	
+		$arParams["SECTION_CODE"] = $_REQUEST["SECTION_CODE"];
 	}	
+	
+	if ( $arParams["SECTION_CODE"] == 'truby_i_fitingi' ){
+		$arParams["SECTION_CODE"] = 'truby';
+	}
 
 	$bSectionFound = false;
 	//Hidden triky parameter USED to display linked
@@ -501,6 +505,8 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 		$arResult = $rsSection->GetNext();
 		if($arResult)
 			$bSectionFound = true;
+		else	
+			echo 'no';
 	}
 	elseif(strlen($arParams["SECTION_CODE_PATH"]) > 0)
 	{
