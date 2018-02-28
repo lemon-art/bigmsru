@@ -170,7 +170,6 @@ if ($USER->IsAdmin()){
 			</div>
 		<?endif;?>
 		
-
 		<form name="<?echo $arResult["FILTER_NAME"]."_form"?>" action="<?echo $arResult["FORM_ACTION"]?>#downtofilter" method="get" class="smartfilter filter-form">
 			<?foreach($arResult["HIDDEN"] as $arItem):?>
 			<input type="hidden" name="<?echo $arItem["CONTROL_NAME"]?>" id="<?echo $arItem["CONTROL_ID"]?>" value="<?echo $arItem["HTML_VALUE"]?>" />
@@ -399,6 +398,14 @@ if ($USER->IsAdmin()){
 							<div class="filter-form__content <?if ($arItem["DISPLAY_EXPANDED"]== "Y"):?>opened<?endif?>">
 								
 								<?
+								foreach ($arItem["VALUES"] as $key => $sortkey) {
+									$values[$key]  = $sortkey['VALUE'];
+								}
+								array_multisort($values, SORT_ASC, $arItem['VALUES']);
+								unset($values);
+								
+								
+								
 								$arCur = current($arItem["VALUES"]);
 								switch ($arItem["DISPLAY_TYPE"])
 								{
