@@ -480,6 +480,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                     </span>
                   </a>
                 </li>
+				<li class="sublist__item" data-hover="Показать товары">
+                  <a href="/proizvoditeli/VALTEC/">
+                    <span class="sublist__img-wrap">
+                      <img class="sublist__logo" src="<?=SITE_TEMPLATE_PATH?>/styles/images/producer_valtec.jpg" alt="">
+                    </span>
+                  </a>
+                </li>
                 <li class="sublist__item" data-hover="Показать товары">
                   <a href="/proizvoditeli/UPONOR/">
                     <span class="sublist__img-wrap">
@@ -488,27 +495,24 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                   </a>
                 </li>
                 <li class="sublist__item" data-hover="Показать товары">
-                  <a href="/proizvoditeli/VALTEC/">
-                    <span class="sublist__img-wrap">
-                      <img class="sublist__logo" src="<?=SITE_TEMPLATE_PATH?>/styles/images/producer_valtec.jpg" alt="">
-                    </span>
-                  </a>
+                  <a href="/proizvoditeli/OVENTROP/"><span class="sublist__img-wrap"><img class="sublist__logo" src="<?=SITE_TEMPLATE_PATH?>/styles/images/producer_oventrop.jpg" alt=""></span></a>
                 </li>
-                <li class="sublist__item" data-hover="Показать товары">
-                  <a href="/proizvoditeli/WATTS/"><span class="sublist__img-wrap"><img class="sublist__logo" src="<?=SITE_TEMPLATE_PATH?>/styles/images/producer_watts.jpg" alt=""></span></a>
-                </li>
-                <li class="sublist__item" data-hover="Показать товары">
-                  <a href="/proizvoditeli/EMMETI/"><span class="sublist__img-wrap"><img class="sublist__logo" src="<?=SITE_TEMPLATE_PATH?>/styles/images/producer_emmeti.jpg" alt=""></span></a>
-                </li>
-                <li class="sublist__item" data-hover="Показать товары">
+				<li class="sublist__item" data-hover="Показать товары">
                   <a href="/proizvoditeli/EUROSTER/"><span class="sublist__img-wrap"><img class="sublist__logo" src="<?=SITE_TEMPLATE_PATH?>/styles/images/producer_euroster.jpg" alt=""></span></a>
                 </li>
                 <li class="sublist__item" data-hover="Показать товары">
-                  <a href="/proizvoditeli/GROHE/"><span class="sublist__img-wrap"><img class="sublist__logo" src="<?=SITE_TEMPLATE_PATH?>/styles/images/producer_grohe.jpg" alt=""></span></a>
+                  <a href="/proizvoditeli/Tech%20Controllers/"><span class="sublist__img-wrap">
+				  <img class="sublist__logo" src="<?=SITE_TEMPLATE_PATH?>/styles/images/tech.jpg" alt=""></span></a>
                 </li>
                 <li class="sublist__item" data-hover="Показать товары">
-                  <a href="/proizvoditeli/OVENTROP/"><span class="sublist__img-wrap"><img class="sublist__logo" src="<?=SITE_TEMPLATE_PATH?>/styles/images/producer_oventrop.jpg" alt=""></span></a>
+                  <a href="/proizvoditeli/UNITECH/"><span class="sublist__img-wrap">
+				  <img class="sublist__logo" src="<?=SITE_TEMPLATE_PATH?>/styles/images/uniteh.jpg" alt=""></span></a>
                 </li>
+
+                <li class="sublist__item" data-hover="Показать товары">
+                  <a href="/proizvoditeli/GROHE/"><span class="sublist__img-wrap"><img class="sublist__logo" src="<?=SITE_TEMPLATE_PATH?>/styles/images/producer_grohe.jpg" alt=""></span></a>
+                </li>
+
                 <li class="sublist__item sublist__item_all" data-hover="Показать товары">
                   <a href="/proizvoditeli/" class="sublist__link sublist__link_all">Показать всех производителей</a>
                 </li>
