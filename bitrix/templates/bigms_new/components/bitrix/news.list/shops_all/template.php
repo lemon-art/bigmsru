@@ -46,7 +46,7 @@ $this->EndViewTarget("row_div_class");
 								<div id="slider<?=$aOffice["ID"]?>" style="display: none;">
 							      <div class="owl-carousel popup-slider__container">
 									<?foreach ( $aOffice["PHOTO"] as $k => $photo ):?>
-										<?if ( $k <200 ):?><img src="<?=$photo["BIG_IMG"]?>" alt="" width="80%"><?endif;?>
+										<?if ( $k <200 ):?><img src="<?=$photo["BIG_IMG"]?>" alt=""><?endif;?>
 									<?endforeach;?>
 								  </div>
 								  <?/*
