@@ -502,7 +502,17 @@ $(document).ready(function() {
 		var slideIndex = $('#office'+ $(this).data('id') +' .content-contacts__gallery-item').index($(this));
         thumbsOwl.trigger('to.owl.carousel', [slideIndex-1, 300]);
 		
-									
+		$('.popup-nav').owlCarousel({
+			items: 1,
+			autoplayHoverPause: true,
+			//dotsContainer: '.slider-nav',
+			autoplay: true,
+
+			animateOut: 'fadeOut',
+			autoplayTimeout: 5000,
+			autoplayHoverPause: true,
+			loop: true,
+		  });							
 		
 	  }
 	  else {
