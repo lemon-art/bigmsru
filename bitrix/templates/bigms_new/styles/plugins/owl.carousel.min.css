@@ -24,7 +24,7 @@
 .owl-dots{
     display: inline-flex;
     position: absolute;
-    left: 20%;
+    left: -10px;
 margin-top: 5px;
    /* top: 270px;*/
 }
