@@ -148,7 +148,7 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 	$intSectionDepth = $arResult["SECTION"]['DEPTH_LEVEL'];
 	
 	$arFilter["PROPERTY"] = Array('BREND'=>$arParams["BRAND_XML"] );
-	
+	$arFilter["<="."DEPTH_LEVEL"] = 1;
 	
 
 	//ORDER BY
