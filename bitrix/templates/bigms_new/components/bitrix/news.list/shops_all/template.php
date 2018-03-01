@@ -37,7 +37,7 @@ $this->EndViewTarget("row_div_class");
 							<div id="contacts_gallery<?=$aOffice["ID"]?>" class="content-contacts__gallery">
 								<ul class="content-contacts__gallery">
 									<?foreach ( $aOffice["PHOTO"] as $k => $photo ):?>
-										<?if ( $k <20 ):?>
+										<?if ( $k <200 ):?>
 										<li data-trigger="slider" data-id="<?=$aOffice["ID"]?>" class="content-contacts__gallery-item popup-trigger"><img src="<?=$photo["SMALL_IMG"]?>" width="138" height="106" alt=""></li>
 										<?endif;?>
 									<?endforeach;?>
@@ -46,9 +46,10 @@ $this->EndViewTarget("row_div_class");
 								<div id="slider<?=$aOffice["ID"]?>" style="display: none;">
 							      <div class="owl-carousel popup-slider__container">
 									<?foreach ( $aOffice["PHOTO"] as $k => $photo ):?>
-										<?if ( $k <20 ):?><img src="<?=$photo["BIG_IMG"]?>" alt="" width="530"><?endif;?>
+										<?if ( $k <200 ):?><img src="<?=$photo["BIG_IMG"]?>" alt="" width="80%"><?endif;?>
 									<?endforeach;?>
 								  </div>
+								  <?/*
 								  <div class="preview_pics">
 									  <ul class="popup-nav">
 										<?foreach ( $aOffice["PHOTO"] as $k => $photo ):?>
@@ -56,6 +57,7 @@ $this->EndViewTarget("row_div_class");
 										<?endforeach;?>
 									 </ul>
 								  </div>
+								  */?>
 								</div>
 								
 								<script>
