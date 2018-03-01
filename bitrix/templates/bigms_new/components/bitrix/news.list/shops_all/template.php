@@ -52,7 +52,7 @@ $this->EndViewTarget("row_div_class");
 								  <div class="preview_pics">
 									  <ul class="popup-nav">
 										<?foreach ( $aOffice["PHOTO"] as $k => $photo ):?>
-											<?if ( $k <20 ):?><li class="popup-nav__item"><img src="<?=$photo["SMALL_IMG"]?>" alt=""></li><?endif;?>
+											<?if ( $k <7 ):?><li class="popup-nav__item"><img src="<?=$photo["SMALL_IMG"]?>" alt=""></li><?endif;?>
 										<?endforeach;?>
 									 </ul>
 								  </div>
