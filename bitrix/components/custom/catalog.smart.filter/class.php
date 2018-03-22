@@ -1092,12 +1092,13 @@ class CBitrixCatalogSmartFilter extends CBitrixComponent
 
 		$smartUrl = str_replace("#SMART_FILTER_PATH#", implode("/", $this->encodeSmartParts($smartParts)), $url);
 		//открываем файл с массивом соответствия адресов страниц
+		/*
 		$data = file_get_contents($_SERVER["DOCUMENT_ROOT"]."/tools/files/seo_url.txt");
 		$arUrlData = unserialize( $data );
 		if ( isset( $arUrlData[$smartUrl])){
 			$smartUrl = $arUrlData[$smartUrl];
 		}
-
+		*/
 			
 		return $smartUrl;
 	}
