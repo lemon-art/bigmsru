@@ -19,7 +19,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
           <div class="form__row form__row_phone <?if (count($arResult['arrVALUES'])>0 && $arResult['arrVALUES']['form_text_2'] == ''):?>error<?endif?>">
             <input class="form__input" type="text" name="form_text_2" placeholder="Номер телефона" value="<?if ( $arResult['arrVALUES']['form_text_2']):?><?=$arResult['arrVALUES']['form_text_2']?><?endif;?>">
           </div>
-          <p class="form__text">Перезвоним в течении рабочего дня<br>с 9:00 до 19:00</p>
+          <p class="form__text">Перезвоним в течении рабочего дня<br>с 9:00 до 18:00</p>
 		  <p class="form__text">
 				<label>
 					<input type="checkbox" name="agree_politic" <?if ( $arResult['arrVALUES']['agree_politic'] == 'on' ):?>checked<?endif;?>>
