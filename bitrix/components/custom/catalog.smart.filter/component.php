@@ -19,7 +19,7 @@ if(!Loader::includeModule('iblock'))
 
 $FILTER_NAME = (string)$arParams["FILTER_NAME"];
 
-if($this->StartResultCache(false, 'v2'.($arParams["CACHE_GROUPS"]? $USER->GetGroups(): false)))
+if($this->StartResultCache(false, 'v7'.($arParams["CACHE_GROUPS"]? $USER->GetGroups(): false)))
 {
 	$arResult["FACET_FILTER"] = false;
 	$arResult["COMBO"] = array();
@@ -67,7 +67,7 @@ if($this->StartResultCache(false, 'v2'.($arParams["CACHE_GROUPS"]? $USER->GetGro
 					elseif ($arResult["ITEMS"][$PID]["PROPERTY_TYPE"] == "S")
 					{
 						$addedKey = $this->fillItemValues($arResult["ITEMS"][$PID], $this->facet->lookupDictionaryValue($row["VALUE"]), true);
-						if ($addedKey)
+						if (strlen($addedKey) > 0)
 						{
 							$arResult["ITEMS"][$PID]["VALUES"][$addedKey]["FACET_VALUE"] = $row["VALUE"];
 							$arResult["ITEMS"][$PID]["VALUES"][$addedKey]["ELEMENT_COUNT"] = $row["ELEMENT_COUNT"];
@@ -76,7 +76,7 @@ if($this->StartResultCache(false, 'v2'.($arParams["CACHE_GROUPS"]? $USER->GetGro
 					else
 					{
 						$addedKey = $this->fillItemValues($arResult["ITEMS"][$PID], $row["VALUE"], true);
-						if ($addedKey)
+						if (strlen($addedKey) > 0)
 						{
 							$arResult["ITEMS"][$PID]["VALUES"][$addedKey]["FACET_VALUE"] = $row["VALUE"];
 							$arResult["ITEMS"][$PID]["VALUES"][$addedKey]["ELEMENT_COUNT"] = $row["ELEMENT_COUNT"];
@@ -91,9 +91,15 @@ if($this->StartResultCache(false, 'v2'.($arParams["CACHE_GROUPS"]? $USER->GetGro
 						if ($arPrice["ID"] == $priceId && isset($arResult["ITEMS"][$NAME]))
 						{
 							$this->fillItemPrices($arResult["ITEMS"][$NAME], $row);
+
 							if (isset($arResult["ITEMS"][$NAME]["~CURRENCIES"]))
 							{
 								$arResult["CURRENCIES"] += $arResult["ITEMS"][$NAME]["~CURRENCIES"];
+							}
+
+							if ($row["VALUE_FRAC_LEN"] > 0)
+							{
+								$arResult["ITEMS"][$PID]["DECIMALS"] = $row["VALUE_FRAC_LEN"];
 							}
 						}
 					}
@@ -103,9 +109,6 @@ if($this->StartResultCache(false, 'v2'.($arParams["CACHE_GROUPS"]? $USER->GetGro
 		}
 		else
 		{
-			//echo $this->SECTION_ID;
-			
-			
 			$arElementFilter = array(
 				"IBLOCK_ID" => $this->IBLOCK_ID,
 				"SUBSECTION" => $this->SECTION_ID,
@@ -113,7 +116,7 @@ if($this->StartResultCache(false, 'v2'.($arParams["CACHE_GROUPS"]? $USER->GetGro
 				"ACTIVE_DATE" => "Y",
 				"ACTIVE" => "Y",
 				"CHECK_PERMISSIONS" => "Y",
-			); 
+			);
 			if ('Y' == $this->arParams['HIDE_NOT_AVAILABLE'])
 				$arElementFilter['CATALOG_AVAILABLE'] = 'Y';
 
@@ -726,7 +729,9 @@ if ($arParams["SEF_MODE"] == "Y")
 	$arResult["JS_FILTER_PARAMS"]["SEF_DEL_FILTER_URL"] = $this->makeSmartUrl($url, false);
 }
 
-$pageURL = $APPLICATION->GetCurPageParam();
+$uri = new \Bitrix\Main\Web\Uri($this->request->getRequestUri());
+$uri->deleteParams(\Bitrix\Main\HttpRequest::getSystemParameters());
+$pageURL = $uri->GetUri();
 $paramsToDelete = array("set_filter", "del_filter", "ajax", "bxajaxid", "AJAX_CALL", "mode");
 foreach($arResult["ITEMS"] as $PID => $arItem)
 {
@@ -888,9 +893,9 @@ if ($arParams["XML_EXPORT"] === "Y" && $_REQUEST["mode"] === "xml")
 	$APPLICATION->RestartBuffer();
 	while(ob_end_clean());
 	header("Content-Type: text/xml; charset=utf-8");
-	echo $APPLICATION->convertCharset($xml, LANG_CHARSET, "utf-8");
-	define("PUBLIC_AJAX_MODE", true);
-	require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/include/epilog_after.php");
+	$error = "";
+	echo \Bitrix\Main\Text\Encoding::convertEncoding($xml, LANG_CHARSET, "utf-8", $error);
+	CMain::FinalActions();
 	die();
 }
 elseif(isset($_REQUEST["ajax"]) && $_REQUEST["ajax"] === "y")
@@ -903,8 +908,7 @@ elseif(isset($_REQUEST["ajax"]) && $_REQUEST["ajax"] === "y")
 	while(ob_end_clean());
 	header('Content-Type: application/x-javascript; charset='.LANG_CHARSET);
 	echo $json;
-	define("PUBLIC_AJAX_MODE", true);
-	require_once($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/include/epilog_after.php");
+	CMain::FinalActions();
 	die();
 }
 else
