@@ -361,8 +361,7 @@ if ( is_array( $arResult["POST"] ) ){
 		}
 		else
 		{
-			    $arOrder = CSaleOrder::GetByID($arResult["ORDER_ID"]);
-				CSaleBasket::OrderBasket($arResult["ORDER_ID"], CSaleBasket::GetBasketUserID(), SITE_ID, false);
+
 
 			
 				//заполняем свойства заказа
@@ -433,6 +432,9 @@ if ( is_array( $arResult["POST"] ) ){
 						}
 					}
 				}
+				
+				$arOrder = CSaleOrder::GetByID($arResult["ORDER_ID"]);
+				CSaleBasket::OrderBasket($arResult["ORDER_ID"], CSaleBasket::GetBasketUserID(), SITE_ID, false);
 			
 			
 		}
