@@ -410,7 +410,7 @@ function ChangeGenerate(val)
 
 
             var orderAddress = $('#street');
-            if(orderAddress.length > 0){
+            if(orderAddress.length > 0 && $('#step3').find('.form-radio__item.active').data('id') != 1){
                 if(orderAddress.val() === ''){
                     orderAddress.css('border', '2px solid red');
                     orderError = true;
