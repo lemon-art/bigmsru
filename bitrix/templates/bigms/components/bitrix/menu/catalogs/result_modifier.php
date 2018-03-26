@@ -27,7 +27,7 @@ while ($uf_value = $uf_arresult->GetNext()) {
 	}
 	
 	if ( $arUrlData[$arResult[$key]['LINK']] ){
-		$arResult[$key]['LINK'] =  $arUrlData[$arResult[$key]['LINK']]; //заменяем ссылку
+//		$arResult[$key]['LINK'] =  $arUrlData[$arResult[$key]['LINK']]; //заменяем ссылку
 	}
 //	if ( !is_null($uf_value['UF_CUSTOM_URL']) && $key !== false ){
 //		$arResult[$key]['LINK'] = $uf_value['UF_CUSTOM_URL'];
