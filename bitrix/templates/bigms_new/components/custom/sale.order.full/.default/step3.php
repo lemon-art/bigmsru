@@ -1,9 +1,6 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
 
 <?
-use Bigms\Helpers\DeliveryHelper;
-
-\Bitrix\Main\Loader::includeModule('sale');
 if ( $_POST["DELIVERY_LOCATION"] ){
 	$DELIVERY_LOCATION = $_POST["DELIVERY_LOCATION"];
 }
@@ -11,7 +8,7 @@ else {
 	$DELIVERY_LOCATION = 20;
 }
 
-/*
+
 $db_dtype = CSaleDelivery::GetList(
     array(
             "SORT" => "ASC",
@@ -26,33 +23,6 @@ $db_dtype = CSaleDelivery::GetList(
     false,
     array()
 );
-*/
-
-$arDeliveries = \Bitrix\Sale\Delivery\Services\Manager::getActiveList();
-//var_dump($arDeliveries);
-foreach ($arDeliveries as $key => $delivery) {
-    if ($delivery["ID"] == "7" || $delivery["PARENT_ID"] != 0 || (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION) && $delivery["ID"] == 4)) {
-        unset($arDeliveries[$key]);
-    }
-}
-
-$arNotRegionsDeliveries = ['1', '2', '8'];
-if (!DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
-    foreach ($arDeliveries as $key => $delivery) {
-        if (in_array($delivery['ID'], $arNotRegionsDeliveries)) {
-            unset($arDeliveries[$key]);
-        }
-    }
-}
-
-$arNotMoscowRegionDeliveries = ['3'];
-if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
-    foreach ($arDeliveries as $key => $delivery) {
-        if (in_array($delivery['ID'], $arNotMoscowRegionDeliveries)) {
-            unset($arDeliveries[$key]);
-        }
-    }
-}
 
 ?>
 
@@ -63,7 +33,7 @@ if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
                           <div class="form-radio">
                             <ul class="form-radio__list">
 								<?$i = 0;?>
-								<?foreach($arDeliveries as $ar_dtype):?>
+								<?while ($ar_dtype = $db_dtype->Fetch()):?>
 								
 									  <li data-trigger="dev<?=$ar_dtype["ID"]?>" data-id="<?=$ar_dtype["ID"]?>" class="form-radio__item">
 										<div class="form-radio__img-wrap">
@@ -77,7 +47,7 @@ if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
 										</div>
 									  </li>
 										<?$i++;?>
-								<?endforeach;?>
+								<?endwhile;?>
                               
                             </ul>
                             <div data-content="dev1" class="form__container dev form__container_1 form__container_wide" style="display: none;">
@@ -134,30 +104,26 @@ if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
                               </div> 
                             </div>
                             <div data-content="dev2" class="form__container dev form__container_wide"  style="display: none;">
-
+                              <strong class="form__title">Выберите адрес доставки</strong>
                               <div class="form__row form__row_delivery form__row_cols">
                                 <div class="form__col">
                                   <div class="form__row div_form">
-                                    <label class="form__label" for="street">Адрес <span style="color:red; position:relative; top:2px;">*</span></label>
-                                      <textarea id="street" rows="3" cols="50" class="form__input" data-min="3" type="text" name="" style="padding:10px;width: 370px;" value=""></textarea>
+                                    <label class="form__label" for="street">Улица</label>
+                                    <input id="street" class="form__input" data-min="3" id="street" type="text" name="" value="">
                                   </div>
                                 </div>
-
-                                  <!--
                                 <div class="form__col form__col_house">
                                   <div class="form__row div_form">
                                     <label class="form__label" for="house">Дом</label>
                                     <input id="house" class="form__input" data-min="1" id="house" type="text" name="" value="">
                                   </div>
                                 </div>
-
                                 <div class="form__col form__col_apartment">
                                   <div class="form__row div_form">
                                     <label class="form__label" for="apartment">Квартира/офис</label>
                                     <input id="apartment" class="form__input" data-min="1" id="office" type="text" name="" value="">
                                   </div>
                                 </div>
-                                  -->
                               </div>
 							  <input type="hidden" id="FULL_ADRESS" name="">
                             </div>
