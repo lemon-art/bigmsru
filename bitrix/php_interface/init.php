@@ -10,7 +10,7 @@ use Bitrix\Sale\Location\Admin\TypeHelper;
 function OnOrderSaveHandler($ID, $arFields, $arOrder, $isNew){*/
 
 
-//require_once($_SERVER['DOCUMENT_ROOT'].'/local/classes/Bigms/Helpers/DeliveryHelper.php');
+require_once($_SERVER['DOCUMENT_ROOT'].'/local/classes/Bigms/Helpers/DeliveryHelper.php');
 
 AddEventHandler("iblock", "OnBeforeIBlockSectionUpdate", Array("MyClass", "OnBeforeIBlockSectionUpdateHandler"));
 class MyClass
@@ -525,7 +525,7 @@ function GenerateSitemap()
 
 	$map = new CSitemap;
 
-	$siteName = 'https://www.bigms.ru';
+	$siteName = 'http://www.bigms.ru';
 
 	$count = 0;
 
