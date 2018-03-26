@@ -695,15 +695,6 @@ function GenerateSitemap()
    return "GenerateSitemap();";
 }
 
-function retailCrmBeforeCustomerSend($customer)
-{
-  
-
-	file_put_contents($_SERVER["DOCUMENT_ROOT"]."/crm.php", "<?$"."arUrlRewrite = ".var_export($customer,true).";?>");
-    return $customer;
-}
-
-
 
 function numberof($numberof, $value, $suffix)
 {

@@ -154,6 +154,7 @@ function ChangeGenerate(val)
 			
 			activate = 1;
 			var full_adr = '';
+			/*
 			$('[data-content="dev2"]').find('.div_form').each(function() {
 				if ( !$(this).hasClass( "validated" ) ){
 					activate = 0;
@@ -166,6 +167,8 @@ function ChangeGenerate(val)
 					full_adr = full_adr + razd + $(this).find('input').val();
 				}
 			}); 
+			*/
+			full_adr = $('#street').val();
 
 			if ( activate ){
 			
