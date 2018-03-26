@@ -271,21 +271,21 @@ class RetailCrmHistory
 
             $log = new Logger();
             $log->write($orderH, 'orderHistory');
-            
+
             if (count($orderH) == 0) {
                 if ($orderHistory['history']['totalPageCount'] > $orderHistory['history']['currentPage']) {
                     $historyFilter['page'] = $orderHistory['history']['currentPage'] + 1;
                     
                     continue;
                 }
-                
+
                 return true;
             }
-            
+
             $orders = self::assemblyOrder($orderH);
-                        
+
             $GLOBALS['RETAIL_CRM_HISTORY'] = true;
-            
+
             //orders with changes
             foreach ($orders as $order) {
                 if (function_exists('retailCrmBeforeOrderSave')) {
@@ -298,9 +298,9 @@ class RetailCrmHistory
                         continue;
                     }
                 }
-                
+
                 $log->write($order, 'assemblyOrderHistory');
-                
+
                 if (isset($order['deleted'])) {
                     if (isset($order['externalId'])) {
                         try {
@@ -314,7 +314,7 @@ class RetailCrmHistory
                             RCrmActions::eventLog('RetailCrmHistory::orderHistory', 'Bitrix\Sale\Order::load', 'Error order load: ' . $order['externalId']);
                             continue;
                         }
-                        
+
                         $newOrder->setField('CANCELED', 'Y');
                         $newOrder->save();
                     }
@@ -396,9 +396,15 @@ class RetailCrmHistory
                         
                         continue;
                     }
-                    
-                    $newOrder = Bitrix\Sale\Order::create($site, $order['customer']['externalId']);
-                    $newOrder->setField('CURRENCY', $currency);
+
+                    $newOrder = Bitrix\Sale\Order::create($site, $order['customer']['externalId'], $currency);
+
+                    if (!is_object($newOrder) || !$newOrder instanceof \Bitrix\Sale\Order) {
+                        RCrmActions::eventLog('RetailCrmHistory::orderHistory', 'Bitrix\Sale\Order::create', 'Error order create');
+
+                        continue;
+                    }
+
                     $externalId = $newOrder->getId();
                     $order['externalId'] = $externalId;
                 }
@@ -416,9 +422,9 @@ class RetailCrmHistory
                         }
                     }
 
-                    if (!$newOrder instanceof \Bitrix\Sale\Order) {
+                    if ($newOrder === null) {
                         RCrmActions::eventLog('RetailCrmHistory::orderHistory', 'Bitrix\Sale\Order::load', 'Error order load number=' . $order['number']);
-                        
+
                         continue;
                     }
 
@@ -432,23 +438,6 @@ class RetailCrmHistory
                         RCrmActions::eventLog('RetailCrmHistory::orderHistory', 'Bitrix\Sale\Order::edit', 'Site = ' . $order['site'] . ' not found in setting. Order number=' . $order['number']);
                         
                         continue;
-                    }
-
-                    if ($optionsOrderNumbers == 'Y' && isset($order['number'])) {
-                        $searchFilter = array(
-                                'filter' => array('ACCOUNT_NUMBER' => $order['number']),
-                                'select' => array('ID'),
-                        );
-                        $searchOrder = \Bitrix\Sale\OrderTable::GetList($searchFilter)->fetch();
-                        if (!empty($searchOrder)) {
-                            if ($searchOrder['ID'] != $order['externalId']) {
-                                RCrmActions::eventLog('RetailCrmHistory::orderHistory', 'setField("ACCOUNT_NUMBER")', 'Error order load id=' . $order['externalId']) . '. Number ' . $order['number'] . ' already exists';
-                            
-                                continue;
-                            }
-                        }
-
-                        $newOrder->setField('ACCOUNT_NUMBER', $order['number']);
                     }
 
                     $personType = $newOrder->getField('PERSON_TYPE_ID');
@@ -477,6 +466,7 @@ class RetailCrmHistory
                     if ($optionsPayStatuses[$order['status']]) {
                         $newOrder->setField('STATUS_ID', $optionsPayStatuses[$order['status']]);
                         if (in_array($optionsPayStatuses[$order['status']], $optionsCanselOrder)) {
+                            self::unreserveShipment($newOrder);
                             $newOrder->setFieldNoDemand('CANCELED', 'Y');
                         } else {
                             $newOrder->setFieldNoDemand('CANCELED', 'N');
@@ -613,21 +603,32 @@ class RetailCrmHistory
 
                     //items
                     $basket = $newOrder->getBasket();
-                    
+
                     if (!$basket) {
                         $basket = Bitrix\Sale\Basket::create($site);
                         $newOrder->setBasket($basket);
                     }
 
+                    $fUserId = $basket->getFUserId(true);
+
+                    if ($fUserId === null) {
+                        $fUserId = Bitrix\Sale\Fuser::getIdByUserId($order['customer']['externalId']);
+                        $basket->setFUserId($fUserId);
+                    }
+
                     if (isset($order['items'])) {
                         $itemUpdate = true;
+
                         foreach ($order['items'] as $product) {
                             $item = self::getExistsItem($basket, 'catalog', $product['offer']['externalId']);
+
                             if (!$item) {
-                                if($product['delete']){
+                                if ($product['delete']) {
                                     continue;
                                 }
+
                                 $item = $basket->createItem('catalog', $product['offer']['externalId']);
+
                                 if ($item instanceof \Bitrix\Sale\BasketItem) {
                                     $elem = self::getInfoElement($product['offer']['externalId']);
                                     $item->setFields(array(
@@ -645,10 +646,11 @@ class RetailCrmHistory
                                     ));
                                 } else {
                                     RCrmActions::eventLog('RetailCrmHistory::orderHistory', 'createItem', 'Error item add');
-                                    
+
                                     continue;
                                 }
                             }
+
                             if ($product['delete']) {
                                 $item->delete();
                                 
@@ -661,7 +663,7 @@ class RetailCrmHistory
 
                             if (array_key_exists('discountTotal', $product)) {
                                 $itemCost = $item->getField('BASE_PRICE');
-                                if (isset($itemCost) && $itemCost > 0) {
+                                if (isset($itemCost) && $itemCost >= 0) {
                                     $item->setField('CUSTOM_PRICE', 'Y');
                                     $item->setField('PRICE', $itemCost - $product['discountTotal']);
                                     $item->setField('DISCOUNT_PRICE', $product['discountTotal']);
@@ -671,7 +673,7 @@ class RetailCrmHistory
                             }
                         }
                     }
-                    
+
                     $orderSumm = 0;
                     foreach ($basket as $item) {
                         $orderSumm += $item->getFinalPrice(); 
@@ -685,16 +687,17 @@ class RetailCrmHistory
 
                     $orderSumm += $deliverySumm;
 
-                    $newOrder->setField('PRICE', $orderSumm);
                     $order['summ'] = $orderSumm;
-                    
+
                     //payment
+                    $newHistoryPayments = array();
+
                     if (array_key_exists('payments', $order)) {
                         if (!isset($orderCrm)) {
                             $orderCrm = RCrmActions::apiMethod($api, 'orderGet', __METHOD__, $order['id']);
                         }
                         if ($orderCrm) {
-                            $newOrder = self::paymentsUpdate($newOrder, $orderCrm['order'], $api);
+                            self::paymentsUpdate($newOrder, $orderCrm['order'], $newHistoryPayments);
                         }
                     }
 
@@ -706,22 +709,57 @@ class RetailCrmHistory
                             $orderCrm = RCrmActions::apiMethod($api, 'orderGet', __METHOD__, $order['id']);
                         }
                         if ($orderCrm) {
-                            $newOrder = self::deliveryEdit($newOrder, $optionsDelivTypes, $orderCrm['order']);
+                            self::deliveryUpdate($newOrder, $optionsDelivTypes, $orderCrm['order']);
                         }
+                    }
+
+                    if ($itemUpdate === true) {
+                        self::shipmentItemReset($newOrder);
                     }
 
                     if (isset($orderCrm)) {
                         unset($orderCrm); 
                     }
-                    
+
+                    $newOrder->setField('PRICE', $orderSumm);
                     $newOrder->save();
+
+                    if ($optionsOrderNumbers == 'Y' && isset($order['number'])) {
+                        $searchFilter = array(
+                            'filter' => array('ACCOUNT_NUMBER' => $order['number']),
+                            'select' => array('ID'),
+                        );
+                        $searchOrder = \Bitrix\Sale\OrderTable::GetList($searchFilter)->fetch();
+                        if (!empty($searchOrder)) {
+                            if ($searchOrder['ID'] != $order['externalId']) {
+                                RCrmActions::eventLog('RetailCrmHistory::orderHistory', 'setField("ACCOUNT_NUMBER")', 'Error order load id=' . $order['externalId']) . '. Number ' . $order['number'] . ' already exists';
+                            
+                                continue;
+                            }
+                        }
+
+                        $newOrder->setField('ACCOUNT_NUMBER', $order['number']);
+                        $newOrder->save();
+                    }
+
+                    if (!empty($newHistoryPayments)) {
+                        foreach ($newOrder->getPaymentCollection() as $orderPayment) {
+                            if (array_key_exists($orderPayment->getField('XML_ID'), $newHistoryPayments)) {
+                                $paymentExternalId = $orderPayment->getId();
+
+                                if ($paymentExternalId) {
+                                    $newHistoryPayments[$orderPayment->getField('XML_ID')]['externalId'] = $paymentExternalId;
+                                    RCrmActions::apiMethod($api, 'paymentEditById', __METHOD__, $newHistoryPayments[$orderPayment->getField('XML_ID')]);
+                                    \Bitrix\Sale\Internals\PaymentTable::update($paymentExternalId, array('XML_ID' => ''));
+                                }  
+                            }
+                        }
+                    }
 
                     if (!$order['externalId']) {
                         if(RCrmActions::apiMethod($api, 'ordersFixExternalIds', __METHOD__, array(array('id' => $order['id'], 'externalId' => $newOrder->getId()))) == false){
                             continue;
                         }
-                    } else {
-                        RCrmActions::eventLog('RetailCrmHistory::orderHistory', 'Bitrix\Sale\Order::create', 'Error order create');
                     }
 
                     if (function_exists('retailCrmAfterOrderSave')) {
@@ -915,9 +953,9 @@ class RetailCrmHistory
      * @param options delivery types
      * @param order from crm
      * 
-     * @return order object
+     * @return void
      */
-    public static function deliveryEdit(Bitrix\Sale\Order $order, $optionsDelivTypes, $orderCrm)
+    public static function deliveryUpdate(Bitrix\Sale\Order $order, $optionsDelivTypes, $orderCrm)
     {
         if (!$order instanceof Bitrix\Sale\Order) {
             return false;
@@ -931,7 +969,6 @@ class RetailCrmHistory
 
         $crmCode = isset($orderCrm['delivery']['code']) ? $orderCrm['delivery']['code'] : false;
         $noDeliveryId = \Bitrix\Sale\Delivery\Services\EmptyDeliveryService::getEmptyDeliveryServiceId();
-        $basket = $order->getBasket();
 
         if ($crmCode === false || !isset($optionsDelivTypes[$crmCode])) {
             $deliveryId = $noDeliveryId;
@@ -962,35 +999,106 @@ class RetailCrmHistory
             if (!$update) {
                     $shipment = $shipmentColl->createItem($delivery);
                     $shipment->setFields(array(
-                        'PRICE_DELIVERY' => $orderCrm['delivery']['cost'],
                         'BASE_PRICE_DELIVERY' => $orderCrm['delivery']['cost'],
                         'CURRENCY' => $order->getCurrency(),
-                        'DELIVERY_NAME' => $delivery->getName()
+                        'DELIVERY_NAME' => $delivery->getName(),
+                        'CUSTOM_PRICE_DELIVERY' => 'Y'
                     ));
             } else {
                 foreach ($shipmentColl as $shipment) {
                     if (!$shipment->isSystem()) {
                         $shipment->setFields(array(
-                            'PRICE_DELIVERY' => $orderCrm['delivery']['cost'],
                             'BASE_PRICE_DELIVERY' => $orderCrm['delivery']['cost'],
                             'CURRENCY' => $order->getCurrency(),
                             'DELIVERY_ID' => $deliveryId,
-                            'DELIVERY_NAME' => $delivery->getName()
+                            'DELIVERY_NAME' => $delivery->getName(),
+                            'CUSTOM_PRICE_DELIVERY' => 'Y'
                         ));
                     }
                 }
             }
         }
-
-        if (isset($shipment) && $shipment) {
-            $shipmentItemColl = $shipment->getShipmentItemCollection();
-            $shipmentItemColl->resetCollection($basket);
-        }
-
-        return $order;
     }
 
-    public static function paymentsUpdate($order, $paymentsCrm, $api)
+    /**
+     * Update shipment item colletion
+     * 
+     * @param \Bitrix\Sale\Order $order
+     * 
+     * @return void | boolean
+     */
+    public static function shipmentItemReset($order)
+    {
+        $shipmentCollection = $order->getShipmentCollection();
+        $basket = $order->getBasket();
+
+        foreach ($shipmentCollection as $shipment) {
+            if (!$shipment->isSystem()) {
+                $reserved = false;
+
+                if ($shipment->needReservation()) {
+                    $reserved = true;
+                }
+
+                $shipmentItemColl = $shipment->getShipmentItemCollection();
+
+                if ($reserved === true) {
+                    $shipment->tryUnreserve();
+                }
+
+                try {
+                    $shipmentItemColl->resetCollection($basket);
+
+                    if ($reserved === true) {
+                        $shipment->tryReserve();
+                    }
+                } catch (\Bitrix\Main\NotSupportedException $NotSupportedException) {
+                    RCrmActions::eventLog('RetailCrmHistory::shipmentItemReset', '\Bitrix\Sale\ShipmentItemCollection::resetCollection()', $NotSupportedException->getMessage());
+
+                    return false;
+                }
+            }
+        }
+    }
+
+    /**
+     * Unreserve items if order canceled
+     * 
+     * @param \Bitrix\Sale\Order $order
+     * 
+     * @return void | boolean
+     */
+    public static function unreserveShipment($order)
+    {
+        $shipmentCollection = $order->getShipmentCollection();
+
+        foreach ($shipmentCollection as $shipment) {
+            if (!$shipment->isSystem()) {
+                try {
+                    $shipment->tryUnreserve();
+                } catch (Main\ArgumentOutOfRangeException $ArgumentOutOfRangeException) {
+                    RCrmActions::eventLog('RetailCrmHistory::unreserveShipment', '\Bitrix\Sale\Shipment::tryUnreserve()', $ArgumentOutOfRangeException->getMessage());
+
+                    return false;
+                } catch (Main\NotSupportedException $NotSupportedException) {
+                    RCrmActions::eventLog('RetailCrmHistory::unreserveShipment', '\Bitrix\Sale\Shipment::tryUnreserve()', $NotSupportedException->getMessage());
+
+                    return false;
+                }
+            }
+        }
+    }
+
+    /**
+     * Update payment in order
+     * 
+     * @param object $order
+     * @param array $paymentsCrm
+     * @param array $newHistoryPayments
+     * 
+     * @return void
+     */
+    public static function paymentsUpdate($order, $paymentsCrm, &$newHistoryPayments = array())
     {
         $optionsPayTypes = array_flip(unserialize(COption::GetOptionString(self::$MODULE_ID, self::$CRM_PAYMENT_TYPES, 0)));
         $optionsPayment = array_flip(unserialize(COption::GetOptionString(self::$MODULE_ID, self::$CRM_PAYMENT, 0)));
@@ -1025,6 +1133,7 @@ class RetailCrmHistory
                     unset($paymentsList[$paymentCrm['externalId']]);
                 }
             } else {
+                $newHistoryPayments[$paymentCrm['id']] = $paymentCrm;
                 $newPayment = $paymentColl->createItem();
                 $newPayment->setField('SUM', $paymentCrm['amount']);
                 $newPayment->setField('PAY_SYSTEM_ID', $optionsPayTypes[$paymentCrm['type']]);
@@ -1035,12 +1144,11 @@ class RetailCrmHistory
                 $newPayment->setField('PRICE_COD', '0.00');
                 $newPayment->setField('EXTERNAL_PAYMENT', 'N');
                 $newPayment->setField('UPDATED_1C', 'N');
+                $newPayment->setField('XML_ID', $paymentCrm['id']);
 
                 $newPaymentId = $newPayment->getId();
 
                 unset($paymentsList[$newPaymentId]);
-
-                RCrmActions::apiMethod($api, 'paymentEditById', __METHOD__, array('id' => $paymentCrm['id'], 'externalId' => $newPaymentId));
             }
 
             if ($optionsPayment[$paymentCrm['status']] == 'Y') {
@@ -1059,8 +1167,6 @@ class RetailCrmHistory
         } else {
             $order->setFieldNoDemand('PAYED', 'N');
         }
-        
-        return $order;
     }
 
     public static function newValue($value)
@@ -1129,11 +1235,11 @@ class RetailCrmHistory
         $info = array(
             'NAME' => $elementInfo['NAME'],
             'URL' => $url,
-            'DIMENSIONS' => serialize(serialize(array(
+            'DIMENSIONS' => serialize(array(
                 'WIDTH' => $catalog['WIDTH'],
                 'HEIGHT' => $catalog['HEIGHT'],
                 'LENGTH' => $catalog['LENGTH'],
-            ))),
+            )),
             'WEIGHT' => $catalog['WEIGHT'],
             'XML_ID' => $elementInfo["XML_ID"],
             'IBLOCK_XML_ID' => $elementInfo["IBLOCK_EXTERNAL_ID"]

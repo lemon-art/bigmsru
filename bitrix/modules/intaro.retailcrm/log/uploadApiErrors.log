@@ -404,3 +404,103 @@ Array
         )
 
 )
+Array
+(
+    [TIME] => 2018-03-04 18:44:03
+    [DATA] => Array
+        (
+            [api] => v5
+            [methodApi] => customersUpload
+            [errorMsg] => Customers are loaded with errors
+            [errors] => Array
+                (
+                    [0] => Customer with externalId=1 already exists.
+                )
+
+            [params] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [externalId] => 1
+                                    [email] => info@bigms.ru
+                                    [createdAt] => 2015-06-10 13:05:23
+                                    [contragentType] => individual
+                                    [firstName] => admin
+                                    [lastName] => admin
+                                    [phones] => Array
+                                        (
+                                            [0] => Array
+                                                (
+                                                    [number] => 4444444444444444444
+                                                )
+
+                                        )
+
+                                    [address] => Array
+                                        (
+                                            [city] => 4444444
+                                            [text] => 1111111111;o;o111111
+                                        )
+
+                                )
+
+                        )
+
+                    [1] => 
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-10 16:50:04
+    [DATA] => Array
+        (
+            [api] => v5
+            [methodApi] => customersUpload
+            [errorMsg] => Customers are loaded with errors
+            [errors] => Array
+                (
+                    [0] => Customer with externalId=1 already exists.
+                )
+
+            [params] => Array
+                (
+                    [0] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [externalId] => 1
+                                    [email] => info@bigms.ru
+                                    [createdAt] => 2015-06-10 13:05:23
+                                    [contragentType] => individual
+                                    [firstName] => admin
+                                    [lastName] => admin
+                                    [phones] => Array
+                                        (
+                                            [0] => Array
+                                                (
+                                                    [number] => 4444444444444444444
+                                                )
+
+                                        )
+
+                                    [address] => Array
+                                        (
+                                            [city] => 4444444
+                                            [text] => 1111111111;o;o111111
+                                        )
+
+                                )
+
+                        )
+
+                    [1] => 
+                )
+
+        )
+
+)

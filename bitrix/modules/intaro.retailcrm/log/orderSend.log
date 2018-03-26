@@ -9625,3 +9625,3552 @@ Array
         )
 
 )
+Array
+(
+    [TIME] => 2018-02-27 10:06:02
+    [DATA] => Array
+        (
+            [number] => 2137
+            [externalId] => 2137
+            [createdAt] => 2018-02-27 10:05:54
+            [customer] => Array
+                (
+                    [externalId] => 2101
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => user_section_1519715153
+            [phone] => +7(923)650-00-60
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 9571
+                                )
+
+                            [productName] => Аэратор канализационный Ø110, McALPINE
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 890
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 890
+                            [externalId] => 2272
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-02-28 10:21:01
+    [DATA] => Array
+        (
+            [number] => 2138
+            [externalId] => 2138
+            [createdAt] => 2018-02-28 10:17:02
+            [customer] => Array
+                (
+                    [externalId] => 2102
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => user_section_1519802222
+            [phone] => +7(903)225-91-99
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 27883
+                                )
+
+                            [productName] => Радиотермометр для измерения t˚ воздуха МЛ-711, уличный, Zont
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 1898
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 1898
+                            [externalId] => 2273
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-02-28 13:05:02
+    [DATA] => Array
+        (
+            [number] => 2139
+            [externalId] => 2139
+            [createdAt] => 2018-02-28 13:02:04
+            [customer] => Array
+                (
+                    [externalId] => 2103
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => user_section_1519812124
+            [phone] => +7(925)850-33-32
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 16226
+                                )
+
+                            [productName] => HG Средство для очистки дымоходов 0,5 л
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 478
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 478
+                            [externalId] => 2274
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-02-28 13:05:02
+    [DATA] => Array
+        (
+            [number] => 2140
+            [externalId] => 2140
+            [createdAt] => 2018-02-28 13:02:20
+            [customer] => Array
+                (
+                    [externalId] => 2104
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => Array
+                        (
+                            [text] => undefined
+                        )
+
+                    [code] => courier
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => Илья
+            [email] => 3452882@mail.ru
+            [phone] => +7(929)997-09-17
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 11368
+                                )
+
+                            [productName] => Муфта ремонтная с НАРУЖНОЙ резьбой АК 11/4', Gebo
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 977
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 1954
+                            [externalId] => 2275
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-02 11:24:02
+    [DATA] => Array
+        (
+            [number] => 2141
+            [externalId] => 2141
+            [createdAt] => 2018-03-02 11:22:19
+            [customer] => Array
+                (
+                    [externalId] => 2105
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => user_section_1519978939
+            [phone] => +7(916)602-06-11
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 22148
+                                )
+
+                            [productName] => Термостат КОМНАТНЫЙ ST-290v2. беспроводной, Tech
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 6797
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 6797
+                            [externalId] => 2276
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-03 11:08:01
+    [DATA] => Array
+        (
+            [number] => 2142
+            [externalId] => 2142
+            [createdAt] => 2018-03-03 11:02:37
+            [customer] => Array
+                (
+                    [externalId] => 2106
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => Array
+                        (
+                            [text] => undefined
+                        )
+
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => тест
+            [email] => 106@bigms.ru
+            [phone] => +7(000)000-00-00
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 7886
+                                )
+
+                            [productName] => Отвод канализационный Ø50/87°, Ostendorf
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 23
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-03 14:15:03
+    [DATA] => Array
+        (
+            [number] => 2143
+            [externalId] => 2143
+            [createdAt] => 2018-03-03 14:11:34
+            [customer] => Array
+                (
+                    [externalId] => 2107
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => Array
+                        (
+                            [text] => undefined
+                        )
+
+                    [code] => courier
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => Иван
+            [email] => zima.ivan@mail.ru
+            [phone] => +7(966)057-75-73
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 22113
+                                )
+
+                            [productName] => Термостат КОМНАТНЫЙ с выключ., с выносным датч,,~ 230 В, Rexant
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 756
+                        )
+
+                    [1] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 14388
+                                )
+
+                            [productName] => Термостат GSM-Climate ZONT-H1V ~ 230 В, ЭВАН
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 7808
+                        )
+
+                    [2] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 16612
+                                )
+
+                            [productName] => Головка термостатическая RTL, 10-50 °С, Luxor
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 1292
+                        )
+
+                    [3] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 28536
+                                )
+
+                            [productName] => Термостат КОМНАТНЫЙ RQ20  CEWAL
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 956
+                        )
+
+                    [4] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 12133
+                                )
+
+                            [productName] => Полуавтомат для ванны с тросом, латунь, прямоток, цвет-золото Timo
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 5287
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 16099
+                            [externalId] => 2278
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-03 14:15:03
+    [DATA] => Array
+        (
+            [number] => 2144
+            [externalId] => 2144
+            [createdAt] => 2018-03-03 14:12:54
+            [customer] => Array
+                (
+                    [externalId] => 2107
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => Array
+                        (
+                            [text] => undefined
+                        )
+
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => Иван
+            [email] => zima.ivan@mail.ru
+            [phone] => +7(966)057-75-73
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 11265
+                                )
+
+                            [productName] => 22 05 06 FKO Радиатор KERMI
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 4342
+                        )
+
+                    [1] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 10324
+                                )
+
+                            [productName] => Коллекторная группа в сборе с регулировочными вентелями, 4 контура (нержавеющая сталь), Valtec VTc.588.EMNX.0604
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 6139
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-03 23:50:03
+    [DATA] => Array
+        (
+            [number] => 2145
+            [externalId] => 2145
+            [createdAt] => 2018-03-03 23:49:44
+            [customer] => Array
+                (
+                    [externalId] => 2108
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => user_section_1520110184
+            [phone] => +7(926)393-34-35
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 22166
+                                )
+
+                            [productName] => Клапан обратный канализационный Ø40 McALPINE
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 504
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 504
+                            [externalId] => 2280
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-04 18:44:02
+    [DATA] => Array
+        (
+            [number] => 2146
+            [externalId] => 2146
+            [createdAt] => 2018-03-04 18:41:08
+            [customer] => Array
+                (
+                    [externalId] => 1
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [customerComment] => Тест!!!
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                    [code] => 1
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => Тест
+            [email] => info@bigms.ru
+            [phone] => +7(000)000-00-00
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 8511
+                                )
+
+                            [productName] => Утеплитель трубный Ø18х 9
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 8.14
+                        )
+
+                    [1] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 10324
+                                )
+
+                            [productName] => Коллекторная группа в сборе с регулировочными вентелями, 4 контура (нержавеющая сталь), Valtec VTc.588.EMNX.0604
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 6139
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-06 09:16:02
+    [DATA] => Array
+        (
+            [number] => 2147
+            [externalId] => 2147
+            [createdAt] => 2018-03-06 09:11:04
+            [customer] => Array
+                (
+                    [externalId] => 2109
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                    [code] => 1
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => тест
+            [email] => 106@bigms.ru
+            [phone] => +7(000)000-00-00
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 7986
+                                )
+
+                            [productName] => Угол полипропиленовый 90° Ø20 (серый) FV-Plast 202020
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 11
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-06 10:13:01
+    [DATA] => Array
+        (
+            [number] => 2148
+            [externalId] => 2148
+            [createdAt] => 2018-03-06 10:11:21
+            [customer] => Array
+                (
+                    [externalId] => 2110
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                    [code] => 1
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => Татьяна
+            [email] => Tatiana.Voronchikhina@izvarino-pharma.ru
+            [phone] => +7(925)195-10-05
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 3
+                            [offer] => Array
+                                (
+                                    [externalId] => 7499
+                                )
+
+                            [productName] => Коллектор с регулировочными вентелями, Трубная резьба 3/4х1/2', на 3 выхода, под прокладку, (хром), FAR
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 1577
+                        )
+
+                    [1] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 17790
+                                )
+
+                            [productName] => Фильтр косой Itap 1/2'
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 204
+                        )
+
+                    [2] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 8885
+                                )
+
+                            [productName] => Фильтр промывной 1/2' для ГОРЯЧЕЙ воды с регулятором давления, без манометра, Honeywell FK06AAM1/2
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 5349
+                        )
+
+                    [3] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 10154
+                                )
+
+                            [productName] => Счётчик Холодной воды Ду15 (без сгонов), Itelma
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 858
+                        )
+
+                    [4] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 8617
+                                )
+
+                            [productName] => Фумнить 20 м., Tangit uni-lock
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 277
+                        )
+
+                    [5] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 10153
+                                )
+
+                            [productName] => Счётчик Горячей воды Ду15 (без сгонов), Itelma
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 858
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 17830
+                            [externalId] => 2283
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-06 12:32:02
+    [DATA] => Array
+        (
+            [number] => 2149
+            [externalId] => 2149
+            [createdAt] => 2018-03-06 12:30:55
+            [customer] => Array
+                (
+                    [externalId] => 2111
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => user_section_1520328655
+            [phone] => +7(903)662-79-74
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 10508
+                                )
+
+                            [productName] => ГАЗ Подводка д/газа РАСТЯГ. 1/2' г/г, 1-2 м Emiflex
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 1123
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 2246
+                            [externalId] => 2284
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-06 12:38:01
+    [DATA] => Array
+        (
+            [number] => 2150
+            [externalId] => 2150
+            [createdAt] => 2018-03-06 12:34:32
+            [customer] => Array
+                (
+                    [externalId] => 2112
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => user_section_1520328872
+            [phone] => +7(903)662-79-74
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 10508
+                                )
+
+                            [productName] => ГАЗ Подводка д/газа РАСТЯГ. 1/2' г/г, 1-2 м Emiflex
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 1123
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 1123
+                            [externalId] => 2285
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-06 12:44:01
+    [DATA] => Array
+        (
+            [number] => 2151
+            [externalId] => 2151
+            [createdAt] => 2018-03-06 12:38:25
+            [customer] => Array
+                (
+                    [externalId] => 2113
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                    [code] => 1
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [lastName] => Федор
+            [firstName] => Коваль
+            [email] => fedor.kowal@yandex.ru
+            [phone] => +7(963)666-90-00
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 3
+                            [offer] => Array
+                                (
+                                    [externalId] => 8296
+                                )
+
+                            [productName] => Отвод гибкий Ø50 внутренний-НАРУЖНЫЙ
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 78
+                        )
+
+                    [1] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 17772
+                                )
+
+                            [productName] => Переход эксцентрический ПП 50х32 ВНУТР
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 20
+                        )
+
+                    [2] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 17771
+                                )
+
+                            [productName] => Переход эксцентрический ПП 50х40 ВНУТР
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 18
+                        )
+
+                    [3] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 17786
+                                )
+
+                            [productName] => Клапан обратный канализационный Ø50 McALPINE
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 862
+                        )
+
+                    [4] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 8093
+                                )
+
+                            [productName] => Крестовина Ø50/87°
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 72
+                        )
+
+                    [5] => Array
+                        (
+                            [quantity] => 3
+                            [offer] => Array
+                                (
+                                    [externalId] => 7479
+                                )
+
+                            [productName] => Отвод Ø50/87°
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 17
+                        )
+
+                    [6] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 9480
+                                )
+
+                            [productName] => Труба для внутренней канализации с раструбом Ø50, L=1000
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 66
+                        )
+
+                    [7] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 9600
+                                )
+
+                            [productName] => Тройник канализационный Ø50х50/87°, Ostendorf
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 46
+                        )
+
+                    [8] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 9348
+                                )
+
+                            [productName] => Отвод канализационный Ø32/87°, Ostendorf
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 40
+                        )
+
+                    [9] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 8633
+                                )
+
+                            [productName] => Труба для внутренней канализации с раструбом Ø32, L=2000, Ostendorf
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 96
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 1505
+                            [externalId] => 2286
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-06 13:00:02
+    [DATA] => Array
+        (
+            [number] => 2152
+            [externalId] => 2152
+            [createdAt] => 2018-03-06 12:57:07
+            [customer] => Array
+                (
+                    [externalId] => 2114
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                    [code] => 1
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => Илья
+            [email] => glavny1974@mail.ru
+            [phone] => +7(916)272-74-63
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 14382
+                                )
+
+                            [productName] => Клапан АкваСтоп 1/2"
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 440
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 880
+                            [externalId] => 2287
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-07 08:05:03
+    [DATA] => Array
+        (
+            [number] => 2153
+            [externalId] => 2153
+            [createdAt] => 2018-03-07 08:00:52
+            [customer] => Array
+                (
+                    [externalId] => 2115
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [lastName] => Виктория
+            [firstName] => Гончарова
+            [phone] => +7(965)367-10-36
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 17894
+                                )
+
+                            [productName] => Унитаз-компакт DELLA Otti
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 2592
+                        )
+
+                    [1] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 9509
+                                )
+
+                            [productName] => Крепёж унитаза к полу, пластмассовая заглушка, 2 болта
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 31
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 2623
+                            [externalId] => 2288
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-07 13:16:12
+    [DATA] => Array
+        (
+            [number] => 2154
+            [externalId] => 2154
+            [createdAt] => 2018-03-07 13:14:07
+            [customer] => Array
+                (
+                    [externalId] => 2116
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => user_section_1520417647
+            [phone] => +7(925)010-10-50
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 8800
+                                )
+
+                            [productName] => Термостат комнатный с недельным программированием, беспроводной, белый, 091 FLRF, Salus
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 6315
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 6315
+                            [externalId] => 2289
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-07 16:49:02
+    [DATA] => Array
+        (
+            [number] => 2155
+            [externalId] => 2155
+            [createdAt] => 2018-03-07 16:48:02
+            [customer] => Array
+                (
+                    [externalId] => 2118
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [customerComment] => Добрый день. мне нужен этот товар 10 или 11 марта
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                    [code] => 1
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => Денис
+            [email] => den923@gmail.com
+            [phone] => +7(985)963-63-97
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 11370
+                                )
+
+                            [productName] => Муфта ремонтная с внутренней резьбой IК 1/2', Gebo
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 514
+                        )
+
+                    [1] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 11368
+                                )
+
+                            [productName] => Муфта ремонтная с НАРУЖНОЙ резьбой АК 11/4', Gebo
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 973
+                        )
+
+                    [2] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 11372
+                                )
+
+                            [productName] => Муфта ремонтная с внутренней резьбой IК 1', Gebo
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 764
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 3015
+                            [externalId] => 2290
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-10 15:47:02
+    [DATA] => Array
+        (
+            [number] => 2156
+            [externalId] => 2156
+            [createdAt] => 2018-03-10 15:43:47
+            [customer] => Array
+                (
+                    [externalId] => 2119
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [customerComment] => Прошу доставить заказ в ваш магазин по адресу: Москва, бульвар Дмитрия Донского, 1, ТЦ &quot;Северное сияние&quot;
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                    [code] => 1
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => Марк
+            [email] => markmamcha@gmail.com
+            [phone] => +7(926)072-07-93
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 9539
+                                )
+
+                            [productName] => Заглушка резьба 1/2' (никель), Valtec
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 39
+                        )
+
+                    [1] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 28050
+                                )
+
+                            [productName] => Прокладка к НГ 13 х 1/2' Neptun
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 5.2
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 88.4
+                            [externalId] => 2291
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-10 16:50:03
+    [DATA] => Array
+        (
+            [number] => 2157
+            [externalId] => 2157
+            [createdAt] => 2018-03-10 16:46:44
+            [customer] => Array
+                (
+                    [externalId] => 1
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [customerComment] => ТЕСТ Татьяна Руденко
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => Array
+                        (
+                            [text] => undefined
+                        )
+
+                    [code] => courier
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [lastName] => Татьяна
+            [firstName] => Руденко
+            [email] => 118@bigms.ru
+            [phone] => +7(986)777-77-77
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 27983
+                                )
+
+                            [productName] => Valtec Труба PE-RT Ø16х2,0 (8 bar) БЕЗ кислор. барьера
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 33
+                        )
+
+                    [1] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 12106
+                                )
+
+                            [productName] => Система душевая Bravat Eco F9111147C-A-RUS
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 12306
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 12339
+                            [externalId] => 2292
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-10 16:56:01
+    [DATA] => Array
+        (
+            [number] => 2158
+            [externalId] => 2158
+            [createdAt] => 2018-03-10 16:51:55
+            [customer] => Array
+                (
+                    [externalId] => 2120
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => ТЕСТ
+            [email] => 205@bigms.ru
+            [phone] => 79637625802
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 7823
+                                )
+
+                            [productName] => Утеплитель трубный Ø22х 9
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 10
+                        )
+
+                    [1] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 12607
+                                )
+
+                            [productName] => Полотенцесушитель водяной ENERGY PRESTIGE 600*500
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 9219
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 9229
+                            [externalId] => 2293
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-10 16:56:02
+    [DATA] => Array
+        (
+            [number] => 2159
+            [externalId] => 2159
+            [createdAt] => 2018-03-10 16:52:28
+            [customer] => Array
+                (
+                    [externalId] => 2120
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => ТЕСТ
+            [email] => 205@bigms.ru
+            [phone] => 79637625802
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 7823
+                                )
+
+                            [productName] => Утеплитель трубный Ø22х 9
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 10
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 10
+                            [externalId] => 2294
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-12 13:04:02
+    [DATA] => Array
+        (
+            [number] => 2160
+            [externalId] => 2160
+            [createdAt] => 2018-03-12 13:00:57
+            [customer] => Array
+                (
+                    [externalId] => 2121
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                    [code] => 1
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [lastName] => Федор
+            [firstName] => Коваль
+            [email] => fedor.kowal@yandex.ru
+            [phone] => +7(963)666-90-00
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 14534
+                                )
+
+                            [productName] => Отвод ПП Ø40 гибкий вн.-НАР.
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 82
+                        )
+
+                    [1] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 9112
+                                )
+
+                            [productName] => Переход эксцентрический Ø110х50 (короткий), Ostendorf
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 47
+                        )
+
+                    [2] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 10778
+                                )
+
+                            [productName] => Тройник канализационный Ø50х40/87°, Ostendorf
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 77
+                        )
+
+                    [3] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 8496
+                                )
+
+                            [productName] => Труба для внутренней канализации с раструбом Ø40, L=250, Ostendorf
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 35
+                        )
+
+                    [4] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 9059
+                                )
+
+                            [productName] => Труба для внутренней канализации с раструбом Ø50, L=250, Ostendorf
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 41
+                        )
+
+                    [5] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 9155
+                                )
+
+                            [productName] => Отвод канализационный Ø50/45°, Ostendorf
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 22
+                        )
+
+                    [6] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 14426
+                                )
+
+                            [productName] => Патрубок однорастр. компенсац. ПП Ø50 ВНУТР. Ostendorf
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 113
+                        )
+
+                    [7] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 8659
+                                )
+
+                            [productName] => Труба для внутренней канализации с раструбом Ø32, L=500, Ostendorf
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 38
+                        )
+
+                    [8] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 9237
+                                )
+
+                            [productName] => Отвод канализационный Ø50/67°, Ostendorf
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 38
+                        )
+
+                    [9] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 8622
+                                )
+
+                            [productName] => Отвод канализационный Ø50/30°, Ostendorf
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 25
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 559
+                            [externalId] => 2295
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-12 14:21:01
+    [DATA] => Array
+        (
+            [number] => 2161
+            [externalId] => 2161
+            [createdAt] => 2018-03-12 14:20:01
+            [customer] => Array
+                (
+                    [externalId] => 2122
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => Array
+                        (
+                            [text] => undefined
+                        )
+
+                    [code] => courier
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => Дмитрий
+            [email] => rokotdm@yandex.ru
+            [phone] => +7(915)344-55-56
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 12085
+                                )
+
+                            [productName] => Смеситель для душа Vidima Сириус BA009AA
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 3150
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 3150
+                            [externalId] => 2296
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-12 15:12:02
+    [DATA] => Array
+        (
+            [number] => 2162
+            [externalId] => 2162
+            [createdAt] => 2018-03-12 15:10:50
+            [customer] => Array
+                (
+                    [externalId] => 2123
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => Array
+                        (
+                            [text] => undefined
+                        )
+
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [lastName] => Александр
+            [firstName] => Санин
+            [email] => santilaster@gmail.com
+            [phone] => +7(914)177-49-70
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 8882
+                                )
+
+                            [productName] => Счётчик воды универсальный ИМПУЛЬСНЫЙ Ду15 (со сгонами), Valtec
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 859
+                        )
+
+                    [1] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 8693
+                                )
+
+                            [productName] => Фильтр промывной 1/2' для ХОЛОДНОЙ воды, без манометра BWT Protector mini C/R 10523
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 2327
+                        )
+
+                    [2] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 8695
+                                )
+
+                            [productName] => Фильтр промывной 1/2' для ГОРЯЧЕЙ воды, без манометра BWT Protector mini H/R 10506
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 4020
+                        )
+
+                    [3] => Array
+                        (
+                            [quantity] => 3
+                            [offer] => Array
+                                (
+                                    [externalId] => 16590
+                                )
+
+                            [productName] => Утеплитель трубный 28/4 (красный) Энергофлекс СУПЕР ПРОТЕКТ
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 22
+                        )
+
+                    [4] => Array
+                        (
+                            [quantity] => 3
+                            [offer] => Array
+                                (
+                                    [externalId] => 16591
+                                )
+
+                            [productName] => Утеплитель трубный 28/4 (синий) Энергофлекс СУПЕР ПРОТЕКТ
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 22
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => credit
+                            [amount] => 8197
+                            [externalId] => 2297
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-13 11:14:02
+    [DATA] => Array
+        (
+            [number] => 2163
+            [externalId] => 2163
+            [createdAt] => 2018-03-13 11:12:07
+            [customer] => Array
+                (
+                    [externalId] => 2124
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => user_section_1520928727
+            [phone] => +7(926)193-15-02
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 22122
+                                )
+
+                            [productName] => Регулятор ST-21 CWU (BUFOR) для управления насосом по температуре, Tech
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 3076
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 3076
+                            [externalId] => 2298
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-13 20:20:03
+    [DATA] => Array
+        (
+            [number] => 2164
+            [externalId] => 2164
+            [createdAt] => 2018-03-13 20:16:09
+            [customer] => Array
+                (
+                    [externalId] => 2125
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => user_section_1520961369
+            [phone] => +7(926)467-15-41
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 7609
+                                )
+
+                            [productName] => Кран шаровой с американкой 3/4' усиленного типа, никель, (бабочка), Giacomini
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 705
+                        )
+
+                    [1] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 7615
+                                )
+
+                            [productName] => Кран шаровой внутренняя-НАРУЖНАЯ резьба 3/4' усиленного типа, никель, (бабочка), Giacomini
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 568
+                        )
+
+                    [2] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 7861
+                                )
+
+                            [productName] => Редуктор-регулятор давления 1-4 бар, 3/4', Itap
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 846
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 2824
+                            [externalId] => 2299
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-15 01:03:02
+    [DATA] => Array
+        (
+            [number] => 2165
+            [externalId] => 2165
+            [createdAt] => 2018-03-15 00:59:08
+            [customer] => Array
+                (
+                    [externalId] => 2126
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => user_section_1521064748
+            [phone] => +7(965)302-42-42
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 25815
+                                )
+
+                            [productName] => Гаситель гидроударов с манометром, Valtec
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 1295
+                        )
+
+                    [1] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 8283
+                                )
+
+                            [productName] => Клапан обратный пружинный с металлическим затвором 3/4', Itap
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 405
+                        )
+
+                    [2] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 8631
+                                )
+
+                            [productName] => Фильтр промывной 3/4' для ГОРЯЧЕЙ воды, Valtec
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 1203
+                        )
+
+                    [3] => Array
+                        (
+                            [quantity] => 3
+                            [offer] => Array
+                                (
+                                    [externalId] => 7926
+                                )
+
+                            [productName] => Ниппель резьба 3/4' (никель), Valtec
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 68
+                        )
+
+                    [4] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 9135
+                                )
+
+                            [productName] => Тройник резьба 3/4' (никель), Valtec
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 201
+                        )
+
+                    [5] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 9371
+                                )
+
+                            [productName] => Угольник резьба внутренняя-НАРУЖНАЯ  3/4' (никель), Valtec
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 173
+                        )
+
+                    [6] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 10024
+                                )
+
+                            [productName] => Сгон резьба 1/2'х 150 (никель), Valtec
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 295
+                        )
+
+                    [7] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 9039
+                                )
+
+                            [productName] => Муфта резьба 1/2' (никель), Valtec
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 62
+                        )
+
+                    [8] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 8883
+                                )
+
+                            [productName] => Контргайка резьба 1/2' ГОСТ (никель), Valtec
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 53
+                        )
+
+                    [9] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 9406
+                                )
+
+                            [productName] => Американка резьба НАРУЖНАЯ-НАРУЖНАЯ 3/4' (никель), Valtec
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 222
+                        )
+
+                    [10] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 9208
+                                )
+
+                            [productName] => Кронштейн стальной с резиновым уплотнением 3/4'
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 21
+                        )
+
+                    [11] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 9459
+                                )
+
+                            [productName] => Муфта резьба 3/4' (никель), Valtec
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 100
+                        )
+
+                    [12] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 9773
+                                )
+
+                            [productName] => Контргайка резьба 3/4' ГОСТ (никель), Valtec
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 70
+                        )
+
+                    [13] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 9147
+                                )
+
+                            [productName] => Муфта переходная резьба  3/4'х 1/2', Valtec
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 102
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 4427
+                            [externalId] => 2300
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-15 18:16:01
+    [DATA] => Array
+        (
+            [number] => 2166
+            [externalId] => 2166
+            [createdAt] => 2018-03-15 18:14:53
+            [customer] => Array
+                (
+                    [externalId] => 2127
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => user_section_1521126893
+            [phone] => +7(985)354-50-64
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 9
+                            [offer] => Array
+                                (
+                                    [externalId] => 18408
+                                )
+
+                            [productName] => Смеситель для ванны GANZER Sire GZ25032
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 6434
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 57906
+                            [externalId] => 2301
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-16 15:37:02
+    [DATA] => Array
+        (
+            [number] => 2167
+            [externalId] => 2167
+            [createdAt] => 2018-03-16 15:33:16
+            [customer] => Array
+                (
+                    [externalId] => 2128
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [customerComment] => Требуется марка/номер машины и фио водителя для заказа пропуска
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => Array
+                        (
+                            [text] => undefined
+                        )
+
+                    [code] => ems
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [lastName] => Алексей
+            [firstName] => Трушин
+            [email] => aleksey.trushin@bk.ru
+            [phone] => +7(926)831-22-20
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 18641
+                                )
+
+                            [productName] => Инсталляция для унитаза Grohe Rapid SL 38772001 3 в 1 с квадратной кнопкой Skate Cosmopolitan
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 10374
+                        )
+
+                    [1] => Array
+                        (
+                            [quantity] => 4
+                            [offer] => Array
+                                (
+                                    [externalId] => 7614
+                                )
+
+                            [productName] => Кран шаровой внутренняя-НАРУЖНАЯ резьба 1/2" усиленного типа, никель, (бабочка), Giacomini
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 374
+                        )
+
+                    [2] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 7616
+                                )
+
+                            [productName] => Кран шаровой внутренняя-НАРУЖНАЯ резьба 1" усиленного типа, никель, (бабочка), Giacomini
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 846
+                        )
+
+                    [3] => Array
+                        (
+                            [quantity] => 4
+                            [offer] => Array
+                                (
+                                    [externalId] => 7750
+                                )
+
+                            [productName] => Фильтр косой 1/2", FAR
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 543
+                        )
+
+                    [4] => Array
+                        (
+                            [quantity] => 4
+                            [offer] => Array
+                                (
+                                    [externalId] => 7487
+                                )
+
+                            [productName] => Редуктор-регулятор давления 1-6 бар, 1/2", Itap
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 1481
+                        )
+
+                    [5] => Array
+                        (
+                            [quantity] => 4
+                            [offer] => Array
+                                (
+                                    [externalId] => 7595
+                                )
+
+                            [productName] => Манометр радиальный 0-4 бар, 1/4", Watts
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 426
+                        )
+
+                    [6] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 7499
+                                )
+
+                            [productName] => Коллектор с регулировочными вентелями, Трубная резьба 3/4х1/2", на 3 выхода, под прокладку, (хром), FAR
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 1577
+                        )
+
+                    [7] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 9277
+                                )
+
+                            [productName] => Коллектор с регулировочными вентелями, Трубная резьба 3/4х1/2", на 2 выхода, под прокладку, (хром), FAR
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 987
+                        )
+
+                    [8] => Array
+                        (
+                            [quantity] => 6
+                            [offer] => Array
+                                (
+                                    [externalId] => 8142
+                                )
+
+                            [productName] => Угольник резьба внутренняя-НАРУЖНАЯ 1/2" (бронза), VIEGA 264 024
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 187
+                        )
+
+                    [9] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 8419
+                                )
+
+                            [productName] => Угольник резьба внутренняя-внутренняя 1/2" (бронза), VIEGA 269 272
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 161
+                        )
+
+                    [10] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 7881
+                                )
+
+                            [productName] => Угольник резьба НАРУЖНАЯ-НАРУЖНАЯ 1/2" (бронза), VIEGA 317 973
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 344
+                        )
+
+                    [11] => Array
+                        (
+                            [quantity] => 8
+                            [offer] => Array
+                                (
+                                    [externalId] => 8418
+                                )
+
+                            [productName] => Ниппель резьба 1/2" (бронза), VIEGA 266 592
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 63
+                        )
+
+                    [12] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 28455
+                                )
+
+                            [productName] => Заглушка 3/4" ХРОМ FAR
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 142
+                        )
+
+                    [13] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 8427
+                                )
+
+                            [productName] => Пробка резьба 3/4" o-ring (ХРОМ), FAR
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 159
+                        )
+
+                    [14] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 7544
+                                )
+
+                            [productName] => Муфта переходная резьба 3/4"х 1/2" (бронза), VIEGA 268 862
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 142
+                        )
+
+                    [15] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 7831
+                                )
+
+                            [productName] => Футорка-переход резьба НАРУЖНАЯ-внутренняя 3/4"х 1/2" (бронза), VIEGA 266 493
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 85
+                        )
+
+                    [16] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 8497
+                                )
+
+                            [productName] => Пластина универсальная для креплений коллектора L=300 мм., FAR
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 250
+                        )
+
+                    [17] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 9097
+                                )
+
+                            [productName] => Крепление коллектора универсальное 3/4" под пластину, (набор 2 шт.), FAR
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 210
+                        )
+
+                    [18] => Array
+                        (
+                            [quantity] => 12
+                            [offer] => Array
+                                (
+                                    [externalId] => 8822
+                                )
+
+                            [productName] => Переходник с накидной гайкой Ø16х1/2" для труб из сшитого полиэтилена REHAU 13660751001
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 335
+                        )
+
+                    [19] => Array
+                        (
+                            [quantity] => 11
+                            [offer] => Array
+                                (
+                                    [externalId] => 8832
+                                )
+
+                            [productName] => Водорозетка (угольник настенный с креплением) Ø16х1/2" для труб из сшитого полиэтилена REHAU 11384611405
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 430
+                        )
+
+                    [20] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 7507
+                                )
+
+                            [productName] => Клапан обратный пружинный с металлическим затвором 1/2", Itap
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 317
+                        )
+
+                    [21] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 7556
+                                )
+
+                            [productName] => Тройник резьба 1/2" (бронза), VIEGA 264 222
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 182
+                        )
+
+                    [22] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 7665
+                                )
+
+                            [productName] => Клапан предохранительный для ВОДОСНАБЖЕНИЯ (синяя крышка) SVW 0-6 бар, 1/2", Watts
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 511
+                        )
+
+                    [23] => Array
+                        (
+                            [quantity] => 11
+                            [offer] => Array
+                                (
+                                    [externalId] => 9254
+                                )
+
+                            [productName] => Заглушка полипропиленовая длинная НР 1/2" (красная, синяя) Capricorn 92120-050-00-01-08/92120-050-00-01-05
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 24
+                        )
+
+                    [24] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 8814
+                                )
+
+                            [productName] => Переходник с НАРУЖНОЙ резьбой Ø16х1/2" для труб из сшитого полиэтилена REHAU 13660491001
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 336
+                        )
+
+                    [25] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 9539
+                                )
+
+                            [productName] => Заглушка резьба 1/2" (никель), Valtec
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 39
+                        )
+
+                    [26] => Array
+                        (
+                            [quantity] => 2
+                            [offer] => Array
+                                (
+                                    [externalId] => 8509
+                                )
+
+                            [productName] => Кран водоразборный со штуцером 1/2" никель, (флажок), Valtec
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 250
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-17 15:49:01
+    [DATA] => Array
+        (
+            [number] => 2168
+            [externalId] => 2168
+            [createdAt] => 2018-03-17 15:45:19
+            [customer] => Array
+                (
+                    [externalId] => 2129
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [firstName] => user_section_1521290719
+            [phone] => +7(985)766-94-08
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 15363
+                                )
+
+                            [productName] => Эксцентрик резьба внутренняя-НАРУЖНАЯ 1/2'х 10 мм, ICMA
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 101
+                        )
+
+                    [1] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 15364
+                                )
+
+                            [productName] => Эксцентрик резьба внутренняя-НАРУЖНАЯ 1/2'х 20 мм, ICMA
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 111
+                        )
+
+                )
+
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 212
+                            [externalId] => 2303
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-26 08:52:25
+    [DATA] => Array
+        (
+            [number] => 2182
+            [externalId] => 2182
+            [createdAt] => 2018-03-26 08:52:24
+            [customer] => Array
+                (
+                    [externalId] => 1
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [customerComment] => 123123123
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                    [code] => courier
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [width] => 0
+            [height] => 0
+            [length] => 0
+            [weight] => 0
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 4808
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-26 08:52:26
+    [DATA] => Array
+        (
+            [number] => 2182
+            [externalId] => 2182
+            [createdAt] => 2018-03-26 08:52:24
+            [customer] => Array
+                (
+                    [externalId] => 1
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [customerComment] => 123123123
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                    [code] => courier
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [discountManualAmount] => 0
+            [discountManualPercent] => 0
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 14433
+                                )
+
+                            [productName] => Фильтр промывной 1/2" для ХОЛОДНОЙ воды с регулятором давления, без манометра BWT Protector mini C/R HWS 10548
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 4508
+                        )
+
+                )
+
+            [width] => 0
+            [height] => 0
+            [length] => 0
+            [weight] => 0
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 4508
+                            [externalId] => 2317
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-26 09:19:47
+    [DATA] => Array
+        (
+            [number] => 2183
+            [externalId] => 2183
+            [createdAt] => 2018-03-26 09:19:46
+            [customer] => Array
+                (
+                    [externalId] => 2143
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                    [code] => courier
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [width] => 0
+            [height] => 0
+            [length] => 0
+            [weight] => 0
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 7484
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-26 09:19:48
+    [DATA] => Array
+        (
+            [number] => 2183
+            [externalId] => 2183
+            [createdAt] => 2018-03-26 09:19:46
+            [customer] => Array
+                (
+                    [externalId] => 2143
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                    [code] => courier
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [discountManualAmount] => 0
+            [discountManualPercent] => 0
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 28269
+                                )
+
+                            [productName] => Коллектор для отопления с регулировочными вентелями STOUT на 6 контуров из нержавеющей стали SMS 0922 000006
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 7184
+                        )
+
+                )
+
+            [width] => 0
+            [height] => 0
+            [length] => 0
+            [weight] => 0
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 7184
+                            [externalId] => 2318
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-26 10:02:42
+    [DATA] => Array
+        (
+            [number] => 2184
+            [externalId] => 2184
+            [createdAt] => 2018-03-26 10:02:41
+            [customer] => Array
+                (
+                    [externalId] => 2144
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                    [code] => ems
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [width] => 0
+            [height] => 0
+            [length] => 0
+            [weight] => 0
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => credit
+                            [amount] => 1134
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-26 10:02:43
+    [DATA] => Array
+        (
+            [number] => 2184
+            [externalId] => 2184
+            [createdAt] => 2018-03-26 10:02:41
+            [customer] => Array
+                (
+                    [externalId] => 2144
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                    [code] => ems
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [discountManualAmount] => 0
+            [discountManualPercent] => 0
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 16630
+                                )
+
+                            [productName] => Воздухоотводчик автомат. с отсек клап. 1/2" латунь, FLAMCO
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 634
+                        )
+
+                )
+
+            [width] => 0
+            [height] => 0
+            [length] => 0
+            [weight] => 0
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => credit
+                            [amount] => 634
+                            [externalId] => 2319
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-26 22:40:04
+    [DATA] => Array
+        (
+            [number] => 2186
+            [externalId] => 2186
+            [createdAt] => 2018-03-26 22:40:03
+            [customer] => Array
+                (
+                    [externalId] => 1
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [customerComment] => 123123123
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                    [code] => courier
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [width] => 0
+            [height] => 0
+            [length] => 0
+            [weight] => 0
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 4808
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)
+Array
+(
+    [TIME] => 2018-03-26 22:40:05
+    [DATA] => Array
+        (
+            [number] => 2186
+            [externalId] => 2186
+            [createdAt] => 2018-03-26 22:40:03
+            [customer] => Array
+                (
+                    [externalId] => 1
+                )
+
+            [orderType] => eshop-individual
+            [status] => new
+            [customerComment] => 123123123
+            [delivery] => Array
+                (
+                    [cost] => 0
+                    [address] => 
+                    [code] => courier
+                )
+
+            [contragent] => Array
+                (
+                    [contragentType] => individual
+                )
+
+            [discountManualAmount] => 0
+            [discountManualPercent] => 0
+            [items] => Array
+                (
+                    [0] => Array
+                        (
+                            [quantity] => 1
+                            [offer] => Array
+                                (
+                                    [externalId] => 14433
+                                    [xmlId] => d9fbe787-9e48-11e5-a568-000c299320e9
+                                )
+
+                            [productName] => Фильтр промывной 1/2" для ХОЛОДНОЙ воды с регулятором давления, без манометра BWT Protector mini C/R HWS 10548
+                            [discountManualAmount] => 0
+                            [discountManualPercent] => 0
+                            [initialPrice] => 4508
+                        )
+
+                )
+
+            [width] => 0
+            [height] => 0
+            [length] => 0
+            [weight] => 0
+            [payments] => Array
+                (
+                    [0] => Array
+                        (
+                            [type] => cash
+                            [amount] => 4508
+                            [externalId] => 2321
+                            [status] => not-paid
+                        )
+
+                )
+
+        )
+
+)

@@ -599,6 +599,13 @@ class RetailCrmHistory
 
                     //items
                     $basket = $newOrder->getBasket();
+                    $fUserId = $basket->getFUserId(true);
+
+                    if ($fUserId === null) {
+                        $fUserId = Bitrix\Sale\Fuser::getIdByUserId($order['customer']['externalId']);
+                        $basket->setFUserId($fUserId);
+                    }
+
                     if (isset($order['items'])) {
                         $itemUpdate = true;
                         foreach ($order['items'] as $product) {
@@ -645,7 +652,7 @@ class RetailCrmHistory
                                     }
                                 }
 
-                                if (isset($itemCost) && $itemCost > 0) {
+                                if (isset($itemCost) && $itemCost >= 0) {
                                     $item->setField('CUSTOM_PRICE', 'Y');
                                     $item->setField('PRICE', $itemCost);
                                     $item->setField('DISCOUNT_NAME', '');

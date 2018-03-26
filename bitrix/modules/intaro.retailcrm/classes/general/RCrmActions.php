@@ -189,7 +189,7 @@ class RCrmActions
             RetailCrmOrder::uploadOrders(50, true);
         }
 
-        return 'RCrmActions::uploadOrdersAgent();';
+        return;
     }
 
     /**
@@ -260,6 +260,26 @@ class RCrmActions
         global $APPLICATION;
 
         return $APPLICATION->ConvertCharset($str, 'utf-8', SITE_CHARSET);
+    }
+
+    /**
+     * Unserialize array
+     * 
+     * @param string $string
+     * 
+     * @return array
+     */
+    public static function unserializeArrayRecursive($string)
+    {
+        if (is_string($string)) {
+            $string = unserialize($string);
+        }
+
+        if (!is_array($string)) {
+            $string = self::unserializeArrayRecursive($string);
+        }
+
+        return $string;
     }
 
     public static function explodeFIO($fio)
