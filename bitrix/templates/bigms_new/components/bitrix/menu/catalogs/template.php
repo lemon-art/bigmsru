@@ -27,7 +27,9 @@
 				<li data-level="<?=$arItem["DEPTH_LEVEL"]?>" class="sublist__item" <?if ($arItem["SELECTED"]):?>active<?endif?>">
 					<a class="sublist__link underground" href="<?=$arItem["LINK"]?>"><?=$arItem["TEXT"]?></a>
 					<ul data-level="3" class="side-nav__sublist sublist">
+						<?/*
 						<li data-level="3" class="sublist__item"><a href="<?=$arItem["LINK"]?>" class="sublist__link sublist__link_all">Все <?=strtolower($arItem["TEXT"])?></a></li>
+						*/?>
 			<?endif?>
 
 		<?else:?>
