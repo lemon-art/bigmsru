@@ -58,7 +58,8 @@
 
 					<input type="hidden" name="PROFILE_ID" value="<?= $arResult["PROFILE_ID"] ?>">
 					<input type="hidden" name="DELIVERY_LOCATION" value="<?= $arResult["DELIVERY_LOCATION"] ?>">
-					
+					<input type="hidden" name="ORDER_PROP_5" value="<?= $arResult["DELIVERY_LOCATION"] ?>">
+					<input type="hidden" name="ORDER_PROP_15" value="<?= $arResult["DELIVERY_LOCATION"] ?>">
 					
 					<input type="hidden" name="TAX_EXEMPT" value="<?= $arResult["TAX_EXEMPT"] ?>">
 					<input type="hidden" name="PAY_CURRENT_ACCOUNT" value="<?= $arResult["PAY_CURRENT_ACCOUNT"] ?>">

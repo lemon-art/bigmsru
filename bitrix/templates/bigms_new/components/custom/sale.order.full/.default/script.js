@@ -194,7 +194,8 @@ function ChangeGenerate(val)
 			$('.form-city__link').attr('data-city', DELIVERY_LOCATION).text( $(this).text() );
 			$('.form-city__popup').toggleClass('opened');
 			$('input[name="DELIVERY_LOCATION"]').val( DELIVERY_LOCATION );
-			
+			$('input[name="ORDER_PROP_5"]').val( DELIVERY_LOCATION );
+			$('input[name="ORDER_PROP_15"]').val( DELIVERY_LOCATION );
 			$.ajax({
 				type: "POST",
 				url: "/ajax/order_delivery.php",
