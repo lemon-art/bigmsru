@@ -95,7 +95,16 @@ function OnAfterIBlockElementUpdateHandler(&$arFields){
 			}
 		}
 	}
-
+	if ( $arFields["IBLOCK_ID"] == 10 ) {
+	
+		$db_props = CIBlockElement::GetProperty($arFields["IBLOCK_ID"], $arFields["ID"], array("sort" => "asc"), Array("CODE"=>"BREND_OLD"));
+		if($ar_props = $db_props->Fetch()){ 
+			
+			$arSetProps = Array( "BREND" => $ar_props['VALUE_XML_ID']);
+			CIBlockElement::SetPropertyValuesEx($arFields["ID"], false, $arSetProps);
+		}		
+	
+	}
 }
 
 
