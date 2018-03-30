@@ -79,12 +79,15 @@ function hyphen_words($text)
 		
 		
 
-foreach ($arResult['SECTIONS'] as &$arSection) {
+foreach ($arResult['SECTIONS'] as $key=> &$arSection) {
 	if(($arSection['UF_ACTIVE'] == 3 || $arSection['UF_ACTIVE'] == 4) && $arSection['UF_CUSTOM_URL'] != ''){
 		$arSection['SECTION_PAGE_URL'] = $arSection['UF_CUSTOM_URL'];
 	}
 	if ( $arUrlData[$arSection['SECTION_PAGE_URL']] ){
 		$arSection['SECTION_PAGE_URL'] =  $arUrlData[$arSection['SECTION_PAGE_URL']]; //заменяем ссылку
+	}
+	if ( $arSection['UF_NO_SECTIONS_SHOW'] ){
+		unset( $arResult['SECTIONS'][$key] );
 	}
 }  
 unset($arSection);

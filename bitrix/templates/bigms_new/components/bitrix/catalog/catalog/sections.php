@@ -51,6 +51,7 @@ if($arParams["IBLOCK_ID"] == 8){
 					2 => "UF_CUSTOM_URL",
 					3 => "UF_ACTIVE",
 					4 => "UF_ICON",
+					5 => "UF_NO_SECTIONS_SHOW",
 				),
 				"SHOW_ALL" => "1",
 				"CACHE_TYPE" => $arParams["CACHE_TYPE"],
