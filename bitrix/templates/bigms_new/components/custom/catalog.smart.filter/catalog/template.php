@@ -11,7 +11,6 @@
 /** @var string $componentPath */
 /** @var CBitrixComponent $component */
 $this->setFrameMode(true);
-
 $templateData = array(
 	'TEMPLATE_THEME' => $this->GetFolder().'/themes/'.$arParams['TEMPLATE_THEME'].'/colors.css',
 	'TEMPLATE_CLASS' => 'bx_'.$arParams['TEMPLATE_THEME']

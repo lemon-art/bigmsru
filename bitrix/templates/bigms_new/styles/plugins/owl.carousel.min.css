@@ -22,9 +22,8 @@
     border: 1px solid #2231e8;
 }
 .owl-dots{
-    display: inline-flex;
+	display: inline-flex;
     position: absolute;
-    left: -10px;
-margin-top: 5px;
-   /* top: 270px;*/
+    left: 47%;
+    margin-top: 5px;
 }

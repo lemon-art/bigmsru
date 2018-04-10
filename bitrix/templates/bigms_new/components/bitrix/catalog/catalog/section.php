@@ -70,7 +70,7 @@ $curPage = $APPLICATION->GetCurPage(false);
 
 			if ( $arUrlData[$curPage] && !substr_count($curPage, 'price') ){
 				//если есть короткое соответсвие то переходим на него
-				header("HTTP/1.1 301 Moved Permanently"); 
+				header("HTTPS/1.1 301 Moved Permanently"); 
 				header("Location: ".$arUrlData[$curPage]); 
 				exit(); 
 			}
@@ -86,7 +86,7 @@ $curPage = $APPLICATION->GetCurPage(false);
 			}
 
 			if($custom_url != ""){
-				header("HTTP/1.1 301 Moved Permanently"); 
+				header("HTTPS/1.1 301 Moved Permanently"); 
 				header("Location: ".$custom_url); 
 				exit(); 
 			}
@@ -131,7 +131,7 @@ if ((substr_count($currentUrl, 'filter') > 0 && substr_count($currentUrl, 'apply
 		$name = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect)->Fetch()['NAME'];
 		$bindProp = CIBlockElement::GetProperty(20, $el['PROPERTY_URL_BLOCK_BIND_VALUE'], array("sort" => "asc"), Array("CODE"=>"URLS"));
 		while($bind = $bindProp->GetNext()) {
-			$url = str_replace("http://www.bigms.ru", "", $bind['VALUE']);
+			$url = str_replace("https://www.bigms.ru", "", $bind['VALUE']);
 			if ( $arUrlData[$url] && !substr_count($url, 'price')){
 				$url = $arUrlData[$url];
 			}
@@ -631,7 +631,7 @@ if(isset($_GET['PAGEN_1'])) {
     $APPLICATION->SetPageProperty('keywords', $ar_result['NAME']. ' купить, '. $ar_result['NAME']. ' цена, '. $ar_result['NAME']. ' фото, '. $ar_result['NAME']. ' в Москве, '. $ar_result['NAME']. ' стоимость');
 }
 
-$APPLICATION->AddHeadString('<link href="http://'.$canonical.'" rel="canonical" />',true);
+$APPLICATION->AddHeadString('<link href="https://'.$canonical.'" rel="canonical" />',true);
 ?>
 
 

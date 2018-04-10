@@ -1,4 +1,5 @@
-<?
+<?php
+// @codingStandardsIgnoreStart
 IncludeModuleLangFile(__FILE__);
 
 if (class_exists("roistat_integration")) return;
@@ -88,7 +89,7 @@ Class roistat_integration extends CModule
 
             RegisterModule("roistat.integration");
             RegisterModuleDependences("main", "OnEndBufferContent", "roistat.integration", "CRoistat", "OnEndBufferContentHandler");
-            RegisterModuleDependences("sale", "OnOrderAdd", "roistat.integration", "CRoistat", "OnOrderAddHandler");
+            RegisterModuleDependences("sale", "onOrderSaved ", "roistat.integration", "CRoistat", "OnOrderAddHandler", 10001);
             RegisterModuleDependences("sale", "OnOrderNewSendEmail", "roistat.integration", "CRoistat", "OnOrderNewSendEmailHandler");
         }
 
@@ -181,4 +182,4 @@ Class roistat_integration extends CModule
     }
 }
 
-?>
+// @codingStandardsIgnoreEnd

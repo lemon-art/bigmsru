@@ -1,4 +1,5 @@
 <?php
+// @codingStandardsIgnoreStart
 IncludeModuleLangFile(__FILE__);
 
 class CRoistat
@@ -27,6 +28,9 @@ JAVASCRIPT;
 
     function __AddRoistatOrderProperty($ORDER_ID)
     {
+        if (!array_key_exists('visit', $_REQUEST) && !array_key_exists('roistat_visit', $_COOKIE)) {
+            return;
+        }
         if (defined('ADMIN_SECTION'))
             return;
         if (!$arOrder = CSaleOrder::GetByID($ORDER_ID))
@@ -42,7 +46,7 @@ JAVASCRIPT;
             "NAME" => GetMessage('ROISTAT_PROPERTY_NAME'),
             "CODE" => "ROISTAT_VISIT",
             "VALUE" => array_key_exists('visit', $_REQUEST) ? $_REQUEST['visit'] : $_COOKIE["roistat_visit"]
- );
+        );
 
 
         $rsPropValue = CSaleOrderPropsValue::GetList(array(), array("ORDER_ID" => $ORDER_ID, "ORDER_PROPS_ID" => $arProp["ID"]));
@@ -62,3 +66,4 @@ JAVASCRIPT;
         return true;
     }
 }
+// @codingStandardsIgnoreEnd

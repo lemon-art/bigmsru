@@ -44,9 +44,9 @@ $arUrlData = unserialize( $data );
 		
 		<?$arSection['SECTION_PAGE_URL'] = "/catalog/".$arSection["IBLOCK_CODE"]."/".$arSection["CODE"].'/filter/brend-is-'.$arParams['BRAND_XML'].'/apply/';?>
 		<?
-			if ( $arUrlData[$arSection['SECTION_PAGE_URL']] ){
-				$arSection['SECTION_PAGE_URL'] = $arUrlData[$arSection['SECTION_PAGE_URL']]; //если есть короткий url то берем его
-			}
+//			if ( $arUrlData[$arSection['SECTION_PAGE_URL']] ){
+//				$arSection['SECTION_PAGE_URL'] = $arUrlData[$arSection['SECTION_PAGE_URL']]; //если есть короткий url то берем его
+//			}
 		?>
 		<li class="brand-products__item">
             <div class="brand-products__img-wrap">

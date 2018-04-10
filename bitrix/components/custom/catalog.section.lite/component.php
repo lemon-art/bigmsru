@@ -530,13 +530,13 @@ if($this->StartResultCache(false, array($arrFilter, ($arParams["CACHE_GROUPS"]==
 	{
 		
 		$this->abortResultCache();
-		Iblock\Component\Tools::process404(
-			trim($arParams["MESSAGE_404"]) ?: GetMessage("CATALOG_SECTION_NOT_FOUND")
-			,true
-			,$arParams["SET_STATUS_404"] === "Y"
-			,$arParams["SHOW_404"] === "Y"
-			,$arParams["FILE_404"]
-		);
+//		Iblock\Component\Tools::process404(
+//			trim($arParams["MESSAGE_404"]) ?: GetMessage("CATALOG_SECTION_NOT_FOUND")
+//			,true
+//			,$arParams["SET_STATUS_404"] === "Y"
+//			,$arParams["SHOW_404"] === "Y"
+//			,$arParams["FILE_404"]
+//		);
 		return;
 		
 		

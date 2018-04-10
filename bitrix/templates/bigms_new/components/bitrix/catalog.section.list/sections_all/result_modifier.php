@@ -12,7 +12,7 @@ foreach ($arResult['SECTIONS'] as &$arSection) {
 		$arSection['SECTION_PAGE_URL'] = $arSection['UF_CUSTOM_URL'];
 	}
 	if ( $arUrlData[$arSection['SECTION_PAGE_URL']] ){
-		$arSection['SECTION_PAGE_URL'] =  $arUrlData[$arSection['SECTION_PAGE_URL']]; //заменяем ссылку
+//		$arSection['SECTION_PAGE_URL'] =  $arUrlData[$arSection['SECTION_PAGE_URL']]; //заменяем ссылку
 	}
 }  
 unset($arSection);

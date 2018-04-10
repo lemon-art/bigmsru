@@ -1,6 +1,5 @@
 <?php
-
-
+// @codingStandardsIgnoreStart
 /**
  * @return string
  */
@@ -113,5 +112,4 @@ if (!is_int($orderId)) {
 } else {
     echo json_encode(array('status' => 'ok', 'order_id' => $orderId));
 }
-
-
+// @codingStandardsIgnoreEnd

@@ -1,5 +1,6 @@
 <?php
-
+// @codingStandardsIgnoreStart
+use CRoistatUtils as Utils;
 global $DB;
 $modifiedDate = isset($_GET['date']) ? (int)$_GET['date'] : time() - 31 * 24 * 60 * 60;
 
@@ -125,15 +126,18 @@ function _addContactsValuesFromShopClients($stringWithValues, $userId, $property
     }
     foreach ($contactsData[$userId][$propertyCode] as $contactValue)
     {
-        if (strpos($result, $contactValue) !== false)
+        if (strlen($contactValue) > 0)
         {
-            continue;
+            if (strpos($result, $contactValue) !== false)
+            {
+                continue;
+            }
+            if (strlen($result) !== 0 && substr($result, -1) !== ',')
+            {
+                $result .= ',';
+            }
+            $result .= $contactValue;
         }
-        if (strlen($result) !== 0 && substr($result, -1) !== ',')
-        {
-            $result .= ',';
-        }
-        $result .= $contactValue;
     }
     return $result;
 }
@@ -197,4 +201,15 @@ foreach ($response as $index => $userData)
     $response[$index]['email'] = _addContactsValuesFromShopClients($emails, $userId, 'EMAIL', $shopContactsData);
 }
 
-echo json_encode(array('clients' => $response));
+$utils = new Utils;
+if (SITE_CHARSET !== 'UTF-8') {
+    $response = $utils->convertToUTF8(SITE_CHARSET, $response);
+}
+if ($response === null || $response === false) {
+    $response = array('status' => 'error', 'message' => 'Failed to encode non-UTF8 data.');
+} else {
+    $response = array('clients' => $response);
+}
+
+echo $utils->jsonResponse($response);
+// @codingStandardsIgnoreEnd

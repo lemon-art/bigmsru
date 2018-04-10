@@ -83,9 +83,9 @@ $count = 0;
 							
 							<?$arSection['SECTION_PAGE_URL'] = "/catalog/".$arSection["IBLOCK_CODE"]."/".$arSection["CODE"].'/filter/brend-is-'.$arParams['BRAND_XML'].'/apply/';?>
 							<?
-								if ( $arUrlData[$arSection['SECTION_PAGE_URL']] ){
-									$arSection['SECTION_PAGE_URL'] = $arUrlData[$arSection['SECTION_PAGE_URL']]; //если есть короткий url то берем его
-								}
+//								if ( $arUrlData[$arSection['SECTION_PAGE_URL']] ){
+//									$arSection['SECTION_PAGE_URL'] = $arUrlData[$arSection['SECTION_PAGE_URL']]; //если есть короткий url то берем его
+//								}
 							?>
 							<a href="<? echo $arSection['SECTION_PAGE_URL']; ?>" class="producers-item__link"><? echo $arSection['NAME']; ?></a>
 						

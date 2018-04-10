@@ -1,50 +1,51 @@
-2018-Feb-16 23:19:44 Наличие необходимых модулей php (check_php_modules): Ok
+2018-Mar-20 15:35:34 Наличие необходимых модулей php (check_php_modules): Ok
 Все необходимые модули установлены
-2018-Feb-16 23:19:44 Обязательные параметры PHP (check_php_settings): Ok
+2018-Mar-20 15:35:34 Обязательные параметры PHP (check_php_settings): Ok
 Настройки правильные
-2018-Feb-16 23:19:44 Модули веб-сервера (check_security): Ok
+2018-Mar-20 15:35:34 Модули веб-сервера (check_security): Ok
 Конфликтов не выявлено
-2018-Feb-16 23:19:44 Значения переменных сервера (check_server_vars): Ok
+2018-Mar-20 15:35:34 Значения переменных сервера (check_server_vars): Ok
 Корректные
-2018-Feb-16 23:19:45 Сохранение сессии (check_session): Ok
+2018-Mar-20 15:35:34 Сохранение сессии (check_session): Ok
 50% done
-2018-Feb-16 23:19:45 Сохранение сессии (check_session): Ok
+2018-Mar-20 15:35:34 Сохранение сессии (check_session): Ok
 Успешно
-2018-Feb-16 23:19:45 Параметры настройки UTF (mbstring и константа BX_UTF) (check_mbstring): Ok
+2018-Mar-20 15:35:35 Параметры настройки UTF (mbstring и константа BX_UTF) (check_mbstring): Ok
 Правильные. Сайт работает в UTF кодировке
-2018-Feb-16 23:19:45 Служебные скрипты в корне сайта (check_install_scripts): Ok
+2018-Mar-20 15:35:35 Служебные скрипты в корне сайта (check_install_scripts): Ok
 Отсутствуют
-2018-Feb-16 23:19:45 Работа с сокетами (check_socket): Ok
-Connection to www.bigms.ru:80	Success
+2018-Mar-20 15:35:35 Работа с сокетами (check_socket): Ok
+Connection to ssl://www.bigms.ru:443	Success
 
 Успешно
-2018-Feb-16 23:19:45 Выполнение агентов на cron (check_bx_crontab): Ok
+2018-Mar-20 15:35:35 Выполнение агентов на cron (check_bx_crontab): Ok
 Успешно
-2018-Feb-16 23:19:45 Параметры подключения к базе данных (check_dbconn_settings): Ok
+2018-Mar-20 15:35:35 Параметры подключения к базе данных (check_dbconn_settings): Ok
 Успешно
-2018-Feb-16 23:19:45 Лишний вывод в файлах конфигурации (check_dbconn): Ok
-Connection to www.bigms.ru:80	Success
+2018-Mar-20 15:35:35 Лишний вывод в файлах конфигурации (check_dbconn): Ok
+Connection to ssl://www.bigms.ru:443	Success
 
 Успешно
-2018-Feb-16 23:19:45 Сохранение сессии без UserAgent (check_session_ua): Ok
+2018-Mar-20 15:35:35 Сохранение сессии без UserAgent (check_session_ua): Ok
 50% done
-Connection to www.bigms.ru:80	Success
+Connection to ssl://www.bigms.ru:443	Success
 
-2018-Feb-16 23:19:46 Сохранение сессии без UserAgent (check_session_ua): Fail
-Connection to www.bigms.ru:80	Success
+2018-Mar-20 15:35:35 Сохранение сессии без UserAgent (check_session_ua): Fail
+Connection to ssl://www.bigms.ru:443	Success
 == Request ==
 GET /bitrix/admin/site_checker.php?test_type=session_test&unique_id=6878b57fbe16da2927c032200e2a473f HTTP/1.1
 Host: www.bigms.ru
-Cookie: PHPSESSID=setq415t7fhp7dhh43kuahemq3
+Cookie: PHPSESSID=5qjfccbh7ridbj7l02kci51ot5
 
 
 == Response ==
 HTTP/1.1 200 OK
 Server: nginx/1.6.2
-Date: Fri, 16 Feb 2018 20:19:46 GMT
+Date: Tue, 20 Mar 2018 12:35:35 GMT
 Content-Type: text/html; charset=UTF-8
 Content-Length: 681
 Connection: keep-alive
+Vary: HTTPS
 X-Powered-By: PHP/5.5.38
 Expires: Thu, 19 Nov 1981 08:52:00 GMT
 Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
@@ -53,163 +54,163 @@ X-Content-Type-Options: nosniff
 
 == Body ==
 <br />
-<b>Warning</b>:  session_start(): open(/tmp/php_sessions/ext_www/bigms.ru/sess_setq415t7fhp7dhh43kuahemq3, O_RDWR) failed: No such file or directory (2) in <b>/home/bitrix/ext_www/bigms.ru/bitrix/modules/main/admin/site_checker.php</b> on line <b>146</b><br />
+<b>Warning</b>:  session_start(): open(/tmp/php_sessions/ext_www/bigms.ru/sess_5qjfccbh7ridbj7l02kci51ot5, O_RDWR) failed: No such file or directory (2) in <b>/home/bitrix/ext_www/bigms.ru/bitrix/modules/main/admin/site_checker.php</b> on line <b>146</b><br />
 <br />
-<b>Warning</b>:  Unknown: open(/tmp/php_sessions/ext_www/bigms.ru/sess_setq415t7fhp7dhh43kuahemq3, O_RDWR) failed: No such file or directory (2) in <b>Unknown</b> on line <b>0</b><br />
+<b>Warning</b>:  Unknown: open(/tmp/php_sessions/ext_www/bigms.ru/sess_5qjfccbh7ridbj7l02kci51ot5, O_RDWR) failed: No such file or directory (2) in <b>Unknown</b> on line <b>0</b><br />
 <br />
 <b>Warning</b>:  Unknown: Failed to write session data (files). Please verify that the current setting of session.save_path is correct (/tmp/php_sessions/ext_www/bigms.ru) in <b>Unknown</b> on line <b>0</b><br />
 
 ==========
 
 Ошибка! Не работает
-2018-Feb-16 23:19:46 Настройки сайтов (check_sites): Fail
+2018-Mar-20 15:35:35 Настройки сайтов (check_sites): Fail
 Ошибка! Путь к корню сайта должен быть пустой, установлено: /home/bitrix/ext_www/bigms.ru
-2018-Feb-16 23:19:46 Передача объектов по ссылке (check_clone): Ok
+2018-Mar-20 15:35:36 Передача объектов по ссылке (check_clone): Ok
 Успешно
-2018-Feb-16 23:19:46 Размер стека и pcre.recursion_limit (check_pcre_recursion): Ok
-Connection to www.bigms.ru:80	Success
+2018-Mar-20 15:35:36 Размер стека и pcre.recursion_limit (check_pcre_recursion): Ok
+Connection to ssl://www.bigms.ru:443	Success
 
 Успешно
-2018-Feb-16 23:19:46 Загрузка файла (check_upload): Fail
+2018-Mar-20 15:35:36 Загрузка файла (check_upload): Fail
 Ошибка! Временная папка не существует (/tmp/php_upload/ext_www/bigms.ru)
-2018-Feb-16 23:19:46 Загрузка файла больше 4Мб (check_upload_big): Fail
+2018-Mar-20 15:35:36 Загрузка файла больше 4Мб (check_upload_big): Fail
 Ошибка! Временная папка не существует (/tmp/php_upload/ext_www/bigms.ru)
-2018-Feb-16 23:19:46 Загрузка файла через php://input (check_upload_raw): Fail
+2018-Mar-20 15:35:36 Загрузка файла через php://input (check_upload_raw): Fail
 Ошибка! Временная папка не существует (/tmp/php_upload/ext_www/bigms.ru)
-2018-Feb-16 23:19:46 Передача POST запроса с большим числом параметров (check_post): Ok
-Connection to www.bigms.ru:80	Success
+2018-Mar-20 15:35:36 Передача POST запроса с большим числом параметров (check_post): Ok
+Connection to ssl://www.bigms.ru:443	Success
 
 Успешно
-2018-Feb-16 23:19:47 Отправка почты (check_mail): Fail
+2018-Mar-20 15:35:36 Отправка почты (check_mail): Fail
 Ошибка! Не работает
-2018-Feb-16 23:19:47 Отправка почтового сообщения больше 64Кб (check_mail_big): Fail
+2018-Mar-20 15:35:36 Отправка почтового сообщения больше 64Кб (check_mail_big): Fail
 Ошибка! Не работает
-2018-Feb-16 23:19:47 Проверка на наличие неотправленных сообщений (check_mail_b_event): Ok
+2018-Mar-20 15:35:36 Проверка на наличие неотправленных сообщений (check_mail_b_event): Ok
 Успешно
-2018-Feb-16 23:19:47 Внутреннее перенаправление (функция LocalRedirect) (check_localredirect): Ok
+2018-Mar-20 15:35:37 Внутреннее перенаправление (функция LocalRedirect) (check_localredirect): Ok
 50% done
-Connection to www.bigms.ru:80	Success
+Connection to ssl://www.bigms.ru:443	Success
 
-2018-Feb-16 23:19:47 Внутреннее перенаправление (функция LocalRedirect) (check_localredirect): Ok
-Connection to www.bigms.ru:80	Success
+2018-Mar-20 15:35:37 Внутреннее перенаправление (функция LocalRedirect) (check_localredirect): Ok
+Connection to ssl://www.bigms.ru:443	Success
 
 Успешно
-2018-Feb-16 23:19:47 Фактическое ограничение памяти (check_memory_limit): Ok
+2018-Mar-20 15:35:37 Фактическое ограничение памяти (check_memory_limit): Ok
 20% done
-Connection to www.bigms.ru:80	Success
+Connection to ssl://www.bigms.ru:443	Success
 
-2018-Feb-16 23:19:47 Фактическое ограничение памяти (check_memory_limit): Ok
+2018-Mar-20 15:35:37 Фактическое ограничение памяти (check_memory_limit): Ok
 40% done
-Connection to www.bigms.ru:80	Success
+Connection to ssl://www.bigms.ru:443	Success
 
-2018-Feb-16 23:19:48 Фактическое ограничение памяти (check_memory_limit): Ok
+2018-Mar-20 15:35:37 Фактическое ограничение памяти (check_memory_limit): Ok
 60% done
-Connection to www.bigms.ru:80	Success
+Connection to ssl://www.bigms.ru:443	Success
 
-2018-Feb-16 23:19:48 Фактическое ограничение памяти (check_memory_limit): Ok
+2018-Mar-20 15:35:37 Фактическое ограничение памяти (check_memory_limit): Ok
 80% done
-Connection to www.bigms.ru:80	Success
+Connection to ssl://www.bigms.ru:443	Success
 
-2018-Feb-16 23:19:48 Фактическое ограничение памяти (check_memory_limit): Ok
-Connection to www.bigms.ru:80	Success
+2018-Mar-20 15:35:38 Фактическое ограничение памяти (check_memory_limit): Ok
+Connection to ssl://www.bigms.ru:443	Success
 
 Не менее 256 М
-2018-Feb-16 23:19:48 Работа с файлами кеша (check_cache): Ok
+2018-Mar-20 15:35:38 Работа с файлами кеша (check_cache): Ok
 Успешно
-2018-Feb-16 23:19:49 Доступ к серверу обновлений (check_update): Ok
+2018-Mar-20 15:35:38 Доступ к серверу обновлений (check_update): Ok
 Успешно
-2018-Feb-16 23:19:49 HTTP авторизация (check_http_auth): Ok
-Connection to www.bigms.ru:80	Success
+2018-Mar-20 15:35:38 HTTP авторизация (check_http_auth): Ok
+Connection to ssl://www.bigms.ru:443	Success
 
 Успешно
-2018-Feb-16 23:19:49 Создание и запуск файла (check_exec): Ok
-Connection to www.bigms.ru:80	Success
+2018-Mar-20 15:35:38 Создание и запуск файла (check_exec): Ok
+Connection to ssl://www.bigms.ru:443	Success
 
 Успешно
-2018-Feb-16 23:19:49 Функция getimagesize для swf (check_getimagesize): Ok
+2018-Mar-20 15:35:38 Функция getimagesize для swf (check_getimagesize): Ok
 Успешно
-2018-Feb-16 23:19:50 Версия MySQL-сервера (check_mysql_bug_version): Ok
+2018-Mar-20 15:35:38 Версия MySQL-сервера (check_mysql_bug_version): Ok
 Успешно
-2018-Feb-16 23:19:51 Время на БД и веб-сервере (check_mysql_time): Ok
+2018-Mar-20 15:35:39 Время на БД и веб-сервере (check_mysql_time): Ok
 Успешно
-2018-Feb-16 23:19:51 Режим работы MySQL (check_mysql_mode): Ok
+2018-Mar-20 15:35:39 Режим работы MySQL (check_mysql_mode): Ok
 Успешно
-2018-Feb-16 23:19:51 Кодировка соединения (check_mysql_connection_charset): Ok
+2018-Mar-20 15:35:39 Кодировка соединения (check_mysql_connection_charset): Ok
 character_set_connection=utf8, collation_connection=utf8_unicode_ci, character_set_results=utf8
 Успешно
-2018-Feb-16 23:19:51 Кодировка базы данных (check_mysql_db_charset): Ok
+2018-Mar-20 15:35:39 Кодировка базы данных (check_mysql_db_charset): Ok
 CHARSET=utf8, COLLATION=utf8_unicode_ci
 Успешно
-2018-Feb-16 23:19:51 Кодировки таблиц в БД (check_mysql_table_charset): Ok
+2018-Mar-20 15:35:39 Кодировки таблиц в БД (check_mysql_table_charset): Ok
 Успешно
-2018-Feb-16 23:19:51 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:35:39 Структура базы данных (check_mysql_table_structure): Ok
 0% done
-2018-Feb-16 23:19:51 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:35:39 Структура базы данных (check_mysql_table_structure): Ok
 3% done
-2018-Feb-16 23:19:52 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:35:40 Структура базы данных (check_mysql_table_structure): Ok
 6% done
-2018-Feb-16 23:19:52 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:35:40 Структура базы данных (check_mysql_table_structure): Ok
 9% done
-2018-Feb-16 23:19:53 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:35:41 Структура базы данных (check_mysql_table_structure): Ok
 12% done
-2018-Feb-16 23:19:53 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:35:41 Структура базы данных (check_mysql_table_structure): Ok
 15% done
-2018-Feb-16 23:19:54 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:35:42 Структура базы данных (check_mysql_table_structure): Ok
 18% done
-2018-Feb-16 23:19:54 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:35:43 Структура базы данных (check_mysql_table_structure): Ok
 21% done
-2018-Feb-16 23:19:54 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:35:43 Структура базы данных (check_mysql_table_structure): Ok
 24% done
-2018-Feb-16 23:19:55 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:35:43 Структура базы данных (check_mysql_table_structure): Ok
 27% done
-2018-Feb-16 23:19:57 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:35:45 Структура базы данных (check_mysql_table_structure): Ok
 30% done
-2018-Feb-16 23:20:02 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:35:50 Структура базы данных (check_mysql_table_structure): Ok
 33% done
-2018-Feb-16 23:20:03 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:35:51 Структура базы данных (check_mysql_table_structure): Ok
 36% done
-2018-Feb-16 23:20:03 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:35:52 Структура базы данных (check_mysql_table_structure): Ok
 39% done
-2018-Feb-16 23:20:11 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:36:00 Структура базы данных (check_mysql_table_structure): Ok
 42% done
-2018-Feb-16 23:20:11 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:36:00 Структура базы данных (check_mysql_table_structure): Ok
 45% done
-2018-Feb-16 23:20:11 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:36:00 Структура базы данных (check_mysql_table_structure): Ok
 48% done
-2018-Feb-16 23:20:13 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:36:01 Структура базы данных (check_mysql_table_structure): Ok
 51% done
-2018-Feb-16 23:20:15 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:36:03 Структура базы данных (check_mysql_table_structure): Ok
 54% done
 В таблице b_iblock_property поле HINT "varchar(1500) NULL DEFAULT NULL  " не соответствует описанию на диске "varchar(255) NULL DEFAULT NULL  "
 
-2018-Feb-16 23:20:15 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:36:03 Структура базы данных (check_mysql_table_structure): Ok
 57% done
-2018-Feb-16 23:20:15 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:36:03 Структура базы данных (check_mysql_table_structure): Ok
 60% done
-2018-Feb-16 23:20:16 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:36:03 Структура базы данных (check_mysql_table_structure): Ok
 63% done
-2018-Feb-16 23:20:16 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:36:04 Структура базы данных (check_mysql_table_structure): Ok
 66% done
-2018-Feb-16 23:20:16 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:36:04 Структура базы данных (check_mysql_table_structure): Ok
 69% done
-2018-Feb-16 23:20:17 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:36:04 Структура базы данных (check_mysql_table_structure): Ok
 72% done
-2018-Feb-16 23:20:17 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:36:05 Структура базы данных (check_mysql_table_structure): Ok
 75% done
-2018-Feb-16 23:20:17 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:36:05 Структура базы данных (check_mysql_table_structure): Ok
 78% done
-2018-Feb-16 23:20:17 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:36:05 Структура базы данных (check_mysql_table_structure): Ok
 81% done
-2018-Feb-16 23:20:19 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:36:06 Структура базы данных (check_mysql_table_structure): Ok
 84% done
-2018-Feb-16 23:20:20 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:36:08 Структура базы данных (check_mysql_table_structure): Ok
 87% done
-2018-Feb-16 23:20:20 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:36:08 Структура базы данных (check_mysql_table_structure): Ok
 90% done
-2018-Feb-16 23:20:21 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:36:09 Структура базы данных (check_mysql_table_structure): Ok
 93% done
-2018-Feb-16 23:20:21 Структура базы данных (check_mysql_table_structure): Ok
+2018-Mar-20 15:36:09 Структура базы данных (check_mysql_table_structure): Ok
 96% done
-2018-Feb-16 23:20:21 Структура базы данных (check_mysql_table_structure): Fail
+2018-Mar-20 15:36:09 Структура базы данных (check_mysql_table_structure): Fail
 ALTER TABLE `b_iblock_property` MODIFY `HINT` varchar(255) NULL DEFAULT NULL  ;
 Ошибка! Структура базы данных имеет ошибки (нет таблиц: 0, нет полей: 0, поля отличаются: 1, нет индексов: 0). Всего 1, автоматически могут быть исправлены: 0.

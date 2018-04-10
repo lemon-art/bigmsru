@@ -63,8 +63,8 @@ if(isset($_REQUEST) && isset($_GET) && $last_symbol_url != "/"){
     <meta property="og:title" content='<?$APPLICATION->ShowTitle()?>' />
     <meta property="og:description" content="<?=$APPLICATION->ShowProperty("description")?>" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="<?='http://'.SITE_SERVER_NAME.$APPLICATION->GetCurPage(false)?>" />
-    <meta property="og:image" content="http://www.bigms.ru/bitrix/templates/bigms/images/big-logo.png">
+    <meta property="og:url" content="<?='https://'.SITE_SERVER_NAME.$APPLICATION->GetCurPage(false)?>" />
+    <meta property="og:image" content="https://www.bigms.ru/bitrix/templates/bigms/images/big-logo.png">
 	
 	<?if($page == "/index.php" || $page == "/kontakty/index.php" || $page == "/proizvoditeli/index.php"):?>
 		<?if(!isset($_REQUEST["_escaped_fragment_"])):?>
@@ -74,7 +74,7 @@ if(isset($_REQUEST) && isset($_GET) && $last_symbol_url != "/"){
 	
 	
 
-	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 	
 	
 	<!--script type="text/javascript" src="<?=SITE_TEMPLATE_PATH?>/js/jquery-1.11.1.min.js"></script-->

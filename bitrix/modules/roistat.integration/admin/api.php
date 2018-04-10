@@ -1,4 +1,6 @@
 <?php
+// @codingStandardsIgnoreStart
+
 @define("NOT_CHECK_PERMISSIONS", true);
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
 
@@ -24,3 +26,5 @@ if ($_REQUEST["action"] === 'export') {
 } elseif ($_REQUEST["action"] === 'export_clients') {
     require_once(__DIR__ . '/action_export_clients.php');
 }
+
+// @codingStandardsIgnoreEnd
