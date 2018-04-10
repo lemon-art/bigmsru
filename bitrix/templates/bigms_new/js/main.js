@@ -395,7 +395,7 @@ $(document).ready(function() {
 	});
 	
 	$('[data-level="1"] > a').click(function() {
-		return false;
+		//return false;
 	});
 	
 	$('.header__status').on('click', '.status-bar_cursor', function(e) {
