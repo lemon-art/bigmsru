@@ -148,7 +148,7 @@ $(document).ready(function() {
   var screenHeight = document.documentElement.clientHeight,
       headerHeight = $('.header').innerHeight(),
      // sidebarHeight = $('.sidebar').innerHeight(),
-	  sidebarHeight = 1100;
+	  sidebarHeight = 1200;
       ifToggle = $('body').hasClass('menu-fix') || false,
       menuTop = 0,
       dataClick = ($('.sidebar').data('click') == false)? false: true;
