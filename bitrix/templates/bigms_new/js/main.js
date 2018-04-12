@@ -147,7 +147,8 @@ $(document).ready(function() {
 
   var screenHeight = document.documentElement.clientHeight,
       headerHeight = $('.header').innerHeight(),
-      sidebarHeight = $('.sidebar').innerHeight(),
+     // sidebarHeight = $('.sidebar').innerHeight(),
+	  sidebarHeight = 800;
       ifToggle = $('body').hasClass('menu-fix') || false,
       menuTop = 0,
       dataClick = ($('.sidebar').data('click') == false)? false: true;
@@ -166,12 +167,18 @@ $(document).ready(function() {
     var sidebarHeightScreens = Math.floor(sidebarHeight/screenHeight),
         sidebarMarginTop = -(sidebarHeight % screenHeight),
         tempMargin = 0;
+		
+
     if(PageScrollY > headerHeight) {
-      $('.sidebar').addClass('top-fixed');
+     $('.sidebar').addClass('top-fixed');
     } else {
       $('.sidebar').removeClass('top-fixed');
     }
+	
     if(screenHeight < sidebarHeight) {
+	
+
+	
       if(PageScrollY > headerHeight) {
         $('.sidebar').addClass('top-fixed');
         if (menuTop > 0) {

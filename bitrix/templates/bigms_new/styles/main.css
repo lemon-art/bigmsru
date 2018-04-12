@@ -2907,7 +2907,7 @@ body {
     position: fixed; }
 
 .side-nav {
-  font-family: 'Museo700', sans-serif, Arial;
+  font-family: 'Museo500', sans-serif, Arial;
   position: relative;
   z-index: 2;
   transition: all 0s linear;
@@ -3205,7 +3205,7 @@ body {
     -webkit-align-items: center;
         -ms-flex-align: center;
             align-items: center;
-    font-family: 'Museo500', sans-serif, Arial;
+    font-family: 'Museo400', sans-serif, Arial;
     text-decoration: none;
     color: #1c6bc4; }
     .sublist__link.underground:after {
