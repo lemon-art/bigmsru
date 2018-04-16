@@ -1070,7 +1070,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 						<?endif;?>
 
 					</div>
-					<div data-tab="stats" class="product-tabs__content tabs__content">
+					<div data-tab="docs" class="product-tabs__content tabs__content">
 						<?include($_SERVER["DOCUMENT_ROOT"].$templateFolder."/files.php");	//вкладка "документация"?>
 					</div>
 					
