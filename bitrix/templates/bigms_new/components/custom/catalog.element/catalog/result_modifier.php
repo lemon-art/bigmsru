@@ -588,11 +588,21 @@ if ($arResult['MODULES']['currency'])
 	}
 }
 
+
 if ( is_array($arResult['PROPERTIES']['FILES']['VALUE']) ){
-	foreach ( $arResult['DISPLAY_PROPERTIES']['FILES']['VALUE'] as $file ){
-			
+	$arFiles = Array();
+	foreach ( $arResult['PROPERTIES']['FILES']['VALUE'] as $key => $file ){
+	
+		$rsFile = CFile::GetByID($file);
+        $arFile = $rsFile->Fetch();
+	
+		$arFiles[] = Array(
+			"NAME" => $arResult['PROPERTIES']['DESCRIPTION'][$key],
+			"SRC"  => CFile::GetPath($file)
+			"DATA" => $arFile
 	}
 	$arResult['SHOW_FILES'] = true;
+	$arResult['FILES'] = $arFiles;
 }
 
 

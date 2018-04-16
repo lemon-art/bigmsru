@@ -6,7 +6,7 @@
 								<div class="col-lg-10 col-md-13 col-sm-18">
 									
 									<pre>
-										<?print_r( $arResult['PROPERTIES']['FILES'] );?>
+										<?print_r( $arResult['FILES'] );?>
 									</pre>
 									
 								</div>
