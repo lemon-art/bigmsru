@@ -12,6 +12,7 @@ $arDescription = Array(
 									  <li class="product-about__list-item">Банковской картой в магазине</li>
 									  <li class="product-about__list-item">Сбербанк Онлайн</li>
 									  <li class="product-about__list-item">Безналичный расчет</li>
+									  <li class="product-about__list-item">В кредит</li>
 									</ul>
 					'
 	),
