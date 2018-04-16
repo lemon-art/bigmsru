@@ -588,6 +588,13 @@ if ($arResult['MODULES']['currency'])
 	}
 }
 
+if ( is_array($arResult['PROPERTIES']['FILES']['VALUE']) ){
+	foreach ( $arResult['DISPLAY_PROPERTIES']['FILES']['VALUE'] as $file ){
+			
+	}
+	$arResult['SHOW_FILES'] = true;
+}
+
 
 if($arParams["IBLOCK_ID"] == 10){
 	$arResult["SECTION_SHOP"] = 27;

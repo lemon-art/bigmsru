@@ -108,6 +108,9 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 						<ul class="product-tabs__header-list tabs__header">
 							<li data-trigger="all" class="product-tabs__header-item tabs-trigger active">Всё о товаре</li>
 							<li data-trigger="stats" class="product-tabs__header-item tabs-trigger">Характеристики</li>
+							<?if ($arResult['SHOW_FILES']):?>
+								<li data-trigger="docs" class="product-tabs__header-item tabs-trigger">Документация</li>
+							<?endif;?>
 							<?if ( count($arResult["COLLECTIONS"]) > 0 ):?>
 								<li data-trigger="collection" class="product-tabs__header-item tabs-trigger">Товары из одной коллекции (<?=count($arResult["COLLECTIONS"])-1?>)</li>
 							<?endif;?>
@@ -1068,8 +1071,18 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 
 					</div>
 					<div data-tab="stats" class="product-tabs__content tabs__content">
-						<?include($_SERVER["DOCUMENT_ROOT"].$templateFolder."/stats.php");	//вкладка "характеристики"?>
+						<?include($_SERVER["DOCUMENT_ROOT"].$templateFolder."/files.php");	//вкладка "документация"?>
 					</div>
+					
+					<?if ($arResult['SHOW_FILES']):?>
+
+						<div data-tab="stats" class="product-tabs__content tabs__content">
+							<?include($_SERVER["DOCUMENT_ROOT"].$templateFolder."/stats.php");	//вкладка "характеристики"?>
+						</div>
+						
+					<?endif;?>
+					
+					
 					<div data-tab="service" class="product-tabs__content tabs__content">
 					
 					</div>
