@@ -596,10 +596,25 @@ if ( is_array($arResult['PROPERTIES']['FILES']['VALUE']) ){
 		$rsFile = CFile::GetByID($file);
         $arFile = $rsFile->Fetch();
 	
+		if ( $arFile["DESCRIPTION"] ){
+			$name = $arFile["DESCRIPTION"];
+		}
+		else {
+			$name = $arFile["ORIGINAL_NAME"];
+		}
+		
+		if ( $arFile["CONTENT_TYPE"] == 'application/pdf'){
+			$type="pdf";
+		}
+		else {
+			$type="word";
+		}
+		
+	
 		$arFiles[] = Array(
-			"NAME" => $arResult['PROPERTIES']['DESCRIPTION'][$key],
+			"NAME" => $name,
 			"SRC"  => CFile::GetPath($file),
-			"DATA" => $arFile
+			"TYPE" => $type
 		);
 	}
 	$arResult['SHOW_FILES'] = true;
