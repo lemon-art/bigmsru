@@ -598,8 +598,9 @@ if ( is_array($arResult['PROPERTIES']['FILES']['VALUE']) ){
 	
 		$arFiles[] = Array(
 			"NAME" => $arResult['PROPERTIES']['DESCRIPTION'][$key],
-			"SRC"  => CFile::GetPath($file)
+			"SRC"  => CFile::GetPath($file),
 			"DATA" => $arFile
+		);
 	}
 	$arResult['SHOW_FILES'] = true;
 	$arResult['FILES'] = $arFiles;
