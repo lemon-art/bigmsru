@@ -20,12 +20,32 @@
 
 .docs_list{
 	list-style: none;
-	margin-top: 50x;
+	margin-top: 50px;
 }
 
 .docs_list li{
-	display: inline-block;
-	margin-right: 40px;
+    display: inline-block;
+    margin-right: 20px;
+    width: 215px;
+    text-align: center;
+	height: 300px;
+}
+
+.docs_pic {
+	height: 220px;
+}
+
+.docs_name {
+	display: block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color: #1c6bc4;
+    font-size: 15px;
+    font-family: 'Museo700', sans-serif, Arial;
+    font-weight: bold;
+    height: 51px;
+    text-decoration: none;
+    overflow: hidden;
 }
 
 a.char_tab {
