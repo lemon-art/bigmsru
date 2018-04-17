@@ -18,6 +18,16 @@
 	white-space: nowrap;
 }
 
+.docs_list{
+	list-style: none;
+	margin-top: 50x;
+}
+
+.docs_list li{
+	display: inline-block;
+	margin-right: 40px;
+}
+
 a.char_tab {
     color: #2d2d2d;
     font-size: 0.750em;
