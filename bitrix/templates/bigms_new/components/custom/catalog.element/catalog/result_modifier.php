@@ -589,11 +589,18 @@ if ($arResult['MODULES']['currency'])
 }
 
 
-if ( is_array($arResult['PROPERTIES']['FILES']['VALUE']) ){
+if ( is_array($arResult['PROPERTIES']['DOCS']['VALUE']) ){
+
 	$arFiles = Array();
-	foreach ( $arResult['PROPERTIES']['FILES']['VALUE'] as $key => $file ){
-	
-		$rsFile = CFile::GetByID($file);
+	$arFilter = Array(
+		"IBLOCK_ID"=>24, 
+	 	"ACTIVE"=>"Y", 
+		"ID"=>$arResult['PROPERTIES']['DOCS']['VALUE']
+	);
+	$res = CIBlockElement::GetList(Array("SORT"=>"ASC"), $arFilter, Array("NAME", "PREVIEW_PICTURE", "PROPERTY_file"));
+	while($ar_fields = $res->GetNext()){
+		
+		$rsFile = CFile::GetByID($ar_fields["PROPERTY_FILE_VALUE"]);
         $arFile = $rsFile->Fetch();
 	
 		if ( $arFile["DESCRIPTION"] ){
@@ -610,16 +617,22 @@ if ( is_array($arResult['PROPERTIES']['FILES']['VALUE']) ){
 			$type="word";
 		}
 		
+		$file = CFile::ResizeImageGet($ar_fields['PREVIEW_PICTURE'], array('width'=>150, 'height'=>250), BX_RESIZE_IMAGE_PROPORTIONAL, true);                
+        $ar_fields['PICTURE'] = $file['src'];     
 	
-		$arFiles[] = Array(
+		$ar_fields['FILE'] = Array(
 			"NAME" => $name,
-			"SRC"  => CFile::GetPath($file),
+			"SRC"  => CFile::GetPath($ar_fields["PROPERTY_FILE_VALUE"]),
 			"TYPE" => $type
 		);
+		
+		$arFiles [] = $ar_fields;
 	}
+
 	$arResult['SHOW_FILES'] = true;
 	$arResult['FILES'] = $arFiles;
 }
+;
 
 
 if($arParams["IBLOCK_ID"] == 10){
