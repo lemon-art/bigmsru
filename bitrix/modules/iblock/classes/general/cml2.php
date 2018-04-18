@@ -4511,6 +4511,11 @@ class CIBlockCMLImport
 				if(!$res)
 				{
 					$this->LAST_ERROR = $obSection->LAST_ERROR;
+					
+					$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
+					fwrite($fp, $arSection["NAME"] . ' - ' . $this->LAST_ERROR . PHP_EOL);
+					fclose($fp);
+					
 					return $this->LAST_ERROR;
 				}
 			}
@@ -4534,6 +4539,11 @@ class CIBlockCMLImport
 			if(!$arSection["ID"])
 			{
 				$this->LAST_ERROR = $obSection->LAST_ERROR;
+				
+				$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
+				fwrite($fp, $arSection["NAME"] . ' - ' . $this->LAST_ERROR . PHP_EOL);
+				fclose($fp);
+				
 				return $this->LAST_ERROR;
 			}
 		}
