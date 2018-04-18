@@ -4312,6 +4312,11 @@ class CIBlockCMLImport
 		global $USER_FIELD_MANAGER;
 		/** @var CDatabase $DB */
 		global $DB;
+		
+				$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
+				fwrite($fp, $xml_tree_id . PHP_EOL); 
+				fclose($fp); 
+		 
 
 		static $arUserFields;
 		if($parent_section_id === false)
