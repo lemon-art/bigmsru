@@ -4453,6 +4453,10 @@ class CIBlockCMLImport
 				}
 			}
 		}
+		
+				$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
+				fwrite($fp, $arSection["XML_ID"] . PHP_EOL);
+				fclose($fp);
 
 		$obSection = new CIBlockSection;
 		$rsSection = $obSection->GetList(array(), array("IBLOCK_ID"=>$IBLOCK_ID, "XML_ID"=>$arSection["XML_ID"]), false);
