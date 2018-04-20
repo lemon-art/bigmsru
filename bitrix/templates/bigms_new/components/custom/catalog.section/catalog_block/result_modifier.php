@@ -4,7 +4,29 @@ use Bitrix\Currency\CurrencyTable;
 
 if (array_key_exists('is_ajax', $_REQUEST) && $_REQUEST['is_ajax']=='y') {
     $APPLICATION->RestartBuffer();
+
 }
+
+
+			//есть ли pdf
+			$arFilter = Array('IBLOCK_ID' => $arParams['IBLOCK_ID'],'ID' => $arResult["ID"]); 
+			$db_list = CIBlockSection::GetList(Array(), $arFilter, false, Array("UF_PDF")); 
+			if($uf_value = $db_list->GetNext()): 
+				$pdf = $uf_value["UF_PDF"];
+				$arFilter = Array(
+					"IBLOCK_ID"=>24, 
+					"ACTIVE"=>"Y", 
+					"ID"=>$pdf,
+					"!PROPERTY_file" => false
+				 );
+				$res = CIBlockElement::GetList(Array("SORT"=>"ASC", "PROPERTY_PRIORITY"=>"ASC"), $arFilter, Array("NAME", "PROPERTY_file"));
+				if($ar_fields = $res->GetNext()){
+					$arResult["PDF_FILE"] = CFile::GetPath($ar_fields["PROPERTY_FILE_VALUE"]);
+				}
+				
+				
+			endif;
+
 
 
 if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED!==true) die();

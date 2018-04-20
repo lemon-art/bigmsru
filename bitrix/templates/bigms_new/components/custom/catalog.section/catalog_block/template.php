@@ -206,3 +206,9 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 	<?endif;?>
 	
 <?endif;?>
+
+
+<?if ( $arResult["PDF_FILE"] ):?>
+	<object><embed src="<?=$arResult["PDF_FILE"]?>" width="100%" height="700" /></object>
+<?endif;?>
+
