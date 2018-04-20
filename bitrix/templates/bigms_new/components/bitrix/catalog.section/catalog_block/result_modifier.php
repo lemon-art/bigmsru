@@ -27,6 +27,18 @@ $arDefaultParams = array(
 );
 $arParams = array_merge($arDefaultParams, $arParams);
 
+			//есть ли pdf
+			$arFilter = Array('IBLOCK_ID' => $arParams['IBLOCK_ID'],'ID' => $arResult["ID"]); 
+			$db_list = CIBlockSection::GetList(Array(), $arFilter, false, Array("UF_PDF")); 
+			if($uf_value = $db_list->GetNext()): 
+				$pdf = $uf_value["UF_PDF"];
+				echo $pdf;
+				
+				
+			endif;
+			
+			echo '123123';
+
 if (!isset($arParams['LINE_ELEMENT_COUNT']))
 	$arParams['LINE_ELEMENT_COUNT'] = 3;
 $arParams['LINE_ELEMENT_COUNT'] = intval($arParams['LINE_ELEMENT_COUNT']);
