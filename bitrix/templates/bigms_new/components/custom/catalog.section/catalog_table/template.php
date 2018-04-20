@@ -216,5 +216,15 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 	<?if ($arParams["DISPLAY_BOTTOM_PAGER"]):?>
 		<? echo $arResult["NAV_STRING"]; ?>
 	<?endif;?>
-	
+<?else:?>
+	<script>
+		$('.content-products__header').hide();
+	</script>
+<?endif;?>
+
+<?if ( $arResult["PDF_FILE"] ):?>
+	<?if ( $arResult["PDF_TEXT"] ):?>
+		<?=$arResult["PDF_TEXT"]?>
+	<?endif;?>
+	<object><embed src="<?=$arResult["PDF_FILE"]?>" width="100%" height="700" /></object>
 <?endif;?>

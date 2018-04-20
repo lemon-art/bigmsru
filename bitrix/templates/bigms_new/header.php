@@ -487,6 +487,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                     </span>
                   </a>
                 </li>
+				<li class="sublist__item" data-hover="Показать товары">
+                  <a href="/proizvoditeli/OVENTROP/"><span class="sublist__img-wrap"><img class="sublist__logo" src="<?=SITE_TEMPLATE_PATH?>/styles/images/producer_oventrop.jpg" alt=""></span></a>
+                </li>
                 <li class="sublist__item" data-hover="Показать товары">
                   <a href="/proizvoditeli/UPONOR/">
                     <span class="sublist__img-wrap">
@@ -494,9 +497,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                     </span>
                   </a>
                 </li>
-                <li class="sublist__item" data-hover="Показать товары">
-                  <a href="/proizvoditeli/OVENTROP/"><span class="sublist__img-wrap"><img class="sublist__logo" src="<?=SITE_TEMPLATE_PATH?>/styles/images/producer_oventrop.jpg" alt=""></span></a>
-                </li>
+
 				<li class="sublist__item" data-hover="Показать товары">
                   <a href="/proizvoditeli/EUROSTER/"><span class="sublist__img-wrap"><img class="sublist__logo" src="<?=SITE_TEMPLATE_PATH?>/styles/images/producer_euroster.jpg" alt=""></span></a>
                 </li>
