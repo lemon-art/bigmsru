@@ -15,7 +15,6 @@
 							 <ul class="cart-delivery__list">
 								<li class="cart-delivery__item">до 1 км от МКАД – 500 руб.</li>
 								<li class="cart-delivery__item">от 1 до 6 км от МКАД - 600 руб.</li>
-								<li class="cart-delivery__item">от 1 до 6 км от МКАД - 600 руб.</li>
 							  </ul>
 						 </div>
 					   </div>
