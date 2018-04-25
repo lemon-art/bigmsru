@@ -9,6 +9,13 @@
             <p class="content-ordered__text">Спасибо, что выбрали нас.</p>
             <a href="/" class="content-cart__back content-ordered__back">Вернуться на главную</a>
 
+			<script type="text/javascript">
+			 window.onload = function() {
+			  yaCounter31721621.reachGoal('TARGET_ORDER_JS');
+			 }
+			</script>
+			
+			
 <?else:?>
 	
 <div class="content__container content__container_order">
