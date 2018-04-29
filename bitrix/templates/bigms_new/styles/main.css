@@ -6743,7 +6743,7 @@ ul.sublist[data-level="3"] .sublist__link:after {
 }
 
 #main_tabs ul.vertical_tabs li.ui-state-active{
-	background-color: #1c6bc4;
+	background-color: #ff6d4b;
 }
 
 #main_tabs ul.vertical_tabs li a{
@@ -6753,7 +6753,7 @@ ul.sublist[data-level="3"] .sublist__link:after {
     -ms-transform: rotate(-90deg) translate(-80px, 0px);
     transform: rotate(-90deg) translate(-80px, 0px);
 	display: block;
-	color: #1c6bc4;
+	color: #ff6d4b;
 	font-family: 'Museo500', sans-serif, Arial;
 	text-decoration: none;
 
