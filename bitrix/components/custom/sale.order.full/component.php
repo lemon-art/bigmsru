@@ -361,7 +361,67 @@ if ( is_array( $arResult["POST"] ) ){
 		}
 		else
 		{
+			$arOrder = $arResult;
+				if ($arOrder)
+				{
+				
+					if (IntVal($arOrder["PAY_SYSTEM_ID"]) > 0)
+					{
+						$dbPaySysAction = CSalePaySystemAction::GetList(
+								array(),
+								array(
+										"PAY_SYSTEM_ID" => $arOrder["PAY_SYSTEM_ID"],
+										"PERSON_TYPE_ID" => $arOrder["PERSON_TYPE_ID"]
+									),
+								false,
+								false,
+								array("NAME", "ACTION_FILE", "NEW_WINDOW", "PARAMS", "ENCODING")
+							);
+						if ($arPaySysAction = $dbPaySysAction->Fetch())
+						{
+						
+							$arPaySysAction["NAME"] = htmlspecialcharsEx($arPaySysAction["NAME"]);
+							if (strlen($arPaySysAction["ACTION_FILE"]) > 0)
+							{
+								if ($arPaySysAction["NEW_WINDOW"] != "Y")
+								{
+									CSalePaySystemAction::InitParamArrays($arOrder, $ID, $arPaySysAction["PARAMS"]);
 
+									$pathToAction = $_SERVER["DOCUMENT_ROOT"].$arPaySysAction["ACTION_FILE"];
+
+									$pathToAction = str_replace("\\", "/", $pathToAction);
+									while (substr($pathToAction, strlen($pathToAction) - 1, 1) == "/")
+										$pathToAction = substr($pathToAction, 0, strlen($pathToAction) - 1);
+
+									if (file_exists($pathToAction))
+									{
+										if (is_dir($pathToAction) && file_exists($pathToAction."/payment.php"))
+											$pathToAction .= "/payment.php";
+
+										$arPaySysAction["PATH_TO_ACTION"] = $pathToAction;
+									}
+
+									if(strlen($arPaySysAction["ENCODING"]) > 0)
+									{
+										define("BX_SALE_ENCODING", $arPaySysAction["ENCODING"]);
+										AddEventHandler("main", "OnEndBufferContent", "ChangeEncoding");
+										function ChangeEncoding($content)
+										{
+											global $APPLICATION;
+											header("Content-Type: text/html; charset=".BX_SALE_ENCODING);
+											$content = $APPLICATION->ConvertCharset($content, SITE_CHARSET, BX_SALE_ENCODING);
+											$content = str_replace("charset=".SITE_CHARSET, "charset=".BX_SALE_ENCODING, $content);
+										}
+									}
+								} 
+							}
+							$arResult["PAY_SYSTEM"] = $arPaySysAction;
+							
+						}
+					}
+				}
+		
+		
 
 			
 				//заполняем свойства заказа
@@ -1601,7 +1661,7 @@ if ($USER->IsAuthorized())
 		}
 	}
 	//------------------ STEP 6 ----------------------------------------------
-	elseif ($arResult["CurrentStep"] == 7)
+	elseif ( $arResult["ORDER_ID"] )
 	{
 		$arOrder = false;
 		if ($bUseAccountNumber) // supporting ACCOUNT_NUMBER or ID in the URL
@@ -1637,8 +1697,11 @@ if ($USER->IsAuthorized())
 
 		if ($arOrder)
 		{
+		
+			echo '0<br>';
 			if (IntVal($arOrder["PAY_SYSTEM_ID"]) > 0)
 			{
+				echo '1<br>';
 				$dbPaySysAction = CSalePaySystemAction::GetList(
 						array(),
 						array(
@@ -1651,6 +1714,8 @@ if ($USER->IsAuthorized())
 					);
 				if ($arPaySysAction = $dbPaySysAction->Fetch())
 				{
+				
+				echo '2<br>';
 					$arPaySysAction["NAME"] = htmlspecialcharsEx($arPaySysAction["NAME"]);
 					if (strlen($arPaySysAction["ACTION_FILE"]) > 0)
 					{
@@ -1687,8 +1752,14 @@ if ($USER->IsAuthorized())
 						}
 					}
 					$arResult["PAY_SYSTEM"] = $arPaySysAction;
+					
+					echo "<pre>";
+					print_r( $arPaySysAction);
+					echo "</pre>";
+					
 				}
 			}
+			echo "no1";
 
 			$arResult["ORDER"] = $arOrder;
 

@@ -6770,3 +6770,8 @@ ul.sublist[data-level="3"] .sublist__link:after {
 #main_tabs ul.vertical_tabs li.ui-state-active a{
 	color: #fff;
 }
+
+.text_main {
+	font-family: 'Museo500';
+    line-height: 20pt;
+}
