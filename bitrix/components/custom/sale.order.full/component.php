@@ -337,7 +337,6 @@ if ( is_array( $arResult["POST"] ) ){
 						"PAYED" => "N",
 						"CANCELED" => "N",
 						"STATUS_ID" => "N",
-						"SHOULD_PAY" => $totalOrderPrice,
 						"PRICE" => $totalOrderPrice,
 						"CURRENCY" => $arResult["BASE_LANG_CURRENCY"],
 						"USER_ID" => IntVal($USER->GetID()),
