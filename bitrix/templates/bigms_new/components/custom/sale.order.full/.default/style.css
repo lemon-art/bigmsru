@@ -2,3 +2,11 @@
 	width: 500px;
     height: 400px;
 }
+
+.payment-7 {
+	background: url('images/paykard.png') no-repeat center;
+}
+
+.payment-7::before {
+    content: "" !important;
+}

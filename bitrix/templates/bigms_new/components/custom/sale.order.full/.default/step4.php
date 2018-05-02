@@ -24,7 +24,7 @@ if ($_POST['DELIVERY_ID'] == 3 || $_POST['DELIVERY_ID'] == 4) {
 //var_dump($arPayments);
 if ($_POST['DELIVERY_ID'] == 2 && $_POST['PERSON_TYPE'] == 1) {
     foreach ($arPayments as $key => $paySystem) {
-        if ($paySystem['ID'] != 1 && $paySystem['ID'] != 6) {
+        if ($paySystem['ID'] != 1 && $paySystem['ID'] != 7) {
             unset($arPayments[$key]);
         }
     }
@@ -40,10 +40,12 @@ if ($_POST['DELIVERY_ID'] == 2 && $_POST['PERSON_TYPE'] == 1) {
 								<?foreach ( $arPayments as $key => $arPayment):?>
 								
 									  <li class="form-radio__item <?if ( $key == 0 ):?>active<?endif;?>" data-id="<?=$arPayment["ID"]?>">
-										<div class="form-radio__img-wrap form-radio__img-wrap_cash">
-										  <svg class="form-radio__img">
-											<use xlink:href="#icon-payment-<?=$arPayment["ID"]?>"></use>
-										  </svg>
+										<div class="form-radio__img-wrap form-radio__img-wrap_cash payment-<?=$arPayment["ID"]?>">
+										  <?if ( $arPayment['ID'] != 7 ):?>
+											  <svg class="form-radio__img">
+												<use xlink:href="#icon-payment-<?=$arPayment["ID"]?>"></use>
+											  </svg>
+										  <?endif;?>
 										</div>
 										<span class="form-radio__name"><?=$arPayment["NAME"]?></span>
 									  </li>
