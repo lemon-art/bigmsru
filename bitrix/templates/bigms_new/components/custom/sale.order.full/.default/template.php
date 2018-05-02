@@ -10,52 +10,26 @@
             
 
 <?
-			if (!empty($arResult["PAY_SYSTEM"]))
+			if ($arResult["PAY_SYSTEM"]["ID"] == 7)
 			{
 				?>
 				<p class="content-ordered__text">
 							<?echo GetMessage("STOF_ORDER_PAY_ACTION1")?> <?= $arResult["PAY_SYSTEM"]["NAME"] ?>
 				</p>
-					<?
-					if (strlen($arResult["PAY_SYSTEM"]["ACTION_FILE"]) > 0)
-					{
-						?>
-								<?
-								if ($arResult["PAY_SYSTEM"]["NEW_WINDOW"] == "Y")
-								{
-									?>
-									<script language="JavaScript">
-										window.open('<?=$arParams["PATH_TO_PAYMENT"]?>?ORDER_ID=<?=urlencode(urlencode($arResult["ORDER"]["ACCOUNT_NUMBER"]))?>');
-									</script>
-									<?= str_replace("#LINK#", $arParams["PATH_TO_PAYMENT"]."?ORDER_ID=".urlencode(urlencode($arResult["ORDER"]["ACCOUNT_NUMBER"])), GetMessage("STOF_ORDER_PAY_WIN")) ?>
-									<?
-								}
-								else
-								{
-									if (strlen($arResult["PAY_SYSTEM"]["PATH_TO_ACTION"])>0)
-									{
-										try
-										{
-											include($arResult["PAY_SYSTEM"]["PATH_TO_ACTION"]);
-										}
-										catch(\Bitrix\Main\SystemException $e)
-										{
-											if($e->getCode() == CSalePaySystemAction::GET_PARAM_VALUE)
-												$message = GetMessage("SOA_TEMPL_ORDER_PS_ERROR");
-											else
-												$message = $e->getMessage();
-
-											echo '<span style="color:red;">'.$message.'</span>';
-										}
-									}
-								}
-								?>
-						<?
-					}
-					?>
-				<?
+				
+				<?$APPLICATION->IncludeComponent(
+					"bitrix:sale.order.payment.receive",
+					"",
+					Array(
+						"PAY_SYSTEM_ID_NEW" => $arResult["PAY_SYSTEM"]["ID"]
+					)
+				);?>
+				
+			<?
 			}
 			?>
+			
+			
 			
 			<a href="/" class="content-cart__back content-ordered__back">Вернуться на главную</a>
 			
