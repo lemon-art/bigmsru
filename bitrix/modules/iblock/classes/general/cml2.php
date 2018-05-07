@@ -1095,6 +1095,11 @@ class CIBlockCMLImport
 				//Get xml parents of the properties and sections
 				if($bMetaFound)
 				{
+				
+					$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
+					fwrite($fp, 's1' , var_export($meta_roots,true) . PHP_EOL); 
+					fclose($fp); 	
+				
 					foreach($meta_roots as $arMeta)
 					{
 						if($arMeta["NAME"] == $this->mess["IBLOCK_XML2_GROUPS"])
