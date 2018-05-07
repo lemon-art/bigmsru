@@ -1195,6 +1195,11 @@ class CIBlockCMLImport
 
 	function ImportSections()
 	{
+	
+		$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
+		fwrite($fp, 'ura1' . PHP_EOL); 
+		fclose($fp); 
+	
 		if($this->next_step["XML_SECTIONS_PARENT"])
 		{
 			$rs = $this->_xml_file->GetList(
