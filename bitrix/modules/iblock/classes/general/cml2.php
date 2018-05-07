@@ -1197,7 +1197,7 @@ class CIBlockCMLImport
 	{
 	
 		$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-		fwrite($fp, 'ura1' . PHP_EOL); 
+		fwrite($fp, 'ura2' . $this->next_step["XML_SECTIONS_PARENT"] . PHP_EOL); 
 		fclose($fp); 
 	
 		if($this->next_step["XML_SECTIONS_PARENT"])
@@ -1208,8 +1208,16 @@ class CIBlockCMLImport
 				array("ID", "NAME", "VALUE")
 			);
 			$arID = array();
-			while($ar = $rs->Fetch())
+			$arSect = array();
+			while($ar = $rs->Fetch()){
 				$arID[] = $ar["ID"];
+				$arSect[] = $ar;
+			}
+				
+				
+				$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
+				fwrite($fp, var_export($arSect,true) . PHP_EOL); 
+				fclose($fp); 	
 
 			if($this->skip_root_section && (count($arID) == 1))
 			{
