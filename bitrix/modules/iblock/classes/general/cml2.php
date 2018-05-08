@@ -1091,6 +1091,11 @@ class CIBlockCMLImport
 
 					$meta_roots[] = $arMeta;
 				}
+				
+					$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
+					fwrite($fp, 's1' , var_export($arMeta,true) . PHP_EOL); 
+					fclose($fp); 
+				
 
 				//Get xml parents of the properties and sections
 				if($bMetaFound)
