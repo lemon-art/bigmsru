@@ -1207,7 +1207,7 @@ class CIBlockCMLImport
 	{
 	
 		$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-		fwrite($fp, 'ura2' . $this->next_step["XML_SECTIONS_PARENT"] . PHP_EOL); 
+		fwrite($fp, 'ura2' . var_export($this->next_step,true) . PHP_EOL); 
 		fclose($fp); 
 	
 		if($this->next_step["XML_SECTIONS_PARENT"])
