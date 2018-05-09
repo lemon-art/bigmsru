@@ -689,6 +689,11 @@ class CIBlockCMLImport
 			array("ID", "NAME", "ATTRIBUTES")
 		);
 		$ar = $rs->Fetch();
+		
+		
+		$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
+		fwrite($fp, 'm1' . var_export($ar) . PHP_EOL);
+		fclose($fp);
 
 		if ($ar)
 		{
@@ -734,6 +739,12 @@ class CIBlockCMLImport
 			array("ID", "ATTRIBUTES")
 		);
 		$ar = $rs->Fetch();
+		
+		$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
+		fwrite($fp, 'm2' . var_export($ar) . PHP_EOL);
+		fclose($fp);
+		
+		
 		if(!$ar)
 		{
 			$rs = $this->_xml_file->GetList(
@@ -778,6 +789,11 @@ class CIBlockCMLImport
 			);
 			while($ar = $rs->Fetch())
 			{
+			
+				$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
+				fwrite($fp, 'm3' . var_export($ar) . PHP_EOL);
+				fclose($fp);
+			
 
 				if(isset($ar["VALUE_CLOB"]))
 					$ar["VALUE"] = $ar["VALUE_CLOB"];
@@ -1064,6 +1080,11 @@ class CIBlockCMLImport
 			$this->next_step["IBLOCK_ID"] = $arIBlock["ID"];
 			$this->next_step["XML_ELEMENTS_PARENT"] = $XML_ELEMENTS_PARENT;
 		}
+		
+		
+		$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
+		fwrite($fp, 'm4' . $meta_data_xml_id . PHP_EOL);
+		fclose($fp);
 
 		if($meta_data_xml_id)
 		{
@@ -1092,18 +1113,16 @@ class CIBlockCMLImport
 					$meta_roots[] = $arMeta;
 				}
 				
-					$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-					fwrite($fp, 's1' , var_export($arMeta,true) . PHP_EOL); 
-					fclose($fp); 
+				$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
+				fwrite($fp, 'm5' . var_export($meta_roots) . PHP_EOL);
+				fclose($fp);
 				
+			
 
 				//Get xml parents of the properties and sections
 				if($bMetaFound)
 				{
 				
-					$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-					fwrite($fp, 's1' , var_export($meta_roots,true) . PHP_EOL); 
-					fclose($fp); 	
 				
 					foreach($meta_roots as $arMeta)
 					{
@@ -1206,9 +1225,6 @@ class CIBlockCMLImport
 	function ImportSections()
 	{
 	
-		$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-		fwrite($fp, 'ura2' . var_export($this->next_step,true) . PHP_EOL); 
-		fclose($fp); 
 	
 		if($this->next_step["XML_SECTIONS_PARENT"])
 		{
@@ -1218,16 +1234,11 @@ class CIBlockCMLImport
 				array("ID", "NAME", "VALUE")
 			);
 			$arID = array();
-			$arSect = array();
 			while($ar = $rs->Fetch()){
 				$arID[] = $ar["ID"];
-				$arSect[] = $ar;
 			}
 				
-				
-				$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-				fwrite($fp, var_export($arSect,true) . PHP_EOL); 
-				fclose($fp); 	
+
 
 			if($this->skip_root_section && (count($arID) == 1))
 			{
@@ -4336,10 +4347,7 @@ class CIBlockCMLImport
 		/** @var CDatabase $DB */
 		global $DB;
 		
-				$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-				fwrite($fp, $xml_tree_id . PHP_EOL); 
-				fclose($fp); 
-		 
+ 
 
 		static $arUserFields;
 		if($parent_section_id === false)
@@ -4482,10 +4490,6 @@ class CIBlockCMLImport
 			}
 		}
 		
-				$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-				fwrite($fp, $arSection["XML_ID"] . PHP_EOL);
-				fclose($fp);
-
 		$obSection = new CIBlockSection;
 		$rsSection = $obSection->GetList(array(), array("IBLOCK_ID"=>$IBLOCK_ID, "XML_ID"=>$arSection["XML_ID"]), false);
 		if($arDBSection = $rsSection->Fetch())
@@ -4543,11 +4547,6 @@ class CIBlockCMLImport
 				if(!$res)
 				{
 					$this->LAST_ERROR = $obSection->LAST_ERROR;
-					
-					$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-					fwrite($fp, $arSection["NAME"] . ' - ' . $this->LAST_ERROR . PHP_EOL);
-					fclose($fp);
-					
 					return $this->LAST_ERROR;
 				}
 			}
@@ -4571,11 +4570,6 @@ class CIBlockCMLImport
 			if(!$arSection["ID"])
 			{
 				$this->LAST_ERROR = $obSection->LAST_ERROR;
-				
-				$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-				fwrite($fp, $arSection["NAME"] . ' - ' . $this->LAST_ERROR . PHP_EOL);
-				fclose($fp);
-				
 				return $this->LAST_ERROR;
 			}
 		}
