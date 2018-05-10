@@ -1132,7 +1132,7 @@ class CIBlockCMLImport
 				
 	
 				
-				file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  $XML_SECTIONS_PARENT, FILE_APPEND);
+				file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  $this->mess["IBLOCK_XML2_GROUPS"] . print_r($meta_roots, 1), FILE_APPEND);
 			}
 		}
 
