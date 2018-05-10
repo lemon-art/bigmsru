@@ -1111,8 +1111,6 @@ class CIBlockCMLImport
 					{
 						if($arMeta["NAME"] == $this->mess["IBLOCK_XML2_GROUPS"]){
 							$this->next_step["XML_SECTIONS_PARENT"] = $arMeta["ID"];
-							file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'YES - ' . $this->next_step["XML_SECTIONS_PARENT"], FILE_APPEND);
-			
 						}
 						elseif($arMeta["NAME"] == $this->mess["IBLOCK_XML2_PROPERTIES"])
 							$XML_PROPERTIES_PARENT = $arMeta["ID"];
@@ -1135,7 +1133,7 @@ class CIBlockCMLImport
 			
 		}
 		
-		file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'z1\r\n', FILE_APPEND);
+		
 
 
 		$iblockFields = CIBlock::GetFields($arIBlock["ID"]);
@@ -1146,7 +1144,6 @@ class CIBlockCMLImport
 		);
 		CIBlock::SetFields($arIBlock["ID"], $iblockFields);
 		
-		file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'z2\r\n', FILE_APPEND);
 
 		if($XML_PROPERTIES_PARENT)
 		{
@@ -1155,7 +1152,7 @@ class CIBlockCMLImport
 				return $result;
 		}
 		
-		file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'z3\r\n', FILE_APPEND);
+
 
 		if($XML_SECTION_PROPERTIES)
 		{
@@ -1164,10 +1161,11 @@ class CIBlockCMLImport
 				return $result;
 		}
 		
-		file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'z4\r\n', FILE_APPEND);
+
 
 		if($XML_SECTIONS_PROPERTIES_PARENT)
 		{
+			file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'z1\r\n', FILE_APPEND);
 			$result = $this->ImportSectionsProperties($XML_SECTIONS_PROPERTIES_PARENT, $arIBlock["ID"]);
 			if($result!==true)
 				return $result;
@@ -1177,6 +1175,7 @@ class CIBlockCMLImport
 		{
 			if($this->bCatalog)
 			{
+				file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'z2\r\n', FILE_APPEND);
 				$result = $this->ImportPrices($XML_PRICES_PARENT, $arIBlock["ID"], $IBLOCK_LID);
 				if($result!==true)
 					return $result;
@@ -1187,13 +1186,13 @@ class CIBlockCMLImport
 		{
 			if($this->bCatalog)
 			{
+				file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'z3\r\n', FILE_APPEND);
 				$result = $this->ImportStores($XML_STORES_PARENT);
 				if($result!==true)
 					return $result;
 			}
 		}
 		
-		file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'z5\r\n', FILE_APPEND);
 
 		if($XML_BASE_UNITS_PARENT)
 		{
