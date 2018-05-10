@@ -1106,9 +1106,7 @@ class CIBlockCMLImport
 				if($bMetaFound)
 				{
 				
-					file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'f1' . print_r($meta_roots, 1), FILE_APPEND);
-				
-				
+
 					foreach($meta_roots as $arMeta)
 					{
 						if($arMeta["NAME"] == $this->mess["IBLOCK_XML2_GROUPS"]){
@@ -1136,6 +1134,9 @@ class CIBlockCMLImport
 			
 			
 		}
+		
+		file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'z1\r\n', FILE_APPEND);
+
 
 		$iblockFields = CIBlock::GetFields($arIBlock["ID"]);
 		$iblockFields["XML_IMPORT_START_TIME"] = array(
@@ -1144,6 +1145,8 @@ class CIBlockCMLImport
 			"DEFAULT_VALUE" => date("Y-m-d H:i:s"),
 		);
 		CIBlock::SetFields($arIBlock["ID"], $iblockFields);
+		
+		file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'z2\r\n', FILE_APPEND);
 
 		if($XML_PROPERTIES_PARENT)
 		{
@@ -1151,6 +1154,8 @@ class CIBlockCMLImport
 			if($result!==true)
 				return $result;
 		}
+		
+		file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'z3\r\n', FILE_APPEND);
 
 		if($XML_SECTION_PROPERTIES)
 		{
@@ -1158,6 +1163,8 @@ class CIBlockCMLImport
 			if($result!==true)
 				return $result;
 		}
+		
+		file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'z4\r\n', FILE_APPEND);
 
 		if($XML_SECTIONS_PROPERTIES_PARENT)
 		{
@@ -1185,6 +1192,8 @@ class CIBlockCMLImport
 					return $result;
 			}
 		}
+		
+		file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'z5\r\n', FILE_APPEND);
 
 		if($XML_BASE_UNITS_PARENT)
 		{
@@ -1196,12 +1205,14 @@ class CIBlockCMLImport
 			}
 		}
 
+		file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'z6\r\n', FILE_APPEND);
+		
 		$this->next_step["section_sort"] = 100;
 		//if ( $XML_SECTIONS_PARENT ) 
 			//$this->next_step["XML_SECTIONS_PARENT"] = $XML_SECTIONS_PARENT;
 		
-		file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  's2-' . $this->next_step["XML_SECTIONS_PARENT"], FILE_APPEND);
-
+		file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'z7\r\n', FILE_APPEND);
+		
 		$rs = $this->_xml_file->GetList(
 			array(),
 			array("PARENT_ID" => $xml_root_id, "NAME" => $this->mess["IBLOCK_XML2_PRODUCTS_SETS"]),
