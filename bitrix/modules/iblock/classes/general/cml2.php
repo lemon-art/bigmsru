@@ -1107,7 +1107,7 @@ class CIBlockCMLImport
 				if($bMetaFound)
 				{
 				
-					file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'f1', FILE_APPEND);
+					file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'f1' . print_r($meta_roots, 1), FILE_APPEND);
 				
 				
 					foreach($meta_roots as $arMeta)
@@ -1129,10 +1129,7 @@ class CIBlockCMLImport
 					}
 					break;
 				}
-				
 	
-				
-				file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'name = ' . $this->mess["IBLOCK_XML2_GROUPS"] . print_r($meta_roots, 1), FILE_APPEND);
 			}
 		}
 
