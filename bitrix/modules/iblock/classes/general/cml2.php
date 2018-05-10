@@ -691,10 +691,6 @@ class CIBlockCMLImport
 		$ar = $rs->Fetch();
 		
 		
-		$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-		fwrite($fp, 'm1' . var_dump($ar) . PHP_EOL);
-		fclose($fp);
-
 		if ($ar)
 		{
 			foreach(array(LANGUAGE_ID, "en", "ru") as $lang)
@@ -740,9 +736,6 @@ class CIBlockCMLImport
 		);
 		$ar = $rs->Fetch();
 		
-		$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-		fwrite($fp, 'm2' . var_dump($ar) . PHP_EOL);
-		fclose($fp);
 		
 		
 		if(!$ar)
@@ -790,9 +783,6 @@ class CIBlockCMLImport
 			while($ar = $rs->Fetch())
 			{
 			
-				$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-				fwrite($fp, 'm3' . var_dump($ar) . PHP_EOL);
-				fclose($fp);
 			
 
 				if(isset($ar["VALUE_CLOB"]))
@@ -1081,10 +1071,6 @@ class CIBlockCMLImport
 			$this->next_step["XML_ELEMENTS_PARENT"] = $XML_ELEMENTS_PARENT;
 		}
 		
-		
-		$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-		fwrite($fp, 'm4-' . $meta_data_xml_id . " ++++ " . $xml_root_id . PHP_EOL);
-		fclose($fp);
 
 		if($meta_data_xml_id)
 		{
@@ -1113,7 +1099,6 @@ class CIBlockCMLImport
 					$meta_roots[] = $arMeta;
 				}
 				
-				file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'm5' . print_r($meta_roots, 1), FILE_APPEND);
 				
 				
 			
@@ -1122,7 +1107,7 @@ class CIBlockCMLImport
 				if($bMetaFound)
 				{
 				
-					file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'm6', FILE_APPEND);
+
 				
 				
 					foreach($meta_roots as $arMeta)
@@ -1144,6 +1129,10 @@ class CIBlockCMLImport
 					}
 					break;
 				}
+				
+	
+				
+				file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  $XML_SECTIONS_PARENT, FILE_APPEND);
 			}
 		}
 
@@ -1208,6 +1197,8 @@ class CIBlockCMLImport
 
 		$this->next_step["section_sort"] = 100;
 		$this->next_step["XML_SECTIONS_PARENT"] = $XML_SECTIONS_PARENT;
+		
+		file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  's2' . $this->next_step["XML_SECTIONS_PARENT"], FILE_APPEND);
 
 		$rs = $this->_xml_file->GetList(
 			array(),
@@ -1225,6 +1216,9 @@ class CIBlockCMLImport
 
 	function ImportSections()
 	{
+	
+		file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  's3' . $this->next_step["XML_SECTIONS_PARENT"], FILE_APPEND);
+
 	
 	
 		if($this->next_step["XML_SECTIONS_PARENT"])
