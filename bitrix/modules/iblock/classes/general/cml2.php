@@ -1197,10 +1197,10 @@ class CIBlockCMLImport
 		}
 
 		$this->next_step["section_sort"] = 100;
-		if ( $XML_SECTIONS_PARENT ) 
-			$this->next_step["XML_SECTIONS_PARENT"] = $XML_SECTIONS_PARENT;
+		//if ( $XML_SECTIONS_PARENT ) 
+			//$this->next_step["XML_SECTIONS_PARENT"] = $XML_SECTIONS_PARENT;
 		
-		file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  's2' . $this->next_step["XML_SECTIONS_PARENT"], FILE_APPEND);
+		file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  's2-' . $this->next_step["XML_SECTIONS_PARENT"], FILE_APPEND);
 
 		$rs = $this->_xml_file->GetList(
 			array(),
@@ -1218,10 +1218,6 @@ class CIBlockCMLImport
 
 	function ImportSections()
 	{
-	
-		file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  's3' . $this->next_step["XML_SECTIONS_PARENT"], FILE_APPEND);
-
-	
 	
 		if($this->next_step["XML_SECTIONS_PARENT"])
 		{
