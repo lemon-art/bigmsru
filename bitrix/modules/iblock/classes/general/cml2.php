@@ -1100,8 +1100,7 @@ class CIBlockCMLImport
 				}
 				 
 				
-				file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'f0' . $this->mess["IBLOCK_XML2_GROUPS"], FILE_APPEND);
-			
+				
 
 				//Get xml parents of the properties and sections
 				if($bMetaFound)
@@ -1112,8 +1111,11 @@ class CIBlockCMLImport
 				
 					foreach($meta_roots as $arMeta)
 					{
-						if($arMeta["NAME"] == $this->mess["IBLOCK_XML2_GROUPS"])
+						if($arMeta["NAME"] == $this->mess["IBLOCK_XML2_GROUPS"]){
 							$this->next_step["XML_SECTIONS_PARENT"] = $arMeta["ID"];
+							file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'YES - ' . $this->next_step["XML_SECTIONS_PARENT"], FILE_APPEND);
+			
+						}
 						elseif($arMeta["NAME"] == $this->mess["IBLOCK_XML2_PROPERTIES"])
 							$XML_PROPERTIES_PARENT = $arMeta["ID"];
 						elseif($arMeta["NAME"] == $this->mess["IBLOCK_XML2_GROUPS_PROPERTIES"])
