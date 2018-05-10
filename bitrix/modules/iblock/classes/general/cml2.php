@@ -1090,7 +1090,7 @@ class CIBlockCMLImport
 		{
 			$rs = $this->_xml_file->GetList(
 				array(),
-				array("PARENT_ID" => $xml_root_id, "NAME" => $this->mess["IBLOCK_XML2_METADATA"]),
+				array("PARENT_ID" => Array(1,2), "NAME" => $this->mess["IBLOCK_XML2_METADATA"]),
 				array("ID")
 			);
 			while($arMetadata = $rs->Fetch())
@@ -1113,15 +1113,16 @@ class CIBlockCMLImport
 					$meta_roots[] = $arMeta;
 				}
 				
-				$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-				fwrite($fp, 'm5' . var_dump($meta_roots) . PHP_EOL);
-				fclose($fp);
+				file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'm5' . print_r($meta_roots, 1), FILE_APPEND);
+				
 				
 			
 
 				//Get xml parents of the properties and sections
 				if($bMetaFound)
 				{
+				
+					file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  'm6', FILE_APPEND);
 				
 				
 					foreach($meta_roots as $arMeta)
