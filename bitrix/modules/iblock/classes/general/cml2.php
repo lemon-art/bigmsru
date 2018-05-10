@@ -692,7 +692,7 @@ class CIBlockCMLImport
 		
 		
 		$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-		fwrite($fp, 'm1' . var_export($ar) . PHP_EOL);
+		fwrite($fp, 'm1' . var_dump($ar) . PHP_EOL);
 		fclose($fp);
 
 		if ($ar)
@@ -741,7 +741,7 @@ class CIBlockCMLImport
 		$ar = $rs->Fetch();
 		
 		$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-		fwrite($fp, 'm2' . var_export($ar) . PHP_EOL);
+		fwrite($fp, 'm2' . var_dump($ar) . PHP_EOL);
 		fclose($fp);
 		
 		
@@ -791,7 +791,7 @@ class CIBlockCMLImport
 			{
 			
 				$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-				fwrite($fp, 'm3' . var_export($ar) . PHP_EOL);
+				fwrite($fp, 'm3' . var_dump($ar) . PHP_EOL);
 				fclose($fp);
 			
 
@@ -1083,7 +1083,7 @@ class CIBlockCMLImport
 		
 		
 		$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-		fwrite($fp, 'm4' . $meta_data_xml_id . PHP_EOL);
+		fwrite($fp, 'm4-' . $meta_data_xml_id . " ++++ " . $xml_root_id . PHP_EOL);
 		fclose($fp);
 
 		if($meta_data_xml_id)
@@ -1114,7 +1114,7 @@ class CIBlockCMLImport
 				}
 				
 				$fp = fopen( $_SERVER["DOCUMENT_ROOT"] .'/1c.txt', 'a');
-				fwrite($fp, 'm5' . var_export($meta_roots) . PHP_EOL);
+				fwrite($fp, 'm5' . var_dump($meta_roots) . PHP_EOL);
 				fclose($fp);
 				
 			
