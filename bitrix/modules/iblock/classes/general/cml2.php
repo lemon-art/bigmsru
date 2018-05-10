@@ -1113,7 +1113,7 @@ class CIBlockCMLImport
 					foreach($meta_roots as $arMeta)
 					{
 						if($arMeta["NAME"] == $this->mess["IBLOCK_XML2_GROUPS"])
-							$XML_SECTIONS_PARENT = $arMeta["ID"];
+							$this->next_step["XML_SECTIONS_PARENT"] = $arMeta["ID"];
 						elseif($arMeta["NAME"] == $this->mess["IBLOCK_XML2_PROPERTIES"])
 							$XML_PROPERTIES_PARENT = $arMeta["ID"];
 						elseif($arMeta["NAME"] == $this->mess["IBLOCK_XML2_GROUPS_PROPERTIES"])
@@ -1131,6 +1131,8 @@ class CIBlockCMLImport
 				}
 	
 			}
+			
+			
 		}
 
 		$iblockFields = CIBlock::GetFields($arIBlock["ID"]);
@@ -1193,7 +1195,8 @@ class CIBlockCMLImport
 		}
 
 		$this->next_step["section_sort"] = 100;
-		$this->next_step["XML_SECTIONS_PARENT"] = $XML_SECTIONS_PARENT;
+		if ( $XML_SECTIONS_PARENT ) 
+			$this->next_step["XML_SECTIONS_PARENT"] = $XML_SECTIONS_PARENT;
 		
 		file_put_contents($_SERVER["DOCUMENT_ROOT"] .'/1c.txt',  's2' . $this->next_step["XML_SECTIONS_PARENT"], FILE_APPEND);
 
