@@ -204,7 +204,7 @@ if($res->SelectedRowsCount() == 1) {
 
 
 $title = '';
-if ($ar_result['DEPTH_LEVEL'] == 4 && !array_search($APPLICATION->GetCurPage(false), $arUrlData)) {
+if ($ar_result['DEPTH_LEVEL'] == 5 && !array_search($APPLICATION->GetCurPage(false), $arUrlData)) {
 
 	\Bitrix\Iblock\Component\Tools::process404(
 			trim($arParams["MESSAGE_404"]) ?: GetMessage("CATALOG_ELEMENT_NOT_FOUND")
