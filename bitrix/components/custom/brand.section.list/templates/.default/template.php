@@ -41,8 +41,9 @@ $arUrlData = unserialize( $data );
 		<?if ( $arSection["IBLOCK_ID"]  == 10 ):?>
 			<?$arSection["IBLOCK_CODE"] = 'inzhenernaya';?>
 		<?endif;?>
-		
-		<?$arSection['SECTION_PAGE_URL'] = "/catalog/".$arSection["IBLOCK_CODE"]."/".$arSection["CODE"].'/filter/brend-is-'.$arParams['BRAND_XML'].'/apply/';?>
+		<?if ( !$arSection['PDF'] ):?>
+			<?$arSection['SECTION_PAGE_URL'] = "/catalog/".$arSection["IBLOCK_CODE"]."/".$arSection["CODE"].'/filter/brend-is-'.$arParams['BRAND_XML'].'/apply/';?>
+		<?endif;?>
 		<?
 //			if ( $arUrlData[$arSection['SECTION_PAGE_URL']] ){
 //				$arSection['SECTION_PAGE_URL'] = $arUrlData[$arSection['SECTION_PAGE_URL']]; //если есть короткий url то берем его
