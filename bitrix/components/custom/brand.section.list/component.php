@@ -237,9 +237,33 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 			$arResult["IBLOCK_ID"] = $arSection["IBLOCK_ID"];
 		}
 		////
+		
+
 
 		$arResult["SECTIONS"][]=$arSection;
 	}
+	
+	
+		//добавляем pdf документацию
+		$arFilterElement = Array(
+			"IBLOCK_ID"=>24, 
+			"ACTIVE"=>"Y", 
+			"PROPERTY_brend" => $arParams["BRAND_XML"],
+			"!PROPERTY_show_brend" => false
+		);
+		
+		$res = CIBlockElement::GetList(Array(), $arFilterElement, false, false, Array("NAME", "PROPERTY_file"));
+		while($arElement = $res->GetNext()){
+			
+			$arSection = Array(
+				"NAME" => $arElement["NAME"],
+				"PDF" => "Y",
+				"SECTION_PAGE_URL" => CFile::GetPath($arElement["PROPERTY_FILE_VALUE"]),
+				"PICTURE" => "/images/pdficon_bf.png"
+			);
+		}
+
+		$arResult["SECTIONS"][]=$arSection;
 	
 	
 

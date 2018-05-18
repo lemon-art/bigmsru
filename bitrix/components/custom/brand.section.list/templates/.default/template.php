@@ -48,11 +48,12 @@ $arUrlData = unserialize( $data );
 //				$arSection['SECTION_PAGE_URL'] = $arUrlData[$arSection['SECTION_PAGE_URL']]; //если есть короткий url то берем его
 //			}
 		?>
+		
 		<li class="brand-products__item">
             <div class="brand-products__img-wrap">
-                <a href="<? echo $arSection['SECTION_PAGE_URL']; ?>"><img class="brand-products__img" src="<? echo $arSection['PICTURE']; ?>" alt="<? echo $arSection['NAME']; ?> <?=$arResult['BRAND_NAME']?>"></a>
+                <a <?if ( $arSection['PDF'] ):?>target="_blank"<?endif;?> href="<? echo $arSection['SECTION_PAGE_URL']; ?>"><img class="brand-products__img" src="<? echo $arSection['PICTURE']; ?>" alt="<? echo $arSection['NAME']; ?> <?=$arResult['BRAND_NAME']?>"></a>
             </div>
-            <a href="<? echo $arSection['SECTION_PAGE_URL']; ?>" class="brand-products__name"><? echo $arSection['NAME']; ?> <?=$arResult['BRAND_NAME']?></a>
+            <a href="<? echo $arSection['SECTION_PAGE_URL']; ?>" <?if ( $arSection['PDF'] ):?>target="_blank"<?endif;?> class="brand-products__name"><? echo $arSection['NAME']; ?> <?if ( !$arSection['PDF'] ):?> <?=$arResult['BRAND_NAME']?><?endif;?></a>
         </li>
 	
 	<?endforeach;?>
