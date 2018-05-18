@@ -254,6 +254,10 @@ if($this->startResultCache(false, ($arParams["CACHE_GROUPS"]==="N"? false: $USER
 		
 		$res = CIBlockElement::GetList(Array(), $arFilterElement, false, false, Array("NAME", "PROPERTY_file"));
 		while($arElement = $res->GetNext()){
+		
+			echo "<pre>";
+			print_r( $arElement );
+			echo "</pre>";
 			
 			$arSection = Array(
 				"NAME" => $arElement["NAME"],
