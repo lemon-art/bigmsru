@@ -6719,12 +6719,19 @@ ul.sublist[data-level="3"] .sublist__link:after {
 .right_tabs {
 	flex-basis: calc(100% - 50px);;
 	flex-shrink: 0;
-	padding: 20px;
+
 	border: 1px solid #91a8b3;
 }
 
+.ui-widget-content {
+	padding: 20px;
+}
 
-
+.ui-widget-content.montaz_tab {
+	padding: 0px;
+	    font-family: 'Museo500';
+    line-height: 20pt;
+}
 
 #main_tabs ul {
 
@@ -6774,4 +6781,114 @@ ul.sublist[data-level="3"] .sublist__link:after {
 .text_main {
 	font-family: 'Museo500';
     line-height: 20pt;
+}
+
+
+.montaz {
+
+	padding: 20px;
+}
+
+.montaz_text {
+	background: url('images/montaz_fon1.jpg') no-repeat right bottom;
+	padding-right: 600px;
+	height: 380px;
+}
+
+.montaz_anvance {
+	background-color: #6fa3d1;
+	width: 100%;
+	padding: 20px;
+	padding-right: 40px;
+	color: #fff;
+}
+
+.montaz_anvance ul {
+	display: -webkit-inline-flex; 
+    display: flex;
+	justify-content: center;
+}
+
+.montaz_anvance ul li{
+	width: 290px;
+	text-align: center;
+}
+
+.montaz_anvance ul li img{
+
+}
+
+.montaz_anvance ul li span{
+	text-align: center;
+    font-size: 14px;
+    padding: 20px;
+    display: block;
+}
+
+.montaz_video {
+	padding: 20px;
+		display: -webkit-inline-flex; 
+    display: flex;
+}
+
+.video_text {
+	padding: 40px;
+	padding-top: 0px;
+
+}
+
+.montaz_brends {
+	background: url('images/mon_fon.jpg') no-repeat left bottom;
+	width: 100%;
+	padding: 20px;
+	height: 300px;
+	background-size: cover;
+}
+
+.montaz_brends h3{
+	color: #6fa3d1;
+	font-size: 22px;
+}
+
+.montaz_brends ul{
+	margin-top: 40px;
+	display: -webkit-inline-flex; 
+    display: flex;
+	justify-content: center;
+}
+
+.montaz_brends li{
+	margin-right: 40px;
+}
+
+.montaz_footer {
+	text-align: center;
+	height: 200px;
+	padding-top: 50px;
+}
+
+.montaz_footer ul{
+	display: -webkit-inline-flex; 
+    display: flex;
+	justify-content: center;
+}
+
+.montaz_footer li{
+	margin-right: 40px;
+	font-size: 24px;
+}
+
+.montaz_footer li a{
+	color: #000;
+	text-decoration: none;
+}
+
+.montaz_footer li.phone{
+	background: url('images/mon_phone.jpg') no-repeat left 6px;
+	padding-left: 30px;
+}
+
+.montaz_footer li.email{
+	background: url('images/mon_email.jpg') no-repeat left 6px;	
+	padding-left: 30px;
 }
