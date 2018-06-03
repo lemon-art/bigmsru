@@ -8,7 +8,8 @@
             <p class="content-ordered__text">В ближайшее время наш менеджер свяжется с вами<br>для уточнения деталей оплаты и доставки.</p>
             
             
-
+			
+			
 <?
 			if (!empty($arResult["PAY_SYSTEM"]))
 			{
@@ -29,13 +30,15 @@
 								{
 									?>
 									<script language="JavaScript">
-										window.open('<?=$arParams["PATH_TO_PAYMENT"]?>?ORDER_ID=<?=urlencode(urlencode($arResult["ORDER"]["ACCOUNT_NUMBER"]))?>');
+										window.open('<?=$arParams["PATH_TO_PAYMENT"]?>?ORDER_ID=<?=urlencode(urlencode($arResult["ORDER_ID"]))?>');
 									</script>
-									<?= str_replace("#LINK#", $arParams["PATH_TO_PAYMENT"]."?ORDER_ID=".urlencode(urlencode($arResult["ORDER"]["ACCOUNT_NUMBER"])), GetMessage("STOF_ORDER_PAY_WIN")) ?>
+									<?= str_replace("#LINK#", $arParams["PATH_TO_PAYMENT"]."?ORDER_ID=".urlencode(urlencode($arResult["ORDER_ID"])), GetMessage("STOF_ORDER_PAY_WIN")) ?>
 									<?
 								}
 								else
 								{
+									echo $arResult["PAY_SYSTEM"]["PATH_TO_ACTION"];
+								
 									if (strlen($arResult["PAY_SYSTEM"]["PATH_TO_ACTION"])>0)
 									{
 										try
