@@ -1764,13 +1764,16 @@ body {
       height: auto; }
   .subcat__item {
     width: 13%;
-    height: 123px;
+    height: 150px;
     position: relative;
     margin-right: 1.5%;
     margin-bottom: 10px;
-    overflow: hidden; }
+ }
     .subcat__item img {
-      width: 100%; }
+      width: 100%; 
+	  overflow: hidden;
+	  max-height: 125px;
+	  }
     .subcat__item:nth-child(7) {
       margin-right: 0; }
     .subcat__item:hover .subcat__text {
@@ -1782,7 +1785,7 @@ body {
     -webkit-align-items: center;
         -ms-flex-align: center;
             align-items: center;
-    position: absolute;
+
     bottom: 0;
     width: 100%;
     background: rgba(32, 42, 53, 0.8);
