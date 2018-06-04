@@ -451,6 +451,26 @@ body {
 		cursor: default;
 	}	
 	
+.content-ordered input[type="submit"]{
+  font-family: 'Museo700', sans-serif, Arial;
+  width: 200px;
+  border: 0;
+  border-radius: 2px;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: #11162d;
+  background: #ffc600;
+  padding: 20px 15px;
+  cursor: pointer; }
+.content-ordered input[type="submit"]:hover {
+    background: #ffcc1a; }
+
+.content-ordered input[type="submit"]:disabled { 
+		background: #dddddd;
+		cursor: default;
+	}	
+	
+	
 	
 .form__captcha {
   margin-bottom: 16px; }
@@ -521,6 +541,125 @@ body {
           align-items: center;
   margin-bottom: 40px; }
 
+ 
+.form_personal .form__col {
+  width: 49%; }
+  .form_personal .form__col_house, .form_personal .form__col_apartment {
+    width: 24%; }
+
+.form_personal .form__row {
+  margin-bottom: 0;
+  width: 70%; }
+  .form_personal .form__row.error .form__input {
+    font-size: 16px; }
+  .form_personal .form__row:before {
+    right: 0;
+    left: 15px; }
+  .form_personal .form__row_legal {
+    width: 500px;
+    margin-bottom: 24px; }
+    .form_personal .form__row_legal .form__label {
+      width: 100%;
+      margin-bottom: 2px; }
+    .form_personal .form__row_legal .form__input {
+      padding: 14px 10px 12px; }
+    .form_personal .form__row_legal .form__row {
+      width: 100%; }
+  .form_personal .form__row_delivery {
+    width: 615px; }
+    .form_personal .form__row_delivery .form__row {
+      width: 100%; }
+    .form_personal .form__row_delivery .form__label {
+      width: 100%; }
+    .form_personal .form__row_delivery .form__input {
+      padding: 14px 10px 12px; }
+  .form_personal .form__row_cols {
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-justify-content: space-between;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    -webkit-align-items: flex-end;
+        -ms-flex-align: end;
+            align-items: flex-end; }
+
+.form_personal .form__label {
+  width: 30%;
+  margin-bottom: 0;
+  color: #162f4d;
+  font-size: 15px;
+  font-family: 'Museo700', sans-serif, Arial; }
+
+.form_personal .form__input {
+  padding-left: 35px; }
+
+.form_personal .form__container {
+  width: 500px;
+  padding-left: 52px;
+  position: relative; }
+  .form_personal .form__container:before {
+    content: '';
+    position: absolute;
+    left: -24px;
+    top: -7px;
+    background: #ffffff;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 5px solid #ffffff; }
+  .form_personal .form__container:after {
+    content: attr(data-step);
+    font-size: 18px;
+    text-align: center;
+    line-height: 35px;
+    color: #1b2036;
+    font-family: 'Museo900', sans-serif, Arial;
+    position: absolute;
+    left: -19px;
+    top: -2px;
+    background: #ffffff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid #ffc600; }
+  .form_personal .form__container [data-step="1"]:before {
+    left: -24px;
+    top: -7px; }
+  .form_personal .form__container [data-step="1"]:after {
+    left: -19px;
+    top: -2px; }
+  .form_personal .form__container_wide {
+    width: 700px; }
+
+.form_personal .form__title {
+  font-size: 24px;
+  color: #162f4d;
+  font-family: 'Museo700', sans-serif, Arial;
+  margin-top: 0;
+  margin-bottom: 13px; }
+  .form_personal .form__title_comment {
+    margin-top: 30px; }
+
+.form_personal .form__textarea {
+  padding: 16px 10px;
+  resize: none;
+  font-size: 13px;
+  width: 520px; }
+
+.form_personal .form__submit {
+  width: 290px;
+  margin-top: 20px;
+  font-size: 16px;
+  margin-bottom: 0; }
+
+.form_personal .form__text {
+  margin: 0;
+  font-size: 13px; } 
+  
+  
+  
+  
 .form_order .form__col {
   width: 49%; }
   .form_order .form__col_house, .form_order .form__col_apartment {

@@ -36,8 +36,7 @@
 									<?
 								}
 								else
-								{
-									echo $arResult["PAY_SYSTEM"]["PATH_TO_ACTION"];
+								{ 
 								
 									if (strlen($arResult["PAY_SYSTEM"]["PATH_TO_ACTION"])>0)
 									{

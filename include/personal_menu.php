@@ -1,5 +1,5 @@
-<nav class="right_menu">
-	<?$APPLICATION->IncludeComponent("bitrix:menu", "simple", Array(
+
+	<?$APPLICATION->IncludeComponent("bitrix:menu", "about", Array(
 		"COMPONENT_TEMPLATE" => ".default",
 			"ROOT_MENU_TYPE" => "personal",
 			"MENU_CACHE_TYPE" => "N",
@@ -16,4 +16,3 @@
 		),
 		false
 	);?>
-</nav>

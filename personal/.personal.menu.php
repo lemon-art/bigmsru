@@ -2,7 +2,7 @@
 $aMenuLinks = Array(
 	Array(
 		"Мои заказы", 
-		"/personal/order/", 
+		"/personal/", 
 		Array(), 
 		Array(), 
 		"" 
@@ -17,13 +17,6 @@ $aMenuLinks = Array(
 	Array(
 		"Корзина", 
 		"/basket/", 
-		Array(), 
-		Array(), 
-		"" 
-	),
-	Array(
-		"Закладки", 
-		"/personal/zakladki/", 
 		Array(), 
 		Array(), 
 		"" 
