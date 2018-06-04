@@ -1771,9 +1771,13 @@ body {
  }
     .subcat__item img {
       width: 100%; 
-	  overflow: hidden;
-	  max-height: 125px;
+
 	  }
+	  .subcat_img {
+		overflow: hidden;
+		height: 125px;
+	  }
+	  
     .subcat__item:nth-child(7) {
       margin-right: 0; }
     .subcat__item:hover .subcat__text {

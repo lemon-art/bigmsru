@@ -38,7 +38,9 @@ $this->setFrameMode(true);
 							?>
 					
 						<li class="subcat__item" id="<?=$this->GetEditAreaId($arSection['ID']);?>">
-							<img src="<?=$img?>" alt="<?=$arSection["NAME"]?>">
+							<div class="subcat_img">
+								<img src="<?=$img?>" alt="<?=$arSection["NAME"]?>">
+							</div>
 							<a href="<?=$arSection["SECTION_PAGE_URL"];?>" class="subcat__text"><?=$arSection["NAME"]?></a>
 						</li>
 					
