@@ -17,10 +17,11 @@ $this->EndViewTarget("row_div_class");
               <div class="content-contacts__tabs product-tabs tabs">
                 <div class="product-tabs__header-wrap">
                   <ul class="product-tabs__header-list tabs__header">
-					<?foreach ( $arResult["SECTIONS"] as $arSection ):?>
-						<li data-section="<?=$arSection["ID"]?>" class="product-tabs__header-item product-tabs__header-item_<?=$arSection["CODE"]?> map-trigger"><?=$arSection["NAME"]?></li>
+					<?$firstSection = $arResult["SECTIONS"][0]["ID"];?>
+					<?foreach ( $arResult["SECTIONS"] as $key => $arSection ):?>
+						<li data-section="<?=$arSection["ID"]?>" class="product-tabs__header-item product-tabs__header-item_<?=$arSection["CODE"]?> map-trigger <?if ( !$key ):?>active<?endif;?>"><?=$arSection["NAME"]?></li>
 					<?endforeach;?>
-				   <li data-section="0" class="product-tabs__header-item map-trigger active">Все</li>
+				   <li data-section="0" class="product-tabs__header-item map-trigger">Все</li>
                     <li class="product-tabs__header-item requisites-trigger">Реквизиты</li>
                   </ul>
                 </div>
@@ -45,7 +46,7 @@ $this->EndViewTarget("row_div_class");
 					<? foreach( $arResult['ITEMS'] as $iOfficeInd => $aOffice ): ?>
 					
 						
-						<div class="office_line active" data-section="<?=$aOffice["IBLOCK_SECTION_ID"]?>">
+						<div class="office_line <?if ($aOffice["IBLOCK_SECTION_ID"] == $firstSection):?>active<?endif;?>" data-section="<?=$aOffice["IBLOCK_SECTION_ID"]?>">
 						
 							<div class="contact_name">
 								<a href="<?=$aOffice["DETAIL_PAGE_URL"]?>"><?=$aOffice["NAME"]?></a>
@@ -193,7 +194,7 @@ $this->EndViewTarget("row_div_class");
 				  
 				
 			</div>
-	<input type="hidden" id="MAP_SECTION" value="0">
+	<input type="hidden" id="MAP_SECTION" value="<?=$firstSection?>">
 	
 	
 	
