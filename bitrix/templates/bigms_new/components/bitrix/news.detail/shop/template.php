@@ -25,8 +25,9 @@ $this->setFrameMode(true);
 			</div>
 			
 			<?if ( $arResult['PROPERTY_13'][1] ):?>
+				<?$email = str_replace('E-mail: ', '', $arResult['PROPERTY_13'][1]);?>
 				<div class="item">
-					<span>E-mail:</span>  <a href="mailto:$arResult['PROPERTY_13'][1]"><?=$arResult['PROPERTY_13'][1]?></a>
+					<span>E-mail:</span>  <a href="mailto:<?=$email?>"><?=$email?></a>
 				</div>
 			<?endif;?>
 		
