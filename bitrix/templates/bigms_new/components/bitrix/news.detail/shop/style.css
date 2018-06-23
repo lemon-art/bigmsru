@@ -1,0 +1,41 @@
+div.news-detail
+{
+	word-wrap: break-word;
+	font-family: 'Museo500', sans-serif, Arial;
+	line-height: 30px;
+}
+div.news-detail img.detail_picture
+{
+	float:left;
+	margin:0 8px 6px 1px;
+}
+.news-date-time
+{
+	color:#486DAA;
+}
+
+.office_data {
+	display: table-cell;
+	width: 50%;
+	padding-right: 50px;
+}
+
+.office_img {
+	display: table-cell;
+	width: 50%;
+}
+
+.office_img img{
+	width: 100%;
+}
+
+.shop_table {
+	display: table;
+	width: 100%;
+	margin-bottom: 30px;
+}
+
+.office_data .item {
+	height: 50px;
+	margin-top: 20px;
+}

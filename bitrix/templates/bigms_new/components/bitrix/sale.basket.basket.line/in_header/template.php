@@ -17,9 +17,11 @@ if ($arParams['POSITION_FIXED'] == 'Y')
 }
 ?>
 
+<?/*
 <script>
 	var <?=$cartId?> = new BitrixSmallCart;
 </script>
+*/?>
 				
                 <li data-url="/catalog/wishlist/" class="status-bar__item status-bar__item_wish <?if( !empty($arResult['FAVORITES'])):?>status-bar_cursor status-bar__item_active<?endif;?>">
 					<?if( !empty($arResult['FAVORITES'])):?>

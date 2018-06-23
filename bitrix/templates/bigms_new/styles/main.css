@@ -5632,11 +5632,11 @@ ul.sublist[data-level="3"] .sublist__link:after {
     display: block; }
 
 .content-contacts__requisites {
-  max-width: 35%;
+
   margin-left: 10px;
-  height: 470px;
+
   padding: 25px 10px;
-  background: #f7f9fa;
+
   display: none; }
   .content-contacts__requisites.active {
     display: block; }

@@ -25,139 +25,173 @@ $this->EndViewTarget("row_div_class");
                   </ul>
                 </div>
               </div>
-			  <div class="content-contacts__content">
-                <div class="content-contacts__map-wrap">
-                  <div id="map" class="content-contacts__map"></div>
-                </div>
-				<? foreach( $arResult['ITEMS'] as $iOfficeInd => $aOffice ): ?>
+	      
+		<ul class="sort contact_sort">
+                    <li class="sort__item sort__item_title">Выводить:</li>
+			<li class="sort__item">
+				<a class="sort__link active" data-type="list_block" href="" rel="nofollow">списком</a>
+			</li>
+			<li class="sort__item">
+				<a class="sort__link" data-type="map-bl"  href="">на карте</a>
+			</li>
+			
+                </ul>
 				
 			
-					<div class="content-contacts__container" id="office<?=$aOffice["ID"]?>">
-						<?if ( count($aOffice["PHOTO"]) > 0 ):?>
-							<div id="contacts_gallery<?=$aOffice["ID"]?>" class="content-contacts__gallery">
-								<ul class="content-contacts__gallery">
-									<?foreach ( $aOffice["PHOTO"] as $k => $photo ):?>
-										<?if ( $k <200 ):?>
-										<li data-trigger="slider" data-id="<?=$aOffice["ID"]?>" class="content-contacts__gallery-item popup-trigger"><img src="<?=$photo["SMALL_IMG"]?>" width="138" height="106" alt=""></li>
-										<?endif;?>
-									<?endforeach;?>
-								</ul>
+	      
+			<div class="content-contacts__content">
+				
+				<div id="list_block" class="content_contact_block">
+					<? foreach( $arResult['ITEMS'] as $iOfficeInd => $aOffice ): ?>
+					
+						
+						<div class="office_line active" data-section="<?=$aOffice["IBLOCK_SECTION_ID"]?>">
+						
+							<div class="contact_name">
+								<a href="<?=$aOffice["DETAIL_PAGE_URL"]?>"><?=$aOffice["NAME"]?></a>
+								<br>
+								<span><?=$aOffice["PROPERTY_12"]?></span>
 							</div>
-								<div id="slider<?=$aOffice["ID"]?>" style="display: none;">
-							      <div class="owl-carousel popup-slider__container">
-									<?foreach ( $aOffice["PHOTO"] as $k => $photo ):?>
-										<?if ( $k <200 ):?><img src="<?=$photo["BIG_IMG"]?>" alt=""><?endif;?>
-									<?endforeach;?>
-								  </div>
-								  <?/*
-								  <div class="preview_pics">
-									  <ul class="popup-nav">
+							<div class="contact_phone">
+								<span><?=$aOffice['PROPERTY_13']["0"]?></span>
+							</div>
+							<div class="contact_house">
+								<span><?=$aOffice["PROPERTY_29"]?></span>
+							</div>	
+						
+						</div>
+						
+
+					
+					
+					<?endforeach;?>
+					
+						<div class="content-contacts__requisites">
+							  <strong class="contacts-description__title">Общество с ограниченной ответственностью<br><span>«Большой Мастер»</span></strong>
+							  <div class="contacts-description__row">
+								<span class="contacts-description__subtitle">Юр. адрес:</span>
+								<span class="contacts-description__text">111024, г. Москва, 2-я ул. Энтузиастов д. 5, корп.1, этаж. 2, комн. 9</span>
+							  </div>
+							  <div class="contacts-description__row">
+								<span class="contacts-description__subtitle">ИНН:</span>
+								<span class="contacts-description__text">7720605468</span>
+							  </div>
+							  <div class="contacts-description__row">
+								<span class="contacts-description__subtitle">КПП:</span>
+								<span class="contacts-description__text">772001001</span>
+							  </div>
+							  <div class="contacts-description__row">
+								<span class="contacts-description__subtitle">ОГРН:</span>
+								<span class="contacts-description__text">1087746107063</span>
+							  </div>
+							  <div class="contacts-description__row">
+								<span class="contacts-description__subtitle">ОКПО:</span>
+								<span class="contacts-description__text">84727931</span>
+							  </div>
+							  <div class="contacts-description__row">
+								<strong class="contacts-description__title">Ген. Директор Павленкович С.М</strong>
+							  </div>
+						</div>
+					
+				</div>
+				
+				
+					<div class="content-contacts__map-wrap" id="map-bl">
+					  <div id="map" class="content-contacts__map"></div>
+					</div>
+					<? foreach( $arResult['ITEMS'] as $iOfficeInd => $aOffice ): ?>
+					
+				
+						<div class="content-contacts__container" id="office<?=$aOffice["ID"]?>">
+							<?/*
+							<?if ( count($aOffice["PHOTO"]) > 0 ):?>
+								<div id="contacts_gallery<?=$aOffice["ID"]?>" class="content-contacts__gallery">
+									<ul class="content-contacts__gallery">
 										<?foreach ( $aOffice["PHOTO"] as $k => $photo ):?>
-											<?if ( $k <7 ):?><li class="popup-nav__item"><img src="<?=$photo["SMALL_IMG"]?>" alt=""></li><?endif;?>
+											<?if ( $k <200 ):?>
+											<li data-trigger="slider" data-id="<?=$aOffice["ID"]?>" class="content-contacts__gallery-item popup-trigger"><img src="<?=$photo["SMALL_IMG"]?>" width="138" height="106" alt=""></li>
+											<?endif;?>
 										<?endforeach;?>
-									 </ul>
-								  </div>
-								  */?>
+									</ul>
 								</div>
-								
-								<script>
-									$("#contacts_gallery<?=$aOffice["ID"]?>").mCustomScrollbar({
-										axis:"x",
-										theme:"bigms-contacts",
-										autoExpandScrollbar:true,
-										advanced:{autoExpandHorizontalScroll:true},
-										scrollbarPosition: "inside",
-										mouseWheel: {
-										  enable: false
-										}
-									});
-								</script>
-						<?else:?>
-							<div id="slider<?=$aOffice["ID"]?>" style="display: none;"></div>
-						<?endif;?>
-					  <div class="content-contacts__description contacts-description" <?if ( count($aOffice["PHOTO"]) > 0 ):?>style="height: 420px;"<?endif;?>>
-						<span class="contacts-description__close"></span>
-						<strong class="contacts-description__title"><?=$aOffice["NAME"]?></strong>
-						<div class="contacts-description__row">
-						  <span class="contacts-description__subtitle">Адрес:</span>
-						  <span class="contacts-description__text"><?=$aOffice["PROPERTY_12"]?></span>
-						</div>
-						<div class="contacts-description__row">
-						  <span class="contacts-description__subtitle">Время работы:</span>
-						  <span class="contacts-description__text"><?=$aOffice["PROPERTY_29"]?></span>
-						</div>
-						<div class="contacts-description__row">
-						  <span class="contacts-description__subtitle">Телефон</span>
-						  <span class="contacts-description__text"><?=$aOffice["PROPERTY_13"][0]?></span>
-						</div>
-						
-						<?if ( $aOffice["PROPERTY_625"] ):?>
+									<div id="slider<?=$aOffice["ID"]?>" style="display: none;">
+								      <div class="owl-carousel popup-slider__container">
+										<?foreach ( $aOffice["PHOTO"] as $k => $photo ):?>
+											<?if ( $k <200 ):?><img src="<?=$photo["BIG_IMG"]?>" alt=""><?endif;?>
+										<?endforeach;?>
+									  </div>
+									 
+									</div>
+									
+									<script>
+										$("#contacts_gallery<?=$aOffice["ID"]?>").mCustomScrollbar({
+											axis:"x",
+											theme:"bigms-contacts",
+											autoExpandScrollbar:true,
+											advanced:{autoExpandHorizontalScroll:true},
+											scrollbarPosition: "inside",
+											mouseWheel: {
+											  enable: false
+											}
+										});
+									</script>
+							<?else:?>
+								<div id="slider<?=$aOffice["ID"]?>" style="display: none;"></div>
+							<?endif;?>
+							*/?>
+							
+						  <div class="content-contacts__description contacts-description" <?if ( count($aOffice["PHOTO"]) > 0 ):?>style="height: 420px;"<?endif;?>>
+							<span class="contacts-description__close"></span>
+							<strong class="contacts-description__title"><?=$aOffice["NAME"]?></strong>
 							<div class="contacts-description__row">
-							  <span class="contacts-description__subtitle"></span>
-							  <span class="contacts-description__text watsup"><?=$aOffice["PROPERTY_625"]?></span>
+							  <span class="contacts-description__subtitle">Адрес:</span>
+							  <span class="contacts-description__text"><?=$aOffice["PROPERTY_12"]?></span>
 							</div>
-						<?endif;?>
-						
-						<?if ( $aOffice["PROPERTY_624"] ):?>
 							<div class="contacts-description__row">
-							  <span class="contacts-description__subtitle"></span>
-							  <span class="contacts-description__text viber"><?=$aOffice["PROPERTY_624"]?></span>
+							  <span class="contacts-description__subtitle">Время работы:</span>
+							  <span class="contacts-description__text"><?=$aOffice["PROPERTY_29"]?></span>
 							</div>
-						<?endif;?>
-						
-						<?if ( $aOffice["PREVIEW_TEXT"] ):?>
 							<div class="contacts-description__row">
-								<span>
-									<?=$aOffice["PREVIEW_TEXT"]?>
-								</span>
+							  <span class="contacts-description__subtitle">Телефон</span>
+							  <span class="contacts-description__text <?if ( $aOffice["PROPERTY_625"] ):?>watsup<?endif;?> <?if ( $aOffice["PROPERTY_624"] ):?>viber<?endif;?>"><?=$aOffice["PROPERTY_13"][0]?></span>
 							</div>
-						<?endif;?>
+							<div class="contacts-description__row">
+								<a href="<?=$aOffice["DETAIL_PAGE_URL"]?>">Подробнее</a>
+							</div>
+							
+							
+							<?/*
+							<?if ( $aOffice["PREVIEW_TEXT"] ):?>
+								<div class="contacts-description__row">
+									<span>
+										<?=$aOffice["PREVIEW_TEXT"]?>
+									</span>
+								</div>
+							<?endif;?>
+							
+							<?if ( $aOffice["PROPERTY_14"] ):?>
+								<a data-trigger="youtube" data-youtube='<?=$aOffice["PROPERTY_14"]?>' href="#" class="contacts-description__video popup-trigger">Видео проезда</a>
+							<?endif;?>
+							
+				
+							<?if ( $aOffice["PROPERTY_622"] ):?>
+								<br><br>
+								<a data-trigger="youtube" data-youtube='<img width="600" src="<?=CFile::GetPath($aOffice["PROPERTY_622"]);?>">' href="#" class="contacts-description__video popup-trigger">Схема проезда на общественном транспорте</a>
+							<?endif;?>
+							
+							<?if ( $aOffice["PROPERTY_623"] ):?>
+								<br><br>
+								<a data-trigger="youtube" data-youtube='<img width="600" src="<?=CFile::GetPath($aOffice["PROPERTY_623"]);?>">' href="#" class="contacts-description__video popup-trigger">Схема проезда на машине</a>
+							<?endif;?>
+							*/?>
+							
+						  </div>
+						</div>
+					<?endforeach;?>
+				
 						
-						<?if ( $aOffice["PROPERTY_14"] ):?>
-							<a data-trigger="youtube" data-youtube='<?=$aOffice["PROPERTY_14"]?>' href="#" class="contacts-description__video popup-trigger">Видео проезда</a>
-						<?endif;?>
-						
-			
-						<?if ( $aOffice["PROPERTY_622"] ):?>
-							<br><br>
-							<a data-trigger="youtube" data-youtube='<img width="600" src="<?=CFile::GetPath($aOffice["PROPERTY_622"]);?>">' href="#" class="contacts-description__video popup-trigger">Схема проезда на общественном транспорте</a>
-						<?endif;?>
-						
-						<?if ( $aOffice["PROPERTY_623"] ):?>
-							<br><br>
-							<a data-trigger="youtube" data-youtube='<img width="600" src="<?=CFile::GetPath($aOffice["PROPERTY_623"]);?>">' href="#" class="contacts-description__video popup-trigger">Схема проезда на машине</a>
-						<?endif;?>
-						
-					  </div>
-					</div>
-				<?endforeach;?>
-					<div class="content-contacts__requisites">
-					  <strong class="contacts-description__title">Общество с ограниченной ответственностью<br><span>«Большой Мастер»</span></strong>
-					  <div class="contacts-description__row">
-						<span class="contacts-description__subtitle">Юр. адрес:</span>
-						<span class="contacts-description__text">111024, г. Москва, 2-я ул. Энтузиастов д. 5, корп.1, этаж. 2, комн. 9</span>
-					  </div>
-					  <div class="contacts-description__row">
-						<span class="contacts-description__subtitle">ИНН:</span>
-						<span class="contacts-description__text">7720605468</span>
-					  </div>
-					  <div class="contacts-description__row">
-						<span class="contacts-description__subtitle">КПП:</span>
-						<span class="contacts-description__text">772001001</span>
-					  </div>
-					  <div class="contacts-description__row">
-						<span class="contacts-description__subtitle">ОГРН:</span>
-						<span class="contacts-description__text">1087746107063</span>
-					  </div>
-					  <div class="contacts-description__row">
-						<span class="contacts-description__subtitle">ОКПО:</span>
-						<span class="contacts-description__text">84727931</span>
-					  </div>
-					  <div class="contacts-description__row">
-						<strong class="contacts-description__title">Ген. Директор Павленкович С.М</strong>
-					  </div>
-					</div>
-			   </div>
+				  
+				
 			</div>
 	<input type="hidden" id="MAP_SECTION" value="0">
 	
@@ -278,14 +312,40 @@ $this->EndViewTarget("row_div_class");
 				}
 	  });
 	  
+		$('.sort__link').click(function() {
+			
+			$('.sort__link').removeClass('active');
+			$('.content-contacts__container').removeClass('active');
+			$(this).addClass('active');
+			$('#map-bl').hide();
+			$('.content_contact_block').hide();
+			var block = '#'+$(this).data('type');
+			$(block).show();
+			myMap.destroy();
+			init();
+			
+			
+			return false;
+		});
 	  
-	    $('.map-trigger').click(function() {
+	  
+		$('.map-trigger').click(function() {
 			$('.content-contacts__container').removeClass('active');
 			$('.content-contacts__requisites').removeClass('active');
 			$('.requisites-trigger').removeClass('active');
 			$('.content-contacts__map-wrap').width('100%');
 			$(this).parent().find('.map-trigger').removeClass('active');
 			$(this).addClass('active');
+			var section = $(this).data('section');
+			if ( section == '0' ){
+				$('.office_line').addClass('active');
+			}
+			else {
+				$('.office_line').removeClass('active');
+				$('[data-section="'+section+'"]').addClass('active');
+			}
+			
+			
 			$('#MAP_SECTION').val( $(this).data('section') );
 			myMap.destroy();
 			init();
@@ -293,13 +353,15 @@ $this->EndViewTarget("row_div_class");
 		
 		  $('.requisites-trigger').click(function() {
 			if($(this).hasClass('active')) {
-			  $(this).toggleClass('active');
-			  $('.content-contacts__requisites').removeClass('active');
-			  $('.content-contacts__map-wrap').width('100%');
+			  //$(this).toggleClass('active');
+			  //$('.content-contacts__requisites').removeClass('active');
+			  //$('.content-contacts__map-wrap').width('100%');
 			} else {
+				$(this).parent().find('.map-trigger').removeClass('active');
 			  $(this).toggleClass('active');
-			  $('.content-contacts__map-wrap').width('65%');
-			  $('.content-contacts__container').removeClass('active');
+			  // $('.content-contacts__map-wrap').width('65%');
+			  $('.office_line').removeClass('active');
+			  //$('.content-contacts__container').removeClass('active');
 			  $('.content-contacts__requisites').addClass('active');
 			}
 		  });	

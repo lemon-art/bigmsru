@@ -1,0 +1,64 @@
+.content_contact_block {
+	margin: 30px 20px;
+	font-family: 'Museo500', sans-serif, Arial;
+	display: block;
+	width: 100%;
+}
+
+.office_line  div{
+	display: table-cell;
+}
+
+.contact_name {
+	width: 55%;
+	padding-right: 50px;
+}
+
+.contact_name a{
+	color: #006db8;
+	border-bottom: 1px dotted #73a0ce;
+	text-decoration: none;
+}
+	    
+
+.contact_phone {
+	width: 25%;
+	padding-right: 50px;
+	padding-left: 50px;
+}
+
+.contact_house {
+	width: 20%;
+
+}
+
+
+.content-contacts {
+	    position: relative;
+}
+
+.contact_sort {
+	    position: absolute;
+    top: -40px;
+    right: 0;
+}
+
+.sort__link.active {
+    border-bottom: 1px dotted transparent;
+}
+
+#map-bl {
+	display: none;
+}
+
+.office_line {
+
+	margin-bottom: 25px;
+	line-height: 30px;
+	display: none;
+}
+
+.office_line.active {
+
+	display: block;
+}
