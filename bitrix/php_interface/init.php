@@ -381,6 +381,20 @@ function _Check404Error()
 }
 
 
+AddEventHandler("iblock", "OnBeforeIBlockElementUpdate","SaveMySection");
+function SaveMySection(&$arFields)
+{
+    if (@$_REQUEST['mode']=='import')//импорт  из 1с?
+    {
+        $db_old_groups = CIBlockElement::GetElementGroups($arFields['ID'], true);
+        while($ar_group = $db_old_groups->Fetch())
+        {
+            if(!in_array($ar_group['ID'],$arFields['IBLOCK_SECTION']))
+            $arFields['IBLOCK_SECTION'][]=$ar_group['ID'];
+        }
+    }
+}
+
 //Импорт товаров из 1С (обработка свойств)
 //AddEventHandler("iblock", "OnBeforeIBlockElementUpdate", Array("EXT1C", "ATTRIBUTES2PROP"));
 //AddEventHandler("iblock", "OnBeforeIBlockElementAdd", Array("EXT1C", "ATTRIBUTES2PROP"));
