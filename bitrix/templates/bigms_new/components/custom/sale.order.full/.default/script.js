@@ -268,7 +268,7 @@ function ChangeGenerate(val)
 						$('#store'+data).show();
 						
 						type = $('[name="PERSON_TYPE"]').val();
-						var sclad = $(this).parent().parent().find('p.self-delivery__text').text();
+						var sclad = $(this).parent().parent().find('.store_name').text();
 						if ( type == '1' ){
 							$('#SKLAD').attr('name', 'ORDER_PROP_17').val( sclad );
 						}

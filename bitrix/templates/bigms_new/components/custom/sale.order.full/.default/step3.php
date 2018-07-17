@@ -99,7 +99,7 @@ if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
 										  <li class="self-delivery__item">
 											<div class="self-delivery__row">
 											  <div class="self-delivery__col self-delivery__col_address">
-												<p class="self-delivery__text"><?=$arStore["NAME"]?></p>
+												<p class="self-delivery__text store_name"><?=$arStore["NAME"]?></p>
 											  </div>
 											  <?=$arStore["PREVIEW_TEXT"]?>
 

@@ -331,12 +331,33 @@ if ( is_array( $arResult["POST"] ) ){
 	
 	$totalOrderPrice = $arResult["ORDER_PRICE"] + $arResult["DELIVERY_PRICE"] + $arResult["TAX_PRICE"] - $arResult["DISCOUNT_PRICE"];
 
+	$status = "N";
+	//статус при самовывозе
+	if ( $arResult["POST"]["~ORDER_PROP_17"] ){
+		$punktS = $arResult["POST"]["ORDER_PROP_17"];
+
+		
+		$arFilter = Array(
+			"IBLOCK_ID"=>9, 
+			"NAME"=>$punktS
+		 );
+		$res = CIBlockElement::GetList(Array("SORT"=>"ASC", "PROPERTY_PRIORITY"=>"ASC"), $arFilter, Array("PROPERTY_status"));
+		if($ar_fields = $res->GetNext())
+		{
+			$status = $ar_fields["PROPERTY_STATUS_VALUE"];
+		}
+
+		
+	}
+	
+	
+	
 	$arFields = array(
 						"LID" => SITE_ID,
 						"PERSON_TYPE_ID" => $arResult["PERSON_TYPE"],
 						"PAYED" => "N",
 						"CANCELED" => "N",
-						"STATUS_ID" => "N",
+						"STATUS_ID" => $status,
 						"PRICE" => $totalOrderPrice,
 						"CURRENCY" => $arResult["BASE_LANG_CURRENCY"],
 						"USER_ID" => IntVal($USER->GetID()),
