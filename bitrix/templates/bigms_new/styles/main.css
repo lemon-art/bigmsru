@@ -2603,6 +2603,15 @@ body {
     text-decoration: line-through;
     line-height: 1;
     margin-left: 10px; }
+    
+    .product-info__zalog{
+    color: #91a8b3;
+    font-size: 22px;
+    font-family: 'Museo700', sans-serif, Arial;
+    line-height: 1;
+    margin-left: 10px; }
+    
+    
   .product-info__status {
     margin-left: 10px;
     height: 45px;

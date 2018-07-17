@@ -364,7 +364,12 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 														<span class="product-info__price"><?echo number_format($minPrice['DISCOUNT_VALUE'],0,'.',' ');?> ₽</span>
 														<span class="product-info__old-price"><?echo number_format($minPrice['VALUE'],0,'.',' ');?> ₽</span>
 												<?else:?>
-													<span class="product-info__price"><?echo number_format($minPrice['VALUE'],0,'.',' ');?> ₽</span>
+													<span class="product-info__price"><?echo number_format($minPrice['VALUE'],0,'.',' ');?> ₽<?if ( $arResult["PROPERTIES"]["ZALOG_NA_INSTRUMENT_RUB"]["VALUE"] ):?>/сут.<?endif;?></span>
+												<?endif;?>
+												
+												<?if ( $arResult["PROPERTIES"]["ZALOG_NA_INSTRUMENT_RUB"]["VALUE"] ):?>
+													<span class="product-info__zalog">Залог: <?echo number_format($arResult["PROPERTIES"]["ZALOG_NA_INSTRUMENT_RUB"]["VALUE"],0,'.',' ');?> ₽</span>
+													<?unset( $arResult["DISPLAY_PROPERTIES"]["ZALOG_NA_INSTRUMENT_RUB"]);?>
 												<?endif;?>
 											<?}?>
 								  
