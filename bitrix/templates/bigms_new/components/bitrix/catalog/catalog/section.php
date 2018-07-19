@@ -270,7 +270,7 @@ if ($ar_result['DEPTH_LEVEL'] == 7 && !array_search($APPLICATION->GetCurPage(fal
 					<span class="content-adv__close popup__close"></span>
 					<strong class="content-adv__title">Сэкономьте до 30% на сантехнике за счет исправления<br>ошибок в смете</strong>
 					<div class="content-adv__buttons">
-					  <a href="/smeta/" class="button button_yel content-adv__button popup-trigger" data-popup="smeta">Пересчитать смету</a>
+					  <a href="/smeta/" class="button button_yel">Пересчитать смету</a>
 					  <a href="" class="button content-adv__button content-adv__button_detail">Подробнее</a>
 					</div>
 					<div class="content-adv__dropdown">
