@@ -3405,8 +3405,17 @@ ul.sublist[data-level="3"] .sublist__link:after {
 
 .main-slider__slide {
   width: 100%;
-  padding: 80px;
-  height: 585px; }
+  padding: 40px;
+  height: 585px; 
+  position: relative;
+  }
+ 
+ .main-slider__slide a.button_yel{
+    position: absolute;
+    right: -250px;
+    bottom: 14px;
+    } 
+  
   .main-slider__slide_partners {
     padding: 40px; }
     .main-slider__slide_partners .slider-callback__title {
