@@ -289,7 +289,7 @@
       <div class="popup__container">
         <div class="popup__wrap">
         <span data-trigger="success_estimate" class="popup__close popup-trigger js-active"></span>
-        <strong class="popup__title form__title">Заявка на рассчет сметы отправлена</strong>
+        <strong class="popup__title form__title">Заявка на расчёт сметы отправлена</strong>
         <p class="popup__text">Наш менеджер свяжется с вами по телефону в течение рабочего дня.</p>
         <p class="popup__text">Спасибо за обращение!</p>
         <span data-trigger="success_estimate" class="button popup-trigger js-active">Закрыть</span>

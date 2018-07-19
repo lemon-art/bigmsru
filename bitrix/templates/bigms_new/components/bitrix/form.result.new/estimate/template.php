@@ -24,10 +24,15 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
             <input class="form__input" type="text" name="form_text_10" value="<?if ( $arResult['arrVALUES']['form_text_10']):?><?=$arResult['arrVALUES']['form_text_10']?><?endif;?>" placeholder="">
           </div>
 		  
-		  <div class="form__row <?if (count($arResult['arrVALUES'])>0 && $arResult['arrVALUES']['form_text_11'] == ''):?>error<?endif?>">
+	 <div class="form__row <?if (count($arResult['arrVALUES'])>0 && $arResult['arrVALUES']['form_text_11'] == ''):?>error<?endif?>">
             <label class="form__label">Ваш e-mail</label>
             <input class="form__input" type="text" name="form_email_11" value="<?if ( $arResult['arrVALUES']['form_text_11']):?><?=$arResult['arrVALUES']['form_text_11']?><?endif;?>" placeholder="">
           </div>
+	  
+	   <div class="form__row">
+		 <label class="form__label">Комментарий</label>
+		 <textarea rows="5" class="form__input" name="form_textarea_20"><?=$arResult['arrVALUES']['form_textarea_20']?></textarea>
+	   </div>		
          
 		  <div class="form__row">
             <label class="form__label">Выбрать файлы</label>
