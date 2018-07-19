@@ -3,7 +3,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 ?>
 <?$this->setFrameMode(true);?>
 
- <strong data-trigger="estimate" class="form__title callback-form__title popup-trigger">Рассчитать смету</strong>
+
          
 
 
