@@ -15,7 +15,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
 
 	      <div class="form__row <?if (count($arResult['arrVALUES'])>0 && $arResult['arrVALUES']['form_text_9'] == ''):?>error<?endif?>">
-            <label class="form__label">Как вас зовут</label>
+            <label class="form__label">Как Вас зовут</label>
             <input class="form__input" type="text" name="form_text_9" value="<?if ( $arResult['arrVALUES']['form_text_9']):?><?=$arResult['arrVALUES']['form_text_9']?><?endif;?>" placeholder="">
           </div>
 			
@@ -41,7 +41,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
           </div>
 
 		
-		  <input class="form__submit" type="submit" name="web_form_submit" value="Отправить на рассчет">
+		  <input class="form__submit" type="submit" name="web_form_submit" value="Отправить на расчёт">
 
 	
 
