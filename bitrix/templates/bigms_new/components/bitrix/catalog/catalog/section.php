@@ -265,6 +265,28 @@ if ($ar_result['DEPTH_LEVEL'] == 7 && !array_search($APPLICATION->GetCurPage(fal
 					array("HIDE_ICONS" => "Y")
 				);?>
 				
+				
+				      <section class="content-adv open">
+					<span class="content-adv__close popup__close"></span>
+					<strong class="content-adv__title">Сэкономьте до 30% на сантехнике за счет исправления<br>ошибок в смете</strong>
+					<div class="content-adv__buttons">
+					  <a href="/smeta/" class="button button_yel content-adv__button popup-trigger" data-popup="smeta">Пересчитать смету</a>
+					  <a href="" class="button content-adv__button content-adv__button_detail">Подробнее</a>
+					</div>
+					<div class="content-adv__dropdown">
+					  <p class="content-adv__text">Мы отлично знаем, как составляются сметы и какие в них бывают ошибки.<br>Оперативно проверим Вашу смету и поможем сэкономить на комплектующих:</p>
+					  <ul class="content-adv__list">
+					    <li class="content-adv__item">- пересчитаем количество товара;</li>
+					    <li class="content-adv__item">- предложим альтернативные цены;</li>
+					    <li class="content-adv__item">- детализируем укрупненные позиции;</li>
+					    <li class="content-adv__item">- исключим лишнее;</li>
+					    <li class="content-adv__item">- добавим необходимое.</li>
+					  </ul>
+					</div>
+				      </section>
+				
+				
+				
 				<!--noindex-->
 				<?
 
