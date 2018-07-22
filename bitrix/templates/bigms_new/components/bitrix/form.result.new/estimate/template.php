@@ -11,27 +11,28 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 <?if ($arResult["isFormNote"] != "Y")
 {
 ?>
-<?=$arResult["FORM_HEADER"]?>
 
 
-	      <div class="form__row <?if (count($arResult['arrVALUES'])>0 && $arResult['arrVALUES']['form_text_9'] == ''):?>error<?endif?>">
+	<div class="estimate_form">
+		<?=$arResult["FORM_HEADER"]?>	
+	  <div class="form__row <?if (count($arResult['arrVALUES'])>0 && $arResult['arrVALUES']['form_text_9'] == ''):?>error<?endif?>">
             <label class="form__label">Как Вас зовут</label>
-            <input class="form__input" type="text" name="form_text_9" value="<?if ( $arResult['arrVALUES']['form_text_9']):?><?=$arResult['arrVALUES']['form_text_9']?><?endif;?>" placeholder="">
+            <input class="form__input" type="text" name="form_text_9" value="<?if ( $arResult['arrVALUES']['form_text_9']):?><?=$arResult['arrVALUES']['form_text_9']?><?endif;?>" placeholder="Введите имя">
           </div>
 			
 		  <div class="form__row <?if (count($arResult['arrVALUES'])>0 && $arResult['arrVALUES']['form_text_10'] == ''):?>error<?endif?>">
             <label class="form__label">Ваш номер телефона</label>
-            <input class="form__input" type="text" name="form_text_10" value="<?if ( $arResult['arrVALUES']['form_text_10']):?><?=$arResult['arrVALUES']['form_text_10']?><?endif;?>" placeholder="">
+            <input class="form__input" type="text" name="form_text_10" value="<?if ( $arResult['arrVALUES']['form_text_10']):?><?=$arResult['arrVALUES']['form_text_10']?><?endif;?>" placeholder="+7 999-99-99-999">
           </div>
 		  
 	 <div class="form__row <?if (count($arResult['arrVALUES'])>0 && $arResult['arrVALUES']['form_text_11'] == ''):?>error<?endif?>">
             <label class="form__label">Ваш e-mail</label>
-            <input class="form__input" type="text" name="form_email_11" value="<?if ( $arResult['arrVALUES']['form_text_11']):?><?=$arResult['arrVALUES']['form_text_11']?><?endif;?>" placeholder="">
+            <input class="form__input" type="text" name="form_email_11" value="<?if ( $arResult['arrVALUES']['form_text_11']):?><?=$arResult['arrVALUES']['form_text_11']?><?endif;?>" placeholder="simple@mail.ru">
           </div>
 	  
 	   <div class="form__row">
 		 <label class="form__label">Комментарий</label>
-		 <textarea rows="5" class="form__input" name="form_textarea_20"><?=$arResult['arrVALUES']['form_textarea_20']?></textarea>
+		 <textarea rows="5" class="form__input" name="form_textarea_20" placeholder="Позиции из сметы"><?=$arResult['arrVALUES']['form_textarea_20']?></textarea>
 	   </div>		
          
 		  <div class="form__row">
@@ -40,7 +41,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
               <svg class="input-file__button">
                 <use xlink:href="#icon-upload"></use>
               </svg>
-              <p class="input-file__text form__input">Файл не выбран</p>
+              <p class="input-file__text form__input">Загрузите файл со сметой</p>
               <input class="input-file__input" type="file" name="form_file_12">
             </div>
           </div>
@@ -53,7 +54,10 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 	
 
 
-<?=$arResult["FORM_FOOTER"]?>
+	<?=$arResult["FORM_FOOTER"]?>
+	
+</div>
+
 <?
 } //endif (isFormNote)
 ?>
