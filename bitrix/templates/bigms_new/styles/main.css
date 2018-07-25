@@ -7064,3 +7064,14 @@ ul.sublist[data-level="3"] .sublist__link:after {
 	background: url('images/mon_email.jpg') no-repeat left 6px;	
 	padding-left: 30px;
 }
+
+
+@media (min-width: 1200px) {
+	.main-slider__slide {
+	    height: 430px;
+	}
+	
+	.owl-carousel .owl-stage-outer {
+		height: 440px;
+	}
+}
