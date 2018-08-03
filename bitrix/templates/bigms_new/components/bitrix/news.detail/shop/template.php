@@ -42,15 +42,15 @@ $this->setFrameMode(true);
 			<?endif;?>
 			
 
-			<?if ( $aOffice["PROPERTY_622"] ):?>
+			<?if ( $arResult["PROPERTY_622"] ):?>
 				<div class="item">
-					<a data-trigger="youtube" data-youtube='<img width="600" src="<?=CFile::GetPath($aOffice["PROPERTY_622"]);?>">' href="#" class="contacts-description__video popup-trigger">Схема проезда на общественном транспорте</a>
+					<a data-trigger="youtube" data-youtube='<img width="600" src="<?=CFile::GetPath($arResult["PROPERTY_622"]);?>">' href="#" class="contacts-description__video popup-trigger">Схема проезда на общественном транспорте</a>
 				</div>
 			<?endif;?>
 								
-			<?if ( $aOffice["PROPERTY_623"] ):?>
+			<?if ( $arResult["PROPERTY_623"] ):?>
 				<div class="item">
-					<a data-trigger="youtube" data-youtube='<img width="600" src="<?=CFile::GetPath($aOffice["PROPERTY_623"]);?>">' href="#" class="contacts-description__video popup-trigger">Схема проезда на машине</a>
+					<a data-trigger="youtube" data-youtube='<img width="600" src="<?=CFile::GetPath($arResult["PROPERTY_623"]);?>">' href="#" class="contacts-description__video popup-trigger">Схема проезда на машине</a>
 				</div>
 			<?endif;?>
 
