@@ -77,6 +77,19 @@ $this->setFrameMode(true);
 </div>
 
 <script type="text/javascript">
+
+
+		var sync1 = $("#main_slider");
+	
+		sync1.owlCarousel({
+		    items : 1,
+		    slideSpeed : 2000,
+		    nav: true,
+		    autoplay: true,
+		    dots: true,
+		    loop: true,
+		});
+
 ymaps.ready(init);
     var myMap;
 	
@@ -130,17 +143,6 @@ ymaps.ready(init);
 		
 	init();
 	
-	$(document).ready(function() {
-	
-		var sync1 = $("#main_slider");
-	
-		sync1.owlCarousel({
-		    items : 1,
-		    slideSpeed : 2000,
-		    nav: true,
-		    autoplay: true,
-		    dots: true,
-		    loop: true,
-		});
-	});
+
+
 </script>
