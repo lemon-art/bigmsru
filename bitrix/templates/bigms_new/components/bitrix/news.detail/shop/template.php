@@ -86,7 +86,7 @@ $this->setFrameMode(true);
 		    slideSpeed : 2000,
 		    nav: true,
 		    autoplay: true,
-		    dots: true,
+		    dots: false,
 		    loop: false,
 		});
 

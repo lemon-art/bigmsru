@@ -8,7 +8,7 @@ foreach ( $arResult['DISPLAY_PROPERTIES']['MORE_PHOTO']['FILE_VALUE'] as $key =>
 
 		$renderImage = CFile::ResizeImageGet(
 			$photo['ID'],
-			Array("width" => 500, "height" => 350),
+			Array("width" => 500, "height" => 450),
 			BX_RESIZE_IMAGE_EXACT,
 			true
 		);
