@@ -44,13 +44,13 @@ $this->setFrameMode(true);
 
 			<?if ( $arResult["PROPERTY_622"] ):?>
 				<div class="item">
-					<a data-trigger="youtube" data-youtube='<img width="600" src="<?=CFile::GetPath($arResult["PROPERTY_622"]);?>">' href="#" class="contacts-description__video popup-trigger">Схема проезда на общественном транспорте</a>
+					<span>Схема проезда на общественном транспорте:</span>  <a data-trigger="youtube" data-youtube='<img width="600" src="<?=CFile::GetPath($arResult["PROPERTY_622"]);?>">' href="#" class="contacts-description__video popup-trigger">Открыть</a>
 				</div>
 			<?endif;?>
 								
 			<?if ( $arResult["PROPERTY_623"] ):?>
 				<div class="item">
-					<a data-trigger="youtube" data-youtube='<img width="600" src="<?=CFile::GetPath($arResult["PROPERTY_623"]);?>">' href="#" class="contacts-description__video popup-trigger">Схема проезда на машине</a>
+					<span>Схема проезда на машине:</span>  <a data-trigger="youtube" data-youtube='<img width="600" src="<?=CFile::GetPath($arResult["PROPERTY_623"]);?>">' href="#" class="contacts-description__video popup-trigger">Открыть</a>
 				</div>
 			<?endif;?>
 
