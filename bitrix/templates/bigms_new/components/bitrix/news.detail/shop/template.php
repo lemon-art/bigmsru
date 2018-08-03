@@ -56,8 +56,12 @@ $this->setFrameMode(true);
 
 			
 		</div>
-		<div class="office_img">
-			<img src="<?=$arResult['DISPLAY_PROPERTIES']['MORE_PHOTO']['FILE_VALUE'][0]["SRC"]?>">
+		<div class="office_img" id="main_slider">
+			<?foreach ( $arResult['DISPLAY_PROPERTIES']['MORE_PHOTO']['FILE_VALUE'] as $photo):?>
+				<div class="item">
+					<img src="<?=$photo["SRC"]?>">
+				</div>
+			<?endforeach;?>
 		</div>
 	</div>
 	
@@ -75,7 +79,7 @@ $this->setFrameMode(true);
 <script type="text/javascript">
 ymaps.ready(init);
     var myMap;
-
+	
 
     function init(){  
 	
@@ -125,4 +129,18 @@ ymaps.ready(init);
 		}
 		
 	init();
+	
+	$(document).ready(function() {
+	
+		var sync1 = $("#main_slider");
+	
+		sync1.owlCarousel({
+		    items : 1,
+		    slideSpeed : 2000,
+		    nav: true,
+		    autoplay: true,
+		    dots: true,
+		    loop: true,
+		});
+	});
 </script>
