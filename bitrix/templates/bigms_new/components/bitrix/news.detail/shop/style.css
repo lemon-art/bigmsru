@@ -29,10 +29,12 @@ div.news-detail img.detail_picture
     display: block;
     width: 500px;
     float: right;
+    height: 450px;
 }
 
-.office_img img{
-
+.office_img .item{
+	width: 500px;
+	height: 450px;
 }
 
 .shop_table {
