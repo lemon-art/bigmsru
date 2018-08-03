@@ -363,8 +363,9 @@ if ( is_array( $arResult["POST"] ) ){
 						"USER_ID" => IntVal($USER->GetID()),
 						"PAY_SYSTEM_ID" => $arResult["PAY_SYSTEM_ID"],
 						"DELIVERY_ID" => is_array($arResult["DELIVERY_ID"]) ? implode(":", $arResult["DELIVERY_ID"]) : ($arResult["DELIVERY_ID"] > 0 ? $arResult["DELIVERY_ID"] : false),
+						"PRICE_DELIVERY" => $arResult["DELIVERY_PRICE"],
 						"DISCOUNT_VALUE" => $arResult["DISCOUNT_PRICE"],
-						"TAX_VALUE" => $arResult["bUsingVat"] == "Y" ? $arResult["vatSum"] : $arResult["TAX_PRICE"],
+						"TAX_VALUE" => "",
 						"USER_DESCRIPTION" => $arResult["ORDER_DESCRIPTION"]
 					);	
 
@@ -1719,10 +1720,10 @@ if ($USER->IsAuthorized())
 		if ($arOrder)
 		{
 		
-			echo '0<br>';
+			
 			if (IntVal($arOrder["PAY_SYSTEM_ID"]) > 0)
 			{
-				echo '1<br>';
+				
 				$dbPaySysAction = CSalePaySystemAction::GetList(
 						array(),
 						array(
@@ -1736,7 +1737,7 @@ if ($USER->IsAuthorized())
 				if ($arPaySysAction = $dbPaySysAction->Fetch())
 				{
 				
-				echo '2<br>';
+				
 					$arPaySysAction["NAME"] = htmlspecialcharsEx($arPaySysAction["NAME"]);
 					if (strlen($arPaySysAction["ACTION_FILE"]) > 0)
 					{
@@ -1780,7 +1781,7 @@ if ($USER->IsAuthorized())
 					
 				}
 			}
-			echo "no1";
+			
 
 			$arResult["ORDER"] = $arOrder;
 
