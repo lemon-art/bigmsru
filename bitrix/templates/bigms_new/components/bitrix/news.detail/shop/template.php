@@ -59,7 +59,7 @@ $this->setFrameMode(true);
 		<div class="office_img" id="main_slider">
 			<?foreach ( $arResult['DISPLAY_PROPERTIES']['MORE_PHOTO']['FILE_VALUE'] as $photo):?>
 				<div class="item">
-					<img src="<?=$photo["SRC"]?>">
+					<img src="<?=$photo["src"]?>">
 				</div>
 			<?endforeach;?>
 		</div>
@@ -87,7 +87,7 @@ $this->setFrameMode(true);
 		    nav: true,
 		    autoplay: true,
 		    dots: true,
-		    loop: true,
+		    loop: false,
 		});
 
 ymaps.ready(init);
