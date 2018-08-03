@@ -2595,13 +2595,13 @@ body {
     color: #11162d;
     font-size: 32px;
     font-family: 'Museo700', sans-serif, Arial;
-    line-height: 1; }
+    line-height: 1.6; }
   .product-info__old-price {
     color: #91a8b3;
     font-size: 22px;
     font-family: 'Museo700', sans-serif, Arial;
     text-decoration: line-through;
-    line-height: 1;
+    line-height: 1.6;
     margin-left: 10px; }
 	
 	.product-info__cards {
