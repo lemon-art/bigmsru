@@ -26,12 +26,13 @@ div.news-detail img.detail_picture
 }
 
 .office_img {
-	display: table-cell;
-	width: 50%;
+    display: block;
+    width: 500px;
+    float: right;
 }
 
 .office_img img{
-	width: 100%;
+
 }
 
 .shop_table {
