@@ -41,18 +41,19 @@ $this->setFrameMode(true);
 				</div>
 			<?endif;?>
 			
-						
-					<?/*
-								<?if ( $aOffice["PROPERTY_622"] ):?>
-									<br><br>
-									<a data-trigger="youtube" data-youtube='<img width="600" src="<?=CFile::GetPath($aOffice["PROPERTY_622"]);?>">' href="#" class="contacts-description__video popup-trigger">Схема проезда на общественном транспорте</a>
-								<?endif;?>
+
+			<?if ( $aOffice["PROPERTY_622"] ):?>
+				<div class="item">
+					<a data-trigger="youtube" data-youtube='<img width="600" src="<?=CFile::GetPath($aOffice["PROPERTY_622"]);?>">' href="#" class="contacts-description__video popup-trigger">Схема проезда на общественном транспорте</a>
+				</div>
+			<?endif;?>
 								
-								<?if ( $aOffice["PROPERTY_623"] ):?>
-									<br><br>
-									<a data-trigger="youtube" data-youtube='<img width="600" src="<?=CFile::GetPath($aOffice["PROPERTY_623"]);?>">' href="#" class="contacts-description__video popup-trigger">Схема проезда на машине</a>
-								<?endif;?>
-					*/?>
+			<?if ( $aOffice["PROPERTY_623"] ):?>
+				<div class="item">
+					<a data-trigger="youtube" data-youtube='<img width="600" src="<?=CFile::GetPath($aOffice["PROPERTY_623"]);?>">' href="#" class="contacts-description__video popup-trigger">Схема проезда на машине</a>
+				</div>
+			<?endif;?>
+
 			
 		</div>
 		<div class="office_img">
