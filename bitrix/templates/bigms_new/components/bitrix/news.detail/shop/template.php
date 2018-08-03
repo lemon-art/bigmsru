@@ -87,7 +87,8 @@ $this->setFrameMode(true);
 		    nav: true,
 		    autoplay: true,
 		    dots: false,
-		    loop: false,
+			 navText: ["<img src='<?=SITE_TEMPLATE_PATH?>/styles/images/icons/arrow-left.png'>", "<img src='<?=SITE_TEMPLATE_PATH?>/styles/images/icons/arrow-right.png'>"],
+		    loop: true,
 		});
 
 ymaps.ready(init);
