@@ -363,8 +363,10 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 													
 														<span class="product-info__price"><?echo number_format($minPrice['DISCOUNT_VALUE'],0,'.',' ');?> ₽</span>
 														<span class="product-info__old-price"><?echo number_format($minPrice['VALUE'],0,'.',' ');?> ₽</span>
+														
 												<?else:?>
 													<span class="product-info__price"><?echo number_format($minPrice['VALUE'],0,'.',' ');?> ₽<?if ( $arResult["PROPERTIES"]["ZALOG_NA_INSTRUMENT_RUB"]["VALUE"] ):?>/сут.<?endif;?></span>
+													<span class="product-info__cards"><img src="<?=SITE_TEMPLATE_PATH?>/images/cards.jpg" title="Возможна оплата банковскими картами" alt="Возможна оплата банковскими картами"></span>
 												<?endif;?>
 												
 												<?if ( $arResult["PROPERTIES"]["ZALOG_NA_INSTRUMENT_RUB"]["VALUE"] ):?>
@@ -373,11 +375,11 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 												<?endif;?>
 											<?}?>
 								  
-
+ 
 								  </div>
 								  <div class="product-info__row product-info__row_icons">
 									<?/*
-									<div class="product-info__icon-wrap">
+									<div class="product-info__icon-wrap"> 
 									  <span class="product-info__compare-icon"></span>
 									</div>
 									*/?>
