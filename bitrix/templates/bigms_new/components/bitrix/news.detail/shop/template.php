@@ -56,7 +56,7 @@ $this->setFrameMode(true);
 
 			
 		</div>
-		<div class="office_img" id="main_slider">
+		<div class="office_img owl-carousel owl-theme" id="main_slider">
 			<?foreach ( $arResult['DISPLAY_PROPERTIES']['MORE_PHOTO']['FILE_VALUE'] as $photo):?>
 				<div class="item">
 					<img src="<?=$photo["src"]?>">
