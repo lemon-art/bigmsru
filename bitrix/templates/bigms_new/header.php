@@ -6,6 +6,7 @@ $page = $APPLICATION->GetCurPage(true);
 if(CSite::InDir(SITE_DIR.'catalog/')){$isCatalog = true;}
 if(CSite::InDir(SITE_DIR.'arenda/')){$isArenda = true;}
 if(CSite::InDir(SITE_DIR.'about/')){$isAbout = true;}
+if(CSite::InDir(SITE_DIR.'personal/')){$isPersonal = true;}
 if(CSite::InDir(SITE_DIR.'about/sertifikaty/')){$isSertifikaty = true;}
 if(CSite::InDir(SITE_DIR.'articles/')){$isArticles = true;}
 if(CSite::InDir(SITE_DIR.'personal/zakladki/')){$isZakladki = true;}
@@ -161,8 +162,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 									"EDIT_TEMPLATE" => "standard.php"
 								),
 								false
-					);?>
+					);?>ertertert
 					<a href="#" class="header__callback-link popup-trigger" data-trigger="callback">Обратный звонок</a>
+					<a href="mailto:bms@bigms.ru" class="header__emeil-link" data-trigger="callback">bms@bigms.ru</a>
 				</div>
 				<div class="col-lg-10 col-lg-offset-0 col-md-10 col-md-offset-0 col-sm-10 col-sm-offset-0">
 				  <ul class="header__auth auth">
@@ -214,6 +216,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 								false
 							);?>
 				  <a href="#" class="header__callback-link popup-trigger" data-trigger="callback">Обратный звонок</a>
+				  <a href="mailto:bms@bigms.ru" class="header__emeil-link" data-trigger="callback">bms@bigms.ru</a>
 				</div>
 				<div class="col-lg-12 col-md-11 col-sm-14">
 				  <nav class="header__menu">
@@ -525,7 +528,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 	
 	<div class="content__wrap <?if ( $isOrderMake ):?>content__wrap_about<?endif;?> <?$APPLICATION->ShowViewContent("content__wrap")?>">
 		<?if( !$isBasket ):?><div class="container-fluid"><?endif;?>
-			<?if ( $isAbout ):?>
+			<?if ( $isAbout):?>
 				<div class="col-lg-30 col-md-30 col-sm-30 content__container content__container_about">
 					<div class="content-about">
 						<div class="content-about__header">
