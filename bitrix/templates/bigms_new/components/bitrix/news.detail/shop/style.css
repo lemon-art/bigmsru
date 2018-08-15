@@ -1,3 +1,13 @@
+
+.owl-dots {
+    display: inline-flex;
+    position: absolute;
+    margin-top: -31px !important;
+    left: 50% !important;
+    margin-left: -25% !important;
+}
+
+
 div.news-detail
 {
 	word-wrap: break-word;
