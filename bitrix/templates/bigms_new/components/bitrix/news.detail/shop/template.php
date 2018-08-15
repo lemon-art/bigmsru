@@ -86,7 +86,7 @@ $this->setFrameMode(true);
 		    slideSpeed : 2000,
 		    nav: true,
 		    autoplay: true,
-		    dots: false,
+		    dots: true,
 			 navText: ["<img src='<?=SITE_TEMPLATE_PATH?>/styles/images/icons/arrow-left.png'>", "<img src='<?=SITE_TEMPLATE_PATH?>/styles/images/icons/arrow-right.png'>"],
 		    loop: true,
 		});
