@@ -213,6 +213,8 @@ function ChangeGenerate(val)
 						$(this).addClass('active');
 						$('.dev').hide();
 
+						alert( DELIVERY_ID );
+						
 						// При доставке авто показываем такое же поле адреса как и при доставке курьером.
 						if(DELIVERY_ID == '3' || DELIVERY_ID == '4' || DELIVERY_ID == '8'){
                             $('.dev[data-content="dev2"]').show();
