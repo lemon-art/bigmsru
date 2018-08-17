@@ -216,6 +216,14 @@ function ChangeGenerate(val)
 						// При доставке авто показываем такое же поле адреса как и при доставке курьером.
 						if(DELIVERY_ID == '3' || DELIVERY_ID == '4' || DELIVERY_ID == '8'){
                             $('.dev[data-content="dev2"]').show();
+							if( DELIVERY_ID == '8'){
+								$('#street').prop('disabled', true);
+								$('.form__col_apartment').show();				
+							}
+							else {
+								$('.form__col_apartment').hide();
+								$('#street').prop('disabled', false);	
+							}
 						}
 						$('.dev[data-content="'+data+'"]').show();
 
