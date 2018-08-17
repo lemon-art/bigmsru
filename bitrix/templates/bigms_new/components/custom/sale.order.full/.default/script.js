@@ -219,13 +219,12 @@ function ChangeGenerate(val)
 						if(DELIVERY_ID == '3' || DELIVERY_ID == '4' || DELIVERY_ID == '8'){
                             
 							if( DELIVERY_ID == '8'){
-								alert('111');
-								$('#street').prop('disabled', true);
+								//$('#street').prop('disabled', true);
 								$('.form__col_apartment').show();				
 							}
 							else {
 								$('.form__col_apartment').hide();
-								$('#street').prop('disabled', false);	
+								//$('#street').prop('disabled', false);	
 							}
 							$('.dev[data-content="dev2"]').show();
 						}
