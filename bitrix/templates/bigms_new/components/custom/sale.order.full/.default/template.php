@@ -87,6 +87,9 @@
 			<div class="col-lg-20 col-md-20 col-sm-20">
 			
 
+			
+			
+			
 				<form method="post" action="<?= htmlspecialcharsbx($arParams["PATH_TO_ORDER"]) ?>" name="order_form" class="content-order__form form form_order">
 				
 					<?=bitrix_sessid_post()?>

@@ -89,7 +89,6 @@ if(isset($_REQUEST) && isset($_GET) && $last_symbol_url != "/"){
 		<script src="//api-maps.yandex.ru/2.0/?load=package.full&lang=ru-RU" type="text/javascript"></script>
 	
 	<?else:*/?>
-		<script src="<?=SITE_TEMPLATE_PATH?>/js/yandex_api.js?load=package.full&lang=ru-RU" type="text/javascript"></script>
 	<?//endif;?>
 	
 	
@@ -123,6 +122,11 @@ if(isset($_REQUEST) && isset($_GET) && $last_symbol_url != "/"){
 		<?$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH."/js/jquery.fancybox.pack.js");?>
 	<?endif;?>
 	<?$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH."/js/jquery.inputmask.bundle.min.js");?>
+
+	<?if ( $isOrderMake ):?>
+		<script src="//ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.js" type="text/javascript"></script>
+		<script src="//api-maps.yandex.ru/2.0/?load=package.full&lang=ru-RU" type="text/javascript"></script>
+	<?endif;?>
 
 </head>
 
@@ -162,7 +166,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 									"EDIT_TEMPLATE" => "standard.php"
 								),
 								false
-					);?>ertertert
+					);?>
 					<a href="#" class="header__callback-link popup-trigger" data-trigger="callback">Обратный звонок</a>
 					<a href="mailto:bms@bigms.ru" class="header__emeil-link" data-trigger="callback">bms@bigms.ru</a>
 				</div>

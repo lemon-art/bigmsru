@@ -80,6 +80,9 @@ if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
 								<?endforeach;?>
                               
                             </ul>
+							
+
+						
                             <div data-content="dev1" class="form__container dev form__container_1 form__container_wide" style="display: none;">
                               <div class="self-delivery">
                                 <ul class="self-delivery__list">
@@ -133,36 +136,66 @@ if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
 								
                               </div> 
                             </div>
-                            <div data-content="dev2" class="form__container dev form__container_wide"  style="display: none;">
+                            <div data-content="dev8" class="form__container dev form__container_wide"  style="display: none;">
 
-                              <div class="form__row form__row_delivery form__row_cols">
-                                <div class="form__col">
+                              
+								<?$APPLICATION->IncludeComponent(
+									"petrofstudio:petrofstudio.mkad",
+									"",
+									Array(
+										"ADDITIONAL_TARIF" => "300",
+										"BLIZ_VREMYA_DOSTAVKI" => "В течении 1 дня",
+										"COST_BY_KM" => "30",
+										"COST_DELIVERY_MKAD" => "300",
+										"COST_FREE_DELIVERY" => "",
+										"MAX_DISTANCE" => "100",
+										"SUMMA_ZAKAZ_TARIF" => ""
+									)
+								);?>
+							  
+							  
+							  <div class="form__row form__row_delivery form__row_cols">
+
+								<div class="form__col form__col_adress">
                                   <div class="form__row div_form">
-                                    <label class="form__label" for="street">Адрес <span style="color:red; position:relative; top:2px;">*</span></label>
-                                      <textarea id="street" rows="3" cols="50" class="form__input" data-min="3" type="text" name="" style="padding:10px;width: 370px;" value=""></textarea>
+                                    <label class="form__label" for="apartment">Адрес</label>
+                                    <input id="street" class="form__input" data-min="1" id="street" disabled type="text" name="" value="">
                                   </div>
                                 </div>
-
-                                  <!--
-                                <div class="form__col form__col_house">
-                                  <div class="form__row div_form">
-                                    <label class="form__label" for="house">Дом</label>
-                                    <input id="house" class="form__input" data-min="1" id="house" type="text" name="" value="">
-                                  </div>
-                                </div>
-
                                 <div class="form__col form__col_apartment">
                                   <div class="form__row div_form">
                                     <label class="form__label" for="apartment">Квартира/офис</label>
                                     <input id="apartment" class="form__input" data-min="1" id="office" type="text" name="" value="">
                                   </div>
                                 </div>
-                                  -->
+                                  
                               </div>
-							  <input type="hidden" id="FULL_ADRESS" name="">
+
                             </div>
+							
+							<div data-content="dev2" class="form__container dev form__container_wide"  style="display: none;">
+
+                              
+						  
+							  
+							  <div class="form__row form__row_delivery form__row_cols">
+
+								<div class="form__col form__col_adress">
+                                  <div class="form__row div_form">
+                                    <label class="form__label" for="apartment">Адрес</label>
+                                    <input id="street" class="form__input" data-min="1" id="street" disabled type="text" name="" value="">
+                                  </div>
+                                </div>
+                                                                 
+                              </div>
+
+                            </div>
+							
+							
+							
                           </div>
                         </div>
-                      
+                      		<input type="hidden" id="FULL_ADRESS" name="">
+							input type="hidden" id="DELIVERY_PRICE" value="" name="DELIVERY_PRICE">
 
 

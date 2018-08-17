@@ -1,0 +1,57 @@
+.hero-unit #YMapsID {
+    width: 70%;
+    height: 500px;
+	float:left;
+}
+.hero-unit {
+    background-color: #FFF;
+}
+.well {
+    padding: 15px 0;
+    height: 620px;
+}
+.label {
+    cursor: pointer;
+}
+.hero-unit #sidebar2 {
+	height: 475px;
+	width: 25%;
+	float:right;
+	font-size: 13px;
+}
+.table tbody tr {
+    cursor: pointer;
+}
+.hero-unit .big-distance {
+	margin-top:10px;
+	font-weight:bold;
+	font-size:13px;
+	color:#5A5A5A;
+}
+.hero-unit .big-distance-17 {
+	margin-top:10px;
+	font-weight:bold;
+	font-size:17px;
+	color:#5A5A5A;
+}
+.hero-unit .no-mrg {
+	font-weight:bold;
+	font-size:13px;
+	color:#5A5A5A;
+}
+.hero-unit .no-mrg-no-bold {
+	font-size:13px;
+	color:#5A5A5A;
+}
+.hero-unit .radius-block {
+	margin-top:7px;
+	border: 2px solid #ccc;
+	padding: 7px;
+	border-radius:8px;
+	font-size:13px;
+	color:#5A5A5A
+}
+.hero-unit .span4 {
+	border: 2px solid #CCCCCC;
+	padding:10px;
+}

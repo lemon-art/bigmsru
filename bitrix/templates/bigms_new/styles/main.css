@@ -658,12 +658,19 @@ body {
   font-size: 13px; } 
   
   
-  
+.form_order .form__row_delivery {
+     margin-top: 25px;
+	}  
   
 .form_order .form__col {
   width: 49%; }
+  .form_order .form__col_adress {
+  width: 70%; }
   .form_order .form__col_house, .form_order .form__col_apartment {
     width: 24%; }
+	
+	
+	
 
 .form_order .form__row {
   margin-bottom: 0;
@@ -1179,6 +1186,10 @@ body {
   font-family: 'Museo700', sans-serif, Arial; }
   .header__emeil-link:hover {
     border-bottom: 0; }	
+	
+.header_order .header__emeil-link {
+	margin-top: 26px;
+}	
 
 .header_order .header__wrap {
   height: 80px;
