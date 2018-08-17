@@ -167,12 +167,13 @@ function ChangeGenerate(val)
 				}
 			}); 
 			
-			if ( $('#street').val() ){
-				full_adr = $('#street').val();
+			var DELIVERY_ID = $('#DELIVERY_ID').val( DELIVERY_ID );
+			
+			if ( DELIVERY_ID == '8' ){
+				full_adr = $('#street1').val() + ' ' + $('#apartment').val();
 			}
 			else {
-				if ( $('#street1').val() )
-					full_adr = $('#street1').val() + ' ' + $('#apartment').val();
+				full_adr = $('#street').val();	
 			}
 			
 			
