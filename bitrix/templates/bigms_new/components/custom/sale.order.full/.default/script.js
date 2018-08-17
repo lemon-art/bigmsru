@@ -167,7 +167,7 @@ function ChangeGenerate(val)
 				}
 			}); 
 			
-			var DELIVERY_ID = $('#DELIVERY_ID').val( DELIVERY_ID );
+			var DELIVERY_ID = $('#DELIVERY_ID').val( );
 			
 			if ( DELIVERY_ID == '8' ){
 				full_adr = $('#street1').val() + ' ' + $('#apartment').val();
@@ -270,6 +270,7 @@ function ChangeGenerate(val)
 							});
 						}
 						
+						
 					});
 					  
 					$('.self-delivery__button').on('click', function() {
@@ -304,6 +305,9 @@ function ChangeGenerate(val)
 		function activateStep4(){
 			
 			var DELIVERY_ID = $('#DELIVERY_ID').val();
+			
+			alert(DELIVERY_ID);
+			
 			$('input[name="DELIVERY_ID"]').val( DELIVERY_ID );
 
 			$.ajax({
@@ -414,7 +418,7 @@ function ChangeGenerate(val)
 			}
 
 
-			/*
+			
             var orderDelivery = $('input[name="DELIVERY_ID"]');
             if(orderDelivery.length > 0) {
                 if(orderDelivery.val() === ''){
@@ -424,7 +428,7 @@ function ChangeGenerate(val)
                     $('#step3').find('.form__title').css('color', '');
                 }
 			}
-			*/
+			
 			
             var orderAddress = $('#FULL_ADRESS');
 			
