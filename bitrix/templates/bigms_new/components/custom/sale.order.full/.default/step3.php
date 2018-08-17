@@ -155,9 +155,7 @@ if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
 							  
 							  
 							  
-                                  
-                              </div>
-
+  
                             </div>
 							
 							<div data-content="dev2" class="form__container dev form__container_wide"  style="display: none;">
