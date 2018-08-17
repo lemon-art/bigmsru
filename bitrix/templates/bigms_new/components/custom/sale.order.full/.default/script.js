@@ -414,6 +414,8 @@ function ChangeGenerate(val)
 
 
             var orderDelivery = $('#DELIVERY_ID');
+			
+			alert( orderDelivery.val() );
             if(orderDelivery.length > 0) {
                 if(orderDelivery.val() === ''){
                     $('#step3').find('.form__title').css('color', 'red');
@@ -428,7 +430,7 @@ function ChangeGenerate(val)
 			
             if(orderAddress.length > 0 && $('#step3').find('.form-radio__item.active').data('id') != 1){
                 if( !orderAddress.val() ){
-                    orderAddress.css('border', '2px solid red');
+                    $('#step3').find('.form__title').css('color', 'red');
                     orderError = true;
                 }else{
                     orderAddress.css('border', '');
