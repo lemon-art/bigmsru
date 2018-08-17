@@ -171,6 +171,7 @@ function ChangeGenerate(val)
 			
 			if ( DELIVERY_ID == '8' ){
 				full_adr = $('#street1').val() + ' ' + $('#apartment').val();
+				alert( full_adr );
 			}
 			else {
 				full_adr = $('#street').val();	
