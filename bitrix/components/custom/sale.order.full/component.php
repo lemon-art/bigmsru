@@ -328,6 +328,10 @@ if ( is_array( $arResult["POST"] ) ){
 	elseif (($arResult["DELIVERY_ID"] > 0) && $arDeliv)
 		$arResult["DELIVERY_PRICE"] = roundEx(CCurrencyRates::ConvertCurrency($arDeliv["PRICE"], $arDeliv["CURRENCY"], $arResult["BASE_LANG_CURRENCY"]), SALE_VALUE_PRECISION);
 
+	if ( $arResult["DELIVERY_ID"] == 8 ){
+		$arResult["DELIVERY_PRICE"] = $_POST['DELIVERY_PRICE'];
+	}
+		
 	
 	$totalOrderPrice = $arResult["ORDER_PRICE"] + $arResult["DELIVERY_PRICE"] + $arResult["TAX_PRICE"] - $arResult["DISCOUNT_PRICE"];
 
