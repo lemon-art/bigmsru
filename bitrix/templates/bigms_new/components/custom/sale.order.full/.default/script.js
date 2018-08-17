@@ -217,9 +217,7 @@ function ChangeGenerate(val)
 						var data = $(this).data('trigger');
 						var DELIVERY_ID = $(this).data('id');
 						$('#DELIVERY_ID').val( DELIVERY_ID );
-						
-						alert( $('#DELIVERY_ID').val() );
-						
+
 						$(this).siblings().removeClass('active');
 						$(this).addClass('active');
 						$('.dev').hide();
@@ -416,7 +414,8 @@ function ChangeGenerate(val)
 			}
 
 
-            var orderDelivery = $('#DELIVERY_ID');
+			/*
+            var orderDelivery = $('input[name="DELIVERY_ID"]');
             if(orderDelivery.length > 0) {
                 if(orderDelivery.val() === ''){
                     $('#step3').find('.form__title').css('color', 'red');
@@ -425,7 +424,7 @@ function ChangeGenerate(val)
                     $('#step3').find('.form__title').css('color', '');
                 }
 			}
-
+			*/
 			
             var orderAddress = $('#FULL_ADRESS');
 			
