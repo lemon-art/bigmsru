@@ -186,5 +186,5 @@ if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
                         </div>
                       		<input type="hidden" id="FULL_ADRESS" name="">
 							<input type="hidden" id="DELIVERY_PRICE" value="" name="DELIVERY_PRICE">
-
+					</div>
 
