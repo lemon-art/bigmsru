@@ -154,7 +154,22 @@ if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
 								);?>
 							  
 							  
-							  
+								<div class="form__row form__row_delivery form__row_cols">
+
+									<div class="form__col form__col_adress">
+									  <div class="form__row div_form">
+										<label class="form__label" for="apartment">Адрес</label>
+										<input id="street1" class="form__input" data-min="10" type="text" disabled name="street1" value="">
+									  </div>
+									</div>
+									<div class="form__col form__col_apartment">
+									  <div class="form__row div_form">
+										<label class="form__label" for="apartment">Квартира/офис</label>
+										<input id="apartment" class="form__input" data-min="1" type="text" name="apartment" value="">
+									  </div>
+									</div>
+
+								</div>
   
                             </div>
 							
@@ -168,16 +183,10 @@ if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
 									<div class="form__col form__col_adress">
 									  <div class="form__row div_form">
 										<label class="form__label" for="apartment">Адрес</label>
-										<input id="street" class="form__input" data-min="1" type="text" name="street" value="">
+										<input id="street" class="form__input" data-min="10" type="text" name="street" value="">
 									  </div>
 									</div>
-									<div class="form__col form__col_apartment">
-									  <div class="form__row div_form">
-										<label class="form__label" for="apartment">Квартира/офис</label>
-										<input id="apartment" class="form__input" data-min="1" type="text" name="apartment" value="">
-									  </div>
-									</div>
-
+									
 								</div>
 							
 							

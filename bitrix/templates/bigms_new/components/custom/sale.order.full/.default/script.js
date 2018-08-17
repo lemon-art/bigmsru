@@ -167,8 +167,14 @@ function ChangeGenerate(val)
 				}
 			}); 
 			
-			full_adr = $('#street').val();
-
+			if ( $('#street').val() ){
+				full_adr = $('#street').val();
+			}
+			else {
+				full_adr = $('#street1').val() + ' ' + $('#apartment').val();
+			}
+			
+			
 			if ( full_adr ){
 			
 				type = $('[name="PERSON_TYPE"]').val();
@@ -216,16 +222,9 @@ function ChangeGenerate(val)
 						
 						
 						// При доставке авто показываем такое же поле адреса как и при доставке курьером.
-						if(DELIVERY_ID == '3' || DELIVERY_ID == '4' || DELIVERY_ID == '8'){
+						if(DELIVERY_ID == '3' || DELIVERY_ID == '4'){
                             
-							if( DELIVERY_ID == '8'){
-								//$('#street').prop('disabled', true);
-								$('.form__col_apartment').show();				
-							}
-							else {
-								//$('#street').removeProp( "disabled" );	
-								$('.form__col_apartment').hide();
-							}
+
 							$('.dev[data-content="dev2"]').show();
 						}
 						$('.dev[data-content="'+data+'"]').show();
