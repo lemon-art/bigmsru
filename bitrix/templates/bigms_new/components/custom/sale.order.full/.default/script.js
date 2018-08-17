@@ -171,7 +171,8 @@ function ChangeGenerate(val)
 				full_adr = $('#street').val();
 			}
 			else {
-				full_adr = $('#street1').val() + ' ' + $('#apartment').val();
+				if ( $('#street1').val() )
+					full_adr = $('#street1').val() + ' ' + $('#apartment').val();
 			}
 			
 			
