@@ -171,7 +171,6 @@ function ChangeGenerate(val)
 			
 			if ( DELIVERY_ID == '8' ){
 				full_adr = $('#street1').val() + ' ' + $('#apartment').val();
-				alert( full_adr );
 			}
 			else {
 				full_adr = $('#street').val();	
@@ -424,8 +423,8 @@ function ChangeGenerate(val)
                 }
 			}
 
-
-            var orderAddress = $('#street');
+			
+            var orderAddress = $('#FULL_ADRESS');
             if(orderAddress.length > 0 && $('#step3').find('.form-radio__item.active').data('id') != 1){
                 if(orderAddress.val() === ''){
                     orderAddress.css('border', '2px solid red');
