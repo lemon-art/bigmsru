@@ -306,7 +306,6 @@ function ChangeGenerate(val)
 			
 			var DELIVERY_ID = $('#DELIVERY_ID').val();
 			
-			alert(DELIVERY_ID);
 			
 			$('input[name="DELIVERY_ID"]').val( DELIVERY_ID );
 
