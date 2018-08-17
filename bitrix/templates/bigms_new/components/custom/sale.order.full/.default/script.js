@@ -425,9 +425,9 @@ function ChangeGenerate(val)
 
 			
             var orderAddress = $('#FULL_ADRESS');
-			alert(orderAddress.val());
+			
             if(orderAddress.length > 0 && $('#step3').find('.form-radio__item.active').data('id') != 1){
-                if(orderAddress.val() === ''){
+                if( !orderAddress.val() ){
                     orderAddress.css('border', '2px solid red');
                     orderError = true;
                 }else{
