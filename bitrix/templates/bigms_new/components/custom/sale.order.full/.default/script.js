@@ -223,7 +223,7 @@ function ChangeGenerate(val)
 								$('.form__col_apartment').show();				
 							}
 							else {
-								$('#street').prop('disabled', false);	
+								$('#street').removeProp( "disabled" );	
 								$('.form__col_apartment').hide();
 							}
 							$('.dev[data-content="dev2"]').show();
