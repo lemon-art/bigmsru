@@ -113,7 +113,7 @@ ptp.getDirections = function () {
                 var street = res.geoObjects.get(0);
                 var name = street.properties.get('name');
                 $('#street1').val(name).change();
-				$('#street').val('').change();
+				$('#street').val(name).change();
             }
         );
 		
