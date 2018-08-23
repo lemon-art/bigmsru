@@ -203,7 +203,7 @@ body {
   font-family: 'Museo500', sans-serif, Arial; }
 
 .title-h1 {
-  color: #192e47;
+  color: #eef2f7;
   font-size: 47px;
   font-family: 'Museo700', sans-serif, Arial;
   display: block;
@@ -5102,7 +5102,7 @@ ul.sublist[data-level="3"] .sublist__link:after {
   margin: 0; }
 
 .content-about__header {
-  height: 330px;
+  height: 130px;
   width: 100%;
   background: url(images/about-header.jpg) repeat-x left center;
   display: -webkit-flex;
@@ -5117,10 +5117,16 @@ ul.sublist[data-level="3"] .sublist__link:after {
   padding: 25px 30px; }
 
 .content-about__content {
-  margin-top: 30px; }
+  margin-top: 30px;
+
+  }
 
 .content-about__main {
-  padding: 0 30px; }
+    color: #3d4f65;
+    line-height: 24px;
+    font-family: 'Museo500', sans-serif, Arial;
+    font-weight: 300;
+    font-size: 15px; }
 
 .about-nav {
   display: -webkit-flex;
@@ -5297,7 +5303,7 @@ ul.sublist[data-level="3"] .sublist__link:after {
   font-weight: 300;
   font-size: 15px;
   margin: 0;
-  max-width: 70%; }
+  margin-bottom: 20px; }
 
 .content-delivery__notice {
   display: block;
