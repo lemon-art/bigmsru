@@ -35,7 +35,19 @@ $(document).ready(function() {
 	  $('.vertical_tabs li').click(function(e) {
 		$(this).find('a').click();
 	  });
-
+	  
+	  
+	  $('#show_dev_info').click(function(e) {
+			$(this).hide();
+			$('.hidden_row').show();
+			return false;
+	  });
+	  
+	  	$('#hide_dev_info').click(function(e) {
+			$('.hidden_row').hide();
+			$('#show_dev_info').show();
+			return false;
+		});
   
 
 	

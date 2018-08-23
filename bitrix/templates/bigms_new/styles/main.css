@@ -5279,6 +5279,51 @@ ul.sublist[data-level="3"] .sublist__link:after {
 .content-delivery__row {
   margin-bottom: 50px; }
 
+.content-delivery__row.center {
+	text-align: center;
+} 
+
+.content-delivery__block{
+	width: 30%;
+    padding: 30px;
+    text-align: center;
+    border: 1px solid #dfe4ea;
+    margin-right: 30px;
+    height: 230px;
+}
+
+.content-delivery__block_half {
+
+	width: 45%;
+    padding: 30px;
+    text-align: center;
+    border: 1px solid #dfe4ea;
+    margin-right: 30px;
+    height: 230px;
+
+}
+
+.content-delivery__block_half:last-child {
+	margin-right: 30px;
+	float: right;
+}
+
+.more_info{
+	display: inline-block;
+    margin: 29px 0 0 0;
+    font-size: 14px;
+    color: #007baf;
+    border-bottom: 1px dotted;
+    cursor: pointer;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+.hidden_row {
+	display: none;
+}
+
+ 
 .content-delivery__title {
   display: block;
   margin: 0;

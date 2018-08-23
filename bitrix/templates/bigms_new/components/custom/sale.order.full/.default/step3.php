@@ -143,10 +143,10 @@ if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
 									"petrofstudio:petrofstudio.mkad",
 									"",
 									Array(
-										"ADDITIONAL_TARIF" => "300",
+										"ADDITIONAL_TARIF" => "350",
 										"BLIZ_VREMYA_DOSTAVKI" => "В течении 1 дня",
 										"COST_BY_KM" => "30",
-										"COST_DELIVERY_MKAD" => "300",
+										"COST_DELIVERY_MKAD" => "350",
 										"COST_FREE_DELIVERY" => "",
 										"MAX_DISTANCE" => "100",
 										"SUMMA_ZAKAZ_TARIF" => ""
