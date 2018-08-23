@@ -15,8 +15,15 @@ $aMenuLinks = Array(
 		"" 
 	),
 	Array(
-		"Доставка и оплата", 
+		"Доставка", 
 		"/about/dostavka-oplata/", 
+		Array(), 
+		Array(), 
+		"" 
+	),
+	Array(
+		"Оплата", 
+		"/about/payment/", 
 		Array(), 
 		Array(), 
 		"" 

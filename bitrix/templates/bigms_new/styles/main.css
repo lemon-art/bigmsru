@@ -6258,6 +6258,10 @@ ul.sublist[data-level="3"] .sublist__link:after {
     color: #1c6bc4; }
   .popup_youtube .popup__wrap {
     width: auto; }
+	
+   .popup_calc .popup__wrap {
+    width: 800px; }
+	
   .popup_login .popup__wrap {
     width: 300px; }
   .popup_slider .popup__wrap {

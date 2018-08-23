@@ -6,6 +6,7 @@ $page = $APPLICATION->GetCurPage(true);
 if(CSite::InDir(SITE_DIR.'catalog/')){$isCatalog = true;}
 if(CSite::InDir(SITE_DIR.'arenda/')){$isArenda = true;}
 if(CSite::InDir(SITE_DIR.'about/')){$isAbout = true;}
+if(CSite::InDir(SITE_DIR.'about/dostavka-oplata/')){$isDostavka = true;}
 if(CSite::InDir(SITE_DIR.'personal/')){$isPersonal = true;}
 if(CSite::InDir(SITE_DIR.'about/sertifikaty/')){$isSertifikaty = true;}
 if(CSite::InDir(SITE_DIR.'articles/')){$isArticles = true;}
@@ -123,7 +124,7 @@ if(isset($_REQUEST) && isset($_GET) && $last_symbol_url != "/"){
 	<?endif;?>
 	<?$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH."/js/jquery.inputmask.bundle.min.js");?>
 
-	<?if ( $isOrderMake ):?>
+	<?if ( $isOrderMake || $isDostavka ):?>
 		<script src="//ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.js" type="text/javascript"></script>
 		<script src="//api-maps.yandex.ru/2.0/?load=package.full&lang=ru-RU" type="text/javascript"></script>
 	<?endif;?>

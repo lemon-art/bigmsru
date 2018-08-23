@@ -327,6 +327,33 @@
 				</div>
 			  </div>
 			</div>
+			
+			<?if ( $isDostavka ):?>
+			
+				<div data-popup="calc_dostavka" class="popup popup_calc">
+				  <div class="popup__container">
+					<div class="popup__wrap">
+						<a role="button" data-trigger="calc_dostavka" class="popup__close popup-trigger"></a>
+						
+							<?$APPLICATION->IncludeComponent(
+									"petrofstudio:petrofstudio.mkad",
+									"",
+									Array(
+										"ADDITIONAL_TARIF" => "350",
+										"BLIZ_VREMYA_DOSTAVKI" => "В течении 1 дня",
+										"COST_BY_KM" => "30",
+										"COST_DELIVERY_MKAD" => "350",
+										"COST_FREE_DELIVERY" => "",
+										"MAX_DISTANCE" => "100",
+										"SUMMA_ZAKAZ_TARIF" => ""
+									)
+								);?>
+						
+					</div>
+				  </div>
+				</div>
+			
+			<?endif;?>
 	
 
 

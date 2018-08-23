@@ -24,6 +24,7 @@ $APPLICATION->SetTitle("Доставка и оплата");
 				<div class="col-lg-4 col-md-4 col-sm-4 content-delivery__block">
 					<strong class="content-delivery__subtitle">350 руб.<br>+30 руб/км<br>от МКАД</strong>
 					<p class="content-delivery__text">Доставка по Московской области</p>
+					<a href="#" class="header__callback-link popup-trigger" data-trigger="calc_dostavka">Расчитать стоимость</a>
 				</div>
 			</div>
 			
