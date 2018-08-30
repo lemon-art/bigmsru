@@ -589,6 +589,14 @@ if ($arResult['MODULES']['currency'])
 }
 
 
+if ( $arResult['PROPERTIES']['MINIMALNAYA_NORMA_OTGRUZKI_M']['VALUE'] ){
+
+	$arResult['MIN_NORMA'] = $arResult['PROPERTIES']['MINIMALNAYA_NORMA_OTGRUZKI_M']['VALUE'];
+}
+else {
+	$arResult['MIN_NORMA'] = 1;
+}
+
 if ( is_array($arResult['PROPERTIES']['DOCS']['VALUE']) ){
 
 	$arFiles = Array();

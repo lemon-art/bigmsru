@@ -154,6 +154,7 @@ if ($countPropduct > 0):
 														name="QUANTITY_INPUT_<?=$arItem["ID"]?>"
 														size="2"
 														maxlength="18"
+														data-norma="<?=$arItem["MEASURE_RATIO"]?>"
 														min="0"
 														<?=$max?>
 														step="<?=$ratio?>"

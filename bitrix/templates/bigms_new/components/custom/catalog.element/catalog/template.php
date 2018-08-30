@@ -237,7 +237,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 										  <div class="form__inner-wrap">
 											<div class="spinner spinner_cart">
 											  <a role="button" href="#" class="spinner__dec">–</a>
-											  <input class="spinner__input" type="text" name="COUNT" value="1">
+											  <input class="spinner__input" type="text" name="COUNT" data-norma="<?=$arResult['MIN_NORMA']?>" value="<?=$arResult['MIN_NORMA']?>">
 											  <a role="button" href="#" class="spinner__inc">+</a>
 											</div>
 											<span class="form__price"><?=number_format($arResult["CATALOG_PRICE_1"],0,'.',' ')?> ₽</span>
@@ -394,7 +394,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 								  <div class="product-info__row">
 									<div class="product-info__spinner spinner">
 									  <a role="button" href="#" class="spinner__dec">–</a>
-									  <input class="spinner__input" type="text" name="COUNT<?=$arResult["ID"]?>" value="1">
+									  <input class="spinner__input" type="text" name="COUNT<?=$arResult["ID"]?>" data-norma="<?=$arResult['MIN_NORMA']?>" value="<?=$arResult['MIN_NORMA']?>">
 									  <a role="button" href="#" class="spinner__inc">+</a>
 									</div>
 									<div class="product-info__status">

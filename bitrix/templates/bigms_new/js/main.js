@@ -741,22 +741,36 @@ $(document).ready(function() {
   $('.spinner__inc').click(function(e) {
     e.preventDefault();
     var target = $(this).parent().find('.spinner__input');
-    value = target.val();
-    target.val(++value);
+	
+	var norma = target.data('norma');
+
+	
+    value = target.val()*1 + norma*1;
+    target.val(value);
   });
   $('.spinner__dec').click(function(e) {
     e.preventDefault();
     var target = $(this).parent().find('.spinner__input');
+	
+	var norma = target.data('norma');
     value = target.val();
-    if (value > 1) {
-      target.val(--value);
+    if (value > norma*1) {
+		value = target.val()*1 - norma*1;
+		target.val(value);
     }
   });
-  $('.spinner__input').change(function() {
-    console.log('123');
-    if(this.value < 1) {
-      this.value = 1;
-    }
+	$('.spinner__input').change(function() {
+    
+		var norma = parseInt($(this).data('norma'));
+		var value = parseInt($(this).val());
+		
+	    if( value < norma ) {
+			$(this).val(norma);
+		}
+		else {
+			var k = Math.ceil(value/norma);
+			$(this).val( norma * k );
+		}
   });
   //filter dropdown
   $('.filter-form__title').click(function(e) {
