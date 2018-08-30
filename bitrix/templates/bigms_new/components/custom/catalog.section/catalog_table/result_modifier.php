@@ -23,10 +23,12 @@ if (array_key_exists('is_ajax', $_REQUEST) && $_REQUEST['is_ajax']=='y') {
 					"ID"=>$pdf,
 					"!PROPERTY_file" => false
 				 );
-				$res = CIBlockElement::GetList(Array("SORT"=>"ASC", "PROPERTY_PRIORITY"=>"ASC"), $arFilter, Array("PREVIEW_TEXT", "PROPERTY_file"));
-				if($ar_fields = $res->GetNext()){
-					$arResult["PDF_FILE"] = CFile::GetPath($ar_fields["PROPERTY_FILE_VALUE"]);
-					$arResult["PDF_TEXT"] = $ar_fields["PREVIEW_TEXT"];
+				if ( $pdf ){
+					$res = CIBlockElement::GetList(Array("SORT"=>"ASC", "PROPERTY_PRIORITY"=>"ASC"), $arFilter, Array("PREVIEW_TEXT", "PROPERTY_file"));
+					if($ar_fields = $res->GetNext()){
+						$arResult["PDF_FILE"] = CFile::GetPath($ar_fields["PROPERTY_FILE_VALUE"]);
+						$arResult["PDF_TEXT"] = $ar_fields["PREVIEW_TEXT"];
+					}
 				}
 				
 			endif;

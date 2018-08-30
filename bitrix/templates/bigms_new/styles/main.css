@@ -202,8 +202,18 @@ body {
   color: #192e47;
   font-family: 'Museo500', sans-serif, Arial; }
 
+.product-info__props{
+	    font-family: 'Museo500', sans-serif, Arial;
+}
+
+.small_price {
+	font-size: 16px !important;
+    margin-top: -40px;
+    position: absolute;
+}
+  
 .title-h1 {
-  color: #4c2e47;
+  color: #192e47;
   font-size: 47px;
   font-family: 'Museo700', sans-serif, Arial;
   display: block;

@@ -365,8 +365,13 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 														<span class="product-info__old-price"><?echo number_format($minPrice['VALUE'],0,'.',' ');?> ₽</span>
 														
 												<?else:?>
-													<span class="product-info__price"><?echo number_format($minPrice['VALUE'],0,'.',' ');?> ₽<?if ( $arResult["PROPERTIES"]["ZALOG_NA_INSTRUMENT_RUB"]["VALUE"] ):?>/сут.<?endif;?></span>
+													<span class="product-info__price <?if ( $arResult['MIN_NORMA'] > 1):?>small_price<?endif;?>"><?echo number_format($minPrice['VALUE'],0,'.',' ');?> ₽<?if ( $arResult["PROPERTIES"]["ZALOG_NA_INSTRUMENT_RUB"]["VALUE"] ):?>/сут.<?endif;?> <?if ( $arResult['MIN_NORMA'] > 1):?>за метр<?endif;?></span>
+													<?if ( $arResult['MIN_NORMA'] > 1):?>
+														<span class="product-info__price"><?echo number_format($minPrice['VALUE']*$arResult['MIN_NORMA'],0,'.',' ');?> ₽ </span>
+													<?endif;?>
 													<span class="product-info__cards"><img src="<?=SITE_TEMPLATE_PATH?>/images/cards.jpg" title="Возможна оплата банковскими картами" alt="Возможна оплата банковскими картами"></span>
+													
+												
 												<?endif;?>
 												
 												<?if ( $arResult["PROPERTIES"]["ZALOG_NA_INSTRUMENT_RUB"]["VALUE"] ):?>
@@ -376,7 +381,15 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 											<?}?>
 								  
  
-								  </div>
+									</div>
+								  	
+									<?if ( $arResult['MIN_NORMA'] > 1):?>
+										<div class="product-info__props">
+											Минимальная норма отгрузки: <?=$arResult['MIN_NORMA']?> м
+										</div>
+									<?endif;?>
+								  
+								  
 								  <div class="product-info__row product-info__row_icons">
 									<?/*
 									<div class="product-info__icon-wrap"> 
@@ -386,6 +399,9 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 									<div class="product-info__icon-wrap">
 										<span class="product-info__wish-icon <?if ( in_array($arResult['ID'], $arResult["FAVORITES"])):?>active<?endif;?>" data-id="<?=$arResult['ID']?>"></span>
 									</div>
+									
+
+									
 									
 									<?if(!empty($arResult["DISPLAY_PROPERTIES"]["CML2_ARTICLE"]["VALUE"])):?>
 										<span class="product-info__id">Артикул: <?=$arResult["DISPLAY_PROPERTIES"]["CML2_ARTICLE"]["VALUE"]?></span>
