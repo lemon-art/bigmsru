@@ -193,7 +193,10 @@ $(document).ready(function() {
     var sidebarHeightScreens = Math.floor(sidebarHeight/screenHeight),
         sidebarMarginTop = -(sidebarHeight % screenHeight),
         tempMargin = 0;
-		
+	
+	
+
+	
 
     if(PageScrollY > headerHeight) {
      $('.sidebar').addClass('top-fixed');
@@ -213,6 +216,10 @@ $(document).ready(function() {
         if (menuTop < sidebarMarginTop || PageScrollY > bodyHeight - screenHeight  ) {
           menuTop = sidebarMarginTop;
         }
+		
+		if(PageScrollY < 201) {
+			menuTop = 0;
+		}
 
         $('.sidebar').css('top', menuTop+'px');
       } else {
@@ -235,13 +242,27 @@ $(document).ready(function() {
     $('.footer').toggleClass('open');
   }
 
-  $('.side-nav__item').hover(function() {
-    var eq = $('.side-nav__item').index($(this));
-    $('.side-nav__icon-item').eq(eq).find('.side-nav__icon').addClass('hovered');
-  }, function() {
-    var eq = $('.side-nav__item').index($(this));
-    $('.side-nav__icon-item').eq(eq).find('.side-nav__icon').removeClass('hovered');
-  });
+	$('.side-nav__item').hover(function() {
+	
+		var PageScrollY = window.pageYOffset,
+        scrollDiff = PageScrollY-preventScroll;
+        menuTop = menuTop - scrollDiff;
+	
+		//$('.sidebar').removeClass('top-fixed');
+		//$('.sidebar').css('top', menuTop+'px');
+	
+		var eq = $('.side-nav__item').index($(this));
+		$('.side-nav__icon-item').eq(eq).find('.side-nav__icon').addClass('hovered');
+		
+	}, function() {
+	
+		var eq = $('.side-nav__item').index($(this));
+		$('.side-nav__icon-item').eq(eq).find('.side-nav__icon').removeClass('hovered');
+		
+		//$('.sidebar').addClass('top-fixed');
+		//$('.sidebar').css('top', '0px');
+		
+	});
 
   //side nav sub menu
   $( "td" ).hover( function() {
@@ -1007,6 +1028,17 @@ $(function () {
 
         return false;
     });
+	
+	/*menu*/
+  jQuery("<div class='arrow'><span>+</span></div>").insertBefore('li .side-nav__sublist');
+
+  	$('div.arrow').click(function(e){
+		var text = $(this).find('span').text();
+		$(this).find('span').text(
+			text == "+" ? "-" : "+");			
+			$(this).nextAll().slideToggle(); 
+			
+		});
 	
 
 });
