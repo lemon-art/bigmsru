@@ -404,6 +404,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 									"ACTIVE_COMPONENT" => "Y"
 								)
 				);?> 
+			<?/*
             <li class="side-nav__icon-item side-nav__icon-item_service icon_service">
               <a href="#">
                 <span class="side-nav__icon-img side-nav__icon-img_service"></span>
@@ -414,6 +415,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                 <span class="side-nav__icon-img side-nav__icon-img_producers"></span>
               </a>
             </li>
+			*/?>
           </ul>
           <ul class="side-nav__list">
             <li class="side-nav__item">
@@ -464,6 +466,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 								)
 							);?>
 
+			<?/*
             <li data-level="1"  class="side-nav__item side-nav__item_colored side-nav__item_service">
               <a href="" class="side-nav__link side-nav__link_colored">
                 <div class="side-nav__icon-wrap">
@@ -527,6 +530,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                 </li>
               </ul>
             </li>
+			*/?>
           </ul>
         </nav>
       </aside>
