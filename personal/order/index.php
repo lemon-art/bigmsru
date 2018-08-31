@@ -2,7 +2,7 @@
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("Заказы");
 
-echo '<div class="left_text">';
+echo '<div class="col-lg-24 col-md-24 col-sm-25 content-about__main content-delivery">';
 ?>
 <?$APPLICATION->IncludeComponent(
 	"bitrix:sale.personal.order", 
@@ -45,7 +45,7 @@ echo '<div class="left_text">';
 );?>
 <?
 echo '</div>';
-
+echo '<div class="col-lg-6 col-md-6 col-sm-5 content-about__nav about-nav">';
 $APPLICATION->IncludeComponent(
 	"bitrix:main.include", 
 	".default", 
@@ -56,7 +56,7 @@ $APPLICATION->IncludeComponent(
 	),
 	false
 );
+echo '</div>';
 
-echo '<div class="clear"></div>';
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
