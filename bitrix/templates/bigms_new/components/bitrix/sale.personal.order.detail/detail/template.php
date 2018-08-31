@@ -1,4 +1,8 @@
 <?if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
+<?
+$APPLICATION->SetTitle(GetMessage('SPOD_ORDER') . ' ' . GetMessage('SPOD_NUM_SIGN') . ' ' .$arResult["ACCOUNT_NUMBER"] . ' ' . GetMessage("SPOD_FROM") . ' ' . $arResult["DATE_INSERT_FORMATED"]);
+$APPLICATION->AddChainItem(GetMessage('SPOD_ORDER') . ' ' . GetMessage('SPOD_NUM_SIGN') . ' ' .$arResult["ACCOUNT_NUMBER"]);
+?>
 
 <!--
 <div class="bx_my_order_switch">
@@ -15,16 +19,6 @@
 	<?else:?>
 	
 		<table class="bx_order_list_table">
-			<thead>
-				<tr>
-					<td colspan="2">
-						<?=GetMessage('SPOD_ORDER')?> <?=GetMessage('SPOD_NUM_SIGN')?><?=$arResult["ACCOUNT_NUMBER"]?>
-						<?if(strlen($arResult["DATE_INSERT_FORMATED"])):?>
-							<?=GetMessage("SPOD_FROM")?> <?=$arResult["DATE_INSERT_FORMATED"]?>
-						<?endif?>
-					</td>
-				</tr>
-			</thead>
 			<tbody>
 				<tr>
 					<td>
@@ -70,7 +64,9 @@
 				<?if(intval($arResult["USER_ID"])):?>
 
 					<tr>
-						<td colspan="2"><?=GetMessage('SPOD_ACCOUNT_DATA')?></td>
+						<td colspan="2">
+						<?=GetMessage('SPOD_ACCOUNT_DATA')?>
+						</td>
 					</tr>
 					<?if(strlen($arResult["USER_NAME"])):?>
 						<tr>
@@ -467,13 +463,6 @@
 					</tr>
 				<?endif?>
 
-				<? ///// TAX SUM ?>
-				<?if(floatval($arResult["TAX_VALUE"])):?>
-					<tr>
-						<td class="custom_t1"><?=GetMessage('SPOD_TAX')?>:</td>
-						<td class="custom_t2"><?=$arResult["TAX_VALUE_FORMATED"]?></td>
-					</tr>
-				<?endif?>
 
 				<? ///// DISCOUNT ?>
 				<?if(floatval($arResult["DISCOUNT_VALUE"])):?>

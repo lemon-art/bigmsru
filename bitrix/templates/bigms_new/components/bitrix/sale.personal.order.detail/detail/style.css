@@ -7,7 +7,7 @@
 .bx_order_list .bx_order_list_table{
 	width: 100%;
 	border-collapse: collapse;
-	border: 1px solid #e8e8e8;
+	border: 0px solid #e8e8e8;
 }
 .bx_order_list .bx_order_list_table tr td{
 	-webkit-box-sizing: border-box;
@@ -15,25 +15,43 @@
 			box-sizing: border-box;
 	vertical-align:middle
 }
-.bx_order_list .bx_order_list_table thead tr td,
-.bx_order_list .bx_order_list_table tbody tr td[colspan="2"],
-.bx_order_list .bx_order_list_table_order thead tr td{
-	color: #ffffff;
-	font-family: "MuseoSansMedium";
-    font-size: 1.231em; /* 16px/13px */
-	background:#b1c0d2 ;
-    border: 1px solid #b1c0d2 ;
-    height: 46px;
-    padding: 0 20px;
-    text-transform: uppercase;
-	position:relative;
-}
+
+
 .bx_order_list .bx_order_list_table tbody tr td{
 	padding: 5px 10px;
 	color: #3f3f3f;
 	font-size: 13px;
 	vertical-align: middle;
 }
+
+.bx_order_list .bx_order_list_table thead tr td,
+.bx_order_list ,
+.bx_order_list .bx_order_list_table_order thead tr td{
+    color: #223955;
+    font-size: 14px;
+    font-family: 'Museo500', sans-serif, Arial;
+    margin-bottom: 10px;
+}
+
+.bx_order_list_table tbody tr td[colspan="2"]{
+	display: block;
+    color: #223955;
+    font-size: 26px;
+    font-family: 'Museo700', sans-serif, Arial;
+    margin-bottom: 20px;
+	min-width: 450px;
+
+}
+
+.bx_order_list_table_order thead td{
+    color: #223955  !important;
+    font-size: 18px  !important;
+    font-family: 'Museo700', sans-serif, Arial !important;
+    margin-bottom: 20px;
+
+}
+
+
 
 .bx_order_list .bx_order_list_table tbody tr td:nth-child(2){width: 75%}
 
@@ -43,7 +61,6 @@
 .bx_order_list .bx_order_list_table_order{
 	width: 100%;
 	border-collapse: collapse;
-	border: 1px solid #e8e8e8;
 }
 .bx_order_list .bx_order_list_table_order tr td{
 	-webkit-box-sizing: border-box;
