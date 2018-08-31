@@ -3224,7 +3224,7 @@ body {
         -ms-flex-pack: start;
             justify-content: flex-start;
     width: 320px;
-    height: 42px;
+    height: 36px;
     color: #1c6bc4;
     text-decoration: none;
     border-bottom: 1px solid transparent; }
@@ -3393,7 +3393,7 @@ body {
     position: relative;
     padding-left: 25px;
     padding-right: 25px;
-    height: 42px;
+    height: 32px;
     display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
@@ -7198,7 +7198,7 @@ ul.sublist[data-level="3"] .sublist__link:after {
     color: #1c6bc4;
     position: absolute;
     right: 8px;
-    top: 12px;
+    top: 9px;
 }
 
 .side-nav__item {
@@ -7250,8 +7250,8 @@ li.sublist__item[data-level="2"]> ul.sublist[data-level="3"]  .sublist__item:hov
 }
 
 .sublist__link {
-    height: 40px;
-    font-size: 14px;
+    height: 32px;
+    font-size: 12px;
 }
 
 .sublist__item .arrow span {
