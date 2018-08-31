@@ -1048,6 +1048,9 @@ $(function () {
 
   	$('div.arrow').click(function(e){
 		var text = $(this).find('span').text();
+		
+		$(this).parent('li').toggleClass('select');
+		
 		$(this).find('span').text(
 			text == "+" ? "-" : "+");			
 			$(this).nextAll().slideToggle(); 

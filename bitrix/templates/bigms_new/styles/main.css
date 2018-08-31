@@ -3148,15 +3148,25 @@ body {
 	.side-nav__item:first-child{
 		    height: 52px;
 	}	
-    .side-nav__item:first-child:hover {
-      color: #1c6bc4;
-      background: transparent; }
+
+	  
+	  
+	  
       .side-nav__item:first-child:hover .side-nav__link {
         color: #1c6bc4; }
         .side-nav__item:first-child:hover .side-nav__link:after {
           display: none; }
-    .side-nav__item:hover {
-      background: #538dce; }
+    .side-nav__item:hover, .side-nav__item.select {
+      background: #538dce;
+	  }
+	  .side-nav__item.select > a{
+		color: #ffffff;
+	  }
+	  .sublist__item.select, .sublist__item.select:hover {
+		background: #d3def1;
+	  }
+
+	  
       .side-nav__item:hover > .side-nav__link {
         color: #ffffff; }
         .side-nav__item:hover > .side-nav__link_colored {
