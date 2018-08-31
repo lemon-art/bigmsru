@@ -36,6 +36,7 @@ foreach ($arDeliveries as $key => $delivery) {
     }
 }
 
+
 $arNotRegionsDeliveries = ['1', '2', '8'];
 if (!DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
     foreach ($arDeliveries as $key => $delivery) {
@@ -45,7 +46,7 @@ if (!DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
     }
 }
 
-$arNotMoscowRegionDeliveries = ['3'];
+$arNotMoscowRegionDeliveries = ['3', '4'];
 if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
     foreach ($arDeliveries as $key => $delivery) {
         if (in_array($delivery['ID'], $arNotMoscowRegionDeliveries)) {

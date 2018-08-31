@@ -21,8 +21,24 @@ class DeliveryHelper
     {
         $cityIds = [];
         Loader::includeModule('sale');
+		
+				$res = LocationTable::getList(array(
+					'filter' => array(
+						'ID' => 3
+					),
+					'select' => array('ID', 'LEFT_MARGIN', 'RIGHT_MARGIN')
+				));
+
+				if($loc = $res->fetch())
+				{
+					$leftMargin = $loc['LEFT_MARGIN'];
+					$rightMargin = $loc['RIGHT_MARGIN'];
+				}
+		
+		
+		
         $dbLocations = LocationTable::getList([
-            'filter' => ['TYPE_CODE' => 'CITY', "PARENT_ID" => 3],
+            'filter' => ['TYPE_CODE' => 'CITY', '>LEFT_MARGIN' => $leftMargin, '<RIGHT_MARGIN' => $rightMargin],
             'select' => ['ID', 'NAME_RU' => 'NAME.NAME', 'TYPE_CODE' => 'TYPE.CODE'],
         ]);
         while($arLocations = $dbLocations->fetch()) {
