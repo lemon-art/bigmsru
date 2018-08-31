@@ -23,6 +23,7 @@
 						<span class="side-nav__name"><?=$arItem["TEXT"]?></span>
 					</a>
 					<ul data-level="<?=$arItem["DEPTH_LEVEL"]+1?>" class="side-nav__sublist sublist">
+						<li data-level="<?=$arItem["DEPTH_LEVEL"]+1?>" class="sublist__item"><a href="<?=$arItem["LINK"]?>" class="sublist__link sublist__link_all">Все товары раздела</a></li>
 				<?else:?>
 				<li data-level="<?=$arItem["DEPTH_LEVEL"]?>" class="sublist__item" <?if ($arItem["SELECTED"]):?>active<?endif?>">
 					<a class="sublist__link underground" href="<?=$arItem["LINK"]?>"><?=$arItem["TEXT"]?></a>
