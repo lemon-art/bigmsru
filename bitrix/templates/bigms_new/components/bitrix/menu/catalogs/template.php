@@ -11,7 +11,7 @@
 			<?=str_repeat("</ul></li>", ($previousLevel - $arItem["DEPTH_LEVEL"]));?>
 		<?endif?>
 
-		<?if ($arItem["IS_PARENT"]):?>
+		<?if ($arItem["IS_PARENT"] && $arItem["DEPTH_LEVEL"] < 4):?>
 
 			<?if ($arItem["DEPTH_LEVEL"] == 1):?>
 				<li data-level="<?=$arItem["DEPTH_LEVEL"]?>" class="side-nav__item side-nav__item_<?=$arItem["ICON"]?> <?if ($arItem["SELECTED"]):?>active<?endif?>">
