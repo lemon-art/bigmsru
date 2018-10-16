@@ -7007,6 +7007,10 @@ ul.sublist[data-level="3"] .sublist__link:after {
 	padding: 20px;
 }
 
+.ui-widget-content.ui-slider {
+	padding: 0px;
+}
+
 .ui-widget-content.montaz_tab {
 	padding: 0px;
 	    font-family: 'Museo500';
