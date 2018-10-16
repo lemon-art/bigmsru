@@ -1097,13 +1097,11 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 						<?include($_SERVER["DOCUMENT_ROOT"].$templateFolder."/files.php");	//вкладка "документация"?>
 					</div>
 					
-					<?if ($arResult['SHOW_FILES']):?>
 
 						<div data-tab="stats" class="product-tabs__content tabs__content">
 							<?include($_SERVER["DOCUMENT_ROOT"].$templateFolder."/stats.php");	//вкладка "характеристики"?>
 						</div>
 						
-					<?endif;?>
 					
 					
 					<div data-tab="service" class="product-tabs__content tabs__content">
