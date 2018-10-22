@@ -2455,9 +2455,9 @@ body {
 .product-description {
   margin-bottom: 40px; }
   .product-description__wrap {
-    -webkit-columns: 2;
-       -moz-columns: 2;
-            columns: 2;
+    -webkit-columns: 1;
+       -moz-columns: 1;
+            columns: 1;
     -webkit-column-gap: 30px;
        -moz-column-gap: 30px;
             column-gap: 30px; }
