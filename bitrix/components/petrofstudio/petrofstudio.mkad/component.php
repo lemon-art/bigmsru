@@ -71,6 +71,20 @@ ptp.setStartPointVnutri = function (position) {
         this._start.events.add('dragend', this._onStartPointChange, this);
         this._map.geoObjects.add(this._start);
     }
+	
+		var myGeocoder = ymaps.geocode(position, {kind: 'house'});
+		myGeocoder.then(
+            function (res) {
+                var street = res.geoObjects.get(0);
+                var name = street.properties.get('name');
+                $('#street1').val(name).change();
+				$('#street').val(name).change();
+				$('#DELIVERY_PRICE').val( <?=$arParams['COST_DELIVERY_MKAD']?> );
+            }
+        );
+	
+	
+	
 	var results = [],
 	total = {
 			id: 'mo',
@@ -81,6 +95,9 @@ ptp.setStartPointVnutri = function (position) {
 			value2: 250,
 			value3: <?=$arParams['COST_DELIVERY_MKAD']?>
 	};
+	
+
+	
 	$('#sidebar3').html($.tmpl(this._template, {
 			results: total
 	}, {
@@ -103,6 +120,8 @@ ptp.setStartPoint = function (position) {
 };
 
 ptp.getDirections = function () {
+
+
     var self = this,
         start = this._start.geometry.getCoordinates(),
 		finish = this._finish.geometry.getClosest(start).position;
