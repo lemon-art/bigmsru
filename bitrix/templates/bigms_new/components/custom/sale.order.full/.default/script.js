@@ -225,18 +225,21 @@ function ChangeGenerate(val)
 						
 						
 						// При доставке авто показываем такое же поле адреса как и при доставке курьером.
-						if(DELIVERY_ID == '3' || DELIVERY_ID == '4'){
+						if(DELIVERY_ID == '3' || DELIVERY_ID == '9'){
                             
-
+							$('#street1').prop('disabled', false);
 							$('.dev[data-content="dev2"]').show();
+						}
+						else {
+							$('#street1').prop('disabled', true);
 						}
 						$('.dev[data-content="'+data+'"]').show();
 
-						if ( DELIVERY_ID == '3' || DELIVERY_ID == '4'){
+						if ( DELIVERY_ID == '3' || DELIVERY_ID == '9'){
 							//activateStep4();
 						}
 
-						if ( DELIVERY_ID == '2' || DELIVERY_ID == '3' || DELIVERY_ID == '4' || DELIVERY_ID == '8'){
+						if ( DELIVERY_ID == '2' || DELIVERY_ID == '3' || DELIVERY_ID == '9' || DELIVERY_ID == '8'){
 							checkAdress();
 							$('[data-content="dev2"]').find('.form__input').on('keyup', function() {
 
