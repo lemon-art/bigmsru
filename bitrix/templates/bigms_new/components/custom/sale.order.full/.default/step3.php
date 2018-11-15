@@ -177,20 +177,7 @@ if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
 							<div data-content="dev2" class="form__container dev form__container_wide"  style="display: none;">
 
                               
-								<?$APPLICATION->IncludeComponent(
-									"petrofstudio:petrofstudio.mkad",
-									"",
-									Array(
-										"ADDITIONAL_TARIF" => "350",
-										"BLIZ_VREMYA_DOSTAVKI" => "В течении 1 дня",
-										"COST_BY_KM" => "30",
-										"COST_DELIVERY_MKAD" => "350",
-										"COST_FREE_DELIVERY" => "",
-										"MAX_DISTANCE" => "100",
-										"SUMMA_ZAKAZ_TARIF" => ""
-									)
-								);?>
-							  
+		  
 							  
 								<div class="form__row form__row_delivery form__row_cols">
 
