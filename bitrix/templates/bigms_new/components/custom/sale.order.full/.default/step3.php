@@ -68,9 +68,13 @@ if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
 								
 									  <li data-trigger="dev<?=$ar_dtype["ID"]?>" data-id="<?=$ar_dtype["ID"]?>" class="form-radio__item">
 										<div class="form-radio__img-wrap">
-										  <svg class="form-radio__img">
-											<use xlink:href="#icon-delivery-<?=$ar_dtype["ID"]?>"></use>
-										  </svg>
+												<?if ( $ar_dtype["ID"] == 9):?>
+													<?$ar_dtype["ID"] = 4;?>
+												<?endif;?>
+												
+												<svg class="form-radio__img">
+													<use xlink:href="#icon-delivery-<?=$ar_dtype["ID"]?>"></use>
+												</svg>
 										</div>
 										<div class="form-radio__text">
 										  <span class="form-radio__name"><?=$ar_dtype["NAME"]?></span>
