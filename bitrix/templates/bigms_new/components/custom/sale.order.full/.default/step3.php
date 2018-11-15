@@ -46,7 +46,7 @@ if (!DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
     }
 }
 
-$arNotMoscowRegionDeliveries = ['3', '4'];
+$arNotMoscowRegionDeliveries = ['3', '9'];
 if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
     foreach ($arDeliveries as $key => $delivery) {
         if (in_array($delivery['ID'], $arNotMoscowRegionDeliveries)) {
@@ -177,8 +177,40 @@ if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
 							<div data-content="dev2" class="form__container dev form__container_wide"  style="display: none;">
 
                               
-						  
+								<?$APPLICATION->IncludeComponent(
+									"petrofstudio:petrofstudio.mkad",
+									"",
+									Array(
+										"ADDITIONAL_TARIF" => "350",
+										"BLIZ_VREMYA_DOSTAVKI" => "В течении 1 дня",
+										"COST_BY_KM" => "30",
+										"COST_DELIVERY_MKAD" => "350",
+										"COST_FREE_DELIVERY" => "",
+										"MAX_DISTANCE" => "100",
+										"SUMMA_ZAKAZ_TARIF" => ""
+									)
+								);?>
 							  
+							  
+								<div class="form__row form__row_delivery form__row_cols">
+
+									<div class="form__col form__col_adress">
+									  <div class="form__row div_form">
+										<label class="form__label" for="apartment">Адрес</label>
+										<input id="street1" class="form__input"  type="text" disabled name="street1" value="">
+									  </div>
+									</div>
+									<div class="form__col form__col_apartment">
+									  <div class="form__row div_form">
+										<label class="form__label" for="apartment">Квартира/офис</label>
+										<input id="apartment" class="form__input" data-min="1" type="text" name="apartment" value="">
+									  </div>
+									</div>
+
+								</div>
+						  
+						  
+								<?/*
 								<div class="form__row form__row_delivery form__row_cols">
 
 									<div class="form__col form__col_adress">
@@ -189,7 +221,7 @@ if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
 									</div>
 									
 								</div>
-							
+								*/?>
 							
 							
                           </div>

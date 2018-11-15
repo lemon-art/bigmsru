@@ -30,7 +30,7 @@ $arCitys = array_merge($arFirstCity, $arCitys);
 
 	
                         <div data-step="2" class="form__container form-city">
-                          <strong class="form__title">Выберите ваш город</strong>
+                          <strong class="form__title">Выберите ваш (или ближайший) город</strong>
                           <div class="form-city__subtitle">Ваш город - <a href="#" class="form-city__link" data-city="">выберите город</a>
 
 							<div class="form-city__popup city-popup">
