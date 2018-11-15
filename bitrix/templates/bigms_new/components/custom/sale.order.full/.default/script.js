@@ -170,10 +170,10 @@ function ChangeGenerate(val)
 			var DELIVERY_ID = $('#DELIVERY_ID').val( );
 			
 			if ( DELIVERY_ID == '8' ){
-				full_adr = $('#street1').val() + ' ' + $('#apartment').val();
+				full_adr = $('#street1').val() + ' ' + $('#apartment1').val();
 			}
 			else {
-				full_adr = $('#street').val();	
+				full_adr = $('#street').val() + ' ' + $('#apartment').val();;	
 			}
 			
 			
@@ -227,12 +227,9 @@ function ChangeGenerate(val)
 						// При доставке авто показываем такое же поле адреса как и при доставке курьером.
 						if(DELIVERY_ID == '3' || DELIVERY_ID == '9'){
                             
-							$('#street1').prop('disabled', false);
 							$('.dev[data-content="dev2"]').show();
 						}
-						else {
-							$('#street1').prop('disabled', true);
-						}
+
 						$('.dev[data-content="'+data+'"]').show();
 
 						if ( DELIVERY_ID == '3' || DELIVERY_ID == '9'){
