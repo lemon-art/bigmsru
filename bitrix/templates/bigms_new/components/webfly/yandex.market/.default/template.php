@@ -105,7 +105,14 @@
                         <? if (!empty($arOffer["DESCRIPTION"]) or ! empty($arOffer["DOP_PROPS"])): ?>
                             <description><? if (!empty($arOffer["DOP_PROPS"])): ?><?= $arOffer["DOP_PROPS"] ?>. <? endif ?><?= $arOffer["DESCRIPTION"] ?></description>
                         <? endif; ?>
-                            <? if ($arOffer["SALES_NOTES"]): ?><sales_notes><?= $arOffer["SALES_NOTES"] ?></sales_notes><? endif ?>
+                            <? if ( $arOffer["SALES_NOTES"] ): ?>
+							
+								<sales_notes>
+								<?= $arOffer["SALES_NOTES"] ?>
+								<?if ( $arOffer["AVAIBLE"]  == 'false' ):?><?=GetMessage("PRERAYMENT")?><?endif;?>
+								</sales_notes>
+								
+							<? endif; ?>
                             <? if (!empty($arOffer["MANUFACTURER_WARRANTY"])): ?>
                             <manufacturer_warranty><?= $arOffer["MANUFACTURER_WARRANTY"] ?></manufacturer_warranty>
                         <? endif ?>
@@ -224,12 +231,18 @@ else:
                         $savedXML .= '<description>' . $arOffer["DESCRIPTION"] . '</description>';
                     endif;
                 endif;
+				if ( $arOffer["AVAIBLE"] == 'false' ):
+					$arOffer["SALES_NOTES"] .= GetMessage("PRERAYMENT");
+				endif;					
+				if ( $arOffer["CONDITION_PROPERTIES"]["MINIMALNAYA_NORMA_OTGRUZKI_M"]["VALUE"] ):
+					$arOffer["SALES_NOTES"] .= GetMessage("MIN_ORDER") . $arOffer["CONDITION_PROPERTIES"]["MINIMALNAYA_NORMA_OTGRUZKI_M"]["VALUE"];
+				endif;	
                 if ($arOffer["SALES_NOTES"]):
                     $savedXML .= '<sales_notes>' . $arOffer["SALES_NOTES"] . '</sales_notes>';
                 endif;
                 if (!empty($arOffer["MANUFACTURER_WARRANTY"])):
                     $savedXML .= '<manufacturer_warranty>' . $arOffer["MANUFACTURER_WARRANTY"] . '</manufacturer_warranty>';
-                endif;
+                endif; 
                 if (!empty($arOffer["COUNTRY"])):
                     $savedXML .= '<country_of_origin>' . $arOffer["COUNTRY"] . '</country_of_origin>';
                 endif;
@@ -264,6 +277,8 @@ else:
         }
 
     }
+	
+	
     if (!function_exists("xmlHeader"))
     {
         function xmlHeader(&$savedXML, $arResult, $arParams) {
