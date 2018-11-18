@@ -149,11 +149,17 @@
     </yml_catalog>
     <?
 else:
+	
     if (!function_exists("itemsCycle"))
     {
 
         function itemsCycle(&$savedXML, $arResult, $arParams) {
             foreach ($arResult["OFFER"] as $arOffer):
+			
+				if ( $arOffer["QUANTITY"] <= 0 )
+					$arOffer["AVAIBLE"] = 'false';
+					
+					
                 $savedXML .= '<offer id="' . $arOffer["ID"] . '" available="' . $arOffer["AVAIBLE"] . '"' . (!empty($arOffer["BID"]) ? ' bid="' . $arOffer["BID"] . '"' : '') . (!empty($arOffer["CBID"])? ' cbid="' . $arOffer["CBID"] . '"' : '') . (!empty($arOffer["FEE"]) ? ' fee="' . $arOffer["FEE"] . '"' : '') . '>';
                 $savedXML .= '<url>' . $arOffer["URL"] . '</url>';
                 $savedXML .= '<price>' . $arOffer["PRICE"] . '</price>';
