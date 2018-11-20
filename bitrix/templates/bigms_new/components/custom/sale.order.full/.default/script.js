@@ -343,7 +343,7 @@ function ChangeGenerate(val)
 						  });
 						  
 							if ( $('#DELIVERY_PRICE').val() ){
-								pause(1500);
+								pause(3000);
 								var ORDER_PRICE = $('#ORDER_PRICE').val();
 								$('#ORDER_PRICE_STR').text( prettify(ORDER_PRICE) );
 							
