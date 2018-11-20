@@ -77,6 +77,12 @@ ptp.setStartPointVnutri = function (position) {
             function (res) {
                 var street = res.geoObjects.get(0);
                 var name = street.properties.get('name');
+				$('.ymaps-b-serp-item').click( function(){
+					var value = $(this).find('.ymaps-b-serp-item__title-link').text();
+					$('.ymaps-b-form-input__input').val( value );
+					$('.ymaps-b-popupa').hide();
+				});
+				
                 $('#street1').val(name).change();
 				$('#street').val(name).change();
 				$('#DELIVERY_PRICE').val( <?=$arParams['COST_DELIVERY_MKAD']?> );
@@ -131,6 +137,13 @@ ptp.getDirections = function () {
             function (res) {
                 var street = res.geoObjects.get(0);
                 var name = street.properties.get('name');
+				
+				$('.ymaps-b-serp-item').click( function(){
+					var value = $(this).find('.ymaps-b-serp-item__title-link').text();
+					$('.ymaps-b-form-input__input').val( value );
+					$('.ymaps-b-popupa').hide();
+				});
+				
                 $('#street1').val(name).change();
 				$('#street').val(name).change();
             }
