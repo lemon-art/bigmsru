@@ -15,11 +15,12 @@
 		{{/if}}
 			{{if results.value3 == '0'}}
 			<div class="descr-distance big-distance"><?=GetMessage("DELIVERY_COST");?></div>
-			<div class="radius-block">
-				<?if($arParams['SUMMA_ZAKAZ_TARIF']!=''):?><?=GetMessage("ZAKAZ_MENEE");?> <?=$arParams['COST_FREE_DELIVERY']?> <?=GetMessage("RUBLEI");?>: <br /><?endif;?>
+			
+				
 				<b>{{if results.value == '0'}}<?=GetMessage("FREE_COST");?>{{else}}${results.value} <?=GetMessage("RUBLEI");?>{{/if}}</b><br />
 				<?=GetMessage("FORMULA");?> <?=$arParams['ADDITIONAL_TARIF']?> <?=GetMessage("RUBLEI");?> + <?=$arParams['COST_BY_KM']?> <?=GetMessage("RUB_KM");?>
-			</div>
+			
+			<?/*
 			<?if($arParams['SUMMA_ZAKAZ_TARIF']!=''):?>
 			<div class="radius-block">
 				<?=GetMessage("ZAKAZ_BOLEE");?> <?=$arParams['COST_FREE_DELIVERY']?> <?=GetMessage("RUBLEI");?>: <br />
@@ -27,14 +28,12 @@
 				<?=GetMessage("FORMULA");?> <?=$arParams['COST_BY_KM']?> <?=GetMessage("RUB_KM");?>
 			</div>
 			<?endif;?>
+			*/?>
 			{{else}}
 			<div class="descr-distance big-distance"><?=GetMessage("DELIVERY_COST");?></div>
-			<div class="radius-block">
-				<?=GetMessage("ZAKAZ_BOLEE");?> <?=$arParams['COST_FREE_DELIVERY']?> <?=GetMessage("RUBLEI");?>: <br /><b>{{if results.value == '0'}}<?=GetMessage("FREE_COST");?>{{else}}${results.value} <?=GetMessage("RUBLEI");?>{{/if}}</b>
-			</div>
-			<div class="radius-block">
-				<?=GetMessage("ZAKAZ_MENEE");?> <?=$arParams['COST_FREE_DELIVERY']?> <?=GetMessage("RUBLEI");?>: <br /><b>${results.value3} <?=GetMessage("RUBLEI");?></b>
-			</div>
+			
+				<b>${results.value3} <?=GetMessage("RUBLEI");?></b>
+			
 			{{/if}}
 			<div class="descr-distance big-distance"><?=GetMessage("DELIVERY_TIME");?></div>
 			<div class="no-mrg-no-bold">
