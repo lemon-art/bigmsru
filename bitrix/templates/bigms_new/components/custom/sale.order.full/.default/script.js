@@ -343,7 +343,7 @@ function ChangeGenerate(val)
 						  });
 						  
 							if ( $('#DELIVERY_PRICE').val() ){
-								pause(7000);
+								
 								var ORDER_PRICE = $('#ORDER_PRICE').val();
 								$('#ORDER_PRICE_STR').text( prettify(ORDER_PRICE) );
 							
@@ -492,12 +492,5 @@ function ChangeGenerate(val)
 			return n.replace(/(\d{1,3}(?=(?:\d\d\d)+(?!\d)))/g, "$1" + separator);
 		}
 		
-		function pause(ms)
-		{
-		var date = new Date();
-		var curDate = null;
-		do { curDate = new Date(); }
-		while(curDate-date < ms);
-		}
 		
 });
