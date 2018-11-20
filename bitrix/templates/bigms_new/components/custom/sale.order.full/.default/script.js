@@ -497,7 +497,7 @@ function ChangeGenerate(val)
 		var date = new Date();
 		var curDate = null;
 		do { curDate = new Date(); }
-		while(curDate-date &lt; ms);
+		while(curDate-date > ms);
 		}
 		
 });
