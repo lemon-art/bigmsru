@@ -86,6 +86,7 @@ ptp.setStartPointVnutri = function (position) {
                 $('#street1').val(name).change();
 				$('#street').val(name).change();
 				$('#DELIVERY_PRICE').val( <?=$arParams['COST_DELIVERY_MKAD']?> );
+
             }
         );
 	
@@ -219,7 +220,7 @@ ptp.getDirections = function () {
 					}));
 					
 					$('#DELIVERY_PRICE').val( total.value );
-
+					
 					
 				}
 		});
@@ -235,6 +236,12 @@ ptp.calculate = function (len) {
 
     return Math.max(len * DELIVERY_TARIF, MINIMUM_COST);
 };
+
+function prettify (num) {
+    var n = num.toString();
+    var separator = " ";
+    return n.replace(/(\d{1,3}(?=(?:\d\d\d)+(?!\d)))/g, "$1" + separator);
+}
 
 ymaps.ready(init);
 </script>

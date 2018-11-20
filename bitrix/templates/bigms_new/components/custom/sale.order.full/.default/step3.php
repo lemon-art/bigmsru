@@ -66,7 +66,8 @@ if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
 								<?$i = 0;?>
 								<?foreach($arDeliveries as $ar_dtype):?>
 								
-									  <li data-trigger="dev<?=$ar_dtype["ID"]?>" data-id="<?=$ar_dtype["ID"]?>" class="form-radio__item">
+									  <li data-trigger="dev<?=$ar_dtype["ID"]?>" data-id="<?=$ar_dtype["ID"]?>" data-price="<?=round($ar_dtype["CONFIG"]["MAIN"]["PRICE"])?>" class="form-radio__item">
+
 										<div class="form-radio__img-wrap">
 												<?if ( $ar_dtype["ID"] == 9):?>
 													<?$ar_dtype["ID"] = 4;?>
@@ -149,7 +150,7 @@ if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
 									"",
 									Array(
 										"ADDITIONAL_TARIF" => "350",
-										"BLIZ_VREMYA_DOSTAVKI" => "В течении 1 дня",
+										"BLIZ_VREMYA_DOSTAVKI" => "При заказе товара до 15.00 и, при наличии на складе, доставка курьером на следующий день. В остальных случаяхm, сроки доставки уточняйте у менеджера.",
 										"COST_BY_KM" => "30",
 										"COST_DELIVERY_MKAD" => "350",
 										"COST_FREE_DELIVERY" => "",

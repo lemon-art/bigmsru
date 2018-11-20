@@ -181,7 +181,7 @@ function ChangeGenerate(val)
 				full_adr = $('#street').val() + ' ' + $('#apartment').val();;	
 			}
 			
-			
+
 			if ( full_adr ){
 			
 				type = $('[name="PERSON_TYPE"]').val();
@@ -226,6 +226,14 @@ function ChangeGenerate(val)
 						$(this).siblings().removeClass('active');
 						$(this).addClass('active');
 						$('.dev').hide();
+						
+						
+						var DELIVERY_PRICE = $(this).data('price');;
+						
+						
+
+						$('#DELIVERY_PRICE').val( DELIVERY_PRICE );
+						
 
 						
 						
@@ -330,6 +338,18 @@ function ChangeGenerate(val)
 							$('#PAYMENT_ID').val( PAYMENT_ID );
 							
 						  });
+						  
+							if ( $('#DELIVERY_PRICE').val() ){
+							
+								var ORDER_PRICE = $('#ORDER_PRICE').val();
+								$('#ORDER_PRICE_STR').text( prettify(ORDER_PRICE) );
+							
+								var DELIVERY_PRICE = $('#DELIVERY_PRICE').val();
+								$('#DELIVERY_PRICE_STR').text( prettify(DELIVERY_PRICE) );
+
+								var itog_price = parseInt( DELIVERY_PRICE ) + parseInt( $('#ORDER_PRICE').val() );
+								$('#ITOG_PRICE_STR').text( prettify(itog_price) );
+							}
 					
 					}
 			});
@@ -462,5 +482,11 @@ function ChangeGenerate(val)
 			}
 
 		});
+		
+		function prettify (num) {
+			var n = num.toString();
+			var separator = " ";
+			return n.replace(/(\d{1,3}(?=(?:\d\d\d)+(?!\d)))/g, "$1" + separator);
+		}
 		
 });

@@ -111,8 +111,9 @@
 					<input type='hidden' value='<?=$templateFolder?>/' id='step3_file'>
 					<input type="hidden" name="DELIVERY_ID" value="" id='DELIVERY_ID'>
 					
+					
 
-					<input type="hidden" name="ORDER_PRICE" value="<?= $arResult["ORDER_PRICE"] ?>">
+					<input type="hidden" id="ORDER_PRICE" name="ORDER_PRICE" value="<?= $arResult["ORDER_PRICE"] ?>">
 					<input type="hidden" name="ORDER_WEIGHT" value="<?= $arResult["ORDER_WEIGHT"] ?>">
 					<input type="hidden" name="SKIP_FIRST_STEP" value="<?= $arResult["SKIP_FIRST_STEP"] ?>">
 					<input type="hidden" name="SKIP_SECOND_STEP" value="<?= $arResult["SKIP_SECOND_STEP"] ?>">

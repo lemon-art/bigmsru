@@ -54,10 +54,19 @@ if ($_POST['DELIVERY_ID'] == 2 && $_POST['PERSON_TYPE'] == 1) {
 
                             </ul>
                           </div>
+						  <?/*
                           <p class="form__text form__text_payment">
                             Ссылку на оплату вышлем после подтверждения заказа
                           </p>
+						  */?>
                           <strong class="form__title form__title_comment">Комментарий к заказу</strong>
                           <textarea class="form__input form__textarea" name="ORDER_DESCRIPTION" rows="4" placeholder="Опишите нюансы доставки"></textarea>
-                          <input class="button button_yel form__submit" type="submit" name="order_submit" value="ОФОРМИТЬ ЗАКАЗ">
+                         
+
+						 
+						  <strong class="form__title form__title_comment">Стоимость заказа:</strong>	
+						  <p>Товаров на: <span id="ORDER_PRICE_STR"><?=$arResult["ORDER_PRICE"]?></span> ₽</p>
+						  <p>Доставка: <span id="DELIVERY_PRICE_STR">0</span> ₽</p>
+						  <p><b>Итого: <span id="ITOG_PRICE_STR"><?=$arResult["ORDER_PRICE"]?></span> ₽</b></p>
+						 <input class="button button_yel form__submit" type="submit" name="order_submit" value="ОФОРМИТЬ ЗАКАЗ">
                         </div>
