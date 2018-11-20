@@ -226,15 +226,7 @@ ptp.getDirections = function () {
 		});
 	}
 	
-	
-	var ORDER_PRICE = $('#ORDER_PRICE').val();
-	$('#ORDER_PRICE_STR').text( prettify(ORDER_PRICE) );
-							
-	var DELIVERY_PRICE = $('#DELIVERY_PRICE').val();
-	$('#DELIVERY_PRICE_STR').text( prettify(DELIVERY_PRICE) );
 
-	var itog_price = parseInt( DELIVERY_PRICE ) + parseInt( $('#ORDER_PRICE').val() );
-	$('#ITOG_PRICE_STR').text( prettify(itog_price) );
 	
 	
 };
