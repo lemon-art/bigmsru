@@ -219,13 +219,13 @@ ptp.getDirections = function () {
 							formatter: ymaps.formatter
 					}));
 					
-					$('#DELIVERY_PRICE').val( total.value );
+					
 					
 					
 				}
 		});
 	}
-	
+	$('#DELIVERY_PRICE').val( total.value );
 	
 	
 };
