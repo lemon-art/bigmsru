@@ -13,7 +13,12 @@ function ChangeGenerate(val)
         $('input.phone').inputmask({"mask": "+7(999)999-99-99"});
 		
 
-
+		$('.content-order__form').keydown(function(event){
+			if(event.keyCode == 13) {
+			  event.preventDefault();
+			  return false;
+			}
+		});
 
 	
 		$('.content-order').on('click', '.self-delivery__link', function(e) {
