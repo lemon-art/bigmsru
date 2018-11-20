@@ -145,8 +145,8 @@ ptp.getDirections = function () {
 					$('.ymaps-b-popupa').hide();
 				});
 				
-                $('#street1').val(name).change();
-				$('#street').val(name).change();
+                $('#street1').val(name);
+				$('#street').val(name);
             }
         );
 		
@@ -226,7 +226,8 @@ ptp.getDirections = function () {
 		});
 	}
 	
-
+	$('#street1').change();
+	$('#street').change();
 	
 	
 };
