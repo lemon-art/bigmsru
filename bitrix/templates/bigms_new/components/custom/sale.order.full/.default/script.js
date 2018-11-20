@@ -172,13 +172,16 @@ function ChangeGenerate(val)
 				}
 			}); 
 			
-			var DELIVERY_ID = $('#DELIVERY_ID').val( );
 			
-			if ( DELIVERY_ID == '8' ){
-				full_adr = $('#street1').val() + ' ' + $('#apartment1').val();
-			}
-			else {
-				full_adr = $('#street').val() + ' ' + $('#apartment').val();;	
+			if ( activate == 1 ){
+				var DELIVERY_ID = $('#DELIVERY_ID').val( );
+				
+				if ( DELIVERY_ID == '8' ){
+					full_adr = $('#street1').val() + ' ' + $('#apartment1').val();
+				}
+				else {
+					full_adr = $('#street').val() + ' ' + $('#apartment').val();;	
+				}
 			}
 			
 

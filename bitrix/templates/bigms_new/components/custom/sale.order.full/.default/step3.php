@@ -150,7 +150,7 @@ if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
 									"",
 									Array(
 										"ADDITIONAL_TARIF" => "350",
-										"BLIZ_VREMYA_DOSTAVKI" => "При заказе товара до 15.00 и, при наличии на складе, доставка курьером на следующий день. В остальных случаяхm, сроки доставки уточняйте у менеджера.",
+										"BLIZ_VREMYA_DOSTAVKI" => "При заказе товара до 15.00 и, при наличии на складе, доставка курьером на следующий день. В остальных случаях, сроки доставки уточняйте у менеджера.",
 										"COST_BY_KM" => "30",
 										"COST_DELIVERY_MKAD" => "350",
 										"COST_FREE_DELIVERY" => "",
@@ -186,7 +186,7 @@ if (DeliveryHelper::isMoscowRegion($DELIVERY_LOCATION)) {
 									<div class="form__col form__col_adress">
 									  <div class="form__row div_form">
 										<label class="form__label" for="apartment">Адрес</label>
-										<input id="street" class="form__input"  type="text" name="street1" value="">
+										<input id="street" data-min="7" class="form__input"  type="text" name="street1" value="">
 									  </div>
 									</div>
 									<div class="form__col form__col_apartment">
