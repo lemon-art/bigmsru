@@ -201,9 +201,9 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 				?>
                 <?$file = CFile::ResizeImageGet($arItem['PREVIEW_PICTURE']['ID'], array('height'=>150, 'width'=>150), BX_RESIZE_IMAGE_PROPORTIONAL, true);?>
                 <?if(!empty($file['src'])) {?>
-                    <img itemprop="image" class="image_rework" itemprop="image" src="<? echo $file['src'] ?>" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>">
+                    <img class="image_rework" src="<? echo $file['src'] ?>" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>">
                 <? } else {?>
-                    <img itemprop="image" style="max-height: 90px !important;" class="image_rework" itemprop="image" src="/bitrix/templates/bigms/images/logo_bw.png" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>">
+                    <img style="max-height: 90px !important;" class="image_rework" src="/bitrix/templates/bigms/images/logo_bw.png" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>">
                 <? } ?>
 			</a>
 		
@@ -260,7 +260,7 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 	            if($arItem['IBLOCK_SECTION_ID'] == 1405 || $arItem['IBLOCK_SECTION_ID'] == 1385 || $arItem['IBLOCK_SECTION_ID'] == 1386) {
 	                echo '<div class="availability">Есть в наличии</div>';
 	            } elseif($arItem["PRICE"]["PRODUCT_QUANTITY"] <= 0) {
-	                echo '<div class="availability no">Заказ 1-3 дня</div>';
+	                echo '<div class="availability no">Под заказ</div>';
 	            } else {
 	                echo '<div class="availability">Есть в наличии</div>';
 	            }

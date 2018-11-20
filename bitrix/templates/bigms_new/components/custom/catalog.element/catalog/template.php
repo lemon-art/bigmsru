@@ -100,7 +100,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 			<h1 class="title-h1 title-h1_product"><?=$strTitle?></h1>
 		</div>
 	</div>
-    <div class="row">
+    <div class="row" itemscope itemtype="http://schema.org/Product">
         <div class="col-lg-30 col-md-30 col-sm-30">
             <div class="content-product">
                 <div class="content-product__tabs product-tabs tabs">
@@ -114,7 +114,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 							<?if ( count($arResult["COLLECTIONS"]) > 0 ):?>
 								<li data-trigger="collection" class="product-tabs__header-item tabs-trigger">Товары из одной коллекции (<?=count($arResult["COLLECTIONS"])-1?>)</li>
 							<?endif;?>
-							 
+							<span class="hidden" itemprop="name"><?=$strTitle?></span>
 							 
 							<?$APPLICATION->IncludeComponent(
 								"bitrix:sale.recommended.products",
@@ -233,7 +233,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 										  <img src="<?=$renderImage["src"]?>" alt="<?=$arResult["NAME"]?>" class="form__img">
 										</div>
 										<div class="form__description">
-										  <strong class="form__subtitle"><?=$arResult["NAME"]?></strong>
+										  <strong class="form__subtitle" itemprop="name"><?=$arResult["NAME"]?></strong>
 										  <div class="form__inner-wrap">
 											<div class="spinner spinner_cart">
 											  <a role="button" href="#" class="spinner__dec">–</a>
@@ -249,12 +249,12 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 												<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_instock" value="В наличии"/>
 											<? } elseif( $arResult['PROPERTIES']['DELIVERY_TIME']['VALUE'] ){
 												?>
-												<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_order" value="Под заказ 1-3 дня"/>
-												<span class="product-card__quantity product-card__quantity_order">Под заказ <?=$arResult['PROPERTIES']['DELIVERY_TIME']['VALUE']?></span>
+												<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_order" value="Под заказ"/>
+												<span class="product-card__quantity product-card__quantity_order">Под заказ</span>
 											<? } elseif($arResult["CATALOG_QUANTITY"] <= 0){
 												?>
-												<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_order" value="Под заказ 1-3 дня"/>
-												<span class="product-card__quantity product-card__quantity_order">Под заказ 1-3 дня</span><?
+												<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_order" value="Под заказ"/>
+												<span class="product-card__quantity product-card__quantity_order">Под заказ</span><?
 											} else{
 												?>
 												<span class="product-card__quantity product-card__quantity_instock">В наличии</span>
@@ -351,7 +351,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 								
 							  </div>
 							  <div class="col-lg-6 col-lg-offset-0 col-md-9 col-md-offset-1 col-sm-9 col-sm-offset-1">
-								<div class="content-product__info product-info">
+								<div class="content-product__info product-info" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
 								  <div class="product-info__row product-info__row_end">
 										<?
 											$minPrice = (isset($arResult['RATIO_PRICE']) ? $arResult['RATIO_PRICE'] : $arResult['MIN_PRICE']);
@@ -361,11 +361,11 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 											<?if(!empty($minPrice['VALUE'])){?>
 												<?if ('Y' == $arParams['SHOW_OLD_PRICE'] && $minPrice['DISCOUNT_VALUE'] < $minPrice['VALUE']):?>
 													
-														<span class="product-info__price"><?echo number_format($minPrice['DISCOUNT_VALUE'],0,'.',' ');?> ₽</span>
+														<span class="product-info__price" itemprop="price" content="<?=$minPrice['DISCOUNT_VALUE']?>"><?echo number_format($minPrice['DISCOUNT_VALUE'],0,'.',' ');?> ₽</span>
 														<span class="product-info__old-price"><?echo number_format($minPrice['VALUE'],0,'.',' ');?> ₽</span>
 														
 												<?else:?>
-													<span class="product-info__price <?if ( $arResult['MIN_NORMA'] > 1):?>small_price<?endif;?>"><?echo number_format($minPrice['VALUE'],0,'.',' ');?> ₽<?if ( $arResult["PROPERTIES"]["ZALOG_NA_INSTRUMENT_RUB"]["VALUE"] ):?>/сут.<?endif;?> <?if ( $arResult['MIN_NORMA'] > 1):?>за метр<?endif;?></span>
+													<span itemprop="price" content="<?=$minPrice['VALUE']?>" class="product-info__price <?if ( $arResult['MIN_NORMA'] > 1):?>small_price<?endif;?>"><?echo number_format($minPrice['VALUE'],0,'.',' ');?> ₽<?if ( $arResult["PROPERTIES"]["ZALOG_NA_INSTRUMENT_RUB"]["VALUE"] ):?>/сут.<?endif;?> <?if ( $arResult['MIN_NORMA'] > 1):?>за метр<?endif;?></span>
 													<?if ( $arResult['MIN_NORMA'] > 1):?>
 														<span class="product-info__price"><?echo number_format($minPrice['VALUE']*$arResult['MIN_NORMA'],0,'.',' ');?> ₽ </span>
 													<?endif;?>
@@ -379,8 +379,9 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 													<?unset( $arResult["DISPLAY_PROPERTIES"]["ZALOG_NA_INSTRUMENT_RUB"]);?>
 												<?endif;?>
 											<?}?>
-								  
- 
+											
+											<meta itemprop="priceCurrency" content="RUB">
+											
 									</div>
 								  	
 									<?if ( $arResult['MIN_NORMA'] > 1):?>
@@ -417,17 +418,21 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 										<?
 										if($arResult['IBLOCK_SECTION_ID'] == 1405 || $arResult['IBLOCK_SECTION_ID'] == 1385 || $arResult['IBLOCK_SECTION_ID'] == 1386) { ?>
 											<span class="product-card__quantity product-card__quantity_instock">В наличии</span>
+											<meta itemprop="availability" href="http://schema.org/InStock" content="В наличии">
 											<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_instock" value="В наличии"/>
 										<? } elseif( $arResult['PROPERTIES']['DELIVERY_TIME']['VALUE'] && $arResult["CATALOG_QUANTITY"] <= 0){
 												?>
+												<meta itemprop="availability" href="http://schema.org/PreOrder" content="Под заказ">
 												<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_order" value="Под заказ 1-3 дня"/>
 												<span class="product-card__quantity product-card__quantity_order">Под заказ <?=$arResult['PROPERTIES']['DELIVERY_TIME']['VALUE']?></span>
 										<? } elseif($arResult["CATALOG_QUANTITY"] <= 0){
 											?>
+											<meta itemprop="availability" href="http://schema.org/PreOrder" content="Под заказ">
 											<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_order" value="Под заказ 1-3 дня"/>
 											<span class="product-card__quantity product-card__quantity_order">Под заказ 1-3 дня</span><?
 										} else{
 											?>
+											<meta itemprop="availability" href="http://schema.org/InStock" content="В наличии">
 											<span class="product-card__quantity product-card__quantity_instock">В наличии</span>
 											<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_instock" value="В наличии"/>
 											<?
@@ -540,18 +545,18 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 								<?endif;?>
 							  
 	                    </div>
-						<?if ( $arResult["DETAIL_TEXT"] ):?>
+						
 							<div class="row">
 							  <div class="col-lg-21">
 								<div class="content-product__description product-description">
 								  <strong class="content-product__title product-description__title">Описание «<?=$arResult["NAME"]?>»</strong>
-								  <div class="product-description__wrap">
-										<p class="product-description__text"><?=$arResult["DETAIL_TEXT"]?></p>
+								  <div class="product-description__wrap" itemprop="description">
+										<p class="product-description__text">ваываыва<?=$arResult["DETAIL_TEXT"]?></p>
 								  </div>
 								</div>
 							  </div>
 							</div>	
-						<?endif;?>
+						
 						
 						
 						<?$APPLICATION->IncludeComponent(
