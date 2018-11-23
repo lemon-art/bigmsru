@@ -1,3 +1,11 @@
+.video_div {
+	background-size: cover;
+}
+
+.hidden {
+	display: none;
+}
+
 .element_char_block div {
 	display: none;
 }

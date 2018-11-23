@@ -114,7 +114,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 							<?if ( count($arResult["COLLECTIONS"]) > 0 ):?>
 								<li data-trigger="collection" class="product-tabs__header-item tabs-trigger">Товары из одной коллекции (<?=count($arResult["COLLECTIONS"])-1?>)</li>
 							<?endif;?>
-							<span class="hidden" itemprop="name"><?=$strTitle?></span>
+							<span class="hidden" style="dispaly: none;" itemprop="name"><?=$strTitle?></span>
 							 
 							<?$APPLICATION->IncludeComponent(
 								"bitrix:sale.recommended.products",
@@ -551,7 +551,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 								<div class="content-product__description product-description">
 								  <strong class="content-product__title product-description__title">Описание «<?=$arResult["NAME"]?>»</strong>
 								  <div class="product-description__wrap" itemprop="description">
-										<p class="product-description__text">ваываыва<?=$arResult["DETAIL_TEXT"]?></p>
+										<p class="product-description__text"><?=$arResult["DETAIL_TEXT"]?></p>
 								  </div>
 								</div>
 							  </div>
