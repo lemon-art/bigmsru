@@ -90,9 +90,9 @@ if (!empty($arResult['ITEMS'])):?>
 									$PICT['HEIGHT'] = $file['height'];
 									?>
 									<?if(!empty($file['src'])) {?>
-										<img itemprop="image" class="product-card__img" itemprop="image" src="<? echo $file['src'] ?>" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>">
+										<img class="product-card__img"src="<? echo $file['src'] ?>" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>">
 									<? } else {?>
-										<img itemprop="image" style="height: 205px;" class="product-card__img" itemprop="image" src="/bitrix/templates/bigms/images/logo_bw.png" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>">
+										<img style="height: 205px;" class="product-card__img" src="/bitrix/templates/bigms/images/logo_bw.png" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>">
 										<?$PICT['SRC'] = '/bitrix/templates/bigms/images/logo_bw.png';?>
 									<? } ?>
 									
