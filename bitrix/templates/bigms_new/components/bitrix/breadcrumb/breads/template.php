@@ -15,7 +15,7 @@ $strReturn = '';
 
 
 
-$strReturn .= '<ul class="breadcrumbs content__breadcrumbs">';
+$strReturn .= '<ul class="breadcrumbs content__breadcrumbs" itemscope itemtype="http://schema.org/BreadcrumbList">';
 
 $brItem = [];
 
@@ -41,7 +41,7 @@ for($index = 0; $index < $itemSize; $index++)
 	if ($drow == true) {
 		if($arResult[$index]["LINK"] <> "" && $index != $itemSize-1)
 		{
-			$strReturn .= '<li class="breadcrumbs__item"><a class="breadcrumbs__link" href="'.$arResult[$index]["LINK"].'">'.$title.'</a></li>';
+			$strReturn .= '<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem" class="breadcrumbs__item"><a itemscope itemtype="http://schema.org/Thing" itemprop="item"class="breadcrumbs__link" href="'.$arResult[$index]["LINK"].'"><span itemprop="name">'.$title.'<span></a> <meta itemprop="position" content="'.($index+1).'" /></li>';
 		}
 		else
 		{
