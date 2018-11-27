@@ -233,7 +233,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 										  <img src="<?=$renderImage["src"]?>" alt="<?=$arResult["NAME"]?>" class="form__img">
 										</div>
 										<div class="form__description">
-										  <strong class="form__subtitle" itemprop="name"><?=$arResult["NAME"]?></strong>
+										  
 										  <div class="form__inner-wrap">
 											<div class="spinner spinner_cart">
 											  <a role="button" href="#" class="spinner__dec">–</a>
@@ -245,19 +245,19 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 										  
 										  <?
 											if($arResult['IBLOCK_SECTION_ID'] == 1405 || !$arResult['PROPERTIES']['DELIVERY_TIME']['VALUE'] || $arResult['IBLOCK_SECTION_ID'] == 1385 || $arResult['IBLOCK_SECTION_ID'] == 1386) { ?>
-												<span class="product-card__quantity product-card__quantity_instock">В наличии</span>
+												<span itemprop="availability" class="product-card__quantity product-card__quantity_instock">В наличии</span>
 												<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_instock" value="В наличии"/>
 											<? } elseif( $arResult['PROPERTIES']['DELIVERY_TIME']['VALUE'] ){
 												?>
 												<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_order" value="Под заказ"/>
-												<span class="product-card__quantity product-card__quantity_order">Под заказ</span>
+												<span itemprop="availability" class="product-card__quantity product-card__quantity_order">Под заказ</span>
 											<? } elseif($arResult["CATALOG_QUANTITY"] <= 0){
 												?>
 												<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_order" value="Под заказ"/>
-												<span class="product-card__quantity product-card__quantity_order">Под заказ</span><?
+												<span itemprop="availability" class="product-card__quantity product-card__quantity_order">Под заказ</span><?
 											} else{
 												?>
-												<span class="product-card__quantity product-card__quantity_instock">В наличии</span>
+												<span itemprop="availability" class="product-card__quantity product-card__quantity_instock">В наличии</span>
 												<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_instock" value="В наличии"/>
 												<?
 											}
@@ -353,6 +353,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 							  <div class="col-lg-6 col-lg-offset-0 col-md-9 col-md-offset-1 col-sm-9 col-sm-offset-1">
 								<div class="content-product__info product-info" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
 								  <div class="product-info__row product-info__row_end">
+										<strong class="form__subtitle" itemprop="name"><?=$arResult["NAME"]?></strong> 
 										<?
 											$minPrice = (isset($arResult['RATIO_PRICE']) ? $arResult['RATIO_PRICE'] : $arResult['MIN_PRICE']);
 											$boolDiscountShow = (0 < $minPrice['DISCOUNT_DIFF']);
