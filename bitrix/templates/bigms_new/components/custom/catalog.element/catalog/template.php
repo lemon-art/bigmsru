@@ -429,7 +429,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 											?>
 											<meta itemprop="availability" href="http://schema.org/PreOrder" content="Под заказ">
 											<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_order" value="Под заказ 1-3 дня"/>
-											<span class="product-card__quantity product-card__quantity_order">Под заказ 1-3 дня</span><?
+											<span class="product-card__quantity product-card__quantity_order">Под заказ</span><?
 										} else{
 											?>
 											<meta itemprop="availability" href="http://schema.org/InStock" content="В наличии">
