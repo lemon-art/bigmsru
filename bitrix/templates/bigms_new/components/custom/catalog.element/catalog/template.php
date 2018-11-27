@@ -419,21 +419,21 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 										<?
 										if($arResult['IBLOCK_SECTION_ID'] == 1405 || $arResult['IBLOCK_SECTION_ID'] == 1385 || $arResult['IBLOCK_SECTION_ID'] == 1386) { ?>
 											<span class="product-card__quantity product-card__quantity_instock">В наличии</span>
-											<meta itemprop="availability" href="http://schema.org/InStock" content="В наличии">
+											<link itemprop="availability" href="http://schema.org/InStock" content="В наличии">
 											<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_instock" value="В наличии"/>
 										<? } elseif( $arResult['PROPERTIES']['DELIVERY_TIME']['VALUE'] && $arResult["CATALOG_QUANTITY"] <= 0){
 												?>
-												<meta itemprop="availability" href="http://schema.org/PreOrder" content="Под заказ">
+												<link itemprop="availability" href="http://schema.org/PreOrder" content="Под заказ">
 												<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_order" value="Под заказ 1-3 дня"/>
 												<span class="product-card__quantity product-card__quantity_order">Под заказ <?=$arResult['PROPERTIES']['DELIVERY_TIME']['VALUE']?></span>
 										<? } elseif($arResult["CATALOG_QUANTITY"] <= 0){
 											?>
-											<meta itemprop="availability" href="http://schema.org/PreOrder" content="Под заказ">
+											<link itemprop="availability" href="http://schema.org/PreOrder" content="Под заказ">
 											<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_order" value="Под заказ 1-3 дня"/>
 											<span class="product-card__quantity product-card__quantity_order">Под заказ</span><?
 										} else{
 											?>
-											<meta itemprop="availability" href="http://schema.org/InStock" content="В наличии">
+											<link itemprop="availability" href="http://schema.org/InStock" content="В наличии">
 											<span class="product-card__quantity product-card__quantity_instock">В наличии</span>
 											<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_instock" value="В наличии"/>
 											<?
