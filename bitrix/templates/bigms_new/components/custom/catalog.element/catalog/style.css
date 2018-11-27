@@ -107,3 +107,7 @@ a.char_tab.active_tab {
 	float: right;
 	padding-left: 5px;
 }
+
+.form__subtitle {
+	display: none;
+}
