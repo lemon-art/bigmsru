@@ -353,7 +353,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 							  <div class="col-lg-6 col-lg-offset-0 col-md-9 col-md-offset-1 col-sm-9 col-sm-offset-1">
 								<div class="content-product__info product-info" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
 								  <div class="product-info__row product-info__row_end">
-										<strong class="form__subtitle" itemprop="name"><?=$arResult["NAME"]?></strong> 
+										<strong class="form__subtitle" itemprop="name" style="display: none;"><?=$arResult["NAME"]?></strong> 
 										<?
 											$minPrice = (isset($arResult['RATIO_PRICE']) ? $arResult['RATIO_PRICE'] : $arResult['MIN_PRICE']);
 											$boolDiscountShow = (0 < $minPrice['DISCOUNT_DIFF']);
