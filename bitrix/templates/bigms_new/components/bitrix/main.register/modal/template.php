@@ -49,6 +49,14 @@ $this->setFrameMode(true);
 			<?$arResult["VALUES"] = array();?>
 		<? endif ?>
 		<?if ( !$noShowForm ):?>
+		
+		
+		
+			<?if (count($arResult["ERRORS"]) > 0):?>
+				<?$arError = explode('.', $arResult["ERRORS"][0]);?>
+				<?ShowError( $arError[0]);?>
+			<?endif;?>
+		
 			<form id="register_form" method="POST" class="form form_register popup__form" action="<?= POST_FORM_ACTION_URI ?>" >
 				<?if ($arResult["BACKURL"] <> ''):?>
 					<input type="hidden" name="backurl" value="<?= $arResult["BACKURL"] ?>"/>
@@ -143,7 +151,7 @@ $this->setFrameMode(true);
 					
 						<div class="form__row form__row_checkbox">
 							<input type="hidden" value="" name="UF_TYPE">
-							<input id="cb_pro" type="checkbox" id="type2" class="checkbox form__checkbox" name="UF_TYPE" value="2">
+							<input id="cb_pro" type="checkbox" id="type2"  class="checkbox form__checkbox" name="UF_TYPE" value="2">
 							<label for="cb_pro" class="form__label">Я - профессионал</label>
 						</div>
 					
@@ -164,7 +172,7 @@ $this->setFrameMode(true);
 										array("bVarsFromForm" => $arResult["bVarsFromForm"], "arUserField" => $arUserField, "form_name" => "regform"), null, array("HIDE_ICONS" => "Y")); ?></div>
 							</div>
 						<? endforeach; ?>
-					<? endif; */?>
+					<? endif; 
 
 					<?
 					if ($arResult["USE_CAPTCHA"] == "Y"):?>
@@ -176,19 +184,15 @@ $this->setFrameMode(true);
 								<input class="form__input" type="text" maxlength="50" name="captcha_word">
 						</div>
 					<?endif;?>
+					*/?>
 					
-					
-					<div class="form__row form__row_checkbox">
-							<input type="checkbox" id="agree_politic" class="checkbox form__checkbox" name="agree_politic">
-							<label for="agree_politic" class="form__label"><span>Я согласен с <a href="/politika-konfidentsialnosti/" target="_blank">политикой конфиденциальности</a></span></label>
-					</div>
 
 					<p class="form__text">
 						<label>
-							<input type="checkbox" name="agree_politic" <?if ( $arResult['arrVALUES']['agree_politic'] == 'on' ):?>checked<?endif;?>>
+							<input type="checkbox" name="agree_politic" checked disabled <?if ( $arResult['arrVALUES']['agree_politic'] == 'on' ):?>checked<?endif;?>>
 							Я согласен с <a href="/politika-konfidentsialnosti/" target="_blank">политикой конфиденциальности</a>
 						</label>
-				  </p>
+					</p>
 					
 					<input class="form__submit" name="register_submit_button" type="submit" name="form_submit" value="ЗАРЕГИСТРИРОВАТЬСЯ">
 					
