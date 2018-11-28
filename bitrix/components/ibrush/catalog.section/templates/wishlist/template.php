@@ -142,8 +142,8 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 										<span class="product-card__quantity product-card__quantity_instock">В наличии</span>
 										<input type="hidden" name="STATUS<?=$arItem["ID"]?>" data-class="product-card__quantity_instock" value="В наличии"/>
 									<?elseif($arItem["CATALOG_QUANTITY"] <= 0):?>
-										<span class="product-card__quantity product-card__quantity_order">Под заказ 1-3 дня</span>
-										<input type="hidden" name="STATUS<?=$arItem["ID"]?>" data-class="product-card__quantity_order" value="Под заказ 1-3 дня"/>
+										<span class="product-card__quantity product-card__quantity_order">Под заказ</span>
+										<input type="hidden" name="STATUS<?=$arItem["ID"]?>" data-class="product-card__quantity_order" value="Под заказ"/>
 									<?else:?>
 										<span class="product-card__quantity product-card__quantity_instock">В наличии</span>
 										<input type="hidden" name="STATUS<?=$arItem["ID"]?>" data-class="product-card__quantity_instock" value="В наличии"/>
