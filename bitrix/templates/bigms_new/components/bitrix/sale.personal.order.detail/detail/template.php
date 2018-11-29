@@ -1,5 +1,7 @@
 <?if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
 <?
+use Bitrix\Main\Localization\Loc,
+	Bitrix\Main\Page\Asset;
 $APPLICATION->SetTitle(GetMessage('SPOD_ORDER') . ' ' . GetMessage('SPOD_NUM_SIGN') . ' ' .$arResult["ACCOUNT_NUMBER"] . ' ' . GetMessage("SPOD_FROM") . ' ' . $arResult["DATE_INSERT_FORMATED"]);
 $APPLICATION->AddChainItem(GetMessage('SPOD_ORDER') . ' ' . GetMessage('SPOD_NUM_SIGN') . ' ' .$arResult["ACCOUNT_NUMBER"]);
 ?>
@@ -301,30 +303,45 @@ $APPLICATION->AddChainItem(GetMessage('SPOD_ORDER') . ' ' . GetMessage('SPOD_NUM
 					<tr><td><br></td><td></td></tr>
 
 				<?endif?>
-
-				<?if($arResult["CAN_REPAY"]=="Y" && $arResult["PAY_SYSTEM"]["PSA_NEW_WINDOW"] != "Y"):?>
 				
-					<?
-					$ORDER_ID = $ID;
+				<?if($arResult["PAY_SYSTEM"]["PSA_ACTION_FILE"]):?>
+					<tr>
+						<td>
+							Оплата заказа:				
 
-					try
-					{
-						include($arResult["PAY_SYSTEM"]["PSA_ACTION_FILE"]);
-					}
-					catch(\Bitrix\Main\SystemException $e)
-					{
-						if($e->getCode() == CSalePaySystemAction::GET_PARAM_VALUE)
-							$message = GetMessage("SOA_TEMPL_ORDER_PS_ERROR");
-						else
-							$message = $e->getMessage();
-
-						echo '<tr><td colspan="2">';
-							ShowError($message);
-						echo '</td></tr>';
-					}
-					?>
 						
-				<?endif?>
+						</td>
+						<td>
+											<?
+											foreach ($arResult['PAYMENT'] as $payment)
+											{
+												?>
+												<div class="row payment-options-methods-row">
+													<div class="col-md-12 col-sm-12 col-xs-12 sale-order-detail-payment-options-methods">
+														
+														<?
+														if ($payment["PAID"] !== "Y"
+															&& $payment['PAY_SYSTEM']["IS_CASH"] !== "Y"
+															&& $payment['PAY_SYSTEM']['PSA_NEW_WINDOW'] !== 'Y'
+															&& $arResult['CANCELED'] !== 'Y'
+															&& $arResult["IS_ALLOW_PAY"] !== "N")
+														{
+															?>
+
+																<?=$payment['BUFFERED_OUTPUT']?>
+																	
+															<?
+														}
+														?>
+													</div>
+												</div>
+												<?
+											}
+											?>
+						</td>
+					</tr>
+				<?endif;?>
+				
 
 			</tbody>
 		</table>
