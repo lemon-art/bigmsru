@@ -122,8 +122,8 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 									
 								</a>
 						<?
-						if ( $arResult['PROPERTIES']['MINIMALNAYA_NORMA_OTGRUZKI_M']['VALUE'] ){
-							$minNorma = $arResult['PROPERTIES']['MINIMALNAYA_NORMA_OTGRUZKI_M']['VALUE'];
+						if ( $arItem['PROPERTIES']['MINIMALNAYA_NORMA_OTGRUZKI_M']['VALUE'] ){
+							$minNorma = $arItem['PROPERTIES']['MINIMALNAYA_NORMA_OTGRUZKI_M']['VALUE'];
 						}
 						else {
 							$minNorma = 1;
