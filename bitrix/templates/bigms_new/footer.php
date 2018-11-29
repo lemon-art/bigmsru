@@ -45,12 +45,14 @@
                 </div>
               </div>
               <div class="col-lg-15 col-md-15 col-sm-15 footer__wrap footer__wrap_right">
-                <div class="footer-widget">
+                <?/*
+				<div class="footer-widget">
                   <!-- сюда вставлять yandex market виджет вместо картинки -->
 					<a href="https://market.yandex.ru/shop/281223/reviews" target="_blank">
 						<img src="<?=SITE_TEMPLATE_PATH?>/styles/images/yandex_market.png" alt="" class="footer-widget__img">
 					</a>
 				</div>
+				*/?>
                 <div class="footer-info">
                   <strong class="footer-info__title">
 					<?$APPLICATION->IncludeComponent(
