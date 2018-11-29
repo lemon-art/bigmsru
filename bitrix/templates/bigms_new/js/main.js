@@ -523,6 +523,8 @@ $(document).ready(function() {
 		$('.popup_cart').find('.product-card__quantity').removeClass('product-card__quantity_order').removeClass('product-card__quantity_instock').addClass( STATUS_CL ).text( STATUS );
 		$('.popup_cart').find('input[name="PRODUCT_ID"]').val( id );
 		$('.popup_cart').find('input[name="PRICE"]').val( '' );
+		$('.popup_cart').find('input[name="spinner__input"]').val( COUNT );
+		$('.popup_cart').find('input[name="spinner__input"]').data( 'norma', COUNT );
 		
 		$.post("/ajax/add_to_cart.php", { ProductID: id, QUANTITY: COUNT },
 		  function(data){
@@ -543,6 +545,11 @@ $(document).ready(function() {
 		
 	   
 	});
+	
+
+	
+
+	
 
   //popup
   $('.popup-trigger').click(function(e) {
@@ -747,6 +754,26 @@ $(document).ready(function() {
 	
     value = target.val()*1 + norma*1;
     target.val(value);
+	
+	if ( $(this).parent().hasClass('popup_cart_spinner')){
+	
+		var id = $('.popup_cart').find('input[name="PRODUCT_ID"]').val();
+		$.post("/ajax/add_to_cart.php", { ProductID: id, QUANTITY: norma },
+		  function(data){
+			$.post("/ajax/top_basket.php", {},
+			  function(data){
+				$('.header__status').html( data );
+				  var _target = $('.status-bar__item_cart');
+				  _target.hover( function() {
+					$( this ).find('.status-dropdown').stop().fadeIn(400);
+				  }, function() {
+					$( this ).find('.status-dropdown').stop().fadeOut(400);
+				  });
+			});
+		});
+	}
+	
+	
   });
   $('.spinner__dec').click(function(e) {
     e.preventDefault();
@@ -758,6 +785,27 @@ $(document).ready(function() {
 		value = target.val()*1 - norma*1;
 		target.val(value);
     }
+	
+	if ( $(this).parent().hasClass('popup_cart_spinner')){
+	
+		var id = $('.popup_cart').find('input[name="PRODUCT_ID"]').val();
+		$.post("/ajax/update_basket.php", { ProductID: id, QUANTITY: norma },
+		  function(data){
+			$.post("/ajax/top_basket.php", {},
+			  function(data){
+				$('.header__status').html( data );
+				  var _target = $('.status-bar__item_cart');
+				  _target.hover( function() {
+					$( this ).find('.status-dropdown').stop().fadeIn(400);
+				  }, function() {
+					$( this ).find('.status-dropdown').stop().fadeOut(400);
+				  });
+			});
+		});
+	}
+	
+	
+	
   });
 	$('.spinner__input').change(function() {
     
@@ -1025,6 +1073,9 @@ $(function () {
             url: '/include/auth.php',
             data: $(this).serialize(),
             success: function (data) {
+				
+				alert( data );
+			
 				if( data.indexOf('notetext') > 0 ){
 					$('[data-popup="remember"]').removeClass('js-active');
 					    var targetData = 'sent';

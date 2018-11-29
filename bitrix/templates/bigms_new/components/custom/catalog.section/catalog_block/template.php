@@ -122,15 +122,21 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 									
 								</a>
 						<?
-							
-							?>
+						if ( $arResult['PROPERTIES']['MINIMALNAYA_NORMA_OTGRUZKI_M']['VALUE'] ){
+							$minNorma = $arResult['PROPERTIES']['MINIMALNAYA_NORMA_OTGRUZKI_M']['VALUE'];
+						}
+						else {
+							$minNorma = 1;
+						}
+						?>
 								
 						<input type="hidden" name="CAT_PRICE_ID<?=$arItem["ID"]?>" value="<?=$arItem["CATALOG_PRICE_ID_1"]?>"/>
 						<input type="hidden" name="CAT_PRICE<?=$arItem["ID"]?>" value="<?=number_format($arItem["CATALOG_PRICE_1"],0,'.',' ')?>  ₽"/>
 						<input type="hidden" name="ELEM_NAME<?=$arItem["ID"]?>" value="<?=$arItem["NAME"]?>"/>
 						<input type="hidden" name="DETAIL_PAGE<?=$arItem["ID"]?>" value="<?=$arItem["DETAIL_PAGE_URL"]?>"/>
 						<input type="hidden" name="PICTURE<?=$arItem["ID"]?>" value="<?=$PICT['SRC']?>"/>
-						<input type="hidden" name="COUNT<?=$arItem["ID"]?>" value="1"/>
+						<input type="hidden" name="COUNT<?=$arItem["ID"]?>" value="<?=$minNorma?>"/>
+
 					  </div>
                       <div class="product-card__info">
                         <a href="<? echo $arItem['DETAIL_PAGE_URL']; ?>" class="product-card__name"><?=$arItem['NAME']; ?></a>

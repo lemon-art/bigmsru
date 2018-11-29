@@ -234,13 +234,13 @@
             <div class="form__description">
               <strong class="form__subtitle"></strong>
               <div class="form__inner-wrap">
-				<?/*
-                <div class="spinner spinner_cart">
+				
+                <div class="spinner spinner_cart popup_cart_spinner">
                   <a role="button" href="#" class="spinner__dec">–</a>
-                  <input class="spinner__input" type="text" name="" value="1">
+                  <input class="spinner__input" type="text" data-norma='1' name="spinner__input" value="1">
                   <a role="button" href="#" class="spinner__inc">+</a>
                 </div>
-				*/?>
+				
                 <span class="form__price"></span>
               </div>
               <span class="product-card__quantity"></span>
