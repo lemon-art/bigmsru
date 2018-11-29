@@ -31,13 +31,13 @@
 					<tr>
 						<td>
 							<a href="<?=$order["ORDER"]["URL_TO_DETAIL"]?>"><?=GetMessage('SPOL_ORDER')?> <?=GetMessage('SPOL_NUM_SIGN')?><?=$order["ORDER"]["ACCOUNT_NUMBER"]?></a>
-							<?//if(strlen($order["ORDER"]["DATE_INSERT_FORMATED"])):?>
-								<?//=GetMessage('SPOL_FROM')?> <?//=$order["ORDER"]["DATE_INSERT_FORMATED"];?>
-							<?//endif?>
+							<?if(strlen($order["ORDER"]["DATE_INSERT_FORMATED"])):?>
+								<?=GetMessage('SPOL_FROM')?> <?=$order["ORDER"]["DATE_INSERT_FORMATED"];?>
+							<?endif?>
 						</td>
 						
 						<td>
-							<div class="bx_my_order_status <?=$arResult["INFO"]["STATUS"][$order["ORDER"]["STATUS_ID"]]['COLOR']?><?/*yellow*/ /*red*/ /*green*/ /*gray*/?>"><?=$arResult["INFO"]["STATUS"][$order["ORDER"]["STATUS_ID"]]["NAME"]?></div>
+							<div class=" <?//=$arResult["INFO"]["STATUS"][$order["ORDER"]["STATUS_ID"]]['COLOR']?><?/*yellow*/ /*red*/ /*green*/ /*gray*/?>"><?=$arResult["INFO"]["STATUS"][$order["ORDER"]["STATUS_ID"]]["NAME"]?></div>
 						</td>
 						
 						<td class="kol"><?=count($order["BASKET_ITEMS"])?></td>

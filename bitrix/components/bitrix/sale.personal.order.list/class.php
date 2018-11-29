@@ -337,7 +337,8 @@ class CBitrixPersonalOrderListComponent extends CBitrixComponent
 				$_REQUEST["by"] = $this->arParams['DEFAULT_SORT'];
 		}
 
-		$this->sortBy = (strlen($_REQUEST["by"]) ? $_REQUEST["by"]: $this->arParams['DEFAULT_SORT']);
+		//$this->sortBy = (strlen($_REQUEST["by"]) ? $_REQUEST["by"]: $this->arParams['DEFAULT_SORT']);
+		$this->sortBy = 'DATE_INSERT';
 		$this->sortOrder = (strlen($_REQUEST["order"]) != "" && $_REQUEST["order"] == "ASC" ? "ASC": "DESC");		
 
 		$this->prepareFilter();
