@@ -313,7 +313,9 @@ $APPLICATION->AddChainItem(GetMessage('SPOD_ORDER') . ' ' . GetMessage('SPOD_NUM
 						</td>
 						<td>
 						
-
+						<pre>
+						<?print_r( $arResult['PAYMENT'] );?>
+						</pre>
 						
 											<?
 											foreach ($arResult['PAYMENT'] as $payment)
