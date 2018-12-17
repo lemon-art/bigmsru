@@ -313,7 +313,9 @@ $APPLICATION->AddChainItem(GetMessage('SPOD_ORDER') . ' ' . GetMessage('SPOD_NUM
 						</td>
 						<td>
 						
-
+						<pre>
+						<?print_r( $arResult['PAYMENT'] );?>
+						</pre>
 						
 											<?
 											foreach ($arResult['PAYMENT'] as $payment)
@@ -323,8 +325,7 @@ $APPLICATION->AddChainItem(GetMessage('SPOD_ORDER') . ' ' . GetMessage('SPOD_NUM
 													<div class="col-md-12 col-sm-12 col-xs-12 sale-order-detail-payment-options-methods">
 														
 														<?
-														if ($payment["PAID"] !== "Y"
-															&& $payment['PAY_SYSTEM']["IS_CASH"] !== "Y"
+														if ($payment["PAID"] !== "Y" && $payment['PAY_SYSTEM']["IS_CASH"] !== "Y")
 														{
 															?>
 
