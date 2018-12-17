@@ -313,9 +313,7 @@ $APPLICATION->AddChainItem(GetMessage('SPOD_ORDER') . ' ' . GetMessage('SPOD_NUM
 						</td>
 						<td>
 						
-						<pre>
-						<?print_r( $arResult['PAYMENT'] );?>
-						</pre>
+
 						
 											<?
 											foreach ($arResult['PAYMENT'] as $payment)
@@ -327,9 +325,6 @@ $APPLICATION->AddChainItem(GetMessage('SPOD_ORDER') . ' ' . GetMessage('SPOD_NUM
 														<?
 														if ($payment["PAID"] !== "Y"
 															&& $payment['PAY_SYSTEM']["IS_CASH"] !== "Y"
-															&& $payment['PAY_SYSTEM']['PSA_NEW_WINDOW'] !== 'Y'
-															&& $arResult['CANCELED'] !== 'Y'
-															&& $arResult["IS_ALLOW_PAY"] !== "N")
 														{
 															?>
 
