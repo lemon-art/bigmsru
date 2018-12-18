@@ -253,7 +253,7 @@
             </div>
           </div>
         </form> 
-		
+		<?/*
         <form id="form_click" class="form form_click">
 			<input type="hidden" name="PRODUCT_ID" value="">
 			<input type="hidden" name="PRICE" value="">
@@ -267,7 +267,7 @@
             <input class="form__submit" type="submit" name="form_submit" value="ЖДУ ЗВОНКА">
           </div>
         </form>
-		
+		*/?>
       </div>
       </div>
     </div>
