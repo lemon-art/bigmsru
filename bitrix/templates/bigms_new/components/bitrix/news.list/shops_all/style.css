@@ -6,11 +6,11 @@
 }
 
 .office_line  div{
-	display: table-cell;
+	display: inline-table;
 }
 
 .contact_name {
-	width: 55%;
+	width: 50%;
 	padding-right: 50px;
 }
 
