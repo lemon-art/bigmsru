@@ -10,3 +10,12 @@
 .payment-7::before {
     content: "" !important;
 }
+
+.alert{
+	text-align: center;
+    margin: 30px 0;
+    border: 1px #000 solid;
+    margin-left: 0;
+    padding: 10px;
+    width: 500px;
+}
