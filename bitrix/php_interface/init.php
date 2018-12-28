@@ -392,6 +392,7 @@ function SaveMySection(&$arFields)
             if(!in_array($ar_group['ID'],$arFields['IBLOCK_SECTION']))
             $arFields['IBLOCK_SECTION'][]=$ar_group['ID'];
         }
+		unset($arFields['ACTION']);
     }
 }
 
