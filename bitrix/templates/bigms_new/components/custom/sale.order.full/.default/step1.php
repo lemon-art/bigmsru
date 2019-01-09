@@ -1,10 +1,5 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
 
-	<div class="alert">
-		<p>Уважаемые покупатели!</p>
-		<p>В праздники, наш магазин не будет работать <br><b>с 30 декабря до 9 января</b>.</p>
-		<p>Все заказы, сделанные в праздничные дни,<br> будут обработаны 9 января.</p>
-	</div>
 	
 	
     <ul class="order-tabs__nav">
