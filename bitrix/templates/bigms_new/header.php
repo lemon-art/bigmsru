@@ -124,11 +124,10 @@ if(isset($_REQUEST) && isset($_GET) && $last_symbol_url != "/"){
 	<?endif;?>
 	<?$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH."/js/jquery.inputmask.bundle.min.js");?>
 
-	<?if ( $isOrderMake || $isDostavka ):?>
+	<?//if ( $isOrderMake || $isDostavka ):?>
 		<script src="//ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.js" type="text/javascript"></script>
 		<script src="//api-maps.yandex.ru/2.0/?load=package.full&lang=ru-RU" type="text/javascript"></script>
-	<?endif;?>
-
+	<?//endif;?>
 </head>
 
 <body>
@@ -421,7 +420,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             <li class="side-nav__item">
               <a href="" class="side-nav__link">Каталог товаров</a>
             </li>
-
+			<?/*
 			  <?$APPLICATION->IncludeComponent(
 								"bitrix:menu", 
 								"catalogs", 
@@ -443,7 +442,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 									"ACTIVE_COMPONENT" => "Y"
 								)
 				);?> 
-
+				*/?>
 						<?$APPLICATION->IncludeComponent(
 								"bitrix:menu",
 								"catalogs",

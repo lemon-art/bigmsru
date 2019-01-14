@@ -87,7 +87,7 @@ $APPLICATION->SetTitle("\"Большой мастер\" - Интернет-ма�
 		<div class="left_tabs">
 		  <ul class="vertical_tabs">
 			<li><a href="#tabs-1">Инженерная<br>сантехника</a></li>
-			<li><a href="#tabs-2">Бытовая сантехника</a></li>
+			<?/*<li><a href="#tabs-2">Бытовая сантехника</a></li>*/?>
 			<li><a href="#tabs-4" style="margin-top: 8px;">Монтаж проектирование</a></li>
 			<li><a href="#tabs-3" style="margin-top: 8px;">Распродажа</a></li>
 			
@@ -127,6 +127,7 @@ $APPLICATION->SetTitle("\"Большой мастер\" - Интернет-ма�
 					array("HIDE_ICONS" => "Y")
 				);?>
 		  </div>
+		  <?/*
 			<div id="tabs-2">
 				<?$APPLICATION->IncludeComponent(
 						"bitrix:catalog.section.list",
@@ -160,6 +161,7 @@ $APPLICATION->SetTitle("\"Большой мастер\" - Интернет-ма�
 						array("HIDE_ICONS" => "Y")
 					);?>
 		  </div>
+		  */?>
 			<div id="tabs-3">
 			
 				<?
