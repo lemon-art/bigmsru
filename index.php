@@ -179,7 +179,7 @@ $APPLICATION->SetTitle("\"Большой мастер\" - Интернет-ма�
 							array(
 								"COMPONENT_TEMPLATE" => "carusel",
 								"IBLOCK_TYPE" => "1c_catalog",
-								"IBLOCK_ID" => "12",
+								"IBLOCK_ID" => "10",
 								"SECTION_ID" => "",
 								"SECTION_CODE" => "",
 								"SECTION_USER_FIELDS" => array(
