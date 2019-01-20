@@ -343,7 +343,7 @@ if ( is_array( $arResult["POST"] ) ){
 		
 		$arFilter = Array(
 			"IBLOCK_ID"=>9, 
-			"NAME"=>$punktS
+			"%NAME"=>$punktS
 		 );
 		$res = CIBlockElement::GetList(Array("SORT"=>"ASC", "PROPERTY_PRIORITY"=>"ASC"), $arFilter, Array("PROPERTY_status"));
 		if($ar_fields = $res->GetNext())
@@ -369,7 +369,7 @@ if ( is_array( $arResult["POST"] ) ){
 						"DELIVERY_ID" => is_array($arResult["DELIVERY_ID"]) ? implode(":", $arResult["DELIVERY_ID"]) : ($arResult["DELIVERY_ID"] > 0 ? $arResult["DELIVERY_ID"] : false),
 						"PRICE_DELIVERY" => $arResult["DELIVERY_PRICE"],
 						"DISCOUNT_VALUE" => $arResult["DISCOUNT_PRICE"],
-						"TAX_VALUE" => "",
+						"TAX_VALUE" => $totalOrderPrice * 0.2,
 						"USER_DESCRIPTION" => $arResult["ORDER_DESCRIPTION"]
 					);	
 
