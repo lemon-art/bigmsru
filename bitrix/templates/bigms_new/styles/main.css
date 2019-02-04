@@ -405,6 +405,19 @@ body {
     border-left: 2px solid #16ca62;
     -webkit-transform: rotate(-45deg);
             transform: rotate(-45deg); }
+			
+	#register_form  .form__row.validated:after {
+    content: '';
+    position: absolute;
+    bottom: 24px;
+    right: -22px;
+    width: 11px;
+    height: 7px;
+    border-bottom: 2px solid #16ca62;
+    border-left: 2px solid #16ca62;
+    -webkit-transform: rotate(-45deg);
+            transform: rotate(-45deg); }	
+			
   .form__row.error .form__input {
     border: 1px solid #ff8686;
     color: #ff3854; }
@@ -6760,8 +6773,7 @@ ul.sublist[data-level="3"] .sublist__link:after {
   } 
 
 .content-categories__inner-list {
-  height: 130px;
-  overflow: hidden; }
+}
   .content-categories__inner-list.opened {
     overflow: visible;
     height: auto; }

@@ -17,9 +17,11 @@ $this->setFrameMode(true);
 					
 						<?if ( $arSection["DEPTH_LEVEL"] <= $lastLevel):?>
 									</ul>
+								<?/*
 								<?if ( $levelCount > 5 ):?>
 									<a href="#" class="content-categories__more">Смотреть</a>
 								<?endif;?>
+								*/?>
 							  </div>
 							</div>
 						<?endif;?>
@@ -51,7 +53,7 @@ $this->setFrameMode(true);
 					
 					<?else:?>
 						<?$lastLevel = $arSection["DEPTH_LEVEL"];?>
-						<?$levelCount++;?>
+						<?//$levelCount++;?>
 						<li class="content-categories__inner-item">
 							<a href="<?=$arSection["SECTION_PAGE_URL"];?>" class="content-categories__inner-link"><?=$arSection["NAME"]?></a>
 						</li>
