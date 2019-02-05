@@ -52,9 +52,6 @@ $this->setFrameMode(true);
 			unset($arSection);
 			?>
 		</ul>
-		<?if ( $i > 5):?>
-			<span class="subcat__more">+</span>
-		<?endif;?>
 	</section>
 	<?
 }

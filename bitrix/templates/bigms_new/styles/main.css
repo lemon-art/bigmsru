@@ -1806,8 +1806,7 @@ body {
     -webkit-justify-content: flex-start;
         -ms-flex-pack: start;
             justify-content: flex-start;
-    overflow-y: hidden;
-    height: 245px; }
+	}
     .subcat__list.open {
       overflow-y: visible;
       height: auto; }
