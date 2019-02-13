@@ -210,9 +210,9 @@ foreach ($arResult['ITEMS'] as $key => $arItem)
 			?>
             <?$file = CFile::ResizeImageGet($arItem['PREVIEW_PICTURE']['ID'], array('height'=>150), BX_RESIZE_IMAGE_PROPORTIONAL, true);?>
             <?if(!empty($file['src'])) {?>
-            <img itemprop="image" class="image_rework" itemprop="image" src="<? echo $file['src'] ?>" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>">
+            <img class="image_rework" src="<? echo $file['src'] ?>" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>">
             <? } else {?>
-            <img itemprop="image" class="image_rework" itemprop="image" src="/bitrix/templates/bigms/images/logo_bw.png" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>">
+            <img class="image_rework" src="/bitrix/templates/bigms/images/logo_bw.png" alt="<? echo $imgTitle; ?>" title="<? echo $imgTitle; ?>">
             <? } ?>
 		</a>
 		
