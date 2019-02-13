@@ -166,6 +166,7 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 									
 						  
                         </div>
+							<?/*
 								<div class="product-card__props">
 									<?foreach ( $arItem["DISPLAY_PROPERTIES"] as $arProperty):?>
 										<?if ( is_array($arProperty["VALUE"]) ):?>
@@ -175,6 +176,7 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 										<?endif;?>
 									<?endforeach;?>		
 								</div>
+							*/?>
                                 <div class="product-card__row product-card__row_start">
                           <?
 								if ('Y' == $arParams['SHOW_OLD_PRICE'] && $minPrice['DISCOUNT_VALUE'] < $minPrice['VALUE'])
