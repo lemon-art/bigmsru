@@ -22,7 +22,7 @@ $this->SetViewTarget("row_div_class");
 echo "col-lg-23 col-md-23 col-sm-23";
 $this->EndViewTarget("row_div_class");
 
-$this->setFrameMode(true);
+$this->setFrameMode(false);
 $templateLibrary = array('popup');
 
 global $MAIN_SECTION_ID;
