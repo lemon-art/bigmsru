@@ -25,6 +25,7 @@
 					<td>Статус заказа</td>
 					<td>Количество</td>
 					<td>Стоимость</td>
+					<td></td>
 				</tr>
 			
 				<?foreach($arResult["ORDERS"] as $key => $order):?>
@@ -44,6 +45,9 @@
 
 						<td class="sum">
 							<?echo number_format($order["ORDER"]["PRICE"],0,'',' ');?><span> руб</span>
+						</td>
+						<td>
+							<a href="" data-order="<?=$order["ORDER"]["ID"]?>" data-id="<?=CSaleBasket::GetBasketUserID()?>" class="exel_download"></a>
 						</td>
 					</tr>
 				<?endforeach?>

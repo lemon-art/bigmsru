@@ -964,7 +964,29 @@ $(function () {
 		}
 	});
 	
-
+	
+	//Обработчик генерации exel файлы
+    $('body').on('click', '.exel_download', function () {
+	
+		var user = $(this).data('id');
+		var order = 'NULL';
+		
+		if ( $(this).data('order') ){
+			var order = $(this).data('order');
+		}
+		
+		$.ajax({
+            type: "POST",
+            url: '/local/tools/make_exel.php',
+			data: {user: user, order: order},
+			success: function (data) {
+				
+				document.location.href = "/local/tmp/bigms_basket_"+user+".xlsx";
+			}
+		
+		});
+		return false;
+	});
     //Обработчик формы авторизации
     $('#modal-login').on('submit', 'form', function () {
 

@@ -21,7 +21,7 @@ $this->setFrameMode(true);
 		<div class="office_data">
 		
 			<div class="item">
-				<span>Телефон:</span>  <?=$arResult['PROPERTY_13'][0]?>
+				<span>Телефон:</span>  <?=$arResult['PROPERTY_13'][0]?> <img src="/images/watsup.png"> <img src="/images/viber.png"> 
 			</div>
 			
 			<?if ( $arResult['PROPERTY_13'][1] ):?>

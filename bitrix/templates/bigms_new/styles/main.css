@@ -7291,4 +7291,12 @@ li.sublist__item[data-level="2"]> ul.sublist[data-level="3"]  .sublist__item:hov
     display: none;
 }
 
+.exel_download{
+	background: url('images/excel-icon.png') no-repeat left 6px;
+	width: 50px;
+    height: 50px;
+    display: inline-block;
+    margin-left: 50px;
+}
+
 /* Стили новие к меню*/	  

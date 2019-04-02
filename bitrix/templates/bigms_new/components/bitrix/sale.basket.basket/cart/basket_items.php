@@ -19,13 +19,14 @@ foreach ($arResult["GRID"]["ROWS"] as $arItem){
 	}
 } 
 
-
+unlink($_SERVER["DOCUMENT_ROOT"]."/local/tmp/bigms_basket_".CSaleBasket::GetBasketUserID().".xlsx");
 if ($countPropduct > 0):
 ?>
     <div class="content-cart__header">
         <a href="" onclick="history.back();return false;" class="content-cart__back">Вернуться к покупкам</a>
         <p class="content-cart__status">Вы добавили <span class="content-cart__value" id="all_count"><?=$countPropduct?></span> <span id="all_count_text"><?=numberof($countPropduct, 'товар', array('', 'а', 'ов'))?></span> на сумму <span class="content-cart__value" id="top_total_price"><?=$arResult["allSum_FORMATED"]?></span></p>
-    </div>
+		<a href="" data-id="<?=CSaleBasket::GetBasketUserID()?>" class="exel_download"></a>
+	</div>
 	
 	
 	<div class="content-cart__list cart-list">
