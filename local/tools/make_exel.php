@@ -78,9 +78,11 @@ $active_sheet->getStyle('E2')->getAlignment()->setHorizontal(
 $objPHPExcel->setActiveSheetIndex(0)
 			->setCellValue('A2', '№')
             ->setCellValue('B2', 'Товар')
-            ->setCellValue('C2', 'Цена (шт.)')
-            ->setCellValue('D2', 'Количество')
-            ->setCellValue('E2', 'Стоимость');
+			->setCellValue('C2', 'Код товара')
+			->setCellValue('D2', 'Артикул')
+            ->setCellValue('E2', 'Цена (шт.)')
+            ->setCellValue('F2', 'Количество')
+            ->setCellValue('G2', 'Стоимость');
 
 $allSumm = 0;
 	
@@ -95,12 +97,34 @@ foreach ( $arBasketItems as $key => $arItem ){
 	$num = (string)($key + 1);
 	
 	
+	
+		$count = 0;
+		$arFilter = Array(
+			"IBLOCK_ID"=> 10, 
+			"ID"	=> $arItem['PRODUCT_ID']
+		);
+		$res = CIBlockElement::GetList(Array("SORT"=>"ASC"), $arFilter, false, false, Array("ID", "PROPERTY_CML2_ARTICLE", "PROPERTY_CML2_TRAITS"));
+		while( $ar_fields = $res->GetNext()) {
+		
+			$prodArticle = $ar_fields['PROPERTY_CML2_ARTICLE_VALUE'];
+			$count++;
+			
+			if ( $count == 3 ) {
+				$prodCode = $ar_fields['PROPERTY_CML2_TRAITS_VALUE'];
+				
+			}
+		
+		}
+	
+	
 	$objPHPExcel->setActiveSheetIndex(0)
 			->setCellValue('A'.$index, $num )	
             ->setCellValue('B'.$index, $arItem['NAME'])
-            ->setCellValue('C'.$index, $price)
-            ->setCellValue('D'.$index, $arItem['QUANTITY'])
-            ->setCellValue('E'.$index, $full_price);  
+			->setCellValue('C'.$index, $prodCode)
+			->setCellValue('D'.$index, $prodArticle)
+            ->setCellValue('E'.$index, $price)
+            ->setCellValue('F'.$index, $arItem['QUANTITY'])
+            ->setCellValue('G'.$index, $full_price);  
 			
 	$active_sheet->getStyle('C'.$index)->getAlignment()->setHorizontal(
 		PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -108,24 +132,28 @@ foreach ( $arBasketItems as $key => $arItem ){
 		PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 	$active_sheet->getStyle('E'.$index)->getAlignment()->setHorizontal(
 		PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+	$active_sheet->getStyle('F'.$index)->getAlignment()->setHorizontal(
+		PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+	$active_sheet->getStyle('G'.$index)->getAlignment()->setHorizontal(
+		PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 }
 
 $index = (string)($key + 5);
 
 $objPHPExcel->setActiveSheetIndex(0)
-            ->setCellValue('D'.$index, 'Итого:')
-            ->setCellValue('E'.$index, CurrencyFormat($allSumm, "RUB")); 
+            ->setCellValue('F'.$index, 'Итого:')
+            ->setCellValue('G'.$index, CurrencyFormat($allSumm, "RUB")); 
 
-$active_sheet->getStyle('D'.$index)->getAlignment()->setHorizontal(
+$active_sheet->getStyle('F'.$index)->getAlignment()->setHorizontal(
 	PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-$active_sheet->getStyle('E'.$index)->getAlignment()->setHorizontal(
+$active_sheet->getStyle('G'.$index)->getAlignment()->setHorizontal(
 	PHPExcel_Style_Alignment::HORIZONTAL_CENTER);	
-$active_sheet->getStyle('D'.$index)->getFill()->setFillType(
+$active_sheet->getStyle('F'.$index)->getFill()->setFillType(
     PHPExcel_Style_Fill::FILL_SOLID);
-$active_sheet->getStyle('E'.$index)->getFill()->setFillType(
+$active_sheet->getStyle('G'.$index)->getFill()->setFillType(
     PHPExcel_Style_Fill::FILL_SOLID);	
-$active_sheet->getStyle('D'.$index)->getFill()->getStartColor()->setRGB('EEEEEE');
-$active_sheet->getStyle('E'.$index)->getFill()->getStartColor()->setRGB('EEEEEE');
+$active_sheet->getStyle('F'.$index)->getFill()->getStartColor()->setRGB('EEEEEE');
+$active_sheet->getStyle('G'.$index)->getFill()->getStartColor()->setRGB('EEEEEE');
 			
 $objPHPExcel->getActiveSheet()->setTitle('Прайс-лист');
 
