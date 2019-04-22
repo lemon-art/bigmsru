@@ -589,9 +589,13 @@ if ($arResult['MODULES']['currency'])
 }
 
 
+
+
+
 if ( $arResult['PROPERTIES']['MINIMALNAYA_NORMA_OTGRUZKI_M']['VALUE'] ){
 
 	$arResult['MIN_NORMA'] = $arResult['PROPERTIES']['MINIMALNAYA_NORMA_OTGRUZKI_M']['VALUE'];
+	unset($arResult['DISPLAY_PROPERTIES']['MINIMALNAYA_NORMA_OTGRUZKI_M']);
 }
 else {
 	$arResult['MIN_NORMA'] = 1;

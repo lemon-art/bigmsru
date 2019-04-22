@@ -404,11 +404,18 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 									
 
 									
+									<div class="product-info__codes">
+										<?if(!empty($arResult["PROPERTIES"]["CML2_TRAITS"]["VALUE"][2])):?>
+											<span class="product-info__id"><b>Код:</b> <?=$arResult["PROPERTIES"]["CML2_TRAITS"]["VALUE"][2]?></span>	
+										<?endif;?>
+										<?if(!empty($arResult["DISPLAY_PROPERTIES"]["CML2_ARTICLE"]["VALUE"])):?>
+											<span class="product-info__id"><b>Артикул:</b> <?=$arResult["DISPLAY_PROPERTIES"]["CML2_ARTICLE"]["VALUE"]?></span>
+										<?endif;?>
+									</div>
 									
-									<?if(!empty($arResult["DISPLAY_PROPERTIES"]["CML2_ARTICLE"]["VALUE"])):?>
-										<span class="product-info__id">Артикул: <?=$arResult["DISPLAY_PROPERTIES"]["CML2_ARTICLE"]["VALUE"]?></span>
-									<?endif;?>
+									
 								  </div>
+									
 								  <div class="product-info__row">
 									<div class="product-info__spinner spinner">
 									  <a role="button" href="#" class="spinner__dec">–</a>

@@ -177,6 +177,12 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 									<?endforeach;?>		
 								</div>
 							*/?>
+							
+								<div class="product-card__props">
+									<span class="product-card__text">Код товара: <?=$arItem["PROPERTIES"]["CML2_TRAITS"]["VALUE"][2]?></span>
+									<span class="product-card__text">Артикул: <?=$arItem["PROPERTIES"]["CML2_ARTICLE"]["VALUE"]?></span>
+								</div>
+							
                                 <div class="product-card__row product-card__row_start">
                           <?
 								if ('Y' == $arParams['SHOW_OLD_PRICE'] && $minPrice['DISCOUNT_VALUE'] < $minPrice['VALUE'])

@@ -2638,7 +2638,18 @@ body {
   .product-info__id {
     color: #223955;
     font-size: 14px;
-    font-family: 'Museo700', sans-serif, Arial; }
+    font-family: 'Museo700', sans-serif, Arial; 
+
+	}
+	.product-info__id:first-child{
+		    display: block;
+	}
+	 .product-info__id b{
+		font-weight: 400;
+		width: 70px;
+		display: inline-block;
+	}
+	
   .product-info__price {
     color: #11162d;
     font-size: 32px;
@@ -4121,7 +4132,7 @@ ul.sublist[data-level="3"] .sublist__link:after {
           -ms-flex-pack: start;
               justify-content: flex-start; }
   .product-card__props {
-    height: 94px;
+    height: 45px;
     margin-bottom: 10px;
     overflow: hidden; }
   .product-card__name {

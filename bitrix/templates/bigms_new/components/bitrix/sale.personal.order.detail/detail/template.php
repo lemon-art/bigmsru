@@ -352,6 +352,8 @@ $APPLICATION->AddChainItem(GetMessage('SPOD_ORDER') . ' ' . GetMessage('SPOD_NUM
 			<thead>
 				<tr>			
 					<td colspan="2"><?=GetMessage('SPOD_NAME')?></td>
+					<td class="custom price">Код</td>
+					<td class="custom price">Артикул</td>
 					<td class="custom price"><?=GetMessage('SPOD_PRICE')?></td>
 
 					<?if($arResult['HAS_PROPS']):?>
@@ -361,7 +363,7 @@ $APPLICATION->AddChainItem(GetMessage('SPOD_ORDER') . ' ' . GetMessage('SPOD_NUM
 					<?if($arResult['HAS_DISCOUNT']):?>
 						<td class="custom price"><?=GetMessage('SPOD_DISCOUNT')?></td>
 					<?endif?>
-
+					
 					<td class="custom amount"><?=GetMessage('SPOD_PRICETYPE')?></td>
 					<td class="custom price"><?=GetMessage('SPOD_QUANTITY')?></td>
 				</tr>
@@ -394,7 +396,8 @@ $APPLICATION->AddChainItem(GetMessage('SPOD_ORDER') . ' ' . GetMessage('SPOD_NUM
 								</a>
 							<?endif?>
 						</td>
-
+						<td><?=$arResult['PROD_INFO'][$prod["PRODUCT_ID"]]["CODE"]?></td>
+						<td><?=$arResult['PROD_INFO'][$prod["PRODUCT_ID"]]["ARTICLE"]?></td>
 						<td class="custom price"> <span class="fm"><?=GetMessage('SPOD_PRICE')?>:</span> <?=$prod["PRICE_FORMATED"]?></td>
 
 						<?if($arResult['HAS_PROPS']):?>

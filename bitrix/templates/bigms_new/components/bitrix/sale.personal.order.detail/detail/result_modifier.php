@@ -24,11 +24,15 @@ if (is_object($cp))
 			$noPict['HEIGHT'] = $noPictSize[1];
 		}
 
+		$arProducts = Array();
 		foreach($arResult["BASKET"] as $k => &$prod)
 		{
 			if(floatval($prod['DISCOUNT_PRICE']))
 				$hasDiscount = true;
 
+			$arProducts[] = $prod['PRODUCT_ID'];
+			
+			
 			// move iblock props (if any) to basket props to have some kind of consistency
 			if(isset($prod['IBLOCK_ID']))
 			{
@@ -68,6 +72,31 @@ if (is_object($cp))
 				$prod['PICTURE'] = $noPict;
 		}
 
+		$arProdInfo = Array();
+		$count = 0;
+		$arFilter = Array(
+			"IBLOCK_ID"=> 10, 
+			"ID"	=> $arProducts
+		);
+		$res = CIBlockElement::GetList(Array("SORT"=>"ASC"), $arFilter, false, false, Array("ID", "PROPERTY_CML2_ARTICLE", "PROPERTY_CML2_TRAITS"));
+		while( $ar_fields = $res->GetNext()) {
+		
+			$arProdInfo[ $ar_fields['ID'] ]['ARTICLE'] = $ar_fields['PROPERTY_CML2_ARTICLE_VALUE'];
+			$count++;
+			
+			if ( $count == 3 ) {
+				$arProdInfo[ $ar_fields['ID'] ]['CODE'] = $ar_fields['PROPERTY_CML2_TRAITS_VALUE'];
+				
+			}
+			if ( $count == 4 ) {
+				$count = 0;
+			}
+		
+		}
+		
+		$arResult['PROD_INFO'] = $arProdInfo;
+		
+		
 		$arResult['HAS_DISCOUNT'] = $hasDiscount;
 		$arResult['HAS_PROPS'] = $hasProps;
 
