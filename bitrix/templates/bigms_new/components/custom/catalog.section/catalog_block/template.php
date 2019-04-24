@@ -179,7 +179,7 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 							*/?>
 							
 								<div class="product-card__props">
-									<span class="product-card__text">Код товара: <?=$arItem["PROPERTIES"]["CML2_TRAITS"]["VALUE"][2]?></span>
+									<span class="product-card__text">Код товара: <?=(int)$arItem["PROPERTIES"]["CML2_TRAITS"]["VALUE"][2]?></span>
 									<span class="product-card__text">Артикул: <?=$arItem["PROPERTIES"]["CML2_ARTICLE"]["VALUE"]?></span>
 								</div>
 							

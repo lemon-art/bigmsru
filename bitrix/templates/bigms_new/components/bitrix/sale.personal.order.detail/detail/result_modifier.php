@@ -85,7 +85,7 @@ if (is_object($cp))
 			$count++;
 			
 			if ( $count == 3 ) {
-				$arProdInfo[ $ar_fields['ID'] ]['CODE'] = $ar_fields['PROPERTY_CML2_TRAITS_VALUE'];
+				$arProdInfo[ $ar_fields['ID'] ]['CODE'] = (int)$ar_fields['PROPERTY_CML2_TRAITS_VALUE'];
 				
 			}
 			if ( $count == 4 ) {

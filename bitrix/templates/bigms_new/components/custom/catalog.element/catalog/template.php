@@ -406,7 +406,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 									
 									<div class="product-info__codes">
 										<?if(!empty($arResult["PROPERTIES"]["CML2_TRAITS"]["VALUE"][2])):?>
-											<span class="product-info__id"><b>Код:</b> <?=$arResult["PROPERTIES"]["CML2_TRAITS"]["VALUE"][2]?></span>	
+											<span class="product-info__id"><b>Код:</b> <?=(int)$arResult["PROPERTIES"]["CML2_TRAITS"]["VALUE"][2]?></span>	
 										<?endif;?>
 										<?if(!empty($arResult["DISPLAY_PROPERTIES"]["CML2_ARTICLE"]["VALUE"])):?>
 											<span class="product-info__id"><b>Артикул:</b> <?=$arResult["DISPLAY_PROPERTIES"]["CML2_ARTICLE"]["VALUE"]?></span>
