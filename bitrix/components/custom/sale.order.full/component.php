@@ -298,7 +298,7 @@ if ( is_array( $arResult["POST"] ) ){
 			$newEmail = $arResult["POST"]["ORDER_PROP_8"];
 			$newName  = $arResult["POST"]["ORDER_PROP_10"];
 		}
-
+		$arResult["USER_EMAIL"] = $newEmail;
 		$newLogin = "buyer".time().GetRandomCode(2);
 		$password_min_length = 6;
 		$password_chars = array(
@@ -316,8 +316,24 @@ if ( is_array( $arResult["POST"] ) ){
 		if ($arAuthResult != False && $arAuthResult["TYPE"] == "ERROR")
 			$arResult["ERROR_MESSAGE"] .= GetMessage("STOF_ERROR_REG").((strlen($arAuthResult["MESSAGE"]) > 0) ? ": ".$arAuthResult["MESSAGE"] : ".<br />" );
 		
+				$arFields = Array(
+					"NAME" 		=> $newName,
+					"LOGIN" 	=> $newEmail,
+					"PASSWORD"  => $newPassword,
+					"EMAIL" 	=> $newEmail
+				);
+
+				$event = new CEvent;
+				$event->Send("NEW_USER_INFO", SITE_ID, $arFields, "N");
+
+		
+		
 		COption::SetOptionString("main","new_user_registration_email_confirmation","Y");
 		COption::SetOptionString("main","captcha_registration","Y");
+		
+	}
+	else {
+		$arResult["USER_EMAIL"] = $USER->GetEmail();
 	}
 
 
