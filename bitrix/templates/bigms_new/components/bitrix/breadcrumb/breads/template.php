@@ -39,14 +39,9 @@ for($index = 0; $index < $itemSize; $index++)
 
 
 	if ($drow == true) {
-		if($arResult[$index]["LINK"] <> "" && $index != $itemSize-1)
-		{
+		
 			$strReturn .= '<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem" class="breadcrumbs__item"><a itemscope itemtype="http://schema.org/Thing" itemprop="item"class="breadcrumbs__link" href="'.$arResult[$index]["LINK"].'"><span itemprop="name">'.$title.'<span></a> <meta itemprop="position" content="'.($index+1).'" /></li>';
-		}
-		else
-		{
-			$strReturn .= '<li class="breadcrumbs__item">'.$title.'</li>';
-		}
+		
 	}
 }
 
