@@ -328,7 +328,7 @@ if ( is_array( $arResult["POST"] ) ){
 
 		
 		
-		COption::SetOptionString("main","new_user_registration_email_confirmation","Y");
+		COption::SetOptionString("main","new_user_registration_email_confirmation","N");
 		COption::SetOptionString("main","captcha_registration","N");
 		
 	}
