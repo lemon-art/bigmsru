@@ -275,7 +275,7 @@ function custom_mail($to, $subject, $message, $addh = "", $addp = "")
         $mail->IsSMTP();
 
     // SMTP server
-        $mail->Host = "smtp.yandex.ru";
+        $mail->Host = "tls://smtp.yandex.ru";
 
     // set the SMTP port for the GMAIL
         //$mail->Port = 25;
