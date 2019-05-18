@@ -284,14 +284,14 @@ function custom_mail($to, $subject, $message, $addh = "", $addp = "")
 		$mail->SMTPSecure   = 'ssl';
 
     // SMTP account username
-		$mail->Username = "bigms.ru";
+		$mail->Username = "bigmsmail";
 
     // SMTP account password
-        $mail->Password = "MBorj83bn";
+        $mail->Password = "bigmsmail126";
 
     // $mail->SMTPDebug = 2;
 
-	$mail->SetFrom('bigms.ru@yandex.ru', 'bigms.ru');
+	$mail->SetFrom('bms@bigms.ru');
         $mail->AddAddress($to);
         $mail->Body = $message;
         $mail->Subject = $subject;
