@@ -339,14 +339,14 @@ function custom_mail($to, $subject, $message, $addh = "", $addp = "")
         echo $e->errorMessage();
 		
 		$file = fopen(__DIR__.'/log.txt', 'w+');
-        $string = $e->errorMessage();.PHP_EOL;
+        $string = $e->errorMessage().PHP_EOL;
         fwrite($file, $string);
         fclose($file);
 		
     } catch (Exception $e) {
         echo $e->getMessage();
 		$file = fopen(__DIR__.'/log.txt', 'w+');
-        $string = $e->errorMessage();.PHP_EOL;
+        $string = $e->errorMessage().PHP_EOL;
         fwrite($file, $string);
         fclose($file);
     }
