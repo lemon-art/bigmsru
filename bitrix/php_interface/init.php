@@ -261,7 +261,20 @@ function DeletePresentFromBasket($ID) {
 
 function custom_mail($to, $subject, $message, $addh = "", $addp = "")
 {
-    require_once __DIR__ . '/mail/class.phpmailer.php';
+    
+	if ($addh=='') {
+		$addh = 'From: Интернет-магазин сантехники Большой Мастер bms@bigms.ru';
+	}
+	if ($addp!=='') {
+      return @mail($to, $subject, $message, $addh, $addp);
+   } else {
+       return @mail($to, $subject, $message, $addh);
+   }
+	
+	
+	
+	/*
+	require_once __DIR__ . '/mail/class.phpmailer.php';
 
     try {
 
@@ -277,14 +290,14 @@ function custom_mail($to, $subject, $message, $addh = "", $addp = "")
 
     // set the SMTP port for the GMAIL
         //$mail->Port = 25;
-		$mail->Port = 465;
+		$mail->Port = 587;
 
         $mail->SMTPAuth   = true;
 		
 		$mail->SMTPSecure   = 'ssl';
 
     // SMTP account username
-		$mail->Username = "bigmsmail";
+		$mail->Username = "bigmsmail@yandex.ru";
 
     // SMTP account password
         $mail->Password = "bigmsmail126";
@@ -340,6 +353,7 @@ function custom_mail($to, $subject, $message, $addh = "", $addp = "")
     }
 
     return $status;
+	*/
 }
 
 
