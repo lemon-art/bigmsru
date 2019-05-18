@@ -275,11 +275,11 @@ function custom_mail($to, $subject, $message, $addh = "", $addp = "")
         $mail->IsSMTP();
 
     // SMTP server
-        $mail->Host = "tls://smtp.yandex.ru";
+        $mail->Host = "smtp.yandex.ru";
 
     // set the SMTP port for the GMAIL
         //$mail->Port = 25;
-		$mail->Port = 587;
+		$mail->Port = 465;
 
         $mail->SMTPAuth   = true;
 		
@@ -293,7 +293,7 @@ function custom_mail($to, $subject, $message, $addh = "", $addp = "")
 
 		$mail->SMTPDebug = 2;
 
-	$mail->SetFrom('bms@bigms.ru');
+		$mail->SetFrom('bigmsmail@yandex.ru');
         $mail->AddAddress($to);
         $mail->Body = $message;
         $mail->Subject = $subject;
