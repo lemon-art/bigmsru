@@ -259,7 +259,7 @@ function DeletePresentFromBasket($ID) {
 }
 
 
-function custom_mail($to, $subject, $message, $addh = "", $addp = "")
+function custom_mail_old($to, $subject, $message, $addh = "", $addp = "")
 {
     require_once __DIR__ . '/mail/class.phpmailer.php';
 
