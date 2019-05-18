@@ -259,7 +259,7 @@ function DeletePresentFromBasket($ID) {
 }
 
 
-function custom_mail_old($to, $subject, $message, $addh = "", $addp = "")
+function custom_mail($to, $subject, $message, $addh = "", $addp = "")
 {
     require_once __DIR__ . '/mail/class.phpmailer.php';
 
@@ -320,15 +320,15 @@ function custom_mail_old($to, $subject, $message, $addh = "", $addp = "")
 
     //Debug
         
-        //$file = fopen(__DIR__.'/log.txt', 'w+');
-        //$string = 'To: '.print_r($to, true).PHP_EOL;
-        //$string .= 'Subject: '.print_r($subject, true).PHP_EOL;
-        //$string .= 'Message: '.print_r($message, true).PHP_EOL;
-        //$string .= 'Additional headers: '.print_r($addh, true).PHP_EOL;
-        //$string .= 'Additional props: '.print_r($addp, true).PHP_EOL;
+        $file = fopen(__DIR__.'/log.txt', 'w+');
+        $string = 'To: '.print_r($to, true).PHP_EOL;
+        $string .= 'Subject: '.print_r($subject, true).PHP_EOL;
+        $string .= 'Message: '.print_r($message, true).PHP_EOL;
+        $string .= 'Additional headers: '.print_r($addh, true).PHP_EOL;
+        $string .= 'Additional props: '.print_r($addp, true).PHP_EOL;
         //
-        //fwrite($file, $string);
-        //fclose($file);
+        fwrite($file, $string);
+        fclose($file);
         
 
         $status = $mail->Send();
