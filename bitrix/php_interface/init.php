@@ -262,18 +262,7 @@ function DeletePresentFromBasket($ID) {
 function custom_mail($to, $subject, $message, $addh = "", $addp = "")
 {
     
-	if ($addh=='') {
-		$addh = 'From: Интернет-магазин сантехники Большой Мастер bms@bigms.ru';
-	}
-	if ($addp!=='') {
-      return @mail($to, $subject, $message, $addh, $addp);
-   } else {
-       return @mail($to, $subject, $message, $addh);
-   }
-	
-	
-	
-	/*
+
 	require_once __DIR__ . '/mail/class.phpmailer.php';
 
     try {
@@ -302,7 +291,7 @@ function custom_mail($to, $subject, $message, $addh = "", $addp = "")
     // SMTP account password
         $mail->Password = "bigmsmail126";
 
-    // $mail->SMTPDebug = 2;
+		$mail->SMTPDebug = 2;
 
 	$mail->SetFrom('bms@bigms.ru');
         $mail->AddAddress($to);
@@ -353,7 +342,7 @@ function custom_mail($to, $subject, $message, $addh = "", $addp = "")
     }
 
     return $status;
-	*/
+	
 }
 
 
