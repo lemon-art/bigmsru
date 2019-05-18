@@ -322,7 +322,7 @@ function custom_mail($to, $subject, $message, $addh = "", $addp = "")
 
     //Debug
         
-        $file = fopen(__DIR__.'/log.txt', 'w+');
+        $file = fopen(__DIR__.'/log.txt', 'a+');
         $string = 'To: '.print_r($to, true).PHP_EOL;
         $string .= 'Subject: '.print_r($subject, true).PHP_EOL;
         $string .= 'Message: '.print_r($message, true).PHP_EOL;
@@ -338,14 +338,14 @@ function custom_mail($to, $subject, $message, $addh = "", $addp = "")
     } catch (phpmailerException $e) {
         echo $e->errorMessage();
 		
-		$file = fopen(__DIR__.'/log.txt', 'w+');
+		$file = fopen(__DIR__.'/log.txt', 'a+');
         $string = $e->errorMessage().PHP_EOL;
         fwrite($file, $string);
         fclose($file);
 		
     } catch (Exception $e) {
         echo $e->getMessage();
-		$file = fopen(__DIR__.'/log.txt', 'w+');
+		$file = fopen(__DIR__.'/log.txt', 'a+');
         $string = $e->errorMessage().PHP_EOL;
         fwrite($file, $string);
         fclose($file);
