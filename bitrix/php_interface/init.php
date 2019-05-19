@@ -273,9 +273,8 @@ function custom_mail($to, $subject, $message, $addh = "", $addp = "")
 
     // telling the class to use SMTP
         $mail->IsSMTP();
-
     // SMTP server
-        $mail->Host = "smtp.yandex.ru";
+        $mail->Host = "ssl://smtp.mail.ru";
 
     // set the SMTP port for the GMAIL
         //$mail->Port = 25;
@@ -286,14 +285,14 @@ function custom_mail($to, $subject, $message, $addh = "", $addp = "")
 		$mail->SMTPSecure   = 'ssl';
 
     // SMTP account username
-		$mail->Username = "bigmsmail@yandex.ru";
+		$mail->Username = "bms@bigms.ru";
 
     // SMTP account password
-        $mail->Password = "bigmsmail126";
+        $mail->Password = "QweZxc159";
 
-		$mail->SMTPDebug = 2;
+		$mail->SMTPDebug = 1;
 
-		$mail->SetFrom('bigmsmail@yandex.ru');
+		$mail->SetFrom('bms@bigms.ru');
         $mail->AddAddress($to);
         $mail->Body = $message;
         $mail->Subject = $subject;
@@ -325,7 +324,7 @@ function custom_mail($to, $subject, $message, $addh = "", $addp = "")
         $file = fopen(__DIR__.'/log.txt', 'a+');
         $string = 'To: '.print_r($to, true).PHP_EOL;
         $string .= 'Subject: '.print_r($subject, true).PHP_EOL;
-        $string .= 'Message: '.print_r($message, true).PHP_EOL;
+        //$string .= 'Message: '.print_r($message, true).PHP_EOL;
         $string .= 'Additional headers: '.print_r($addh, true).PHP_EOL;
         $string .= 'Additional props: '.print_r($addp, true).PHP_EOL;
         //
