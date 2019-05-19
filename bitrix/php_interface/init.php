@@ -274,7 +274,7 @@ function custom_mail($to, $subject, $message, $addh = "", $addp = "")
     // telling the class to use SMTP
         $mail->IsSMTP();
     // SMTP server
-        $mail->Host = "ssl://smtp.mail.ru";
+        $mail->Host = "smtp.mail.ru";
 
     // set the SMTP port for the GMAIL
         //$mail->Port = 25;
