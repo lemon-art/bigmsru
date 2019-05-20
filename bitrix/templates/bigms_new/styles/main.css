@@ -7310,4 +7310,12 @@ li.sublist__item[data-level="2"]> ul.sublist[data-level="3"]  .sublist__item:hov
     margin-left: 50px;
 }
 
+.product-card__quantity_instock_text {
+	position: absolute;
+    min-width: 200px;
+    font-size: 10px;
+    top: 14px;
+}
+
+
 /* Стили новие к меню*/	  

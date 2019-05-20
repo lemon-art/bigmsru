@@ -151,7 +151,10 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 									<?endif;?>
 									
 									<?if($arResult['NAME'] == 'Душевые кабины SANWAY' || $arResult['NAME'] == 'Водяные полотенцесушители НИКА' || $arResult['NAME'] == 'Душевые кабины RIVER'):?>
-										<span class="product-card__quantity product-card__quantity_instock">В наличии</span>
+										<span class="product-card__quantity product-card__quantity_instock">В наличии
+											<span class="product-card__quantity_instock_text">Уточняйте склад</span>
+										</span>
+										
 										<input type="hidden" name="STATUS<?=$arItem["ID"]?>" data-class="product-card__quantity_instock" value="В наличии"/>
 									<?elseif( $arItem['PROPERTIES']['DELIVERY_TIME']['VALUE'] && $arItem["CATALOG_QUANTITY"] <= 0):?>
 										<input type="hidden" name="STATUS<?=$arResult["ID"]?>" data-class="product-card__quantity_order" value="Под заказ"/>
@@ -160,7 +163,9 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 										<span class="product-card__quantity product-card__quantity_order">Под заказ</span>
 										<input type="hidden" name="STATUS<?=$arItem["ID"]?>" data-class="product-card__quantity_order" value="Под заказ"/>
 									<?else:?>
-										<span class="product-card__quantity product-card__quantity_instock">В наличии</span>
+										<span class="product-card__quantity product-card__quantity_instock">В наличии
+											<span class="product-card__quantity_instock_text">Уточняйте склад</span>
+										</span>
 										<input type="hidden" name="STATUS<?=$arItem["ID"]?>" data-class="product-card__quantity_instock" value="В наличии"/>
 									<?endif;?>
 									
