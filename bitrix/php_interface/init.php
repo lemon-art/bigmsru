@@ -288,9 +288,9 @@ function custom_mail($to, $subject, $message, $addh = "", $addp = "")
 		$mail->Username = "bms@bigms.ru";
 
     // SMTP account password
-        $mail->Password = "QweZxc159";
+        $mail->Password = "<tkrf2019+";
 
-		$mail->SMTPDebug = 1;
+		//$mail->SMTPDebug = 1;
 
 		$mail->SetFrom('bms@bigms.ru');
         $mail->AddAddress($to);
