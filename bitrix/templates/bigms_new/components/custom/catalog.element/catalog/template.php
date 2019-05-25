@@ -214,6 +214,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 									<input type="hidden" name="PICTURE<?=$arResult["ID"]?>" value="<?=$renderImage["src"]?>"/>
 								</div>
 								
+								<?/*
 								<?
 								//код для поп ап окна купить в 1 клик
 								$this->SetViewTarget("one_click");
@@ -278,7 +279,7 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 								  </div>
 								
 								<?$this->EndViewTarget("one_click");?>
-								
+								*/?>
 								 
 								<?if( $arResult["MORE_PHOTO_COUNT"] > 1 || count($arResult["PROPERTIES"]["VIDEO"]["VALUE"]) > 0 ):?>
 									<div id="thumbs" class="content-product__thumbs-wrap right-shadow">
@@ -463,9 +464,11 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
                 
 								  </div>
 								  
+								  <?/*
 								  <div class="product-info__row product-info__row_click active">
 									<a role="button" data-trigger="click" href="#" class="product-info__buy product-info__buy_one popup-trigger">Купить в 1 клик</a>
 								  </div>
+								  */?>
 								  
 								  <div class="product-info__row product-info__row_incart">
 									<span href="#" class="button product-info__incart">Товар в корзине</span>
