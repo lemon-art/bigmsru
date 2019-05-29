@@ -276,7 +276,7 @@ if ($countPropduct > 0):
 </div>
 				<div class="content-cart__result cart-result">
                   <div class="cart-result__wrap">
-					
+					<?/*
                     <form id="form_one_click" class="cart-result__form form form_cart">
 						<input type="hidden" name="TYPE" value="cart">
 						<label class="form__label">Заказать в 1 клик:</label>
@@ -285,6 +285,7 @@ if ($countPropduct > 0):
 						</div>
 						<input class="form__submit" type="submit" name="one_click_submit" value="Жду звонка">
                     </form>
+					*/?>
 					
                   </div>
                   <div class="cart-result__wrap cart-result__wrap_flexend">
