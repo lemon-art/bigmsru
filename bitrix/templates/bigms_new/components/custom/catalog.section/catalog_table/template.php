@@ -94,6 +94,7 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 	?> 
 	
 				<li class="product-card product-card_list content-products__item">
+						
 					<div class="row">
                       <div class="col-lg-3 col-lg-offset-0 col-md-3 col-md-offset-0 col-sm-4 col-sm-offset-0">
                         <div class="product-card__img-wrap">
@@ -202,6 +203,11 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 										<use xlink:href="#icon-delivery"></use>
 									</svg>
 									<span class="product-card__delivery-text">Доставка<br>бесплатно</span>
+								</span>
+							<?endif;?>
+							<?if ( $arItem['PROPERTIES']['SKIDKA_PRI_SAMOVYVOZE']['VALUE'] ):?>
+								<span class="product-card__delivery">
+									<span class="product-card__delivery-text" title="На товар предоставляется скидк при покупке его в одном из наших магазинов">Скидка <br>в магазине</span>
 								</span>
 							<?endif;?>
                         </div>

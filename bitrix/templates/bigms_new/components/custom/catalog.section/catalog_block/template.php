@@ -99,8 +99,10 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 				
 				
                     <div class="product-card__content">
+						<?if ( $arItem['PROPERTIES']['SKIDKA_PRI_SAMOVYVOZE']['VALUE'] ):?>
+							<span class="product-card__gift" title="На товар предоставляется скидк при покупке его в одном из наших магазинов">Скидка <br>в магазине</span>
+						<?endif;?>
 						<?/*
-						<span class="product-card__gift"><img src="styles/images/icons/gift.png" alt="">Подарок</span>
 						<span class="product-card__delivery">Доставка бесплатно</span>
 						*/?>
                       <div class="product-card__img-wrap">
