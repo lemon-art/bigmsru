@@ -206,9 +206,18 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
 								</span>
 							<?endif;?>
 							<?if ( $arItem['PROPERTIES']['SKIDKA_PRI_SAMOVYVOZE']['VALUE'] ):?>
-								<span class="product-card__delivery">
-									<span class="product-card__delivery-text" title="На товар предоставляется скидк при покупке его в одном из наших магазинов">Скидка <br>в магазине</span>
-								</span>
+								<?if ( intval($arItem['PROPERTIES']['SKIDKA_PRI_SAMOVYVOZE']['VALUE']) == 1):?>
+									<span class="product-card__delivery">
+										<span class="product-card__delivery-text" title="На товар предоставляется скидк при покупке его в одном из наших магазинов">Скидка <br>в магазине</span>
+									</span>
+								<?else:?>
+									<span class="product-card__delivery">
+										<span class="product-card__delivery-text" title="На товар предоставляется скидк при покупке его в одном из наших магазинов">Скидка <?=$arItem['PROPERTIES']['SKIDKA_PRI_SAMOVYVOZE']['VALUE']?>%<br>в магазине</span>
+									</span>
+								<?endif;?>
+								
+								
+								
 							<?endif;?>
                         </div>
                       </div>
