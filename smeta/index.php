@@ -7,7 +7,7 @@ $APPLICATION->SetTitle("Быстрый расчёт сметы");
 		<section class="promo-adv">
 			<h2 class="promo-adv__title">Как быстро получить расчёт сметы на сантехнику</h2>
 			<ul class="promo-adv__list">
-				<li class="promo-adv__item"><b>Заполните форму</b> на сайте,<br>или отправить данные нам для анализа <br>и пересчета нам на email <a href="mailto:info@bigms.ru">info@bigms.ru</a>.<br> В течении <b>30 минут</b> наш специалист свяжется с Вами!</li>
+				<li class="promo-adv__item"><b>Заполните форму</b> на сайте,<br>или отправить данные нам для анализа <br>и пересчета нам на email <a href="mailto:bms@bigms.ru">bms@bigms.ru</a>.<br> В течении <b>30 минут</b> наш специалист свяжется с Вами!</li>
 				<li class="promo-adv__item">
 					Мы проверим Вашу смету и поможем <b>сэкономить</b> <br>на комплектующих:<br>
 					- пересчитаем количество товара;<br>
