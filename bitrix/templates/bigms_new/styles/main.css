@@ -4070,7 +4070,8 @@ ul.sublist[data-level="3"] .sublist__link:after {
     z-index: 1; }
 	.product-card__gift a{
 		color: #ffffff;
-		text-underline: none;
+		text-decoration: none;
+		font-size: 9px;
 	}
     .product-card__gift img {
       vertical-align: middle;
