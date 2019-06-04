@@ -4068,6 +4068,10 @@ ul.sublist[data-level="3"] .sublist__link:after {
     -webkit-transform: rotate(-45deg);
             transform: rotate(-45deg);
     z-index: 1; }
+	.product-card__gift a{
+		color: #ffffff;
+		text-underline: none;
+	}
     .product-card__gift img {
       vertical-align: middle;
       display: inline-block;

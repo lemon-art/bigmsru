@@ -183,9 +183,16 @@ $arFirstPhoto = current($arResult['MORE_PHOTO']);
 						<div class="row">
 							  <div class="col-lg-7 col-md-10 col-sm-10">
 								<div class="content-product__image">
-									<?if ( $arResult['PROPERTIES']['SKIDKA_PRI_SAMOVYVOZE']['VALUE'] ):?>
-										<span class="content-product__gift" title="На товар предоставляется скидк при покупке его в одном из наших магазинов">Скидка <br>в магазине</span>
+									
+									<?if ( $arResult['PROPERTIES']['SKIDKA_PRI_SAMOVYVOZE']['VALUE']):?>
+										<?if ( intval($arResult['PROPERTIES']['SKIDKA_PRI_SAMOVYVOZE']['VALUE']) == 1):?>
+											<span class="product-card__gift" title="На товар предоставляется скидк при покупке его в одном из наших магазинов"><a href="/skidka-v-magazine/" target="_blank">Скидка <br>при самовывозе</a></span>
+										<?else:?>
+											<span class="product-card__gift" title="На товар предоставляется скидк при покупке его в одном из наших магазинов"><a href="/skidka-v-magazine/" target="_blank">Скидка <?=$arResult['PROPERTIES']['SKIDKA_PRI_SAMOVYVOZE']['VALUE']?>%<br>при самовывозе</a></span>
+										<?endif;?>
 									<?endif;?>
+									
+									
 									<?if ( count($arResult["GIFT"]) > 0 ):?> 
 										<span class="content-product__gift"><img src="<?=SITE_TEMPLATE_PATH?>/styles/images/icons/gift.png" alt="">Подарок</span>
 									<?endif;?>
