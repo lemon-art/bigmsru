@@ -101,9 +101,9 @@ foreach ($arResult['ITEMS'] as $key => $arItem):
                     <div class="product-card__content">
 						<?if ( $arItem['PROPERTIES']['SKIDKA_PRI_SAMOVYVOZE']['VALUE']):?>
 							<?if ( intval($arItem['PROPERTIES']['SKIDKA_PRI_SAMOVYVOZE']['VALUE']) == 1):?>
-								<span class="product-card__gift" title="На товар предоставляется скидк при покупке его в одном из наших магазинов">Скидка <br>в магазине</span>
+								<span class="product-card__gift" title="На товар предоставляется скидк при покупке его в одном из наших магазинов"><a href="/skidka-v-magazine/" target="_blank">Скидка <br>при самовывозе</a></span>
 							<?else:?>
-								<span class="product-card__gift" title="На товар предоставляется скидк при покупке его в одном из наших магазинов">Скидка <?=$arItem['PROPERTIES']['SKIDKA_PRI_SAMOVYVOZE']['VALUE']?>%<br>в магазине</span>
+								<span class="product-card__gift" title="На товар предоставляется скидк при покупке его в одном из наших магазинов"><a href="/skidka-v-magazine/" target="_blank">Скидка <?=$arItem['PROPERTIES']['SKIDKA_PRI_SAMOVYVOZE']['VALUE']?>%<br>при самовывозе</a></span>
 							<?endif;?>
 						<?endif;?>
 						<?/*
