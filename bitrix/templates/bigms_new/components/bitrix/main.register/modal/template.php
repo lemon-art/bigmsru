@@ -1,7 +1,8 @@
 <?
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 $this->setFrameMode(true);
-
+?>
+<?
 /**
  * Bitrix vars
  *
@@ -57,13 +58,13 @@ $this->setFrameMode(true);
 				<?ShowError( $arError[0]);?>
 			<?endif;?>
 		
-			<form id="register_form" method="POST" class="form form_register popup__form" action="<?= POST_FORM_ACTION_URI ?>" >
+			<form id="register_form" name="REGISTER" method="POST" class="form form_register popup__form" action="<?= POST_FORM_ACTION_URI ?>" >
 				<?if ($arResult["BACKURL"] <> ''):?>
 					<input type="hidden" name="backurl" value="<?= $arResult["BACKURL"] ?>"/>
 				<?endif;?>
 				<input type="hidden" name="TYPE" value="REGISTRATION"/>
 				<input type="hidden" name="register_submit_button" value="Y"/>
-				<input type="text" class="api-mf-antibot" value="" name="ANTIBOT[NAME]">
+				<input type="hidden" class="api-mf-antibot" value="" name="ANTIBOT[NAME]">
 		
 					<? foreach ($arResult["SHOW_FIELDS"] as $FIELD): ?>
 
@@ -189,14 +190,35 @@ $this->setFrameMode(true);
 
 					<p class="form__text">
 						<label>
-							<input type="checkbox" name="agree_politic" checked disabled <?if ( $arResult['arrVALUES']['agree_politic'] == 'on' ):?>checked<?endif;?>>
+							<input type="checkbox" name="agree_politic"  <?if ( $arResult['arrVALUES']['agree_politic'] == 'on' ):?>checked<?endif;?>>
 							Я согласен с <a href="/politika-konfidentsialnosti/" target="_blank">политикой конфиденциальности</a>
 						</label>
 					</p>
 					
-					<input class="form__submit" name="register_submit_button" type="submit" name="form_submit" value="ЗАРЕГИСТРИРОВАТЬСЯ">
+					<input class="form__submit" name="register_submit_button" disabled type="submit" name="form_submit" value="ЗАРЕГИСТРИРОВАТЬСЯ">
 					
 
 			</form>
 		<? endif ?>	
 	<? endif ?>
+	
+	
+	<script type="text/javascript">
+	
+		$(function() {
+
+			
+			$('form[name="REGISTER"]').find('input[name="agree_politic"]').change(function() {
+
+				if ( $(this).prop("checked")){
+					$('form[name="REGISTER"]').find('.form__submit').prop('disabled',false);
+				}
+				else {
+					$('form[name="REGISTER"]').find('.form__submit').prop('disabled',true);
+				}
+				
+			});
+			
+			
+		});
+	</script>

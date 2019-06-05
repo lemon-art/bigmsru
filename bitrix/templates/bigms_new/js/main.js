@@ -588,6 +588,19 @@ $(document).ready(function() {
 		
     }
 	
+	//регистрация
+	if( $(this).data('trigger') == 'register' && !$(this).hasClass('js-active') ) {
+	
+		$.ajax({
+            type: "POST",
+            url: '/ajax/reg_form.php',
+            success: function (data) {
+				$('#modal_reg').html( data );
+            }
+        });
+		
+    }
+	
 	//рассчитать смету
 	if( $(this).data('trigger') == 'estimate' && !$(this).hasClass('js-active') ) {
 	

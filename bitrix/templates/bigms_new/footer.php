@@ -164,21 +164,8 @@
         <span data-trigger="register" class="popup__close popup-trigger"></span>
 		<strong class="form__title callback-form__title">Регистрация</strong>
 		<div class="modal-content">
-			<?$APPLICATION->IncludeComponent(
-					"bitrix:main.register",
-					"modal",
-					Array(
-						"SHOW_FIELDS" => array("EMAIL","NAME","LAST_NAME","WORK_COMPANY"),
-						"REQUIRED_FIELDS" => array("EMAIL","NAME","LAST_NAME"),
-						"AUTH" => "Y",
-						"USE_BACKURL" => "N",
-						"SUCCESS_PAGE" => "",
-						"SET_TITLE" => "N",
-						"USER_PROPERTY" => array("UF_TYPE","UF_INN"),
-						"USER_PROPERTY_NAME" => "",
-						"COMPONENT_TEMPLATE" => "modal"
-					)
-			);?>
+			 <span id="modal_reg"></span>  
+			
 		</div>
 		
         
